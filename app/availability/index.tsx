@@ -5,10 +5,9 @@ import { ActivityIndicator, Pressable, ScrollView, Text, TextInput, View } from 
 import { LinearGradient } from 'expo-linear-gradient';
 
 import { Chip } from '../../src/components/Chip';
-import { ENERGY_SLOTS } from '../../src/features/onboarding/options';
-import type { TimeSlot } from '../../src/features/availability/types';
-import { createAvailabilitySlot, deleteAvailabilitySlot, fetchAvailabilitySlots } from '../../src/lib/availability';
+import { createAvailabilitySlots, deleteAvailabilitySlot, fetchAvailabilitySlots } from '../../src/lib/availability';
 import { DAYS_OF_WEEK } from '../../src/lib/days';
+import { formatTimeRange, TIME_OPTIONS, timeSlotFromStartTime } from '../../src/lib/time';
 import { getUpcomingDates } from '../../src/lib/upcomingDates';
 import { useAuthStore } from '../../src/store/authStore';
 
@@ -20,10 +19,12 @@ export default function AvailabilityScreen() {
   const queryClient = useQueryClient();
 
   const [kind, setKind] = useState<'recurring' | 'specific'>('recurring');
-  const [dayOfWeek, setDayOfWeek] = useState(0);
-  const [specificDate, setSpecificDate] = useState(UPCOMING_DATES[0].value);
-  const [timeSlot, setTimeSlot] = useState<TimeSlot>('soir');
+  const [selectedDays, setSelectedDays] = useState<Set<number>>(new Set([0]));
+  const [selectedDates, setSelectedDates] = useState<Set<string>>(new Set());
+  const [startTime, setStartTime] = useState('18:00');
+  const [endTime, setEndTime] = useState('19:00');
   const [label, setLabel] = useState('');
+  const [formError, setFormError] = useState<string | null>(null);
 
   const slotsQuery = useQuery({
     queryKey: ['availability', userId],
@@ -32,24 +33,46 @@ export default function AvailabilityScreen() {
   });
 
   const createMutation = useMutation({
-    mutationFn: () =>
-      createAvailabilitySlot(userId!, {
+    mutationFn: async () => {
+      const selection = kind === 'recurring' ? Array.from(selectedDays) : Array.from(selectedDates);
+      if (selection.length === 0) throw new Error('Choisissez au moins un jour.');
+      if (endTime <= startTime) throw new Error("L'heure de fin doit être après l'heure de début.");
+
+      const timeSlot = timeSlotFromStartTime(startTime);
+      const slots = selection.map((value) => ({
         label: label.trim() || null,
         is_recurring: kind === 'recurring',
-        day_of_week: kind === 'recurring' ? dayOfWeek : null,
-        specific_date: kind === 'specific' ? specificDate : null,
+        day_of_week: kind === 'recurring' ? (value as number) : null,
+        specific_date: kind === 'specific' ? (value as string) : null,
         time_slot: timeSlot,
-      }),
+        start_time: startTime,
+        end_time: endTime,
+      }));
+      return createAvailabilitySlots(userId!, slots);
+    },
     onSuccess: () => {
       setLabel('');
+      setFormError(null);
       queryClient.invalidateQueries({ queryKey: ['availability', userId] });
     },
+    onError: (e: Error) => setFormError(e.message),
   });
 
-  const deleteMutation = useMutation({
-    mutationFn: (id: string) => deleteAvailabilitySlot(id),
-    onSuccess: () => queryClient.invalidateQueries({ queryKey: ['availability', userId] }),
-  });
+  const toggleDay = (value: number) => {
+    setSelectedDays((prev) => {
+      const next = new Set(prev);
+      next.has(value) ? next.delete(value) : next.add(value);
+      return next;
+    });
+  };
+
+  const toggleDate = (value: string) => {
+    setSelectedDates((prev) => {
+      const next = new Set(prev);
+      next.has(value) ? next.delete(value) : next.add(value);
+      return next;
+    });
+  };
 
   return (
     <ScrollView className="flex-1 bg-paper px-6 pt-16" contentContainerStyle={{ paddingBottom: 60 }}>
@@ -71,43 +94,68 @@ export default function AvailabilityScreen() {
       </Text>
       <View className="mb-4 flex-row flex-wrap">
         <Chip label="Chaque semaine" selected={kind === 'recurring'} onPress={() => setKind('recurring')} />
-        <Chip label="Une seule fois" selected={kind === 'specific'} onPress={() => setKind('specific')} />
+        <Chip label="Dates précises" selected={kind === 'specific'} onPress={() => setKind('specific')} />
       </View>
 
       {kind === 'recurring' ? (
         <>
-          <Text style={{ fontFamily: 'Nunito_800ExtraBold' }} className="mb-2.5 text-sm text-ink">
-            Jour
+          <Text style={{ fontFamily: 'Nunito_800ExtraBold' }} className="mb-1 text-sm text-ink">
+            Jours
           </Text>
+          <Text className="mb-2.5 text-xs text-ink-soft">Vous pouvez en choisir plusieurs à la fois.</Text>
           <View className="mb-4 flex-row flex-wrap">
             {DAYS_OF_WEEK.map((day) => (
-              <Chip key={day.value} label={day.label} selected={dayOfWeek === day.value} onPress={() => setDayOfWeek(day.value)} />
+              <Chip
+                key={day.value}
+                label={day.label}
+                selected={selectedDays.has(day.value)}
+                onPress={() => toggleDay(day.value)}
+              />
             ))}
           </View>
         </>
       ) : (
         <>
-          <Text style={{ fontFamily: 'Nunito_800ExtraBold' }} className="mb-2.5 text-sm text-ink">
-            Date
+          <Text style={{ fontFamily: 'Nunito_800ExtraBold' }} className="mb-1 text-sm text-ink">
+            Dates
           </Text>
+          <Text className="mb-2.5 text-xs text-ink-soft">Vous pouvez en choisir plusieurs à la fois.</Text>
           <ScrollView horizontal showsHorizontalScrollIndicator={false} className="mb-4">
             <View className="flex-row">
               {UPCOMING_DATES.map((d) => (
-                <Chip key={d.value} label={d.label} selected={specificDate === d.value} onPress={() => setSpecificDate(d.value)} />
+                <Chip
+                  key={d.value}
+                  label={d.label}
+                  selected={selectedDates.has(d.value)}
+                  onPress={() => toggleDate(d.value)}
+                />
               ))}
             </View>
           </ScrollView>
         </>
       )}
 
-      <Text style={{ fontFamily: 'Nunito_800ExtraBold' }} className="mb-2.5 text-sm text-ink">
-        Moment
+      <Text style={{ fontFamily: 'Nunito_800ExtraBold' }} className="mb-1 text-sm text-ink">
+        De
       </Text>
-      <View className="mb-4 flex-row flex-wrap">
-        {ENERGY_SLOTS.map((slot) => (
-          <Chip key={slot.key} label={slot.label} selected={timeSlot === slot.key} onPress={() => setTimeSlot(slot.key)} />
-        ))}
-      </View>
+      <ScrollView horizontal showsHorizontalScrollIndicator={false} className="mb-3">
+        <View className="flex-row">
+          {TIME_OPTIONS.map((t) => (
+            <Chip key={t} label={t} selected={startTime === t} onPress={() => setStartTime(t)} />
+          ))}
+        </View>
+      </ScrollView>
+
+      <Text style={{ fontFamily: 'Nunito_800ExtraBold' }} className="mb-1 text-sm text-ink">
+        À
+      </Text>
+      <ScrollView horizontal showsHorizontalScrollIndicator={false} className="mb-4">
+        <View className="flex-row">
+          {TIME_OPTIONS.map((t) => (
+            <Chip key={t} label={t} selected={endTime === t} onPress={() => setEndTime(t)} />
+          ))}
+        </View>
+      </ScrollView>
 
       <Text style={{ fontFamily: 'Nunito_800ExtraBold' }} className="mb-2.5 text-sm text-ink">
         Note (optionnel)
@@ -120,6 +168,8 @@ export default function AvailabilityScreen() {
         onChangeText={setLabel}
       />
 
+      {formError ? <Text className="mb-3 text-xs text-red-700">{formError}</Text> : null}
+
       <Pressable
         onPress={() => createMutation.mutate()}
         disabled={createMutation.isPending}
@@ -130,7 +180,8 @@ export default function AvailabilityScreen() {
             <ActivityIndicator color="#FFFFFF" />
           ) : (
             <Text style={{ fontFamily: 'Nunito_800ExtraBold' }} className="text-center text-white">
-              Ajouter ce créneau
+              Ajouter ce{kind === 'recurring' && selectedDays.size > 1 ? 's' : ''} créneau
+              {kind === 'recurring' && selectedDays.size > 1 ? 'x' : kind === 'specific' && selectedDates.size > 1 ? 'x' : ''}
             </Text>
           )}
         </LinearGradient>
@@ -147,7 +198,6 @@ export default function AvailabilityScreen() {
         const when = slot.is_recurring
           ? DAYS_OF_WEEK.find((d) => d.value === slot.day_of_week)?.label
           : UPCOMING_DATES.find((d) => d.value === slot.specific_date)?.label ?? slot.specific_date;
-        const slotLabel = ENERGY_SLOTS.find((s) => s.key === slot.time_slot)?.label;
         return (
           <View
             key={slot.id}
@@ -155,12 +205,12 @@ export default function AvailabilityScreen() {
           >
             <View className="flex-1 pr-3">
               <Text style={{ fontFamily: 'Nunito_700Bold' }} className="text-sm text-ink">
-                {when} · {slotLabel}
+                {when} · {formatTimeRange(slot.start_time, slot.end_time)}
                 {slot.is_recurring ? ' (chaque semaine)' : ''}
               </Text>
               {slot.label ? <Text className="mt-0.5 text-xs text-ink-soft">{slot.label}</Text> : null}
             </View>
-            <Pressable onPress={() => deleteMutation.mutate(slot.id)}>
+            <Pressable onPress={() => deleteAvailabilitySlot(slot.id).then(() => queryClient.invalidateQueries({ queryKey: ['availability', userId] }))}>
               <Text style={{ fontFamily: 'Nunito_700Bold' }} className="text-sm text-accent">
                 Supprimer
               </Text>

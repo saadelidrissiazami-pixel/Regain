@@ -12,6 +12,12 @@ export async function fetchCatalog(): Promise<CatalogActivity[]> {
   return data;
 }
 
+export async function fetchActivityById(id: string): Promise<CatalogActivity> {
+  const { data, error } = await supabase.from('activities_catalog').select('*').eq('id', id).single();
+  if (error) throw error;
+  return data;
+}
+
 async function fetchPreferences(userId: string) {
   const { data, error } = await supabase
     .from('user_preferences')

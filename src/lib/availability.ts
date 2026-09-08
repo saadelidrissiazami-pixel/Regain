@@ -18,6 +18,13 @@ export async function createAvailabilitySlot(userId: string, slot: NewAvailabili
   if (error) throw error;
 }
 
+export async function createAvailabilitySlots(userId: string, slots: NewAvailabilitySlot[]) {
+  const { error } = await supabase
+    .from('availability_slots')
+    .insert(slots.map((slot) => ({ user_id: userId, ...slot })));
+  if (error) throw error;
+}
+
 export async function deleteAvailabilitySlot(id: string) {
   const { error } = await supabase.from('availability_slots').delete().eq('id', id);
   if (error) throw error;

@@ -1,6 +1,7 @@
 import type { AvailabilitySlot, TimeSlot } from '../availability/types';
 import { energyMeetsRequirement, fitsBudget, type BudgetLevel, type CatalogActivity, type EnergyLevel } from './catalog';
 import { getDateForDayOfWeek } from '../../lib/week';
+import { durationMinutes } from '../../lib/time';
 import type { CategoryAffinity } from '../../lib/personalization';
 
 export type EnergyBySlot = Partial<Record<TimeSlot, EnergyLevel>>;
@@ -49,9 +50,13 @@ export function generateWeeklyPlan(params: {
 
   for (const { slot, date } of resolvedSlots) {
     const userEnergy = energyBySlot[slot.time_slot] ?? 'moyen';
+    const availableMinutes = durationMinutes(slot.start_time, slot.end_time);
 
     const eligible = catalog.filter(
-      (a) => energyMeetsRequirement(userEnergy, a.energy_required) && fitsBudget(a.cost_level, budgetLevel)
+      (a) =>
+        energyMeetsRequirement(userEnergy, a.energy_required) &&
+        fitsBudget(a.cost_level, budgetLevel) &&
+        a.duration_minutes <= availableMinutes
     );
     if (eligible.length === 0) continue;
 

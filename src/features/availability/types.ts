@@ -8,6 +8,8 @@ export type AvailabilitySlot = {
   day_of_week: number | null;
   specific_date: string | null;
   time_slot: TimeSlot;
+  start_time: string; // "HH:MM"
+  end_time: string; // "HH:MM"
   created_at: string;
 };
 
@@ -17,4 +19,6 @@ export type NewAvailabilitySlot = {
   day_of_week: number | null;
   specific_date: string | null;
   time_slot: TimeSlot;
+  start_time: string;
+  end_time: string;
 };

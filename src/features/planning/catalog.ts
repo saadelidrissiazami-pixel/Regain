@@ -4,6 +4,12 @@ export type EnergyLevel = 'bas' | 'moyen' | 'eleve';
 export type CostLevel = 'gratuit' | 'faible' | 'modere';
 export type BudgetLevel = 'gratuit' | 'modere' | 'confortable';
 
+export type ActivityStep = {
+  icon: string;
+  title: string;
+  description: string;
+};
+
 export type CatalogActivity = {
   id: string;
   title: string;
@@ -14,6 +20,7 @@ export type CatalogActivity = {
   cost_level: CostLevel;
   instructions: string | null;
   tags: string[];
+  steps: ActivityStep[];
 };
 
 const ENERGY_ORDER: Record<EnergyLevel, number> = { bas: 0, moyen: 1, eleve: 2 };

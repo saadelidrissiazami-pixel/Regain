@@ -43,19 +43,21 @@ function ActivityCard({
         done ? 'border-primary-soft bg-primary-soft' : 'border-line bg-surface'
       }`}
     >
-      <View className="flex-1 pr-3">
-        <CategoryBadge
-          category={item.activities_catalog.category}
-          suffix={ENERGY_SLOTS.find((s) => s.key === item.time_slot)?.label}
-        />
-        <Text
-          style={{ fontFamily: 'Nunito_700Bold' }}
-          className={`mt-2 text-base ${done ? 'text-ink-soft line-through' : 'text-ink'}`}
-        >
-          {item.activities_catalog.title}
-        </Text>
-        <Text className="mt-0.5 text-xs text-ink-soft">{item.activities_catalog.duration_minutes} min</Text>
-      </View>
+      <Link href={`/activity/${item.activities_catalog.id}`} asChild>
+        <Pressable className="flex-1 pr-3">
+          <CategoryBadge
+            category={item.activities_catalog.category}
+            suffix={ENERGY_SLOTS.find((s) => s.key === item.time_slot)?.label}
+          />
+          <Text
+            style={{ fontFamily: 'Nunito_700Bold' }}
+            className={`mt-2 text-base ${done ? 'text-ink-soft line-through' : 'text-ink'}`}
+          >
+            {item.activities_catalog.title}
+          </Text>
+          <Text className="mt-0.5 text-xs text-ink-soft">{item.activities_catalog.duration_minutes} min · Voir le détail →</Text>
+        </Pressable>
+      </Link>
       <Pressable
         onPress={onToggle}
         disabled={toggling}
