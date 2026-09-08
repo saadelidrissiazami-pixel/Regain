@@ -1,6 +1,7 @@
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { LinearGradient } from 'expo-linear-gradient';
 import { router, useLocalSearchParams } from 'expo-router';
+import * as Speech from 'expo-speech';
 import { useEffect, useRef, useState } from 'react';
 import { Animated, Pressable, Text, View } from 'react-native';
 
@@ -9,7 +10,24 @@ import { usePremium } from '../../src/lib/premium';
 import { fetchPrograms, markProgramCompleted } from '../../src/lib/wellbeing';
 import { useAuthStore } from '../../src/store/authStore';
 
-function BreathingPlayer({ content, onDone }: { content: Extract<ReturnType<typeof getContent>, { type: 'breathing' }>; onDone: () => void }) {
+function speak(text: string) {
+  try {
+    Speech.stop();
+    Speech.speak(text, { language: 'fr-FR', pitch: 1, rate: 0.95 });
+  } catch {
+    // La synthèse vocale n'est pas disponible sur cet appareil/navigateur — on continue en silence.
+  }
+}
+
+function BreathingPlayer({
+  content,
+  onDone,
+  audioOn,
+}: {
+  content: Extract<ReturnType<typeof getContent>, { type: 'breathing' }>;
+  onDone: () => void;
+  audioOn: boolean;
+}) {
   const [cycle, setCycle] = useState(0);
   const [phaseIndex, setPhaseIndex] = useState(0);
   const [secondsLeft, setSecondsLeft] = useState(content.phases[0].seconds);
@@ -22,6 +40,10 @@ function BreathingPlayer({ content, onDone }: { content: Extract<ReturnType<type
     const target = phase.label.startsWith('Inspirez') ? 1.4 : phase.label.startsWith('Expirez') ? 1 : 1.4;
     Animated.timing(scale, { toValue: target, duration: phase.seconds * 1000, useNativeDriver: true }).start();
   }, [phaseIndex, cycle]);
+
+  useEffect(() => {
+    if (audioOn && !finished) speak(phase.label);
+  }, [phaseIndex, cycle, audioOn]);
 
   useEffect(() => {
     if (finished) return;
@@ -85,9 +107,24 @@ function BreathingPlayer({ content, onDone }: { content: Extract<ReturnType<type
   );
 }
 
-function GuidedPlayer({ paragraphs, onDone }: { paragraphs: string[]; onDone: () => void }) {
+function GuidedPlayer({
+  paragraphs,
+  onDone,
+  audioOn,
+}: {
+  paragraphs: string[];
+  onDone: () => void;
+  audioOn: boolean;
+}) {
   const [index, setIndex] = useState(0);
   const isLast = index === paragraphs.length - 1;
+
+  useEffect(() => {
+    if (audioOn) speak(paragraphs[index]);
+    return () => {
+      if (audioOn) Speech.stop();
+    };
+  }, [index, audioOn]);
 
   return (
     <View className="flex-1 justify-between px-8 pb-10">
@@ -128,6 +165,7 @@ export default function WellbeingSessionScreen() {
   const queryClient = useQueryClient();
   const { isPremium } = usePremium();
   const [completed, setCompleted] = useState(false);
+  const [audioOn, setAudioOn] = useState(true);
 
   const programsQuery = useQuery({ queryKey: ['wellbeingPrograms'], queryFn: fetchPrograms });
   const program = programsQuery.data?.find((p) => p.slug === slug);
@@ -141,9 +179,24 @@ export default function WellbeingSessionScreen() {
   });
 
   const handleDone = () => {
+    try {
+      Speech.stop();
+    } catch {
+      // no-op
+    }
     if (program && session?.user.id) completeMutation.mutate();
     setCompleted(true);
   };
+
+  useEffect(() => {
+    return () => {
+      try {
+        Speech.stop();
+      } catch {
+        // no-op
+      }
+    };
+  }, []);
 
   if (!content || !program) {
     return (
@@ -171,11 +224,34 @@ export default function WellbeingSessionScreen() {
 
   return (
     <View className="flex-1 bg-paper pt-16">
-      <Pressable onPress={() => router.back()} className="mb-4 px-6">
-        <Text style={{ fontFamily: 'Nunito_700Bold' }} className="text-sm text-ink-soft">
-          ✕ Fermer
-        </Text>
-      </Pressable>
+      <View className="mb-4 flex-row items-center justify-between px-6">
+        <Pressable onPress={() => router.back()}>
+          <Text style={{ fontFamily: 'Nunito_700Bold' }} className="text-sm text-ink-soft">
+            ✕ Fermer
+          </Text>
+        </Pressable>
+        {!completed ? (
+          <Pressable
+            onPress={() => {
+              setAudioOn((v) => {
+                if (v) {
+                  try {
+                    Speech.stop();
+                  } catch {
+                    // no-op
+                  }
+                }
+                return !v;
+              });
+            }}
+            className={`flex-row items-center rounded-full px-3 py-1.5 ${audioOn ? 'bg-primary-soft' : 'bg-surface'}`}
+          >
+            <Text style={{ fontFamily: 'Nunito_700Bold' }} className={`text-xs ${audioOn ? 'text-primary' : 'text-ink-soft'}`}>
+              {audioOn ? '🔊 Guidage audio' : '🔇 Muet'}
+            </Text>
+          </Pressable>
+        ) : null}
+      </View>
 
       {completed ? (
         <View className="flex-1 items-center justify-center px-8">
@@ -192,9 +268,9 @@ export default function WellbeingSessionScreen() {
           </Pressable>
         </View>
       ) : content.type === 'breathing' ? (
-        <BreathingPlayer content={content} onDone={handleDone} />
+        <BreathingPlayer content={content} onDone={handleDone} audioOn={audioOn} />
       ) : (
-        <GuidedPlayer paragraphs={content.paragraphs} onDone={handleDone} />
+        <GuidedPlayer paragraphs={content.paragraphs} onDone={handleDone} audioOn={audioOn} />
       )}
     </View>
   );
