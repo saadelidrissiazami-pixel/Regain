@@ -1,0 +1,64 @@
+import { Text, View } from 'react-native';
+import Svg, { Circle } from 'react-native-svg';
+
+type ProgressRingProps = {
+  progress: number; // 0..1
+  size?: number;
+  strokeWidth?: number;
+  color?: string;
+  trackColor?: string;
+  label: string;
+  value: string;
+};
+
+export function ProgressRing({
+  progress,
+  size = 96,
+  strokeWidth = 10,
+  color = '#FF6B57',
+  trackColor = '#FFE4DD',
+  label,
+  value,
+}: ProgressRingProps) {
+  const radius = (size - strokeWidth) / 2;
+  const circumference = 2 * Math.PI * radius;
+  const offset = circumference * (1 - Math.min(Math.max(progress, 0), 1));
+
+  return (
+    <View className="items-center">
+      <View style={{ width: size, height: size }}>
+        <Svg width={size} height={size}>
+          <Circle
+            cx={size / 2}
+            cy={size / 2}
+            r={radius}
+            stroke={trackColor}
+            strokeWidth={strokeWidth}
+            fill="none"
+          />
+          <Circle
+            cx={size / 2}
+            cy={size / 2}
+            r={radius}
+            stroke={color}
+            strokeWidth={strokeWidth}
+            fill="none"
+            strokeLinecap="round"
+            strokeDasharray={circumference}
+            strokeDashoffset={offset}
+            rotation="-90"
+            origin={`${size / 2}, ${size / 2}`}
+          />
+        </Svg>
+        <View style={{ position: 'absolute', inset: 0 }} className="items-center justify-center">
+          <Text style={{ fontFamily: 'Nunito_800ExtraBold' }} className="text-xl text-ink">
+            {value}
+          </Text>
+        </View>
+      </View>
+      <Text style={{ fontFamily: 'Nunito_700Bold' }} className="mt-2 text-xs text-ink-soft">
+        {label}
+      </Text>
+    </View>
+  );
+}

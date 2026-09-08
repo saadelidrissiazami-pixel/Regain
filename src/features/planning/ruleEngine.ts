@@ -1,0 +1,76 @@
+import type { AvailabilitySlot, TimeSlot } from '../availability/types';
+import { energyMeetsRequirement, fitsBudget, type BudgetLevel, type CatalogActivity, type EnergyLevel } from './catalog';
+import { getDateForDayOfWeek } from '../../lib/week';
+
+export type EnergyBySlot = Partial<Record<TimeSlot, EnergyLevel>>;
+
+export type GeneratedItem = {
+  date: string;
+  timeSlot: TimeSlot;
+  activity: CatalogActivity;
+};
+
+const SLOT_ORDER: TimeSlot[] = ['matin', 'apres_midi', 'soir'];
+
+function resolveSlotDate(slot: AvailabilitySlot, weekStart: string, weekEnd: string): string | null {
+  if (slot.is_recurring && slot.day_of_week !== null) {
+    return getDateForDayOfWeek(weekStart, slot.day_of_week);
+  }
+  if (!slot.is_recurring && slot.specific_date) {
+    return slot.specific_date >= weekStart && slot.specific_date <= weekEnd ? slot.specific_date : null;
+  }
+  return null;
+}
+
+export function generateWeeklyPlan(params: {
+  availability: AvailabilitySlot[];
+  catalog: CatalogActivity[];
+  primaryGoals: string[];
+  energyBySlot: EnergyBySlot;
+  budgetLevel: BudgetLevel;
+  weekStart: string;
+}): GeneratedItem[] {
+  const { availability, catalog, primaryGoals, energyBySlot, budgetLevel, weekStart } = params;
+  const weekEnd = getDateForDayOfWeek(weekStart, 6);
+
+  const resolvedSlots = availability
+    .map((slot) => ({ slot, date: resolveSlotDate(slot, weekStart, weekEnd) }))
+    .filter((s): s is { slot: AvailabilitySlot; date: string } => s.date !== null)
+    .sort((a, b) => {
+      if (a.date !== b.date) return a.date < b.date ? -1 : 1;
+      return SLOT_ORDER.indexOf(a.slot.time_slot) - SLOT_ORDER.indexOf(b.slot.time_slot);
+    });
+
+  const categoryCounts: Record<string, number> = {};
+  const usedActivityIds = new Set<string>();
+  const results: GeneratedItem[] = [];
+
+  for (const { slot, date } of resolvedSlots) {
+    const userEnergy = energyBySlot[slot.time_slot] ?? 'moyen';
+
+    const eligible = catalog.filter(
+      (a) => energyMeetsRequirement(userEnergy, a.energy_required) && fitsBudget(a.cost_level, budgetLevel)
+    );
+    if (eligible.length === 0) continue;
+
+    let best: CatalogActivity | null = null;
+    let bestScore = -Infinity;
+    for (const activity of eligible) {
+      const tagScore = activity.tags.filter((t) => primaryGoals.includes(t)).length * 2;
+      const varietyBonus = -(categoryCounts[activity.category] ?? 0);
+      const repeatPenalty = usedActivityIds.has(activity.id) ? -3 : 0;
+      const score = tagScore + varietyBonus + repeatPenalty + Math.random() * 0.3;
+      if (score > bestScore) {
+        bestScore = score;
+        best = activity;
+      }
+    }
+    if (!best) continue;
+
+    categoryCounts[best.category] = (categoryCounts[best.category] ?? 0) + 1;
+    usedActivityIds.add(best.id);
+    results.push({ date, timeSlot: slot.time_slot, activity: best });
+  }
+
+  return results;
+}
