@@ -27,29 +27,24 @@ export function ProgressRing({
   return (
     <View className="items-center">
       <View style={{ width: size, height: size }}>
-        <Svg width={size} height={size}>
-          <Circle
-            cx={size / 2}
-            cy={size / 2}
-            r={radius}
-            stroke={trackColor}
-            strokeWidth={strokeWidth}
-            fill="none"
-          />
-          <Circle
-            cx={size / 2}
-            cy={size / 2}
-            r={radius}
-            stroke={color}
-            strokeWidth={strokeWidth}
-            fill="none"
-            strokeLinecap="round"
-            strokeDasharray={circumference}
-            strokeDashoffset={offset}
-            rotation="-90"
-            origin={`${size / 2}, ${size / 2}`}
-          />
-        </Svg>
+        {/* La rotation passe par le style RN de ce wrapper plutôt que par les props SVG
+            rotation/transform, qui déclenchent un bug de react-native-svg sur web. */}
+        <View style={{ transform: [{ rotate: '-90deg' }] }}>
+          <Svg width={size} height={size}>
+            <Circle cx={size / 2} cy={size / 2} r={radius} stroke={trackColor} strokeWidth={strokeWidth} fill="none" />
+            <Circle
+              cx={size / 2}
+              cy={size / 2}
+              r={radius}
+              stroke={color}
+              strokeWidth={strokeWidth}
+              fill="none"
+              strokeLinecap="round"
+              strokeDasharray={circumference}
+              strokeDashoffset={offset}
+            />
+          </Svg>
+        </View>
         <View style={{ position: 'absolute', inset: 0 }} className="items-center justify-center">
           <Text style={{ fontFamily: 'Nunito_800ExtraBold' }} className="text-xl text-ink">
             {value}
