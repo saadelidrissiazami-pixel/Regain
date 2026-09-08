@@ -7,17 +7,9 @@ import { Animated, Pressable, Text, View } from 'react-native';
 
 import { CONTENT_BY_SLUG } from '../../src/features/wellbeing/content';
 import { usePremium } from '../../src/lib/premium';
+import { speakGently as speak } from '../../src/lib/voice';
 import { fetchPrograms, markProgramCompleted } from '../../src/lib/wellbeing';
 import { useAuthStore } from '../../src/store/authStore';
-
-function speak(text: string) {
-  try {
-    Speech.stop();
-    Speech.speak(text, { language: 'fr-FR', pitch: 1, rate: 0.95 });
-  } catch {
-    // La synthèse vocale n'est pas disponible sur cet appareil/navigateur — on continue en silence.
-  }
-}
 
 function BreathingPlayer({
   content,
