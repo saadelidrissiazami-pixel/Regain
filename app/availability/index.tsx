@@ -7,11 +7,14 @@ import { LinearGradient } from 'expo-linear-gradient';
 import { Chip } from '../../src/components/Chip';
 import { createAvailabilitySlots, deleteAvailabilitySlot, fetchAvailabilitySlots } from '../../src/lib/availability';
 import { DAYS_OF_WEEK } from '../../src/lib/days';
+import { generateAndSaveWeekPlan } from '../../src/lib/planning';
 import { formatTimeRange, TIME_OPTIONS, timeSlotFromStartTime } from '../../src/lib/time';
 import { getUpcomingDates } from '../../src/lib/upcomingDates';
+import { getWeekStart } from '../../src/lib/week';
 import { useAuthStore } from '../../src/store/authStore';
 
 const UPCOMING_DATES = getUpcomingDates(14);
+const weekStart = getWeekStart();
 
 export default function AvailabilityScreen() {
   const session = useAuthStore((s) => s.session);
@@ -56,6 +59,14 @@ export default function AvailabilityScreen() {
       queryClient.invalidateQueries({ queryKey: ['availability', userId] });
     },
     onError: (e: Error) => setFormError(e.message),
+  });
+
+  const generateMutation = useMutation({
+    mutationFn: () => generateAndSaveWeekPlan(userId!, weekStart),
+    onSuccess: (data) => {
+      queryClient.setQueryData(['weekPlan', userId, weekStart], data);
+      router.push('/(tabs)/planning');
+    },
   });
 
   const toggleDay = (value: number) => {
@@ -218,6 +229,27 @@ export default function AvailabilityScreen() {
           </View>
         );
       })}
+
+      {(slotsQuery.data?.length ?? 0) > 0 ? (
+        <>
+          <Pressable
+            onPress={() => generateMutation.mutate()}
+            disabled={generateMutation.isPending}
+            className="mb-2 mt-6 items-center rounded-full bg-primary px-4 py-3.5 shadow-sm"
+          >
+            {generateMutation.isPending ? (
+              <ActivityIndicator color="#FFFFFF" />
+            ) : (
+              <Text style={{ fontFamily: 'Nunito_800ExtraBold' }} className="text-white">
+                ✨ Générer mon planning
+              </Text>
+            )}
+          </Pressable>
+          {generateMutation.isError ? (
+            <Text className="text-xs text-red-700">{(generateMutation.error as Error).message}</Text>
+          ) : null}
+        </>
+      ) : null}
     </ScrollView>
   );
 }
