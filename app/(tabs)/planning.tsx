@@ -7,6 +7,7 @@ import { ActivityIndicator, Pressable, RefreshControl, ScrollView, Text, View } 
 import { CategoryBadge } from '../../src/components/CategoryBadge';
 import { ENERGY_SLOTS } from '../../src/features/onboarding/options';
 import { fetchAvailabilitySlots } from '../../src/lib/availability';
+import { syncWeekPlanToCalendar } from '../../src/lib/deviceCalendar';
 import { formatDayLabel } from '../../src/lib/formatDate';
 import {
   fetchWeekPlan,
@@ -102,6 +103,10 @@ export default function PlanningScreen() {
     },
   });
 
+  const calendarSyncMutation = useMutation({
+    mutationFn: () => syncWeekPlanToCalendar(planQuery.data ?? [], weekStart),
+  });
+
   const hasAvailability = (availabilityQuery.data?.length ?? 0) > 0;
   const days = Array.from(new Set((planQuery.data ?? []).map((item) => item.date)));
 
@@ -172,6 +177,31 @@ export default function PlanningScreen() {
 
       {generateMutation.isError ? (
         <Text className="mb-4 text-xs text-red-700">{(generateMutation.error as Error).message}</Text>
+      ) : null}
+
+      {days.length > 0 ? (
+        <Pressable
+          onPress={() => calendarSyncMutation.mutate()}
+          disabled={calendarSyncMutation.isPending}
+          className="mb-5 items-center rounded-full border border-line bg-surface px-4 py-3.5"
+        >
+          {calendarSyncMutation.isPending ? (
+            <ActivityIndicator color="#FF6B57" />
+          ) : (
+            <Text style={{ fontFamily: 'Nunito_700Bold' }} className="text-ink">
+              📆 Synchroniser avec mon calendrier
+            </Text>
+          )}
+        </Pressable>
+      ) : null}
+      {calendarSyncMutation.isError ? (
+        <Text className="mb-4 text-xs text-red-700">{(calendarSyncMutation.error as Error).message}</Text>
+      ) : null}
+      {calendarSyncMutation.isSuccess ? (
+        <Text className="mb-4 text-xs text-calm">
+          {calendarSyncMutation.data} activité{calendarSyncMutation.data > 1 ? 's' : ''} ajoutée
+          {calendarSyncMutation.data > 1 ? 's' : ''} au calendrier « Regain ».
+        </Text>
       ) : null}
 
       {planQuery.isLoading ? <ActivityIndicator color="#FF6B57" /> : null}

@@ -1,6 +1,7 @@
 import type { AvailabilitySlot, TimeSlot } from '../availability/types';
 import { energyMeetsRequirement, fitsBudget, type BudgetLevel, type CatalogActivity, type EnergyLevel } from './catalog';
 import { getDateForDayOfWeek } from '../../lib/week';
+import type { CategoryAffinity } from '../../lib/personalization';
 
 export type EnergyBySlot = Partial<Record<TimeSlot, EnergyLevel>>;
 
@@ -29,8 +30,9 @@ export function generateWeeklyPlan(params: {
   energyBySlot: EnergyBySlot;
   budgetLevel: BudgetLevel;
   weekStart: string;
+  categoryAffinity?: CategoryAffinity;
 }): GeneratedItem[] {
-  const { availability, catalog, primaryGoals, energyBySlot, budgetLevel, weekStart } = params;
+  const { availability, catalog, primaryGoals, energyBySlot, budgetLevel, weekStart, categoryAffinity = {} } = params;
   const weekEnd = getDateForDayOfWeek(weekStart, 6);
 
   const resolvedSlots = availability
@@ -59,7 +61,10 @@ export function generateWeeklyPlan(params: {
       const tagScore = activity.tags.filter((t) => primaryGoals.includes(t)).length * 2;
       const varietyBonus = -(categoryCounts[activity.category] ?? 0);
       const repeatPenalty = usedActivityIds.has(activity.id) ? -3 : 0;
-      const score = tagScore + varietyBonus + repeatPenalty + Math.random() * 0.3;
+      // Catégories que l'utilisateur termine souvent -> légèrement favorisées ; celles
+      // souvent sautées -> légèrement défavorisées, sans jamais les exclure.
+      const affinityBonus = ((categoryAffinity[activity.category] ?? 0.5) - 0.5) * 4;
+      const score = tagScore + varietyBonus + repeatPenalty + affinityBonus + Math.random() * 0.3;
       if (score > bestScore) {
         bestScore = score;
         best = activity;

@@ -40,6 +40,12 @@
         {
           "color": "#FF6B57"
         }
+      ],
+      [
+        "expo-calendar",
+        {
+          "calendarPermission": "Regain synchronise votre planning avec votre calendrier."
+        }
       ]
     ]
   }

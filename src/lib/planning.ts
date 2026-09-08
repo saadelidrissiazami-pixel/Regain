@@ -2,6 +2,7 @@ import type { BudgetLevel, CatalogActivity, EnergyLevel } from '../features/plan
 import { generateWeeklyPlan, type EnergyBySlot } from '../features/planning/ruleEngine';
 import type { AvailabilitySlot } from '../features/availability/types';
 import { fetchAvailabilitySlots } from './availability';
+import { fetchCategoryAffinity } from './personalization';
 import { getWeekStart } from './week';
 import { supabase } from './supabase';
 
@@ -45,10 +46,11 @@ export async function fetchWeekPlan(userId: string, weekStart: string): Promise<
 }
 
 export async function generateAndSaveWeekPlan(userId: string, weekStart = getWeekStart()) {
-  const [availability, catalog, prefs] = await Promise.all([
+  const [availability, catalog, prefs, categoryAffinity] = await Promise.all([
     fetchAvailabilitySlots(userId),
     fetchCatalog(),
     fetchPreferences(userId),
+    fetchCategoryAffinity(userId),
   ]);
 
   const items = generateWeeklyPlan({
@@ -58,6 +60,7 @@ export async function generateAndSaveWeekPlan(userId: string, weekStart = getWee
     energyBySlot: prefs.typical_energy_by_slot ?? {},
     budgetLevel: prefs.budget_level ?? 'modere',
     weekStart,
+    categoryAffinity,
   });
 
   await supabase.from('planned_activities').delete().eq('user_id', userId).eq('week_start_date', weekStart);

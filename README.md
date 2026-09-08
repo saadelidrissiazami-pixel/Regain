@@ -34,6 +34,16 @@ Le code du paywall et de la logique d'abonnement (RevenueCat) est déjà en plac
 
 Ces achats intégrés nécessitent un **build natif** (EAS Build) — ils ne fonctionnent pas dans Expo Go ni dans l'aperçu web.
 
+## Coach IA conversationnel (optionnel — V2)
+
+Le chat ([app/(tabs)/coach.tsx](app/(tabs)/coach.tsx)) appelle une Edge Function Supabase ([supabase/functions/coach](supabase/functions/coach)) qui elle-même appelle l'API Anthropic — la clé API n'est jamais exposée dans l'app. Sans déploiement, l'écran affiche un message d'erreur clair au lieu de planter. Pour l'activer :
+
+1. Créez un compte sur [console.anthropic.com](https://console.anthropic.com) et générez une clé API.
+2. Installez la CLI Supabase si besoin : `npm install -g supabase`.
+3. `supabase login`, puis `supabase link --project-ref bbxmmqmrndgcmmsdrcjg`.
+4. `supabase secrets set ANTHROPIC_API_KEY=sk-ant-votre-clé`.
+5. `supabase functions deploy coach`.
+
 ## Déploiement bêta (Phase 8)
 
 1. Créez un compte sur [expo.dev](https://expo.dev) si vous n'en avez pas, puis dans le projet : `npx eas login`.
@@ -47,7 +57,7 @@ La configuration des profils de build est déjà prête dans [`eas.json`](eas.js
 
 ```
 app/                    Écrans Expo Router
-  (tabs)/               Planning, Bien-être, Suivi, Profil
+  (tabs)/               Planning, Coach, Bien-être, Suivi, Profil
   (auth)/               Connexion
   onboarding/           Parcours d'accueil
   availability/         Gestion des disponibilités
@@ -56,10 +66,11 @@ app/                    Écrans Expo Router
 src/
   components/           Composants UI partagés (Chip, CategoryBadge, ProgressRing...)
   features/              Logique par domaine (planning, availability, onboarding, wellbeing)
-  lib/                   Supabase, moteur de planning, suivi, notifications, achats
+  lib/                   Supabase, moteur de planning, personnalisation, calendrier, coach, achats
   styles/                Tailwind / NativeWind
 supabase/
   migrations/            Schéma SQL versionné (à exécuter dans l'ordre)
+  functions/coach/        Edge Function du coach IA (proxy sécurisé vers Anthropic)
 content/                 Bibliothèque bien-être statique (méditation, respiration, journaling...)
 ```
 
@@ -75,5 +86,11 @@ Toutes les phases du MVP défini au départ sont implémentées et testées :
 - **Phase 6** — Paywall Premium prêt (code) — nécessite vos comptes RevenueCat/App Store/Play Store
 - **Phase 7** — Rappels quotidiens, pull-to-refresh
 - **Phase 8** — Configuration EAS prête — nécessite votre compte Expo pour builder et distribuer
+
+Fonctionnalités V2 (au-delà du MVP initial) :
+
+- **Personnalisation apprise** — le moteur de règles favorise progressivement les catégories que vous complétez le plus souvent
+- **Synchronisation calendrier** — export du planning vers le calendrier natif de l'appareil (iOS/Android)
+- **Coach IA conversationnel** — prêt (code) — nécessite votre compte Anthropic + déploiement de l'Edge Function
 
 Les étapes restantes dépendent uniquement de comptes externes que vous devez créer vous-même (voir sections ci-dessus).
