@@ -1,10 +1,10 @@
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
-import { LinearGradient } from 'expo-linear-gradient';
 import { Link } from 'expo-router';
 import { useCallback, useState } from 'react';
 import { ActivityIndicator, Pressable, RefreshControl, ScrollView, Text, View } from 'react-native';
 
 import { CategoryBadge } from '../../src/components/CategoryBadge';
+import { EnergyCheckin } from '../../src/components/EnergyCheckin';
 import { ENERGY_SLOTS } from '../../src/features/onboarding/options';
 import { fetchAvailabilitySlots } from '../../src/lib/availability';
 import { syncWeekPlanToCalendar } from '../../src/lib/deviceCalendar';
@@ -139,19 +139,7 @@ export default function PlanningScreen() {
         </Pressable>
       </Link>
 
-      <LinearGradient
-        colors={['#F0A324', '#FF6B57']}
-        start={{ x: 0, y: 0 }}
-        end={{ x: 1, y: 1 }}
-        style={{ borderRadius: 20, padding: 16, marginBottom: 16 }}
-      >
-        <Text style={{ fontFamily: 'Nunito_700Bold' }} className="text-[11px] uppercase tracking-wide text-white/90">
-          Check-in d'énergie
-        </Text>
-        <Text style={{ fontFamily: 'Nunito_800ExtraBold' }} className="mt-1 text-base text-white">
-          Comment vous sentez-vous là, maintenant ?
-        </Text>
-      </LinearGradient>
+      <EnergyCheckin userId={userId} />
 
       {!availabilityQuery.isLoading && !hasAvailability ? (
         <View className="mb-4 rounded-2xl border border-line bg-surface p-4 shadow-sm">
