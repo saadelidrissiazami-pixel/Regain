@@ -1,12 +1,16 @@
 import { useQuery } from '@tanstack/react-query';
-import { router, useLocalSearchParams } from 'expo-router';
+import { Link, router, useLocalSearchParams } from 'expo-router';
 import { ActivityIndicator, Pressable, ScrollView, Text, View } from 'react-native';
 
 import { CategoryBadge } from '../../src/components/CategoryBadge';
-import { fetchActivityById } from '../../src/lib/planning';
+import { computeActivityFit, pickComplementaryActivities } from '../../src/features/planning/recommendation';
+import { fetchActivityById, fetchCatalog, fetchPreferences } from '../../src/lib/planning';
+import { useAuthStore } from '../../src/store/authStore';
 
 export default function ActivityDetailScreen() {
   const { id } = useLocalSearchParams<{ id: string }>();
+  const session = useAuthStore((s) => s.session);
+  const userId = session?.user.id;
 
   const activityQuery = useQuery({
     queryKey: ['activity', id],
@@ -14,7 +18,19 @@ export default function ActivityDetailScreen() {
     enabled: !!id,
   });
 
+  const preferencesQuery = useQuery({
+    queryKey: ['preferences', userId],
+    queryFn: () => fetchPreferences(userId!),
+    enabled: !!userId,
+  });
+
+  const catalogQuery = useQuery({ queryKey: ['catalog'], queryFn: fetchCatalog });
+
   const activity = activityQuery.data;
+  const prefs = preferencesQuery.data;
+  const fit = activity && prefs ? computeActivityFit(activity, prefs) : null;
+  const complementary =
+    activity && prefs && catalogQuery.data ? pickComplementaryActivities(activity, catalogQuery.data, prefs) : [];
 
   return (
     <ScrollView className="flex-1 bg-paper px-6 pt-16" contentContainerStyle={{ paddingBottom: 60 }}>
@@ -35,6 +51,47 @@ export default function ActivityDetailScreen() {
           <Text className="mb-6 text-sm text-ink-soft">
             {activity.duration_minutes} min · {activity.cost_level === 'gratuit' ? 'Gratuit' : activity.cost_level === 'faible' ? 'Coût faible' : 'Coût modéré'}
           </Text>
+
+          {fit ? (
+            <View className="mb-6 rounded-2xl border border-line bg-surface p-4 shadow-sm">
+              <Text style={{ fontFamily: 'Nunito_800ExtraBold' }} className="mb-2.5 text-sm text-ink">
+                Pour vous, précisément
+              </Text>
+
+              <Text className="text-sm text-ink-soft">
+                {fit.matchedGoalLabels.length > 0 ? (
+                  <>
+                    🎯 Sert vos objectifs :{' '}
+                    <Text style={{ fontFamily: 'Nunito_700Bold' }} className="text-ink">
+                      {fit.matchedGoalLabels.join(', ')}
+                    </Text>
+                  </>
+                ) : (
+                  "🎯 Ne recoupe aucun de vos objectifs actuels — à tester si l'envie est là."
+                )}
+              </Text>
+
+              <Text className="mt-2 text-sm text-ink-soft">
+                {fit.goodEnergySlotLabels.length === 3 ? (
+                  '⚡️ Adaptée à votre énergie, à tout moment de la journée.'
+                ) : fit.goodEnergySlotLabels.length > 0 ? (
+                  <>
+                    ⚡️ Plutôt bien adaptée le{' '}
+                    <Text style={{ fontFamily: 'Nunito_700Bold' }} className="text-ink">
+                      {fit.goodEnergySlotLabels.join(', ').toLowerCase()}
+                    </Text>
+                    , selon votre énergie habituelle.
+                  </>
+                ) : (
+                  '⚡️ Demande plus d’énergie que votre niveau habituel — mieux un jour en forme.'
+                )}
+              </Text>
+
+              <Text className="mt-2 text-sm text-ink-soft">
+                {fit.budgetFits ? '💶 Correspond à votre budget.' : '💶 Un peu au-dessus de votre budget habituel.'}
+              </Text>
+            </View>
+          ) : null}
 
           {activity.steps.length > 0 ? (
             <>
@@ -62,6 +119,28 @@ export default function ActivityDetailScreen() {
               </Text>
             </View>
           )}
+
+          {complementary.length > 0 ? (
+            <>
+              <Text style={{ fontFamily: 'Nunito_800ExtraBold' }} className="mb-3 mt-6 text-sm text-ink-soft">
+                Dans la même veine
+              </Text>
+              {complementary.map((a) => (
+                <Link key={a.id} href={`/activity/${a.id}`} asChild>
+                  <Pressable className="mb-2.5 flex-row items-center rounded-2xl border border-line bg-surface p-4 shadow-sm">
+                    <View className="flex-1 pr-3">
+                      <CategoryBadge category={a.category} />
+                      <Text style={{ fontFamily: 'Nunito_700Bold' }} className="mt-2 text-base text-ink">
+                        {a.title}
+                      </Text>
+                      <Text className="mt-0.5 text-xs text-ink-soft">{a.duration_minutes} min</Text>
+                    </View>
+                    <Text className="text-base text-primary">→</Text>
+                  </Pressable>
+                </Link>
+              ))}
+            </>
+          ) : null}
         </>
       ) : null}
     </ScrollView>

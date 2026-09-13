@@ -18,18 +18,20 @@ export async function fetchActivityById(id: string): Promise<CatalogActivity> {
   return data;
 }
 
-async function fetchPreferences(userId: string) {
+export type UserPreferences = {
+  primary_goals: string[];
+  typical_energy_by_slot: EnergyBySlot;
+  budget_level: BudgetLevel;
+};
+
+export async function fetchPreferences(userId: string): Promise<UserPreferences> {
   const { data, error } = await supabase
     .from('user_preferences')
     .select('primary_goals, typical_energy_by_slot, budget_level')
     .eq('user_id', userId)
     .single();
   if (error) throw error;
-  return data as {
-    primary_goals: string[];
-    typical_energy_by_slot: EnergyBySlot;
-    budget_level: BudgetLevel;
-  };
+  return data as UserPreferences;
 }
 
 export type PlannedActivityRow = {
