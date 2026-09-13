@@ -9,6 +9,7 @@ import { ENERGY_SLOTS } from '../../src/features/onboarding/options';
 import { fetchAvailabilitySlots } from '../../src/lib/availability';
 import { syncWeekPlanToCalendar } from '../../src/lib/deviceCalendar';
 import { formatDayLabel } from '../../src/lib/formatDate';
+import { scheduleActivityReminders } from '../../src/lib/notifications';
 import {
   fetchWeekPlan,
   generateAndSaveWeekPlan,
@@ -92,7 +93,10 @@ export default function PlanningScreen() {
 
   const generateMutation = useMutation({
     mutationFn: () => generateAndSaveWeekPlan(userId!, weekStart),
-    onSuccess: (data) => queryClient.setQueryData(['weekPlan', userId, weekStart], data),
+    onSuccess: (data) => {
+      queryClient.setQueryData(['weekPlan', userId, weekStart], data);
+      scheduleActivityReminders(data).catch(() => {});
+    },
   });
 
   const toggleMutation = useMutation({

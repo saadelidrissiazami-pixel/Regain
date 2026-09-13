@@ -1,5 +1,14 @@
 import type { ProgramContent } from '../../src/features/wellbeing/types';
 
+export const gratitudeExpress: ProgramContent = {
+  type: 'guided',
+  paragraphs: [
+    "Quelle est une petite chose agréable qui s'est produite aujourd'hui ?",
+    "Qui ou quoi vous a aidé, même un peu ?",
+    "Que pourriez-vous vous dire, là, pour bien terminer la journée ?",
+  ],
+};
+
 export const clarifierJournee: ProgramContent = {
   type: 'guided',
   paragraphs: [
@@ -8,5 +17,18 @@ export const clarifierJournee: ProgramContent = {
     "Y a-t-il un moment, même petit, qui vous a fait du bien ?",
     "Qu'aimeriez-vous faire différemment demain, si vous en aviez l'occasion ?",
     "Vous n'avez pas besoin d'écrire les réponses maintenant — laissez-les simplement infuser.",
+  ],
+};
+
+export const viderSaTete: ProgramContent = {
+  type: 'guided',
+  paragraphs: [
+    "Si votre tête est pleine, ce moment sert à en sortir un peu de contenu — pas à tout résoudre.",
+    "Qu'est-ce qui tourne en boucle depuis un moment ?",
+    "Est-ce une chose à faire, à décider, ou juste à ressentir ?",
+    "Si c'est une chose à faire : quelle serait la toute première petite étape ?",
+    "Si c'est une décision : qu'est-ce qui vous manque pour la prendre — du temps, une information, un avis ?",
+    "Si c'est juste un ressenti : il n'a pas besoin d'être réglé maintenant, seulement remarqué.",
+    "Une dernière chose : qu'est-ce qui, dans tout ça, ne vous appartient pas vraiment à porter ?",
   ],
 };

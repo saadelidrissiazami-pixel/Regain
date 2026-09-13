@@ -7,6 +7,7 @@ import { LinearGradient } from 'expo-linear-gradient';
 import { Chip } from '../../src/components/Chip';
 import { createAvailabilitySlots, deleteAvailabilitySlot, fetchAvailabilitySlots } from '../../src/lib/availability';
 import { DAYS_OF_WEEK } from '../../src/lib/days';
+import { scheduleActivityReminders } from '../../src/lib/notifications';
 import { generateAndSaveWeekPlan } from '../../src/lib/planning';
 import { formatTimeRange, TIME_OPTIONS, timeSlotFromStartTime } from '../../src/lib/time';
 import { getUpcomingDates } from '../../src/lib/upcomingDates';
@@ -65,6 +66,7 @@ export default function AvailabilityScreen() {
     mutationFn: () => generateAndSaveWeekPlan(userId!, weekStart),
     onSuccess: (data) => {
       queryClient.setQueryData(['weekPlan', userId, weekStart], data);
+      scheduleActivityReminders(data).catch(() => {});
       router.push('/(tabs)/planning');
     },
   });

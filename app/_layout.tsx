@@ -7,11 +7,11 @@ import {
   useFonts,
 } from '@expo-google-fonts/nunito';
 import { QueryClientProvider } from '@tanstack/react-query';
-import { Stack } from 'expo-router';
+import { router, Stack } from 'expo-router';
 import * as SplashScreen from 'expo-splash-screen';
 import { StatusBar } from 'expo-status-bar';
 import { useEffect } from 'react';
-import { Text, TextInput } from 'react-native';
+import { Platform, Text, TextInput } from 'react-native';
 import { SafeAreaProvider } from 'react-native-safe-area-context';
 
 import { queryClient } from '../src/lib/queryClient';
@@ -50,6 +50,18 @@ export default function RootLayout() {
   useEffect(() => {
     if (fontsLoaded) SplashScreen.hideAsync().catch(() => {});
   }, [fontsLoaded]);
+
+  useEffect(() => {
+    if (Platform.OS === 'web') return;
+    let subscription: { remove: () => void } | undefined;
+    import('expo-notifications').then((Notifications) => {
+      subscription = Notifications.addNotificationResponseReceivedListener((response) => {
+        const route = response.notification.request.content.data?.route;
+        if (typeof route === 'string') router.push(route as never);
+      });
+    });
+    return () => subscription?.remove();
+  }, []);
 
   if (!fontsLoaded) return null;
 

@@ -7,6 +7,7 @@ import { ActivityIndicator, Pressable, RefreshControl, ScrollView, Text, View } 
 import { usePremium } from '../../src/lib/premium';
 import { fetchCompletedProgramIds, fetchPrograms } from '../../src/lib/wellbeing';
 import { useAuthStore } from '../../src/store/authStore';
+import type { WellbeingProgram } from '../../src/features/wellbeing/types';
 
 const CATEGORY_ICONS: Record<string, string> = {
   Respiration: '🌬️',
@@ -17,6 +18,7 @@ const CATEGORY_ICONS: Record<string, string> = {
   'En public': '🎧',
 };
 
+const CATEGORY_ORDER = Object.keys(CATEGORY_ICONS);
 const FEATURED_SLUG = 'detachement-regard-autres';
 
 export default function WellbeingScreen() {
@@ -32,7 +34,20 @@ export default function WellbeingScreen() {
   });
 
   const featured = programsQuery.data?.find((p) => p.slug === FEATURED_SLUG);
-  const rest = programsQuery.data?.filter((p) => p.slug !== FEATURED_SLUG) ?? [];
+
+  const byCategory = new Map<string, WellbeingProgram[]>();
+  for (const program of programsQuery.data ?? []) {
+    if (program.slug === FEATURED_SLUG) continue;
+    const list = byCategory.get(program.category) ?? [];
+    list.push(program);
+    byCategory.set(program.category, list);
+  }
+  for (const list of byCategory.values()) {
+    list.sort((a, b) => a.duration_minutes - b.duration_minutes);
+  }
+  const categories = [...byCategory.keys()].sort(
+    (a, b) => CATEGORY_ORDER.indexOf(a) - CATEGORY_ORDER.indexOf(b)
+  );
 
   const [refreshing, setRefreshing] = useState(false);
   const onRefresh = useCallback(async () => {
@@ -56,7 +71,7 @@ export default function WellbeingScreen() {
 
       {featured ? (
         <Link href={`/wellbeing/${featured.slug}`} asChild>
-          <Pressable className="mb-5 overflow-hidden rounded-2xl shadow-sm">
+          <Pressable className="mb-6 overflow-hidden rounded-2xl shadow-sm">
             <LinearGradient colors={['#1E9C86', '#4E9BDE']} start={{ x: 0, y: 0 }} end={{ x: 1, y: 1 }} style={{ padding: 18 }}>
               <Text style={{ fontFamily: 'Nunito_700Bold' }} className="text-[11px] uppercase tracking-wide text-white/90">
                 🎧 Dans les transports ? En public ?
@@ -74,31 +89,39 @@ export default function WellbeingScreen() {
 
       {programsQuery.isLoading ? <ActivityIndicator color="#1E9C86" /> : null}
 
-      {rest.map((program) => {
-        const done = completedQuery.data?.has(program.id);
-        const locked = program.premium_only && !isPremium;
-        return (
-          <Link key={program.id} href={locked ? '/paywall' : `/wellbeing/${program.slug}`} asChild>
-            <Pressable className="mb-3 flex-row items-center rounded-2xl border border-line bg-surface p-4 shadow-sm">
-              <View className="mr-3.5 h-12 w-12 items-center justify-center rounded-2xl bg-calm-soft">
-                <Text className="text-2xl">{CATEGORY_ICONS[program.category] ?? '✨'}</Text>
-              </View>
-              <View className="flex-1">
-                <Text style={{ fontFamily: 'Nunito_700Bold' }} className="text-[11px] uppercase tracking-wide text-calm">
-                  {program.category}
-                </Text>
-                <Text style={{ fontFamily: 'Nunito_700Bold' }} className="mt-0.5 text-base text-ink">
-                  {program.title}
-                </Text>
-                <Text className="mt-0.5 text-xs text-ink-soft">
-                  {program.session_count} session{program.session_count > 1 ? 's' : ''}
-                </Text>
-              </View>
-              {locked ? <Text className="text-lg">🔒</Text> : done ? <Text className="text-lg">✅</Text> : null}
-            </Pressable>
-          </Link>
-        );
-      })}
+      {categories.map((category) => (
+        <View key={category} className="mb-6">
+          <View className="mb-2.5 flex-row items-center">
+            <Text className="mr-2 text-lg">{CATEGORY_ICONS[category] ?? '✨'}</Text>
+            <Text style={{ fontFamily: 'Nunito_800ExtraBold' }} className="text-sm text-ink-soft">
+              {category}
+            </Text>
+          </View>
+
+          {byCategory.get(category)!.map((program) => {
+            const done = completedQuery.data?.has(program.id);
+            const locked = program.premium_only && !isPremium;
+            return (
+              <Link key={program.id} href={locked ? '/paywall' : `/wellbeing/${program.slug}`} asChild>
+                <Pressable className="mb-2.5 flex-row items-center rounded-2xl border border-line bg-surface p-4 shadow-sm">
+                  <View className="mr-3 h-10 w-10 items-center justify-center rounded-full bg-calm-soft">
+                    <Text style={{ fontFamily: 'Nunito_800ExtraBold' }} className="text-xs text-calm">
+                      {program.duration_minutes}′
+                    </Text>
+                  </View>
+                  <View className="flex-1">
+                    <Text style={{ fontFamily: 'Nunito_700Bold' }} className="text-base text-ink">
+                      {program.title}
+                    </Text>
+                    <Text className="mt-0.5 text-xs text-ink-soft">{program.duration_minutes} min</Text>
+                  </View>
+                  {locked ? <Text className="text-lg">🔒</Text> : done ? <Text className="text-lg">✅</Text> : null}
+                </Pressable>
+              </Link>
+            );
+          })}
+        </View>
+      ))}
 
       <Text className="mt-2 text-xs text-ink-soft">
         Regain ne pose pas de diagnostic médical et ne remplace pas l'accompagnement d'un professionnel de santé.

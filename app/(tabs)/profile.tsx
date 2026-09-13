@@ -2,9 +2,11 @@ import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { Link, router } from 'expo-router';
 import { Pressable, ScrollView, Switch, Text, View } from 'react-native';
 
-import { areRemindersEnabled, disableDailyReminder, enableDailyReminder } from '../../src/lib/notifications';
+import { areRemindersEnabled, disableDailyReminder, enableDailyReminder, scheduleActivityReminders } from '../../src/lib/notifications';
 import { usePremium } from '../../src/lib/premium';
+import { fetchWeekPlan } from '../../src/lib/planning';
 import { supabase } from '../../src/lib/supabase';
+import { getWeekStart } from '../../src/lib/week';
 import { useAuthStore } from '../../src/store/authStore';
 
 export default function ProfileScreen() {
@@ -21,6 +23,10 @@ export default function ProfileScreen() {
       if (next) {
         const granted = await enableDailyReminder();
         if (!granted) throw new Error("Autorisez les notifications pour Regain dans les réglages de l'appareil.");
+        if (session?.user.id) {
+          const plan = await fetchWeekPlan(session.user.id, getWeekStart());
+          await scheduleActivityReminders(plan);
+        }
       } else {
         await disableDailyReminder();
       }
@@ -74,9 +80,11 @@ export default function ProfileScreen() {
         <View className="flex-row items-center justify-between">
           <View className="flex-1 pr-3">
             <Text style={{ fontFamily: 'Nunito_700Bold' }} className="text-[11px] uppercase tracking-wide text-primary">
-              Rappel quotidien
+              Rappels
             </Text>
-            <Text className="mt-0.5 text-sm text-ink-soft">Un petit signe à 9h, sans pression, pour penser à votre journée.</Text>
+            <Text className="mt-0.5 text-sm text-ink-soft">
+              Un signe à 8h pour préférer une respiration aux réseaux, et un petit rappel à l'heure de chaque activité planifiée.
+            </Text>
           </View>
           <Switch
             value={!!remindersQuery.data}

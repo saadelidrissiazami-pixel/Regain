@@ -5,6 +5,7 @@ export type WellbeingProgram = {
   category: string;
   session_count: number;
   premium_only: boolean;
+  duration_minutes: number;
 };
 
 export type BreathingPhase = { label: string; seconds: number };

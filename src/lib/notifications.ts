@@ -1,6 +1,11 @@
 import { Platform } from 'react-native';
 
-const REMINDER_ID_KEY = 'daily-reminder';
+import type { PlannedActivityRow } from './planning';
+
+const MORNING_NUDGE_ID = 'morning-nudge';
+const ACTIVITY_PREFIX = 'activity-';
+const TIME_SLOT_HOURS: Record<string, number> = { matin: 9, apres_midi: 14, soir: 19 };
+
 const isSupported = Platform.OS !== 'web';
 
 async function getNotifications() {
@@ -8,17 +13,7 @@ async function getNotifications() {
   return module;
 }
 
-export async function areRemindersEnabled(): Promise<boolean> {
-  if (!isSupported) return false;
-  const Notifications = await getNotifications();
-  const scheduled = await Notifications.getAllScheduledNotificationsAsync();
-  return scheduled.some((n) => n.identifier === REMINDER_ID_KEY);
-}
-
-export async function enableDailyReminder(): Promise<boolean> {
-  if (!isSupported) return false;
-  const Notifications = await getNotifications();
-
+function configureHandler(Notifications: Awaited<ReturnType<typeof getNotifications>>) {
   Notifications.setNotificationHandler({
     handleNotification: async () => ({
       shouldShowAlert: true,
@@ -28,18 +23,32 @@ export async function enableDailyReminder(): Promise<boolean> {
       shouldShowList: true,
     }),
   });
+}
+
+export async function areRemindersEnabled(): Promise<boolean> {
+  if (!isSupported) return false;
+  const Notifications = await getNotifications();
+  const scheduled = await Notifications.getAllScheduledNotificationsAsync();
+  return scheduled.some((n) => n.identifier === MORNING_NUDGE_ID);
+}
+
+export async function enableDailyReminder(): Promise<boolean> {
+  if (!isSupported) return false;
+  const Notifications = await getNotifications();
+  configureHandler(Notifications);
 
   const { status } = await Notifications.requestPermissionsAsync();
   if (status !== 'granted') return false;
 
-  await Notifications.cancelScheduledNotificationAsync(REMINDER_ID_KEY).catch(() => {});
+  await Notifications.cancelScheduledNotificationAsync(MORNING_NUDGE_ID).catch(() => {});
   await Notifications.scheduleNotificationAsync({
-    identifier: REMINDER_ID_KEY,
+    identifier: MORNING_NUDGE_ID,
     content: {
       title: 'Regain',
-      body: 'Une activité vous attend dans votre semaine, quand vous serez prêt·e 🌱',
+      body: 'Avant de scroller ? Deux minutes de respiration ou d’étirement plutôt qu’un réseau social 🌱',
+      data: { route: '/(tabs)/wellbeing' },
     },
-    trigger: { type: Notifications.SchedulableTriggerInputTypes.DAILY, hour: 9, minute: 0 },
+    trigger: { type: Notifications.SchedulableTriggerInputTypes.DAILY, hour: 8, minute: 0 },
   });
   return true;
 }
@@ -47,5 +56,46 @@ export async function enableDailyReminder(): Promise<boolean> {
 export async function disableDailyReminder() {
   if (!isSupported) return;
   const Notifications = await getNotifications();
-  await Notifications.cancelScheduledNotificationAsync(REMINDER_ID_KEY).catch(() => {});
+  await Notifications.cancelScheduledNotificationAsync(MORNING_NUDGE_ID).catch(() => {});
+  await cancelActivityReminders();
+}
+
+export async function cancelActivityReminders() {
+  if (!isSupported) return;
+  const Notifications = await getNotifications();
+  const scheduled = await Notifications.getAllScheduledNotificationsAsync();
+  await Promise.all(
+    scheduled
+      .filter((n) => n.identifier.startsWith(ACTIVITY_PREFIX))
+      .map((n) => Notifications.cancelScheduledNotificationAsync(n.identifier).catch(() => {}))
+  );
+}
+
+// N'affecte que le planning courant : appelé après chaque génération, seulement si les
+// rappels sont déjà activés (on ne redemande jamais la permission ici).
+export async function scheduleActivityReminders(items: PlannedActivityRow[]) {
+  if (!isSupported) return;
+  if (!(await areRemindersEnabled())) return;
+
+  const Notifications = await getNotifications();
+  configureHandler(Notifications);
+  await cancelActivityReminders();
+
+  const now = new Date();
+  for (const item of items) {
+    const hour = TIME_SLOT_HOURS[item.time_slot] ?? 9;
+    const date = new Date(`${item.date}T00:00:00`);
+    date.setHours(hour, 0, 0, 0);
+    if (date <= now) continue;
+
+    await Notifications.scheduleNotificationAsync({
+      identifier: `${ACTIVITY_PREFIX}${item.id}`,
+      content: {
+        title: 'Regain',
+        body: `C'est le moment pour : ${item.activities_catalog.title}`,
+        data: { route: `/activity/${item.activities_catalog.id}` },
+      },
+      trigger: { type: Notifications.SchedulableTriggerInputTypes.DATE, date },
+    });
+  }
 }
