@@ -241,7 +241,7 @@ export default function WellbeingSessionScreen() {
   const queryClient = useQueryClient();
   const { isPremium } = usePremium();
   const [completed, setCompleted] = useState(false);
-  const [audioOn, setAudioOn] = useState(true);
+  const [audioOn, setAudioOn] = useState(false);
   const [preparing, setPreparing] = useState(true);
 
   const programsQuery = useQuery({ queryKey: ['wellbeingPrograms'], queryFn: fetchPrograms });
