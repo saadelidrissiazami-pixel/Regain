@@ -193,6 +193,44 @@ function GuidedPlayer({
   );
 }
 
+const PREP_SECONDS = 10;
+
+function PrepCountdown({ onDone, audioOn }: { onDone: () => void; audioOn: boolean }) {
+  const [secondsLeft, setSecondsLeft] = useState(PREP_SECONDS);
+
+  useEffect(() => {
+    if (audioOn) speak('Installez-vous confortablement. La séance commence dans quelques secondes.');
+  }, []);
+
+  useEffect(() => {
+    if (secondsLeft <= 0) {
+      onDone();
+      return;
+    }
+    const timer = setTimeout(() => setSecondsLeft((s) => s - 1), 1000);
+    return () => clearTimeout(timer);
+  }, [secondsLeft]);
+
+  return (
+    <View className="flex-1 items-center justify-center px-8">
+      <Text style={{ fontFamily: 'Nunito_800ExtraBold' }} className="mb-6 text-center text-xl text-ink">
+        Installez-vous, préparez-vous
+      </Text>
+      <View className="mb-8 h-32 w-32 items-center justify-center rounded-full bg-calm-soft">
+        <Text style={{ fontFamily: 'Nunito_800ExtraBold' }} className="text-5xl text-calm">
+          {secondsLeft}
+        </Text>
+      </View>
+      <Text className="mb-8 text-center text-sm text-ink-soft">La séance démarre dans un instant.</Text>
+      <Pressable onPress={onDone}>
+        <Text style={{ fontFamily: 'Nunito_700Bold' }} className="text-sm text-ink-soft underline">
+          Passer
+        </Text>
+      </Pressable>
+    </View>
+  );
+}
+
 function getContent(slug: string) {
   return CONTENT_BY_SLUG[slug];
 }
@@ -204,6 +242,7 @@ export default function WellbeingSessionScreen() {
   const { isPremium } = usePremium();
   const [completed, setCompleted] = useState(false);
   const [audioOn, setAudioOn] = useState(true);
+  const [preparing, setPreparing] = useState(true);
 
   const programsQuery = useQuery({ queryKey: ['wellbeingPrograms'], queryFn: fetchPrograms });
   const program = programsQuery.data?.find((p) => p.slug === slug);
@@ -305,6 +344,8 @@ export default function WellbeingSessionScreen() {
             </LinearGradient>
           </Pressable>
         </View>
+      ) : preparing ? (
+        <PrepCountdown onDone={() => setPreparing(false)} audioOn={audioOn} />
       ) : content.type === 'breathing' ? (
         <BreathingPlayer content={content} onDone={handleDone} audioOn={audioOn} />
       ) : (
