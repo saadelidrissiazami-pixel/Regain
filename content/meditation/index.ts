@@ -35,3 +35,43 @@ export const meditationSoir: ProgramContent = {
     "Quand vous êtes prêt·e, laissez ce moment vous accompagner vers le repos.",
   ],
 };
+
+export const meditationCinqSens: ProgramContent = {
+  type: 'guided',
+  paragraphs: [
+    "Installe-toi confortablement. Tu peux garder les yeux ouverts.",
+    "La vue : trouve cinq choses que tu vois autour de toi, sans les juger, juste les nommer.",
+    "L'ouïe : trouve quatre sons différents, même discrets — une voix, une ventilation, ta propre respiration.",
+    "Le toucher : trouve trois sensations physiques — tes pieds sur le sol, un tissu, un dossier contre ton dos.",
+    "L'odorat : trouve deux odeurs, même très légères.",
+    "Le goût : identifie une seule sensation dans ta bouche.",
+    "Termine en te disant : je suis ici, maintenant. Je n'ai rien à résoudre pendant ces quelques minutes.",
+  ],
+};
+
+export const meditationObserverPensees: ProgramContent = {
+  type: 'guided',
+  paragraphs: [
+    "Installe-toi et respire normalement. Ferme les yeux si tu es à l'aise.",
+    "Pendant quelques minutes, tu ne vas pas chercher à arrêter tes pensées.",
+    "Quand une pensée arrive, donne-lui simplement une étiquette mentale : « pensée » — puis laisse-la repartir.",
+    "Si tu penses « les gens me regardent » : « pensée ». Retour à la respiration.",
+    "Si tu penses « je vais être ridicule » : « pensée ». Retour à la respiration.",
+    "Tu n'essaies pas de supprimer la pensée. Tu apprends la différence entre avoir une pensée et devoir agir selon elle.",
+    "Pour finir, inspire doucement, expire, et dis-toi : une pensée n'est pas forcément un fait.",
+  ],
+};
+
+export const meditationScanCorporel: ProgramContent = {
+  type: 'guided',
+  paragraphs: [
+    "Assieds-toi ou allonge-toi. Commence par tes pieds : chaleur, froid, tension, contact avec le sol.",
+    "Remonte vers tes jambes — mollets, cuisses. Observe simplement, sans rien changer.",
+    "Ton ventre : observe le mouvement de ta respiration à cet endroit.",
+    "Ta poitrine : observe la respiration qui continue, sans effort.",
+    "Tes épaules : sont-elles contractées ? Laisse-les descendre légèrement.",
+    "Ta mâchoire : desserre les dents, laisse la langue se détendre.",
+    "Ton visage : relâche le front, les yeux, les joues, la bouche.",
+    "Termine en observant ton corps comme un ensemble. Tu n'as pas besoin de supprimer toutes les sensations — tu peux simplement les laisser être là.",
+  ],
+};

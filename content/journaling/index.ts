@@ -32,3 +32,39 @@ export const viderSaTete: ProgramContent = {
     "Une dernière chose : qu'est-ce qui, dans tout ça, ne vous appartient pas vraiment à porter ?",
   ],
 };
+
+export const dechargementMental: ProgramContent = {
+  type: 'guided',
+  paragraphs: [
+    "Prends une feuille ou l'application Notes de ton téléphone, et mets un minuteur de 5 à 10 minutes.",
+    "Écris absolument tout ce qui te traverse l'esprit — sans grammaire, sans structure, sans jugement.",
+    "Même « je ne sais pas quoi écrire » compte. Continue.",
+    "Une fois le temps écoulé, relis ce que tu as écrit et sépare-le en trois colonnes : ce qui est dans ta tête, ce qui est sous ton contrôle, ce qui ne l'est pas.",
+    "Ta respiration, tes décisions et tes actions sont sous ton contrôle. Le passé et les réactions des autres ne le sont pas.",
+    "Choisis une seule action, dans la colonne « sous mon contrôle ». Une seule suffit — par exemple « envoyer ce message ».",
+  ],
+};
+
+export const journalDeConfiance: ProgramContent = {
+  type: 'guided',
+  paragraphs: [
+    "Chaque soir, tu peux répondre à ces quelques questions, même en une phrase chacune.",
+    "Qu'as-tu fait aujourd'hui malgré une difficulté ? Même quelque chose de petit.",
+    "Quelle situation as-tu mieux gérée que tu ne l'aurais fait avant ?",
+    "Qu'est-ce que cela dit de toi ? Par exemple : « je suis capable de continuer même inconfortable ».",
+    "Quel petit acte de courage as-tu posé aujourd'hui — poser une question, dire non, essayer quelque chose de nouveau ?",
+    "Quelle chose, petite et réalisable, vas-tu oser faire demain ?",
+  ],
+};
+
+export const peurEnPlan: ProgramContent = {
+  type: 'guided',
+  paragraphs: [
+    "Écris : de quoi ai-je peur, précisément ?",
+    "Quel est le scénario catastrophe que ton cerveau imagine ? Sois précis·e.",
+    "Quelle est la probabilité réelle que cela arrive ? Pas besoin d'un chiffre exact.",
+    "Si cela arrivait quand même, que pourrais-tu faire ? Cherche trois solutions possibles.",
+    "Qu'est-ce qui est réellement sous ton contrôle dans cette situation ?",
+    "Termine par : je n'ai pas besoin d'être certain·e que tout se passera parfaitement. J'ai seulement besoin de savoir que je pourrai gérer ce qui arrivera.",
+  ],
+};

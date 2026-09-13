@@ -11,5 +11,5 @@ export type WellbeingProgram = {
 export type BreathingPhase = { label: string; seconds: number };
 
 export type ProgramContent =
-  | { type: 'breathing'; cycles: number; phases: BreathingPhase[] }
+  | { type: 'breathing'; cycles: number; phases: BreathingPhase[]; intro?: string[]; outro?: string[] }
   | { type: 'guided'; paragraphs: string[] };

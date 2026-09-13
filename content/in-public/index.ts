@@ -36,3 +36,48 @@ export const respirerDansLaFoule: ProgramContent = {
     "Vous arriverez bientôt. Jusque-là, ce moment ne demande rien de plus que d'être traversé.",
   ],
 };
+
+export const sortieDeTroisMinutes: ProgramContent = {
+  type: 'guided',
+  paragraphs: [
+    "Quand tu sens que tu commences à être saturé·e, ne pars pas immédiatement. Arrête-toi quelques secondes, pose tes pieds au sol.",
+    "Fais trois respirations lentes.",
+    "Cherche une zone plus calme si possible : couloir, extérieur, banc, coin moins fréquenté.",
+    "Pendant deux minutes, sans regarder ton téléphone : trouve cinq choses que tu vois, quatre que tu entends, trois sensations physiques.",
+    "Puis demande-toi : est-ce que je veux retourner maintenant, ou prendre encore quelques minutes ? Décide calmement.",
+  ],
+};
+
+export const modeObservateur: ProgramContent = {
+  type: 'guided',
+  paragraphs: [
+    "Sans quitter l'endroit où tu es, imagine que tu n'es pas obligé·e de participer à tout ce qui s'y passe. Deviens un instant simple observateur·rice.",
+    "Cherche trois couleurs autour de toi.",
+    "Cherche trois formes.",
+    "Cherche trois sons.",
+    "Cherche trois sensations physiques — tes pieds au sol, ton dos contre la chaise, l'air sur ton visage.",
+    "Termine par : je n'ai pas besoin de contrôler la pièce. Je peux simplement être présent·e dedans.",
+  ],
+};
+
+export const boutonPause: ProgramContent = {
+  type: 'guided',
+  paragraphs: [
+    "Dis-toi mentalement : pause.",
+    "Pousse légèrement tes pieds contre le sol. Sens leur contact.",
+    "Fais trois respirations : inspiration douce, expiration lente.",
+    "Choisis une phrase courte de sécurité : « je suis ici », ou « je n'ai rien à prouver ».",
+    "Ne réfléchis pas à toute la situation d'un coup. Demande-toi simplement : quelle est la prochaine petite chose que j'ai à faire ?",
+    "Fais uniquement cette action. Puis la suivante, une à la fois.",
+  ],
+};
+
+export const kitDurgence: ProgramContent = {
+  type: 'guided',
+  paragraphs: [
+    "Ce kit se fait en deux minutes, où que tu sois. Pose tes pieds au sol, regarde autour de toi et trouve trois objets.",
+    "Fais trois respirations : inspire doucement, ajoute une toute petite inspiration supplémentaire, puis expire longuement.",
+    "Dis-toi mentalement : je n'ai pas besoin de résoudre tout maintenant.",
+    "Demande-toi : quelle est ma prochaine petite action ? Puis fais uniquement celle-là.",
+  ],
+};

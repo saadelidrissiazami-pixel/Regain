@@ -31,3 +31,40 @@ export const preparationMomentDifficile: ProgramContent = {
     "Vous n'avez pas besoin de vous sentir prêt·e à 100% pour avancer quand même.",
   ],
 };
+
+export const postureDePresence: ProgramContent = {
+  type: 'guided',
+  paragraphs: [
+    "Mets-toi debout, pieds écartés à peu près à la largeur des épaules. Ne gonfle pas artificiellement le torse.",
+    "Sens tes pieds sur le sol pendant quelques secondes.",
+    "Épaules légèrement relâchées, tête droite, regard horizontal, mâchoire détendue, respiration lente.",
+    "Répète mentalement : je n'ai pas besoin d'impressionner.",
+    "Je peux prendre ma place.",
+    "Je peux être imparfait·e et rester digne de respect.",
+    "Marche tranquillement pendant une minute. Le but n'est pas de jouer un personnage confiant, mais d'apprendre à occuper l'espace sans te faire petit·e.",
+  ],
+};
+
+export const microDefiSocial: ProgramContent = {
+  type: 'guided',
+  paragraphs: [
+    "Choisis une petite action sociale légèrement inconfortable : dire bonjour, poser une question, remercier quelqu'un, donner ton avis.",
+    "Avant de le faire, note ton niveau d'inconfort de 0 à 10.",
+    "Fais l'action. Ne cherche pas immédiatement à l'analyser.",
+    "Après trente secondes, note ton niveau réel d'inconfort — souvent, il a déjà baissé.",
+    "Demande-toi : qu'est-ce que je pensais qui allait arriver, et qu'est-ce qui s'est réellement passé ?",
+    "Chaque petit défi accumule une preuve d'expérience réelle — plus solide que n'importe quel discours pour se rassurer.",
+  ],
+};
+
+export const preuveDesTroisVictoires: ProgramContent = {
+  type: 'guided',
+  paragraphs: [
+    "Chaque soir, cherche trois victoires, même minuscules.",
+    "Une victoire facile : quelque chose que tu as simplement réussi à faire.",
+    "Une victoire difficile : quelque chose qui t'a demandé un effort, malgré la nervosité.",
+    "Une victoire invisible : quelque chose que personne n'a forcément remarqué, comme rester calme alors que tu avais envie de partir.",
+    "Termine par une phrase : qu'as-tu appris sur toi aujourd'hui ? Une phrase suffit.",
+    "Avec le temps, ce journal devient une preuve réelle de ta capacité à gérer les choses.",
+  ],
+};

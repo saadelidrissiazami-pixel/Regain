@@ -11,6 +11,56 @@ import { speakGently as speak } from '../../src/lib/voice';
 import { fetchPrograms, markProgramCompleted } from '../../src/lib/wellbeing';
 import { useAuthStore } from '../../src/store/authStore';
 
+function ParagraphStepper({
+  paragraphs,
+  audioOn,
+  buttonLabel,
+  onFinish,
+}: {
+  paragraphs: string[];
+  audioOn: boolean;
+  buttonLabel: (isLast: boolean) => string;
+  onFinish: () => void;
+}) {
+  const [index, setIndex] = useState(0);
+  const isLast = index === paragraphs.length - 1;
+
+  useEffect(() => {
+    if (audioOn) speak(paragraphs[index]);
+    return () => {
+      if (audioOn) Speech.stop();
+    };
+  }, [index, audioOn]);
+
+  return (
+    <View className="flex-1 justify-between px-8 pb-10">
+      <View className="flex-1 items-center justify-center">
+        <Text style={{ fontFamily: 'Nunito_700Bold' }} className="text-center text-xl leading-8 text-ink">
+          {paragraphs[index]}
+        </Text>
+      </View>
+
+      <View>
+        <View className="mb-6 flex-row justify-center gap-2">
+          {paragraphs.map((_, i) => (
+            <View key={i} className={`h-1.5 w-1.5 rounded-full ${i === index ? 'bg-primary' : 'bg-line'}`} />
+          ))}
+        </View>
+        <Pressable
+          onPress={() => (isLast ? onFinish() : setIndex((i) => i + 1))}
+          className="overflow-hidden rounded-full shadow-sm"
+        >
+          <LinearGradient colors={['#F0A324', '#FF6B57']} start={{ x: 0, y: 0 }} end={{ x: 1, y: 0 }} style={{ paddingVertical: 15 }}>
+            <Text style={{ fontFamily: 'Nunito_800ExtraBold' }} className="text-center text-white">
+              {buttonLabel(isLast)}
+            </Text>
+          </LinearGradient>
+        </Pressable>
+      </View>
+    </View>
+  );
+}
+
 function BreathingPlayer({
   content,
   onDone,
@@ -20,25 +70,28 @@ function BreathingPlayer({
   onDone: () => void;
   audioOn: boolean;
 }) {
+  const [stage, setStage] = useState<'intro' | 'active' | 'outro' | 'finished'>(
+    content.intro?.length ? 'intro' : 'active'
+  );
   const [cycle, setCycle] = useState(0);
   const [phaseIndex, setPhaseIndex] = useState(0);
   const [secondsLeft, setSecondsLeft] = useState(content.phases[0].seconds);
-  const [finished, setFinished] = useState(false);
   const scale = useRef(new Animated.Value(1)).current;
 
   const phase = content.phases[phaseIndex];
 
   useEffect(() => {
-    const target = phase.label.startsWith('Inspirez') ? 1.4 : phase.label.startsWith('Expirez') ? 1 : 1.4;
+    if (stage !== 'active') return;
+    const target = phase.label.startsWith('Inspirez') || phase.label.toLowerCase().includes('inspiration') ? 1.4 : 1;
     Animated.timing(scale, { toValue: target, duration: phase.seconds * 1000, useNativeDriver: true }).start();
-  }, [phaseIndex, cycle]);
+  }, [phaseIndex, cycle, stage]);
 
   useEffect(() => {
-    if (audioOn && !finished) speak(phase.label);
-  }, [phaseIndex, cycle, audioOn]);
+    if (stage === 'active' && audioOn) speak(phase.label);
+  }, [phaseIndex, cycle, audioOn, stage]);
 
   useEffect(() => {
-    if (finished) return;
+    if (stage !== 'active') return;
     const timer = setInterval(() => {
       setSecondsLeft((s) => {
         if (s > 1) return s - 1;
@@ -46,7 +99,7 @@ function BreathingPlayer({
         if (nextPhaseIndex === 0) {
           const nextCycle = cycle + 1;
           if (nextCycle >= content.cycles) {
-            setFinished(true);
+            setStage(content.outro?.length ? 'outro' : 'finished');
             return 0;
           }
           setCycle(nextCycle);
@@ -56,9 +109,31 @@ function BreathingPlayer({
       });
     }, 1000);
     return () => clearInterval(timer);
-  }, [phaseIndex, cycle, finished]);
+  }, [phaseIndex, cycle, stage]);
 
-  if (finished) {
+  if (stage === 'intro') {
+    return (
+      <ParagraphStepper
+        paragraphs={content.intro!}
+        audioOn={audioOn}
+        buttonLabel={(isLast) => (isLast ? 'Commencer' : 'Suivant')}
+        onFinish={() => setStage('active')}
+      />
+    );
+  }
+
+  if (stage === 'outro') {
+    return (
+      <ParagraphStepper
+        paragraphs={content.outro!}
+        audioOn={audioOn}
+        buttonLabel={(isLast) => (isLast ? 'Terminer' : 'Suivant')}
+        onFinish={onDone}
+      />
+    );
+  }
+
+  if (stage === 'finished') {
     return (
       <View className="flex-1 items-center justify-center px-8">
         <Text className="mb-3 text-5xl">🎉</Text>
@@ -108,42 +183,13 @@ function GuidedPlayer({
   onDone: () => void;
   audioOn: boolean;
 }) {
-  const [index, setIndex] = useState(0);
-  const isLast = index === paragraphs.length - 1;
-
-  useEffect(() => {
-    if (audioOn) speak(paragraphs[index]);
-    return () => {
-      if (audioOn) Speech.stop();
-    };
-  }, [index, audioOn]);
-
   return (
-    <View className="flex-1 justify-between px-8 pb-10">
-      <View className="flex-1 items-center justify-center">
-        <Text style={{ fontFamily: 'Nunito_700Bold' }} className="text-center text-xl leading-8 text-ink">
-          {paragraphs[index]}
-        </Text>
-      </View>
-
-      <View>
-        <View className="mb-6 flex-row justify-center gap-2">
-          {paragraphs.map((_, i) => (
-            <View key={i} className={`h-1.5 w-1.5 rounded-full ${i === index ? 'bg-primary' : 'bg-line'}`} />
-          ))}
-        </View>
-        <Pressable
-          onPress={() => (isLast ? onDone() : setIndex((i) => i + 1))}
-          className="overflow-hidden rounded-full shadow-sm"
-        >
-          <LinearGradient colors={['#F0A324', '#FF6B57']} start={{ x: 0, y: 0 }} end={{ x: 1, y: 0 }} style={{ paddingVertical: 15 }}>
-            <Text style={{ fontFamily: 'Nunito_800ExtraBold' }} className="text-center text-white">
-              {isLast ? 'Terminer' : 'Suivant'}
-            </Text>
-          </LinearGradient>
-        </Pressable>
-      </View>
-    </View>
+    <ParagraphStepper
+      paragraphs={paragraphs}
+      audioOn={audioOn}
+      buttonLabel={(isLast) => (isLast ? 'Terminer' : 'Suivant')}
+      onFinish={onDone}
+    />
   );
 }
 
