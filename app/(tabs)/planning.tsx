@@ -106,6 +106,7 @@ export default function PlanningScreen() {
       queryClient.invalidateQueries({ queryKey: ['weekPlan', userId, weekStart] });
       queryClient.invalidateQueries({ queryKey: ['trackingStats', userId] });
       queryClient.invalidateQueries({ queryKey: ['streak', userId] });
+      queryClient.invalidateQueries({ queryKey: ['completedActivities', userId] });
     },
   });
 
@@ -114,7 +115,9 @@ export default function PlanningScreen() {
   });
 
   const hasAvailability = (availabilityQuery.data?.length ?? 0) > 0;
-  const days = Array.from(new Set((planQuery.data ?? []).map((item) => item.date)));
+  const activeItems = (planQuery.data ?? []).filter((item) => item.status !== 'realise');
+  const days = Array.from(new Set(activeItems.map((item) => item.date)));
+  const allDone = (planQuery.data?.length ?? 0) > 0 && activeItems.length === 0;
 
   const [refreshing, setRefreshing] = useState(false);
   const onRefresh = useCallback(async () => {
@@ -163,7 +166,7 @@ export default function PlanningScreen() {
             <ActivityIndicator color="#FFFFFF" />
           ) : (
             <Text style={{ fontFamily: 'Nunito_800ExtraBold' }} className="text-white">
-              {days.length > 0 ? '🔄 Régénérer mon planning' : '✨ Générer mon planning de la semaine'}
+              {(planQuery.data?.length ?? 0) > 0 ? '🔄 Régénérer mon planning' : '✨ Générer mon planning de la semaine'}
             </Text>
           )}
         </Pressable>
@@ -200,8 +203,20 @@ export default function PlanningScreen() {
 
       {planQuery.isLoading ? <ActivityIndicator color="#FF6B57" /> : null}
 
+      {allDone ? (
+        <View className="items-center rounded-2xl border border-line bg-surface p-6 shadow-sm">
+          <Text className="mb-2 text-3xl">🎉</Text>
+          <Text style={{ fontFamily: 'Nunito_800ExtraBold' }} className="text-center text-base text-ink">
+            Tout est fait pour cette semaine
+          </Text>
+          <Text className="mt-1 text-center text-xs text-ink-soft">
+            Retrouvez ce que vous avez accompli dans l'Historique, sur l'onglet Suivi.
+          </Text>
+        </View>
+      ) : null}
+
       {days.map((date) => {
-        const items = (planQuery.data ?? []).filter((item) => item.date === date);
+        const items = activeItems.filter((item) => item.date === date);
         return (
           <View key={date} className="mb-5">
             <Text style={{ fontFamily: 'Nunito_800ExtraBold' }} className="mb-2 text-sm text-ink-soft">

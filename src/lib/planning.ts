@@ -88,6 +88,18 @@ export async function generateAndSaveWeekPlan(userId: string, weekStart = getWee
   return fetchWeekPlan(userId, weekStart);
 }
 
+export async function fetchCompletedActivities(userId: string, limit = 100): Promise<PlannedActivityRow[]> {
+  const { data, error } = await supabase
+    .from('planned_activities')
+    .select('id, date, time_slot, status, activities_catalog(*)')
+    .eq('user_id', userId)
+    .eq('status', 'realise')
+    .order('date', { ascending: false })
+    .limit(limit);
+  if (error) throw error;
+  return data as unknown as PlannedActivityRow[];
+}
+
 export async function markActivityDone(userId: string, plannedActivityId: string) {
   const { error: statusError } = await supabase
     .from('planned_activities')
