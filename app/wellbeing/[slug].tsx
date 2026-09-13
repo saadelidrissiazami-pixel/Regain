@@ -3,7 +3,7 @@ import { LinearGradient } from 'expo-linear-gradient';
 import { router, useLocalSearchParams } from 'expo-router';
 import * as Speech from 'expo-speech';
 import { useEffect, useRef, useState } from 'react';
-import { Animated, Pressable, Text, View } from 'react-native';
+import { Animated, Pressable, Text, TextInput, View } from 'react-native';
 
 import { CONTENT_BY_SLUG } from '../../src/features/wellbeing/content';
 import { usePremium } from '../../src/lib/premium';
@@ -231,6 +231,40 @@ function PrepCountdown({ onDone, audioOn }: { onDone: () => void; audioOn: boole
   );
 }
 
+function NoteScreen({ onSubmit }: { onSubmit: (note: string) => void }) {
+  const [note, setNote] = useState('');
+
+  return (
+    <View className="flex-1 px-8 pb-10">
+      <Text style={{ fontFamily: 'Nunito_800ExtraBold' }} className="mb-2 text-center text-xl text-ink">
+        Un mot sur cette séance ?
+      </Text>
+      <Text className="mb-5 text-center text-sm text-ink-soft">
+        Comment vous sentez-vous, à quoi avez-vous pensé ? Ces notes resteront privées et pourront être analysées
+        plus tard par votre coach IA.
+      </Text>
+      <TextInput
+        value={note}
+        onChangeText={setNote}
+        multiline
+        placeholder="Écrivez librement ici… (optionnel)"
+        placeholderTextColor="#B8AFA3"
+        className="mb-6 min-h-[120px] rounded-2xl border border-line bg-surface p-4 text-base text-ink"
+        style={{ fontFamily: 'Nunito_700Bold', textAlignVertical: 'top' }}
+      />
+      <View className="mt-auto">
+        <Pressable onPress={() => onSubmit(note)} className="overflow-hidden rounded-full shadow-sm">
+          <LinearGradient colors={['#F0A324', '#FF6B57']} start={{ x: 0, y: 0 }} end={{ x: 1, y: 0 }} style={{ paddingVertical: 15 }}>
+            <Text style={{ fontFamily: 'Nunito_800ExtraBold' }} className="text-center text-white">
+              {note.trim() ? 'Enregistrer et terminer' : 'Terminer'}
+            </Text>
+          </LinearGradient>
+        </Pressable>
+      </View>
+    </View>
+  );
+}
+
 function getContent(slug: string) {
   return CONTENT_BY_SLUG[slug];
 }
@@ -241,6 +275,7 @@ export default function WellbeingSessionScreen() {
   const queryClient = useQueryClient();
   const { isPremium } = usePremium();
   const [completed, setCompleted] = useState(false);
+  const [showNote, setShowNote] = useState(false);
   const [audioOn, setAudioOn] = useState(false);
   const [preparing, setPreparing] = useState(true);
 
@@ -249,7 +284,7 @@ export default function WellbeingSessionScreen() {
   const content = slug ? getContent(slug) : undefined;
 
   const completeMutation = useMutation({
-    mutationFn: () => markProgramCompleted(session!.user.id, program!.id),
+    mutationFn: (note: string) => markProgramCompleted(session!.user.id, program!.id, note),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['completedPrograms', session?.user.id] });
     },
@@ -261,7 +296,12 @@ export default function WellbeingSessionScreen() {
     } catch {
       // no-op
     }
-    if (program && session?.user.id) completeMutation.mutate();
+    setShowNote(true);
+  };
+
+  const handleSubmitNote = (note: string) => {
+    if (program && session?.user.id) completeMutation.mutate(note);
+    setShowNote(false);
     setCompleted(true);
   };
 
@@ -307,7 +347,7 @@ export default function WellbeingSessionScreen() {
             ✕ Fermer
           </Text>
         </Pressable>
-        {!completed ? (
+        {!completed && !showNote ? (
           <Pressable
             onPress={() => {
               setAudioOn((v) => {
@@ -344,6 +384,8 @@ export default function WellbeingSessionScreen() {
             </LinearGradient>
           </Pressable>
         </View>
+      ) : showNote ? (
+        <NoteScreen onSubmit={handleSubmitNote} />
       ) : preparing ? (
         <PrepCountdown onDone={() => setPreparing(false)} audioOn={audioOn} />
       ) : content.type === 'breathing' ? (

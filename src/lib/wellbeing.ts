@@ -16,9 +16,9 @@ export async function fetchCompletedProgramIds(userId: string): Promise<Set<stri
   return new Set(data.map((row) => row.program_id));
 }
 
-export async function markProgramCompleted(userId: string, programId: string) {
+export async function markProgramCompleted(userId: string, programId: string, note?: string) {
   const { error } = await supabase
     .from('wellbeing_sessions_completed')
-    .insert({ user_id: userId, program_id: programId, session_index: 0 });
+    .insert({ user_id: userId, program_id: programId, session_index: 0, note: note?.trim() || null });
   if (error) throw error;
 }
