@@ -2,10 +2,17 @@ import { useQuery } from '@tanstack/react-query';
 import { Link, router, useLocalSearchParams } from 'expo-router';
 import { ActivityIndicator, Pressable, ScrollView, Text, View } from 'react-native';
 
+import { BookSuggestionCard } from '../../src/components/activity/BookSuggestionCard';
+import { NeighborhoodHistoryCard } from '../../src/components/activity/NeighborhoodHistoryCard';
+import { WalkingLoopCard } from '../../src/components/activity/WalkingLoopCard';
 import { CategoryBadge } from '../../src/components/CategoryBadge';
 import { computeActivityFit, pickComplementaryActivities } from '../../src/features/planning/recommendation';
 import { fetchActivityById, fetchCatalog, fetchPreferences } from '../../src/lib/planning';
 import { useAuthStore } from '../../src/store/authStore';
+
+const NEIGHBORHOOD_HISTORY_TITLES = ['Explorer un nouveau quartier'];
+const WALKING_LOOP_TITLES = ['Marche rapide 30 min', 'Balade en nature'];
+const BOOK_TITLES = ["Lecture d'un livre"];
 
 export default function ActivityDetailScreen() {
   const { id } = useLocalSearchParams<{ id: string }>();
@@ -119,6 +126,14 @@ export default function ActivityDetailScreen() {
               </Text>
             </View>
           )}
+
+          {NEIGHBORHOOD_HISTORY_TITLES.includes(activity.title) ? <NeighborhoodHistoryCard /> : null}
+          {WALKING_LOOP_TITLES.includes(activity.title) ? (
+            <WalkingLoopCard durationMinutes={activity.duration_minutes} />
+          ) : null}
+          {BOOK_TITLES.includes(activity.title) && prefs ? (
+            <BookSuggestionCard primaryGoals={prefs.primary_goals} />
+          ) : null}
 
           {complementary.length > 0 ? (
             <>

@@ -46,6 +46,12 @@
         {
           "calendarPermission": "Regain synchronise votre planning avec votre calendrier."
         }
+      ],
+      [
+        "expo-location",
+        {
+          "locationWhenInUsePermission": "Regain utilise votre position pour proposer un itinéraire de marche et l'histoire de votre quartier."
+        }
       ]
     ]
   }
