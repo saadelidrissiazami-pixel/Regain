@@ -13,14 +13,35 @@ export const ancrageRapide: ProgramContent = {
 };
 
 export const detachementRegardAutres: ProgramContent = {
-  type: 'guided',
-  paragraphs: [
-    "Vous êtes entouré de monde. Ce moment vous appartient autant qu'à n'importe qui d'autre ici.",
-    "Sans fermer les yeux, posez votre regard sur quelque chose de neutre — une fenêtre, le sol, un point fixe.",
-    "La plupart des gens autour de vous sont pris dans leurs propres pensées, pas dans les vôtres. On est rarement aussi observé qu'on le croit.",
-    "Sentez vos pieds au sol, ou votre corps posé sur le siège. Un point d'ancrage simple, toujours là.",
-    "Respirez normalement, sans rien forcer. Trois inspirations, à votre rythme.",
-    "Vous n'avez rien à prouver ici. Juste à être là, jusqu'à la prochaine étape.",
+  type: 'grounding',
+  steps: [
+    { kind: 'text', text: "Vous êtes entouré de monde. Ce moment vous appartient autant qu'à n'importe qui d'autre ici." },
+    {
+      kind: 'scale',
+      prompt: 'Là, maintenant : à quel point vous sentez-vous observé·e ou mal à l’aise ?',
+      key: 'before',
+    },
+    {
+      kind: 'text',
+      text: "Sans fermer les yeux, posez votre regard sur quelque chose de neutre — une fenêtre, le sol, un point fixe.",
+    },
+    { kind: 'confirm', text: 'Prenez le temps de le trouver.', buttonLabel: "J'ai trouvé mon point" },
+    {
+      kind: 'text',
+      text: "La plupart des gens autour de vous sont pris dans leurs propres pensées, pas dans les vôtres. On est rarement aussi observé qu'on le croit.",
+    },
+    {
+      kind: 'breath-counter',
+      text: 'Respirez normalement, sans rien forcer. Appuyez à chaque respiration.',
+      count: 3,
+    },
+    { kind: 'text', text: "Sentez vos pieds au sol, ou votre corps posé sur le siège. Un point d'ancrage simple, toujours là." },
+    { kind: 'text', text: "Vous n'avez rien à prouver ici. Juste à être là, jusqu'à la prochaine étape." },
+    {
+      kind: 'scale',
+      prompt: 'Et maintenant : où en êtes-vous ?',
+      key: 'after',
+    },
   ],
 };
 

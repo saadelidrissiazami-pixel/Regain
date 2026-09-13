@@ -6,6 +6,7 @@ import { useEffect, useRef, useState } from 'react';
 import { Animated, Pressable, Text, TextInput, View } from 'react-native';
 
 import { CONTENT_BY_SLUG } from '../../src/features/wellbeing/content';
+import type { GroundingStep } from '../../src/features/wellbeing/types';
 import { usePremium } from '../../src/lib/premium';
 import { speakGently as speak } from '../../src/lib/voice';
 import { fetchPrograms, markProgramCompleted } from '../../src/lib/wellbeing';
@@ -193,6 +194,139 @@ function GuidedPlayer({
   );
 }
 
+const SCALE_VALUES = Array.from({ length: 11 }, (_, i) => i);
+
+function GroundingPlayer({
+  steps,
+  onDone,
+  audioOn,
+}: {
+  steps: GroundingStep[];
+  onDone: (summaryNote?: string) => void;
+  audioOn: boolean;
+}) {
+  const [index, setIndex] = useState(0);
+  const [answers, setAnswers] = useState<Record<string, number>>({});
+  const [breathCount, setBreathCount] = useState(0);
+  const step = steps[index];
+  const isLast = index === steps.length - 1;
+
+  const speakText =
+    step.kind === 'scale' ? step.prompt : step.kind === 'text' || step.kind === 'confirm' ? step.text : step.text;
+
+  useEffect(() => {
+    if (audioOn) speak(speakText);
+    return () => {
+      if (audioOn) Speech.stop();
+    };
+  }, [index, audioOn]);
+
+  useEffect(() => {
+    setBreathCount(0);
+  }, [index]);
+
+  const goNext = () => {
+    if (isLast) {
+      const { before, after } = answers;
+      const summary =
+        before !== undefined && after !== undefined
+          ? `Niveau de gêne ressenti : ${before}/10 avant la séance, ${after}/10 après.`
+          : undefined;
+      onDone(summary);
+    } else {
+      setIndex((i) => i + 1);
+    }
+  };
+
+  return (
+    <View className="flex-1 justify-between px-8 pb-10">
+      <View className="flex-1 items-center justify-center">
+        {step.kind === 'text' ? (
+          <Text style={{ fontFamily: 'Nunito_700Bold' }} className="text-center text-xl leading-8 text-ink">
+            {step.text}
+          </Text>
+        ) : step.kind === 'confirm' ? (
+          <>
+            <Text style={{ fontFamily: 'Nunito_700Bold' }} className="mb-8 text-center text-xl leading-8 text-ink">
+              {step.text}
+            </Text>
+            <Pressable onPress={goNext} className="overflow-hidden rounded-full shadow-sm">
+              <LinearGradient colors={['#1E9C86', '#4E9BDE']} start={{ x: 0, y: 0 }} end={{ x: 1, y: 0 }} style={{ paddingHorizontal: 24, paddingVertical: 14 }}>
+                <Text style={{ fontFamily: 'Nunito_800ExtraBold' }} className="text-center text-white">
+                  {step.buttonLabel}
+                </Text>
+              </LinearGradient>
+            </Pressable>
+          </>
+        ) : step.kind === 'breath-counter' ? (
+          <>
+            <Text style={{ fontFamily: 'Nunito_700Bold' }} className="mb-8 text-center text-xl leading-8 text-ink">
+              {step.text}
+            </Text>
+            <Pressable
+              onPress={() => setBreathCount((c) => Math.min(c + 1, step.count))}
+              className="h-32 w-32 items-center justify-center rounded-full bg-calm-soft"
+            >
+              <Text style={{ fontFamily: 'Nunito_800ExtraBold' }} className="text-3xl text-calm">
+                {breathCount}/{step.count}
+              </Text>
+            </Pressable>
+            <Text className="mt-4 text-xs text-ink-soft">Appuyez à chaque respiration</Text>
+          </>
+        ) : (
+          <>
+            <Text style={{ fontFamily: 'Nunito_700Bold' }} className="mb-6 text-center text-xl leading-8 text-ink">
+              {step.prompt}
+            </Text>
+            <View className="flex-row flex-wrap justify-center gap-2">
+              {SCALE_VALUES.map((value) => {
+                const selected = answers[step.key] === value;
+                return (
+                  <Pressable
+                    key={value}
+                    onPress={() => setAnswers((a) => ({ ...a, [step.key]: value }))}
+                    className={`h-10 w-10 items-center justify-center rounded-full border ${
+                      selected ? 'border-primary bg-primary' : 'border-line bg-surface'
+                    }`}
+                  >
+                    <Text
+                      style={{ fontFamily: 'Nunito_700Bold' }}
+                      className={`text-sm ${selected ? 'text-white' : 'text-ink-soft'}`}
+                    >
+                      {value}
+                    </Text>
+                  </Pressable>
+                );
+              })}
+            </View>
+            <View className="mt-2 flex-row justify-between px-1" style={{ width: 280 }}>
+              <Text className="text-[11px] text-ink-soft">À l'aise</Text>
+              <Text className="text-[11px] text-ink-soft">Très mal à l'aise</Text>
+            </View>
+          </>
+        )}
+      </View>
+
+      <View>
+        <View className="mb-6 flex-row justify-center gap-2">
+          {steps.map((_, i) => (
+            <View key={i} className={`h-1.5 w-1.5 rounded-full ${i === index ? 'bg-primary' : 'bg-line'}`} />
+          ))}
+        </View>
+        {step.kind === 'text' || (step.kind === 'scale' && answers[step.key] !== undefined) || (step.kind === 'breath-counter' && breathCount >= step.count) ? (
+          <Pressable onPress={goNext} className="overflow-hidden rounded-full shadow-sm">
+            <LinearGradient colors={['#F0A324', '#FF6B57']} start={{ x: 0, y: 0 }} end={{ x: 1, y: 0 }} style={{ paddingVertical: 15 }}>
+              <Text style={{ fontFamily: 'Nunito_800ExtraBold' }} className="text-center text-white">
+                {isLast ? 'Terminer' : 'Suivant'}
+              </Text>
+            </LinearGradient>
+          </Pressable>
+        ) : null}
+      </View>
+    </View>
+  );
+}
+
 const PREP_SECONDS = 10;
 
 function PrepCountdown({ onDone, audioOn }: { onDone: () => void; audioOn: boolean }) {
@@ -231,8 +365,8 @@ function PrepCountdown({ onDone, audioOn }: { onDone: () => void; audioOn: boole
   );
 }
 
-function NoteScreen({ onSubmit }: { onSubmit: (note: string) => void }) {
-  const [note, setNote] = useState('');
+function NoteScreen({ onSubmit, initialNote = '' }: { onSubmit: (note: string) => void; initialNote?: string }) {
+  const [note, setNote] = useState(initialNote);
 
   return (
     <View className="flex-1 px-8 pb-10">
@@ -276,6 +410,7 @@ export default function WellbeingSessionScreen() {
   const { isPremium } = usePremium();
   const [completed, setCompleted] = useState(false);
   const [showNote, setShowNote] = useState(false);
+  const [noteDraft, setNoteDraft] = useState('');
   const [audioOn, setAudioOn] = useState(false);
   const [preparing, setPreparing] = useState(true);
 
@@ -290,12 +425,13 @@ export default function WellbeingSessionScreen() {
     },
   });
 
-  const handleDone = () => {
+  const handleDone = (prefillNote?: string) => {
     try {
       Speech.stop();
     } catch {
       // no-op
     }
+    if (prefillNote) setNoteDraft(prefillNote);
     setShowNote(true);
   };
 
@@ -385,11 +521,13 @@ export default function WellbeingSessionScreen() {
           </Pressable>
         </View>
       ) : showNote ? (
-        <NoteScreen onSubmit={handleSubmitNote} />
+        <NoteScreen onSubmit={handleSubmitNote} initialNote={noteDraft} />
       ) : preparing ? (
         <PrepCountdown onDone={() => setPreparing(false)} audioOn={audioOn} />
       ) : content.type === 'breathing' ? (
         <BreathingPlayer content={content} onDone={handleDone} audioOn={audioOn} />
+      ) : content.type === 'grounding' ? (
+        <GroundingPlayer steps={content.steps} onDone={handleDone} audioOn={audioOn} />
       ) : (
         <GuidedPlayer paragraphs={content.paragraphs} onDone={handleDone} audioOn={audioOn} />
       )}
