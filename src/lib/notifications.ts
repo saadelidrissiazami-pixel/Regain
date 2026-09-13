@@ -5,6 +5,7 @@ import type { PlannedActivityRow } from './planning';
 const MORNING_NUDGE_ID = 'morning-nudge';
 const ACTIVITY_PREFIX = 'activity-';
 const TIME_SLOT_HOURS: Record<string, number> = { matin: 9, apres_midi: 14, soir: 19 };
+const REMINDER_LEAD_MINUTES = 15;
 
 const isSupported = Platform.OS !== 'web';
 
@@ -84,18 +85,20 @@ export async function scheduleActivityReminders(items: PlannedActivityRow[]) {
   const now = new Date();
   for (const item of items) {
     const hour = TIME_SLOT_HOURS[item.time_slot] ?? 9;
-    const date = new Date(`${item.date}T00:00:00`);
-    date.setHours(hour, 0, 0, 0);
-    if (date <= now) continue;
+    const activityDate = new Date(`${item.date}T00:00:00`);
+    activityDate.setHours(hour, 0, 0, 0);
+
+    const reminderDate = new Date(activityDate.getTime() - REMINDER_LEAD_MINUTES * 60_000);
+    if (reminderDate <= now) continue;
 
     await Notifications.scheduleNotificationAsync({
       identifier: `${ACTIVITY_PREFIX}${item.id}`,
       content: {
         title: 'Regain',
-        body: `C'est le moment pour : ${item.activities_catalog.title}`,
+        body: `Dans ${REMINDER_LEAD_MINUTES} min : ${item.activities_catalog.title}`,
         data: { route: `/activity/${item.activities_catalog.id}` },
       },
-      trigger: { type: Notifications.SchedulableTriggerInputTypes.DATE, date },
+      trigger: { type: Notifications.SchedulableTriggerInputTypes.DATE, date: reminderDate },
     });
   }
 }
