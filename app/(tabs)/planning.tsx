@@ -120,11 +120,13 @@ export default function PlanningScreen() {
   const allDone = (planQuery.data?.length ?? 0) > 0 && activeItems.length === 0;
 
   const [refreshing, setRefreshing] = useState(false);
+  const refetchAvailability = availabilityQuery.refetch;
+  const refetchPlan = planQuery.refetch;
   const onRefresh = useCallback(async () => {
     setRefreshing(true);
-    await Promise.all([availabilityQuery.refetch(), planQuery.refetch()]);
+    await Promise.all([refetchAvailability(), refetchPlan()]);
     setRefreshing(false);
-  }, [availabilityQuery.refetch, planQuery.refetch]);
+  }, [refetchAvailability, refetchPlan]);
 
   return (
     <ScrollView

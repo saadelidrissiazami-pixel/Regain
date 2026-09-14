@@ -2,7 +2,7 @@ import { zodResolver } from '@hookform/resolvers/zod';
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { router } from 'expo-router';
 import { useState } from 'react';
-import { Controller, useForm } from 'react-hook-form';
+import { Controller, useForm, useWatch } from 'react-hook-form';
 import { ActivityIndicator, Pressable, ScrollView, View } from 'react-native';
 import { Text } from '../../src/components/typography';
 import { LinearGradient } from 'expo-linear-gradient';
@@ -21,7 +21,6 @@ export default function OnboardingScreen() {
   const {
     control,
     handleSubmit,
-    watch,
     setValue,
     formState: { errors },
   } = useForm<OnboardingFormValues>({
@@ -33,7 +32,8 @@ export default function OnboardingScreen() {
     },
   });
 
-  const selectedGoals = watch('primaryGoals');
+  // useWatch plutôt que watch() : watch n'est pas compatible avec la mémoïsation du compilateur React.
+  const selectedGoals = useWatch({ control, name: 'primaryGoals' });
 
   const mutation = useMutation({
     mutationFn: (values: OnboardingFormValues) => {

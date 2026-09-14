@@ -65,11 +65,13 @@ export default function WellbeingScreen() {
   };
 
   const [refreshing, setRefreshing] = useState(false);
+  const refetchPrograms = programsQuery.refetch;
+  const refetchCompleted = completedQuery.refetch;
   const onRefresh = useCallback(async () => {
     setRefreshing(true);
-    await Promise.all([programsQuery.refetch(), completedQuery.refetch()]);
+    await Promise.all([refetchPrograms(), refetchCompleted()]);
     setRefreshing(false);
-  }, [programsQuery.refetch, completedQuery.refetch]);
+  }, [refetchPrograms, refetchCompleted]);
 
   return (
     <ScrollView

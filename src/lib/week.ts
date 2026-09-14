@@ -8,6 +8,13 @@ export function toLocalISODate(date: Date): string {
   return toISODateUTC(date.getFullYear(), date.getMonth(), date.getDate());
 }
 
+/** Inverse de toLocalISODate : minuit, heure locale, du jour donné (new Date('AAAA-MM-JJ')
+ *  le lirait en UTC et pourrait tomber la veille). */
+export function fromLocalISODate(iso: string): Date {
+  const [year, month, day] = iso.split('-').map(Number);
+  return new Date(year, month - 1, day);
+}
+
 export function getWeekStart(date = new Date()): string {
   const day = date.getDay(); // 0=dimanche..6=samedi (heure locale)
   const diffToMonday = day === 0 ? -6 : 1 - day;

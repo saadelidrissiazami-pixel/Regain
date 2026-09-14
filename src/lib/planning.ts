@@ -1,4 +1,4 @@
-import type { BudgetLevel, CatalogActivity, EnergyLevel } from '../features/planning/catalog';
+import type { BudgetLevel, CatalogActivity } from '../features/planning/catalog';
 import { generateWeeklyPlan, type EnergyBySlot } from '../features/planning/ruleEngine';
 import type { AvailabilitySlot } from '../features/availability/types';
 import { fetchAvailabilitySlots } from './availability';

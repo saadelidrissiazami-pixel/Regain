@@ -2,7 +2,7 @@ import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { LinearGradient } from 'expo-linear-gradient';
 import { router, useLocalSearchParams } from 'expo-router';
 import * as Speech from 'expo-speech';
-import { useEffect, useRef, useState } from 'react';
+import { useCallback, useEffect, useReducer, useState } from 'react';
 import { ActivityIndicator, Animated, Pressable, View } from 'react-native';
 import { Text, TextInput } from '../../src/components/typography';
 import { CONTENT_BY_SLUG } from '../../src/features/wellbeing/content';
@@ -31,7 +31,7 @@ function ParagraphStepper({
     return () => {
       if (audioOn) Speech.stop();
     };
-  }, [index, audioOn]);
+  }, [index, audioOn, paragraphs]);
 
   return (
     <View className="flex-1 justify-between px-8 pb-10">
@@ -62,6 +62,13 @@ function ParagraphStepper({
   );
 }
 
+type BreathingState = {
+  stage: 'intro' | 'active' | 'outro' | 'finished';
+  cycle: number;
+  phaseIndex: number;
+  secondsLeft: number;
+};
+
 function BreathingPlayer({
   content,
   onDone,
@@ -71,13 +78,35 @@ function BreathingPlayer({
   onDone: () => void;
   audioOn: boolean;
 }) {
-  const [stage, setStage] = useState<'intro' | 'active' | 'outro' | 'finished'>(
-    content.intro?.length ? 'intro' : 'active'
+  // Tick et changements de phase passent par un reducer pur, déclenché depuis l'intervalle :
+  // ni setState imbriqué dans un updater (que React peut rejouer), ni setState synchrone
+  // dans un effet.
+  const [{ stage, cycle, phaseIndex, secondsLeft }, dispatch] = useReducer(
+    (state: BreathingState, action: 'start' | 'tick'): BreathingState => {
+      if (action === 'start') return { ...state, stage: 'active' };
+      if (state.stage !== 'active') return state;
+      if (state.secondsLeft > 1) return { ...state, secondsLeft: state.secondsLeft - 1 };
+
+      const nextPhaseIndex = (state.phaseIndex + 1) % content.phases.length;
+      const nextCycle = nextPhaseIndex === 0 ? state.cycle + 1 : state.cycle;
+      if (nextCycle >= content.cycles) {
+        return { ...state, stage: content.outro?.length ? 'outro' : 'finished' };
+      }
+      return {
+        ...state,
+        cycle: nextCycle,
+        phaseIndex: nextPhaseIndex,
+        secondsLeft: content.phases[nextPhaseIndex].seconds,
+      };
+    },
+    {
+      stage: content.intro?.length ? 'intro' : 'active',
+      cycle: 0,
+      phaseIndex: 0,
+      secondsLeft: content.phases[0].seconds,
+    }
   );
-  const [cycle, setCycle] = useState(0);
-  const [phaseIndex, setPhaseIndex] = useState(0);
-  const [secondsLeft, setSecondsLeft] = useState(content.phases[0].seconds);
-  const scale = useRef(new Animated.Value(1)).current;
+  const [scale] = useState(() => new Animated.Value(1));
 
   const phase = content.phases[phaseIndex];
 
@@ -85,35 +114,17 @@ function BreathingPlayer({
     if (stage !== 'active') return;
     const target = phase.label.startsWith('Inspirez') || phase.label.toLowerCase().includes('inspiration') ? 1.4 : 1;
     Animated.timing(scale, { toValue: target, duration: phase.seconds * 1000, useNativeDriver: true }).start();
-  }, [phaseIndex, cycle, stage]);
+  }, [stage, cycle, phaseIndex, phase.label, phase.seconds, scale]);
 
   useEffect(() => {
     if (stage === 'active' && audioOn) speak(phase.label);
-  }, [phaseIndex, cycle, audioOn, stage]);
+  }, [stage, cycle, phaseIndex, phase.label, audioOn]);
 
-  // Le tick ne fait que décrémenter : React peut rejouer un updater (StrictMode le fait),
-  // donc il doit rester pur. Le changement de phase vit dans son propre effet.
   useEffect(() => {
     if (stage !== 'active') return;
-    const timer = setInterval(() => setSecondsLeft((s) => Math.max(0, s - 1)), 1000);
+    const timer = setInterval(() => dispatch('tick'), 1000);
     return () => clearInterval(timer);
   }, [stage]);
-
-  useEffect(() => {
-    if (stage !== 'active' || secondsLeft > 0) return;
-
-    const nextPhaseIndex = (phaseIndex + 1) % content.phases.length;
-    if (nextPhaseIndex === 0) {
-      const nextCycle = cycle + 1;
-      if (nextCycle >= content.cycles) {
-        setStage(content.outro?.length ? 'outro' : 'finished');
-        return;
-      }
-      setCycle(nextCycle);
-    }
-    setPhaseIndex(nextPhaseIndex);
-    setSecondsLeft(content.phases[nextPhaseIndex].seconds);
-  }, [secondsLeft, stage, phaseIndex, cycle]);
 
   if (stage === 'intro') {
     return (
@@ -121,7 +132,7 @@ function BreathingPlayer({
         paragraphs={content.intro!}
         audioOn={audioOn}
         buttonLabel={(isLast) => (isLast ? 'Commencer' : 'Suivant')}
-        onFinish={() => setStage('active')}
+        onFinish={() => dispatch('start')}
       />
     );
   }
@@ -222,11 +233,7 @@ function GroundingPlayer({
     return () => {
       if (audioOn) Speech.stop();
     };
-  }, [index, audioOn]);
-
-  useEffect(() => {
-    setBreathCount(0);
-  }, [index]);
+  }, [index, audioOn, speakText]);
 
   const goNext = () => {
     if (isLast) {
@@ -238,6 +245,7 @@ function GroundingPlayer({
       onDone(summary);
     } else {
       setIndex((i) => i + 1);
+      setBreathCount(0);
     }
   };
 
@@ -337,7 +345,7 @@ function PrepCountdown({ onDone, audioOn }: { onDone: () => void; audioOn: boole
 
   useEffect(() => {
     if (audioOn) speak('Installez-vous confortablement. La séance commence dans quelques secondes.');
-  }, []);
+  }, [audioOn]);
 
   useEffect(() => {
     if (secondsLeft <= 0) {
@@ -346,7 +354,7 @@ function PrepCountdown({ onDone, audioOn }: { onDone: () => void; audioOn: boole
     }
     const timer = setTimeout(() => setSecondsLeft((s) => s - 1), 1000);
     return () => clearTimeout(timer);
-  }, [secondsLeft]);
+  }, [secondsLeft, onDone]);
 
   return (
     <View className="flex-1 items-center justify-center px-8">
@@ -416,6 +424,8 @@ export default function WellbeingSessionScreen() {
   const [noteDraft, setNoteDraft] = useState('');
   const [audioOn, setAudioOn] = useState(false);
   const [preparing, setPreparing] = useState(true);
+  // Stable : PrepCountdown dépend de onDone dans son effet de décompte.
+  const handlePrepDone = useCallback(() => setPreparing(false), []);
 
   const programsQuery = useQuery({ queryKey: ['wellbeingPrograms'], queryFn: fetchPrograms });
   const program = programsQuery.data?.find((p) => p.slug === slug);
@@ -534,7 +544,7 @@ export default function WellbeingSessionScreen() {
       ) : showNote ? (
         <NoteScreen onSubmit={handleSubmitNote} initialNote={noteDraft} />
       ) : preparing ? (
-        <PrepCountdown onDone={() => setPreparing(false)} audioOn={audioOn} />
+        <PrepCountdown onDone={handlePrepDone} audioOn={audioOn} />
       ) : content.type === 'breathing' ? (
         <BreathingPlayer content={content} onDone={handleDone} audioOn={audioOn} />
       ) : content.type === 'grounding' ? (

@@ -54,11 +54,14 @@ export default function TrackingScreen() {
   const maxMinutes = Math.max(1, ...categoryEntries.map(([, minutes]) => minutes));
 
   const [refreshing, setRefreshing] = useState(false);
+  const refetchStats = statsQuery.refetch;
+  const refetchStreak = streakQuery.refetch;
+  const refetchHistory = historyQuery.refetch;
   const onRefresh = useCallback(async () => {
     setRefreshing(true);
-    await Promise.all([statsQuery.refetch(), streakQuery.refetch(), historyQuery.refetch()]);
+    await Promise.all([refetchStats(), refetchStreak(), refetchHistory()]);
     setRefreshing(false);
-  }, [statsQuery.refetch, streakQuery.refetch, historyQuery.refetch]);
+  }, [refetchStats, refetchStreak, refetchHistory]);
 
   return (
     <ScrollView

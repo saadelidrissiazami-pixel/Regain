@@ -84,7 +84,11 @@ export default function AvailabilityScreen() {
   const toggleDay = (value: number) => {
     setSelectedDays((prev) => {
       const next = new Set(prev);
-      next.has(value) ? next.delete(value) : next.add(value);
+      if (next.has(value)) {
+        next.delete(value);
+      } else {
+        next.add(value);
+      }
       return next;
     });
   };
@@ -92,7 +96,11 @@ export default function AvailabilityScreen() {
   const toggleDate = (value: string) => {
     setSelectedDates((prev) => {
       const next = new Set(prev);
-      next.has(value) ? next.delete(value) : next.add(value);
+      if (next.has(value)) {
+        next.delete(value);
+      } else {
+        next.add(value);
+      }
       return next;
     });
   };
