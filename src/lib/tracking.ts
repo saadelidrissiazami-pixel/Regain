@@ -1,7 +1,7 @@
 import type { ActivityCategory } from '../features/planning/types';
 import { fetchWeekPlan } from './planning';
 import { supabase } from './supabase';
-import { toISODateUTC } from './week';
+import { toLocalISODate } from './week';
 
 export type WeekStats = {
   activeDays: number;
@@ -32,20 +32,19 @@ export async function fetchStreak(userId: string): Promise<number> {
     .order('completed_at', { ascending: false });
   if (error) throw error;
 
-  const days = new Set(data.map((row) => (row.completed_at as string).slice(0, 10)));
+  // completed_at est un timestamptz : le tronquer donnerait la date UTC, alors que le
+  // curseur ci-dessous avance en dates locales. Une activité cochée à 00h30 à Paris
+  // serait comptée la veille et casserait le streak.
+  const days = new Set(data.map((row) => toLocalISODate(new Date(row.completed_at as string))));
 
   const cursor = new Date();
-  let cursorDate = toISODateUTC(cursor.getFullYear(), cursor.getMonth(), cursor.getDate());
-  if (!days.has(cursorDate)) {
-    cursor.setDate(cursor.getDate() - 1);
-    cursorDate = toISODateUTC(cursor.getFullYear(), cursor.getMonth(), cursor.getDate());
-  }
+  // Rien aujourd'hui n'interrompt pas la série tant qu'hier est coché.
+  if (!days.has(toLocalISODate(cursor))) cursor.setDate(cursor.getDate() - 1);
 
   let streak = 0;
-  while (days.has(cursorDate)) {
+  while (days.has(toLocalISODate(cursor))) {
     streak += 1;
     cursor.setDate(cursor.getDate() - 1);
-    cursorDate = toISODateUTC(cursor.getFullYear(), cursor.getMonth(), cursor.getDate());
   }
   return streak;
 }

@@ -2,8 +2,8 @@ import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { LinearGradient } from 'expo-linear-gradient';
 import { router, useLocalSearchParams } from 'expo-router';
 import * as Speech from 'expo-speech';
-import { useEffect, useRef, useState } from 'react';
-import { Animated, Pressable, Text, View } from 'react-native';
+import { useEffect, useLayoutEffect, useRef, useState } from 'react';
+import { ActivityIndicator, Animated, Pressable, Text, View } from 'react-native';
 
 import { CONTENT_BY_SLUG } from '../../src/features/wellbeing/content';
 import { usePremium } from '../../src/lib/premium';
@@ -37,26 +37,32 @@ function BreathingPlayer({
     if (audioOn && !finished) speak(phase.label);
   }, [phaseIndex, cycle, audioOn]);
 
+  // Décompte pur : l'updater ne fait que décrémenter. Enchaîner les phases *à
+  // l'intérieur* d'un updater (comme avant) viole le contrat de pureté de React,
+  // qui se réserve le droit de rejouer l'updater — le minuteur sautait alors une
+  // phase sur deux dès que StrictMode était actif.
   useEffect(() => {
     if (finished) return;
-    const timer = setInterval(() => {
-      setSecondsLeft((s) => {
-        if (s > 1) return s - 1;
-        const nextPhaseIndex = (phaseIndex + 1) % content.phases.length;
-        if (nextPhaseIndex === 0) {
-          const nextCycle = cycle + 1;
-          if (nextCycle >= content.cycles) {
-            setFinished(true);
-            return 0;
-          }
-          setCycle(nextCycle);
-        }
-        setPhaseIndex(nextPhaseIndex);
-        return content.phases[nextPhaseIndex].seconds;
-      });
-    }, 1000);
+    const timer = setInterval(() => setSecondsLeft((s) => (s > 0 ? s - 1 : 0)), 1000);
     return () => clearInterval(timer);
-  }, [phaseIndex, cycle, finished]);
+  }, [finished]);
+
+  // Transition de phase, hors updater. useLayoutEffect plutôt que useEffect pour
+  // que le « 0 » intermédiaire ne soit jamais peint.
+  useLayoutEffect(() => {
+    if (finished || secondsLeft > 0) return;
+
+    const nextPhaseIndex = (phaseIndex + 1) % content.phases.length;
+    if (nextPhaseIndex === 0) {
+      if (cycle + 1 >= content.cycles) {
+        setFinished(true);
+        return;
+      }
+      setCycle(cycle + 1);
+    }
+    setPhaseIndex(nextPhaseIndex);
+    setSecondsLeft(content.phases[nextPhaseIndex].seconds);
+  }, [secondsLeft, phaseIndex, cycle, finished, content]);
 
   if (finished) {
     return (
@@ -155,7 +161,7 @@ export default function WellbeingSessionScreen() {
   const { slug } = useLocalSearchParams<{ slug: string }>();
   const session = useAuthStore((s) => s.session);
   const queryClient = useQueryClient();
-  const { isPremium } = usePremium();
+  const { isPremium, isLoading: premiumLoading } = usePremium();
   const [completed, setCompleted] = useState(false);
   const [audioOn, setAudioOn] = useState(true);
 
@@ -194,6 +200,16 @@ export default function WellbeingSessionScreen() {
     return (
       <View className="flex-1 items-center justify-center bg-paper px-8">
         <Text className="font-body text-sm text-ink-soft">Séance introuvable.</Text>
+      </View>
+    );
+  }
+
+  // On attend la réponse de RevenueCat avant de décider : sinon un abonné verrait
+  // l'écran de verrouillage pendant la résolution de son abonnement.
+  if (program.premium_only && premiumLoading) {
+    return (
+      <View className="flex-1 items-center justify-center bg-paper px-8">
+        <ActivityIndicator color="#FF6B57" />
       </View>
     );
   }

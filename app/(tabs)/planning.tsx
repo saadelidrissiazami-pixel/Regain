@@ -17,10 +17,8 @@ import {
   markActivityUndone,
   type PlannedActivityRow,
 } from '../../src/lib/planning';
-import { getWeekStart } from '../../src/lib/week';
+import { useWeekStart } from '../../src/lib/useToday';
 import { useAuthStore } from '../../src/store/authStore';
-
-const weekStart = getWeekStart();
 
 function firstName(email?: string | null) {
   if (!email) return '';
@@ -74,6 +72,7 @@ function ActivityCard({
 }
 
 export default function PlanningScreen() {
+  const weekStart = useWeekStart();
   const session = useAuthStore((s) => s.session);
   const userId = session?.user.id;
   const queryClient = useQueryClient();

@@ -8,12 +8,11 @@ import { CATEGORY_COLORS, CATEGORY_LABELS } from '../../src/features/planning/ty
 import { formatDayLabel } from '../../src/lib/formatDate';
 import { fetchCompletedActivities, markActivityUndone } from '../../src/lib/planning';
 import { fetchStreak, fetchWeekStats } from '../../src/lib/tracking';
-import { getWeekStart } from '../../src/lib/week';
+import { useWeekStart } from '../../src/lib/useToday';
 import { useAuthStore } from '../../src/store/authStore';
 
-const weekStart = getWeekStart();
-
 export default function TrackingScreen() {
+  const weekStart = useWeekStart();
   const session = useAuthStore((s) => s.session);
   const userId = session?.user.id;
   const queryClient = useQueryClient();

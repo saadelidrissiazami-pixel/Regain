@@ -10,14 +10,12 @@ import { DAYS_OF_WEEK } from '../../src/lib/days';
 import { scheduleActivityReminders } from '../../src/lib/notifications';
 import { generateAndSaveWeekPlan } from '../../src/lib/planning';
 import { formatTimeRange, TIME_OPTIONS, timeSlotFromStartTime } from '../../src/lib/time';
-import { getUpcomingDates } from '../../src/lib/upcomingDates';
-import { getWeekStart } from '../../src/lib/week';
+import { useUpcomingDates, useWeekStart } from '../../src/lib/useToday';
 import { useAuthStore } from '../../src/store/authStore';
 
-const UPCOMING_DATES = getUpcomingDates(14);
-const weekStart = getWeekStart();
-
 export default function AvailabilityScreen() {
+  const upcomingDates = useUpcomingDates(14);
+  const weekStart = useWeekStart();
   const session = useAuthStore((s) => s.session);
   const userId = session?.user.id;
   const queryClient = useQueryClient();
@@ -135,7 +133,7 @@ export default function AvailabilityScreen() {
           <Text className="font-body mb-2.5 text-xs text-ink-soft">Vous pouvez en choisir plusieurs à la fois.</Text>
           <ScrollView horizontal showsHorizontalScrollIndicator={false} className="mb-4">
             <View className="flex-row">
-              {UPCOMING_DATES.map((d) => (
+              {upcomingDates.map((d) => (
                 <Chip
                   key={d.value}
                   label={d.label}
@@ -210,7 +208,7 @@ export default function AvailabilityScreen() {
       {slotsQuery.data?.map((slot) => {
         const when = slot.is_recurring
           ? DAYS_OF_WEEK.find((d) => d.value === slot.day_of_week)?.label
-          : UPCOMING_DATES.find((d) => d.value === slot.specific_date)?.label ?? slot.specific_date;
+          : upcomingDates.find((d) => d.value === slot.specific_date)?.label ?? slot.specific_date;
         return (
           <View
             key={slot.id}

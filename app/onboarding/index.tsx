@@ -17,7 +17,13 @@ export default function OnboardingScreen() {
   const queryClient = useQueryClient();
   const [serverError, setServerError] = useState<string | null>(null);
 
-  const { control, handleSubmit, watch, setValue } = useForm<OnboardingFormValues>({
+  const {
+    control,
+    handleSubmit,
+    watch,
+    setValue,
+    formState: { errors },
+  } = useForm<OnboardingFormValues>({
     resolver: zodResolver(onboardingSchema),
     defaultValues: {
       primaryGoals: [],
@@ -57,7 +63,7 @@ export default function OnboardingScreen() {
       <Text className="font-display mb-2.5 text-sm text-ink">
         Quels sont vos objectifs ?
       </Text>
-      <View className="mb-7 flex-row flex-wrap">
+      <View className="mb-1 flex-row flex-wrap">
         {GOAL_OPTIONS.map((goal) => (
           <Chip
             key={goal.value}
@@ -67,6 +73,11 @@ export default function OnboardingScreen() {
           />
         ))}
       </View>
+      {errors.primaryGoals ? (
+        <Text className="font-body mb-6 text-xs text-red-700">{errors.primaryGoals.message}</Text>
+      ) : (
+        <View className="mb-6" />
+      )}
 
       <Text className="font-display mb-2.5 text-sm text-ink">
         Quel est votre budget pour vos activités ?

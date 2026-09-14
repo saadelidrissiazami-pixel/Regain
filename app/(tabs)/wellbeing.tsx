@@ -24,7 +24,9 @@ const FEATURED_SLUG = 'detachement-regard-autres';
 export default function WellbeingScreen() {
   const session = useAuthStore((s) => s.session);
   const userId = session?.user.id;
-  const { isPremium } = usePremium();
+  // Tant que l'entitlement n'est pas résolu, usePremium renvoie false : verrouiller
+  // sur cette valeur enverrait un abonné au paywall le temps du chargement.
+  const { isPremium, isLoading: premiumLoading } = usePremium();
 
   const programsQuery = useQuery({ queryKey: ['wellbeingPrograms'], queryFn: fetchPrograms });
   const completedQuery = useQuery({
@@ -100,23 +102,36 @@ export default function WellbeingScreen() {
 
           {byCategory.get(category)!.map((program) => {
             const done = completedQuery.data?.has(program.id);
-            const locked = program.premium_only && !isPremium;
+            const checking = program.premium_only && premiumLoading;
+            const locked = program.premium_only && !premiumLoading && !isPremium;
+
+            const row = (
+              <Pressable
+                disabled={checking}
+                className="mb-2.5 flex-row items-center rounded-2xl border border-line bg-surface p-4 shadow-sm"
+              >
+                <View className="mr-3 h-10 w-10 items-center justify-center rounded-full bg-calm-soft">
+                  <Text className="font-display text-xs text-calm">{program.duration_minutes}′</Text>
+                </View>
+                <View className="flex-1">
+                  <Text className="font-label text-base text-ink">{program.title}</Text>
+                  <Text className="font-body mt-0.5 text-xs text-ink-soft">{program.duration_minutes} min</Text>
+                </View>
+                {checking ? (
+                  <ActivityIndicator size="small" color="#1E9C86" />
+                ) : locked ? (
+                  <Text className="font-body text-lg">🔒</Text>
+                ) : done ? (
+                  <Text className="font-body text-lg">✅</Text>
+                ) : null}
+              </Pressable>
+            );
+
+            if (checking) return <View key={program.id}>{row}</View>;
+
             return (
               <Link key={program.id} href={locked ? '/paywall' : `/wellbeing/${program.slug}`} asChild>
-                <Pressable className="mb-2.5 flex-row items-center rounded-2xl border border-line bg-surface p-4 shadow-sm">
-                  <View className="mr-3 h-10 w-10 items-center justify-center rounded-full bg-calm-soft">
-                    <Text className="font-display text-xs text-calm">
-                      {program.duration_minutes}′
-                    </Text>
-                  </View>
-                  <View className="flex-1">
-                    <Text className="font-label text-base text-ink">
-                      {program.title}
-                    </Text>
-                    <Text className="font-body mt-0.5 text-xs text-ink-soft">{program.duration_minutes} min</Text>
-                  </View>
-                  {locked ? <Text className="font-body text-lg">🔒</Text> : done ? <Text className="font-body text-lg">✅</Text> : null}
-                </Pressable>
+                {row}
               </Link>
             );
           })}
