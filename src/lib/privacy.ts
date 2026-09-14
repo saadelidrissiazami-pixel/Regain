@@ -1,4 +1,4 @@
-import { Share } from 'react-native';
+import { Platform, Share } from 'react-native';
 
 import { readFunctionError } from './functionError';
 import { supabase } from './supabase';
@@ -43,12 +43,28 @@ export async function buildDataExport(userId: string, email: string | null): Pro
   };
 }
 
+// Sur le web, react-native-web rejette Share.share si navigator.share n'existe pas
+// (tous les navigateurs de bureau) : on télécharge le fichier à la place, ce qui est
+// de toute façon plus pratique pour un export de données.
+function downloadOnWeb(json: string, filename: string) {
+  const url = URL.createObjectURL(new Blob([json], { type: 'application/json' }));
+  const link = document.createElement('a');
+  link.href = url;
+  link.download = filename;
+  link.click();
+  URL.revokeObjectURL(url);
+}
+
 export async function shareDataExport(userId: string, email: string | null) {
   const payload = await buildDataExport(userId, email);
-  await Share.share({
-    title: 'Mes données Regain',
-    message: JSON.stringify(payload, null, 2),
-  });
+  const json = JSON.stringify(payload, null, 2);
+
+  if (Platform.OS === 'web') {
+    downloadOnWeb(json, `regain-donnees-${payload.exported_at.slice(0, 10)}.json`);
+    return;
+  }
+
+  await Share.share({ title: 'Mes données Regain', message: json });
 }
 
 // RGPD art. 17 (effacement). Passe par une Edge Function : supprimer une ligne de

@@ -51,23 +51,21 @@ export default function ProfileScreen() {
   // Confirmation en deux temps : Alert.alert n'est pas implémenté par
   // react-native-web, et une suppression de compte est irréversible.
   const [confirmingDelete, setConfirmingDelete] = useState(false);
-  const deleteMutation = useMutation({
-    mutationFn: deleteAccount,
-    onSuccess: async () => {
-      await supabase.auth.signOut();
-      queryClient.clear();
-      router.replace('/');
-    },
-  });
-
-  const handleSignOut = async () => {
-    await supabase.auth.signOut();
-    // Rien du compte précédent ne doit survivre à la déconnexion sur un appareil
-    // partagé : cache des requêtes, identité RevenueCat, rappels d'activités.
+  // Rien du compte précédent ne doit survivre sur un appareil partagé : cache des
+  // requêtes, identité RevenueCat, rappels d'activités programmés.
+  const endSession = async () => {
+    // Après une suppression de compte le jeton n'est plus valide : signOut peut
+    // échouer, ce n'est pas une raison d'interrompre le nettoyage local.
+    await supabase.auth.signOut().catch(() => {});
     queryClient.clear();
     await Promise.all([logOutPurchases().catch(() => {}), cancelActivityReminders().catch(() => {})]);
     router.replace('/');
   };
+
+  const deleteMutation = useMutation({
+    mutationFn: deleteAccount,
+    onSuccess: () => endSession(),
+  });
 
   return (
     <ScrollView className="flex-1 bg-paper px-5 pt-16" contentContainerStyle={{ paddingBottom: 40 }}>
@@ -190,7 +188,7 @@ export default function ProfileScreen() {
       </View>
 
       <Pressable
-        onPress={handleSignOut}
+        onPress={endSession}
         className="mt-2 items-center rounded-full border border-line bg-surface px-4 py-3.5"
       >
         <Text className="font-label text-ink">
