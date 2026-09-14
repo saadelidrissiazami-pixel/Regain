@@ -19,12 +19,22 @@ export async function fetchCoachHistory(userId: string): Promise<CoachMessage[]>
 }
 
 export async function sendCoachMessage(message: string): Promise<string> {
-  const { data, error } = await supabase.functions.invoke('coach', { body: { message } });
+  const { data, error } = await supabase.functions.invoke<{ reply?: string }>('coach', {
+    body: { message },
+  });
+
+  // invoke() renvoie une error pour tout statut non-2xx : une panne serveur, un quota atteint
+  // ou une fonction non déployée arrivent tous ici. On lit le message réel de la fonction
+  // plutôt que de supposer qu'elle n'est pas configurée.
   if (error) {
-    throw new Error(
-      "Le coach IA n'est pas encore configuré côté serveur (fonction non déployée ou clé API manquante)."
-    );
+    const response = (error as { context?: Response }).context;
+    if (response?.status === 404) {
+      throw new Error("Le coach IA n'est pas encore déployé côté serveur.");
+    }
+    const body = await response?.json().catch(() => null);
+    throw new Error(body?.error ?? 'Le coach est momentanément indisponible. Réessayez dans un instant.');
   }
-  if (data?.error) throw new Error(data.error);
-  return data.reply as string;
+
+  if (!data?.reply) throw new Error("Le coach n'a pas renvoyé de réponse.");
+  return data.reply;
 }

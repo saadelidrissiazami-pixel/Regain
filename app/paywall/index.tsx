@@ -2,7 +2,8 @@ import { useQuery, useQueryClient } from '@tanstack/react-query';
 import { LinearGradient } from 'expo-linear-gradient';
 import { router } from 'expo-router';
 import { useState } from 'react';
-import { ActivityIndicator, Pressable, ScrollView, View } from 'react-native';
+import { ActivityIndicator, Linking, Pressable, ScrollView, View } from 'react-native';
+import { PRIVACY_URL, SUBSCRIPTION_DISCLOSURE, TERMS_URL, hasLegalUrls } from '../../src/config/legal';
 import { Text } from '../../src/components/typography';
 import { isPurchasesConfigured, fetchOfferings, purchasePackage, restorePurchases } from '../../src/lib/purchases';
 
@@ -116,6 +117,28 @@ export default function PaywallScreen() {
       )}
 
       {error ? <Text className="mt-3 text-xs text-red-700">{error}</Text> : null}
+
+      <Text className="mt-6 text-[11px] leading-4 text-ink-soft">{SUBSCRIPTION_DISCLOSURE}</Text>
+
+      {hasLegalUrls ? (
+        <View className="mt-3 flex-row">
+          <Pressable onPress={() => Linking.openURL(TERMS_URL)} className="mr-4">
+            <Text style={{ fontFamily: 'Nunito_700Bold' }} className="text-xs text-ink-soft underline">
+              Conditions d'utilisation
+            </Text>
+          </Pressable>
+          <Pressable onPress={() => Linking.openURL(PRIVACY_URL)}>
+            <Text style={{ fontFamily: 'Nunito_700Bold' }} className="text-xs text-ink-soft underline">
+              Politique de confidentialité
+            </Text>
+          </Pressable>
+        </View>
+      ) : (
+        <Text className="mt-3 text-[11px] text-accent">
+          ⚠️ EXPO_PUBLIC_TERMS_URL et EXPO_PUBLIC_PRIVACY_URL ne sont pas renseignées : ces liens sont
+          obligatoires pour passer la validation App Store.
+        </Text>
+      )}
     </ScrollView>
   );
 }

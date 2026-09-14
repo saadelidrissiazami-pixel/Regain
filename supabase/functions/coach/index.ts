@@ -9,6 +9,11 @@ const corsHeaders = {
   'Access-Control-Allow-Headers': 'authorization, x-client-info, apikey, content-type',
 };
 
+// Garde-fous : sans eux, n'importe quel compte authentifié peut faire tourner la facture
+// Anthropic du projet (messages géants, en boucle).
+const MAX_MESSAGE_LENGTH = 2000;
+const MAX_MESSAGES_PER_HOUR = 30;
+
 const SYSTEM_PROMPT = `Tu es le coach personnel de Regain, une application qui aide des personnes en reconstruction de routine (post-burnout, changement de vie) à mieux utiliser leur temps libre, en alternative au temps passif (réseaux sociaux, streaming).
 
 Règles :
@@ -18,80 +23,103 @@ Règles :
 - Tu n'es pas un professionnel de santé et tu ne poses pas de diagnostic. Si la personne évoque une détresse sérieuse, encourage-la doucement à en parler à un professionnel.
 - Tu peux suggérer d'ajuster le planning, mais tu ne peux pas le modifier toi-même pour l'instant.`;
 
+function jsonResponse(body: unknown, status: number) {
+  return new Response(JSON.stringify(body), {
+    status,
+    headers: { ...corsHeaders, 'content-type': 'application/json' },
+  });
+}
+
 Deno.serve(async (req) => {
   if (req.method === 'OPTIONS') return new Response('ok', { headers: corsHeaders });
 
+  const authHeader = req.headers.get('Authorization');
+  if (!authHeader) return jsonResponse({ error: 'Non authentifié' }, 401);
+
+  // Client authentifié uniquement : coach_messages et user_preferences sont déjà lisibles
+  // par leur propriétaire via RLS, la service_role n'a rien à faire ici (moindre privilège).
+  const supabase = createClient(Deno.env.get('SUPABASE_URL')!, Deno.env.get('SUPABASE_ANON_KEY')!, {
+    global: { headers: { Authorization: authHeader } },
+  });
+
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
+  if (!user) return jsonResponse({ error: 'Non authentifié' }, 401);
+
+  let message: unknown;
   try {
-    const authHeader = req.headers.get('Authorization');
-    if (!authHeader) throw new Error('Non authentifié');
-
-    const supabase = createClient(Deno.env.get('SUPABASE_URL')!, Deno.env.get('SUPABASE_ANON_KEY')!, {
-      global: { headers: { Authorization: authHeader } },
-    });
-    const {
-      data: { user },
-    } = await supabase.auth.getUser();
-    if (!user) throw new Error('Non authentifié');
-
-    const { message } = await req.json();
-    if (!message || typeof message !== 'string') throw new Error('Message manquant');
-
-    const admin = createClient(Deno.env.get('SUPABASE_URL')!, Deno.env.get('SUPABASE_SERVICE_ROLE_KEY')!);
-
-    const [{ data: prefs }, { data: history }] = await Promise.all([
-      admin
-        .from('user_preferences')
-        .select('primary_goals, budget_level')
-        .eq('user_id', user.id)
-        .maybeSingle(),
-      admin
-        .from('coach_messages')
-        .select('role, content')
-        .eq('user_id', user.id)
-        .order('created_at', { ascending: false })
-        .limit(10),
-    ]);
-
-    const context = prefs
-      ? `Objectifs de l'utilisateur : ${(prefs.primary_goals ?? []).join(', ') || 'non renseignés'}. Budget : ${prefs.budget_level ?? 'non renseigné'}.`
-      : "Contexte utilisateur non disponible.";
-
-    const conversation = (history ?? []).reverse();
-
-    const anthropicRes = await fetch('https://api.anthropic.com/v1/messages', {
-      method: 'POST',
-      headers: {
-        'content-type': 'application/json',
-        'x-api-key': Deno.env.get('ANTHROPIC_API_KEY')!,
-        'anthropic-version': '2023-06-01',
-      },
-      body: JSON.stringify({
-        model: 'claude-sonnet-5',
-        max_tokens: 400,
-        system: `${SYSTEM_PROMPT}\n\n${context}`,
-        messages: [...conversation.map((m) => ({ role: m.role, content: m.content })), { role: 'user', content: message }],
-      }),
-    });
-
-    if (!anthropicRes.ok) {
-      const errText = await anthropicRes.text();
-      throw new Error(`Erreur IA (${anthropicRes.status}): ${errText.slice(0, 200)}`);
-    }
-    const anthropicBody = await anthropicRes.json();
-    const reply = anthropicBody.content?.[0]?.text ?? "Désolé, je n'ai pas de réponse à proposer là.";
-
-    await admin.from('coach_messages').insert([
-      { user_id: user.id, role: 'user', content: message },
-      { user_id: user.id, role: 'assistant', content: reply },
-    ]);
-
-    return new Response(JSON.stringify({ reply }), {
-      headers: { ...corsHeaders, 'content-type': 'application/json' },
-    });
-  } catch (err) {
-    return new Response(JSON.stringify({ error: (err as Error).message }), {
-      status: 400,
-      headers: { ...corsHeaders, 'content-type': 'application/json' },
-    });
+    ({ message } = await req.json());
+  } catch {
+    return jsonResponse({ error: 'Requête invalide' }, 400);
   }
+
+  if (typeof message !== 'string' || message.trim().length === 0) {
+    return jsonResponse({ error: 'Message manquant' }, 400);
+  }
+  if (message.length > MAX_MESSAGE_LENGTH) {
+    return jsonResponse({ error: `Message trop long (${MAX_MESSAGE_LENGTH} caractères maximum).` }, 400);
+  }
+
+  const oneHourAgo = new Date(Date.now() - 60 * 60 * 1000).toISOString();
+  const { count: recentCount } = await supabase
+    .from('coach_messages')
+    .select('id', { count: 'exact', head: true })
+    .eq('user_id', user.id)
+    .eq('role', 'user')
+    .gte('created_at', oneHourAgo);
+
+  if ((recentCount ?? 0) >= MAX_MESSAGES_PER_HOUR) {
+    return jsonResponse({ error: 'Trop de messages sur la dernière heure. Réessayez un peu plus tard.' }, 429);
+  }
+
+  const [{ data: prefs }, { data: history }] = await Promise.all([
+    supabase.from('user_preferences').select('primary_goals, budget_level').eq('user_id', user.id).maybeSingle(),
+    supabase
+      .from('coach_messages')
+      .select('role, content')
+      .eq('user_id', user.id)
+      .order('created_at', { ascending: false })
+      .limit(10),
+  ]);
+
+  const context = prefs
+    ? `Objectifs de l'utilisateur : ${(prefs.primary_goals ?? []).join(', ') || 'non renseignés'}. Budget : ${prefs.budget_level ?? 'non renseigné'}.`
+    : 'Contexte utilisateur non disponible.';
+
+  const conversation = (history ?? []).reverse();
+
+  const anthropicRes = await fetch('https://api.anthropic.com/v1/messages', {
+    method: 'POST',
+    headers: {
+      'content-type': 'application/json',
+      'x-api-key': Deno.env.get('ANTHROPIC_API_KEY')!,
+      'anthropic-version': '2023-06-01',
+    },
+    body: JSON.stringify({
+      model: 'claude-sonnet-5',
+      max_tokens: 400,
+      system: `${SYSTEM_PROMPT}\n\n${context}`,
+      messages: [
+        ...conversation.map((m) => ({ role: m.role, content: m.content })),
+        { role: 'user', content: message },
+      ],
+    }),
+  });
+
+  if (!anthropicRes.ok) {
+    // Les détails du fournisseur restent dans les logs de la fonction, pas chez le client.
+    console.error('Anthropic error', anthropicRes.status, (await anthropicRes.text()).slice(0, 500));
+    return jsonResponse({ error: 'Le coach est momentanément indisponible. Réessayez dans un instant.' }, 502);
+  }
+
+  const anthropicBody = await anthropicRes.json();
+  const reply = anthropicBody.content?.[0]?.text ?? "Désolé, je n'ai pas de réponse à proposer là.";
+
+  await supabase.from('coach_messages').insert([
+    { user_id: user.id, role: 'user', content: message },
+    { user_id: user.id, role: 'assistant', content: reply },
+  ]);
+
+  return jsonResponse({ reply }, 200);
 });

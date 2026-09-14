@@ -6,13 +6,12 @@ import {
   Platform,
   Pressable,
   ScrollView,
-  Text,
-  TextInput,
   View,
 } from 'react-native';
 
-import { fetchCoachHistory, sendCoachMessage, type CoachMessage } from '../../src/lib/coach';
-import { useAuthStore } from '../../src/store/authStore';
+import { Text, TextInput } from '../src/components/typography';
+import { fetchCoachHistory, sendCoachMessage, type CoachMessage } from '../src/lib/coach';
+import { useAuthStore } from '../src/store/authStore';
 
 function Bubble({ message }: { message: Pick<CoachMessage, 'role' | 'content'> }) {
   const isUser = message.role === 'user';

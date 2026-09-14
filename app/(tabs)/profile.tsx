@@ -1,7 +1,9 @@
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { Link, router } from 'expo-router';
-import { Pressable, ScrollView, Switch, View } from 'react-native';
+import { useState } from 'react';
+import { ActivityIndicator, Pressable, ScrollView, Switch, View } from 'react-native';
 import { Text } from '../../src/components/typography';
+import { deleteAccount, exportUserData } from '../../src/lib/gdpr';
 import { areRemindersEnabled, disableDailyReminder, enableDailyReminder, scheduleActivityReminders } from '../../src/lib/notifications';
 import { usePremium } from '../../src/lib/premium';
 import { logOutPurchases } from '../../src/lib/purchases';
@@ -34,6 +36,20 @@ export default function ProfileScreen() {
       return next;
     },
     onSuccess: () => queryClient.invalidateQueries({ queryKey: ['remindersEnabled'] }),
+  });
+
+  const [confirmingDelete, setConfirmingDelete] = useState(false);
+
+  const exportMutation = useMutation({
+    mutationFn: () => exportUserData(session!.user.id),
+  });
+
+  const deleteMutation = useMutation({
+    mutationFn: deleteAccount,
+    onSuccess: () => {
+      queryClient.clear();
+      router.replace('/');
+    },
   });
 
   const handleSignOut = async () => {
@@ -109,8 +125,61 @@ export default function ProfileScreen() {
           Confidentialité
         </Text>
         <Text className="mt-1 text-sm text-ink-soft">
-          Exporter mes données · Supprimer mon compte · Gérer mes consentements
+          Notifications et localisation restent facultatives : elles ne s'activent que si vous les autorisez, et
+          se coupent depuis le réglage ci-dessus ou les réglages de votre appareil.
         </Text>
+
+        <Pressable
+          onPress={() => exportMutation.mutate()}
+          disabled={exportMutation.isPending}
+          className="mt-3 items-center rounded-full border border-line bg-paper px-4 py-3"
+        >
+          {exportMutation.isPending ? (
+            <ActivityIndicator size="small" color="#FF6B57" />
+          ) : (
+            <Text style={{ fontFamily: 'Nunito_700Bold' }} className="text-sm text-ink">
+              Exporter mes données
+            </Text>
+          )}
+        </Pressable>
+        {exportMutation.isError ? (
+          <Text className="mt-2 text-xs text-red-700">{(exportMutation.error as Error).message}</Text>
+        ) : null}
+
+        {confirmingDelete ? (
+          <View className="mt-3 rounded-2xl border border-line bg-paper p-3">
+            <Text className="text-sm text-ink">
+              Supprimer définitivement votre compte et toutes vos données ? Cette action est irréversible.
+            </Text>
+            <View className="mt-3 flex-row">
+              <Pressable
+                onPress={() => deleteMutation.mutate()}
+                disabled={deleteMutation.isPending}
+                className="mr-3 rounded-full bg-red-700 px-4 py-2.5"
+              >
+                {deleteMutation.isPending ? (
+                  <ActivityIndicator size="small" color="#FFFFFF" />
+                ) : (
+                  <Text style={{ fontFamily: 'Nunito_800ExtraBold' }} className="text-sm text-white">
+                    Supprimer définitivement
+                  </Text>
+                )}
+              </Pressable>
+              <Pressable onPress={() => setConfirmingDelete(false)} className="justify-center px-2">
+                <Text className="text-sm text-ink-soft">Annuler</Text>
+              </Pressable>
+            </View>
+            {deleteMutation.isError ? (
+              <Text className="mt-2 text-xs text-red-700">{(deleteMutation.error as Error).message}</Text>
+            ) : null}
+          </View>
+        ) : (
+          <Pressable onPress={() => setConfirmingDelete(true)} className="mt-2 items-center px-4 py-3">
+            <Text style={{ fontFamily: 'Nunito_700Bold' }} className="text-sm text-accent">
+              Supprimer mon compte
+            </Text>
+          </Pressable>
+        )}
       </View>
 
       <Pressable
