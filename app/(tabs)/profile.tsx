@@ -1,6 +1,7 @@
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { Link, router } from 'expo-router';
-import { Pressable, ScrollView, Switch, Text, View } from 'react-native';
+import { useState } from 'react';
+import { ActivityIndicator, Pressable, ScrollView, Switch, Text, View } from 'react-native';
 
 import {
   areRemindersEnabled,
@@ -10,6 +11,7 @@ import {
   scheduleActivityReminders,
 } from '../../src/lib/notifications';
 import { usePremium } from '../../src/lib/premium';
+import { deleteAccount, shareDataExport } from '../../src/lib/privacy';
 import { fetchWeekPlan } from '../../src/lib/planning';
 import { logOutPurchases } from '../../src/lib/purchases';
 import { supabase } from '../../src/lib/supabase';
@@ -40,6 +42,22 @@ export default function ProfileScreen() {
       return next;
     },
     onSuccess: () => queryClient.invalidateQueries({ queryKey: ['remindersEnabled'] }),
+  });
+
+  const exportMutation = useMutation({
+    mutationFn: () => shareDataExport(session!.user.id, session?.user.email ?? null),
+  });
+
+  // Confirmation en deux temps : Alert.alert n'est pas implémenté par
+  // react-native-web, et une suppression de compte est irréversible.
+  const [confirmingDelete, setConfirmingDelete] = useState(false);
+  const deleteMutation = useMutation({
+    mutationFn: deleteAccount,
+    onSuccess: async () => {
+      await supabase.auth.signOut();
+      queryClient.clear();
+      router.replace('/');
+    },
   });
 
   const handleSignOut = async () => {
@@ -114,9 +132,61 @@ export default function ProfileScreen() {
         <Text className="font-label text-[11px] uppercase tracking-wide text-primary">
           Confidentialité
         </Text>
-        <Text className="font-body mt-1 text-sm text-ink-soft">
-          Exporter mes données · Supprimer mon compte · Gérer mes consentements
-        </Text>
+
+        <Pressable
+          onPress={() => exportMutation.mutate()}
+          disabled={exportMutation.isPending || !session?.user.id}
+          className="mt-3 flex-row items-center justify-between"
+        >
+          <View className="flex-1 pr-3">
+            <Text className="font-label text-sm text-ink">Exporter mes données</Text>
+            <Text className="font-body mt-0.5 text-xs text-ink-soft">
+              Tout ce que Regain conserve sur vous, au format JSON.
+            </Text>
+          </View>
+          {exportMutation.isPending ? (
+            <ActivityIndicator size="small" color="#FF6B57" />
+          ) : (
+            <Text className="font-body text-base text-primary">→</Text>
+          )}
+        </Pressable>
+        {exportMutation.isError ? (
+          <Text className="font-body mt-1 text-xs text-red-700">{(exportMutation.error as Error).message}</Text>
+        ) : null}
+
+        <View className="my-3 h-px bg-line" />
+
+        {confirmingDelete ? (
+          <>
+            <Text className="font-label text-sm text-ink">Supprimer définitivement mon compte ?</Text>
+            <Text className="font-body mt-0.5 text-xs text-ink-soft">
+              Votre planning, votre historique et vos préférences seront effacés. C'est irréversible.
+            </Text>
+            <View className="mt-3 flex-row items-center">
+              <Pressable
+                onPress={() => deleteMutation.mutate()}
+                disabled={deleteMutation.isPending}
+                className="mr-4 rounded-full bg-red-700 px-4 py-2"
+              >
+                {deleteMutation.isPending ? (
+                  <ActivityIndicator size="small" color="#FFFFFF" />
+                ) : (
+                  <Text className="font-label text-sm text-white">Oui, supprimer</Text>
+                )}
+              </Pressable>
+              <Pressable onPress={() => setConfirmingDelete(false)} disabled={deleteMutation.isPending}>
+                <Text className="font-body text-sm text-ink-soft">Annuler</Text>
+              </Pressable>
+            </View>
+          </>
+        ) : (
+          <Pressable onPress={() => { deleteMutation.reset(); setConfirmingDelete(true); }}>
+            <Text className="font-label text-sm text-accent">Supprimer mon compte</Text>
+          </Pressable>
+        )}
+        {deleteMutation.isError ? (
+          <Text className="font-body mt-2 text-xs text-red-700">{(deleteMutation.error as Error).message}</Text>
+        ) : null}
       </View>
 
       <Pressable

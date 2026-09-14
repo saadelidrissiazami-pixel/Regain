@@ -2,9 +2,16 @@ import { useQuery, useQueryClient } from '@tanstack/react-query';
 import { LinearGradient } from 'expo-linear-gradient';
 import { router } from 'expo-router';
 import { useState } from 'react';
-import { ActivityIndicator, Pressable, ScrollView, Text, View } from 'react-native';
+import { ActivityIndicator, Linking, Pressable, ScrollView, Text, View } from 'react-native';
 
 import { isPurchasesConfigured, fetchOfferings, purchasePackage, restorePurchases } from '../../src/lib/purchases';
+
+// Apple (App Store Review 3.1.2) et Google exigent que l'écran d'abonnement affiche
+// un lien vers les CGU et la politique de confidentialité, ainsi que la mention du
+// renouvellement automatique. Renseignez ces deux URL dans .env avant soumission.
+const TERMS_URL = process.env.EXPO_PUBLIC_TERMS_URL;
+const PRIVACY_URL = process.env.EXPO_PUBLIC_PRIVACY_URL;
+const hasLegalLinks = !!(TERMS_URL && PRIVACY_URL);
 
 const BENEFITS = [
   { icon: '🎯', text: 'Personnalisation avancée du planning' },
@@ -120,6 +127,30 @@ export default function PaywallScreen() {
       )}
 
       {error ? <Text className="font-body mt-3 text-xs text-red-700">{error}</Text> : null}
+
+      {isPurchasesConfigured ? (
+        <View className="mt-6">
+          <Text className="font-body text-[11px] leading-4 text-ink-soft">
+            L'abonnement est renouvelé automatiquement à la fin de chaque période, sauf résiliation au moins
+            24 h avant l'échéance depuis les réglages de votre compte App Store ou Google Play.
+          </Text>
+          {hasLegalLinks ? (
+            <View className="mt-2 flex-row">
+              <Pressable onPress={() => Linking.openURL(TERMS_URL!)} className="mr-4">
+                <Text className="font-label text-[11px] text-primary">Conditions d'utilisation</Text>
+              </Pressable>
+              <Pressable onPress={() => Linking.openURL(PRIVACY_URL!)}>
+                <Text className="font-label text-[11px] text-primary">Politique de confidentialité</Text>
+              </Pressable>
+            </View>
+          ) : (
+            <Text className="font-body mt-2 text-[11px] leading-4 text-red-700">
+              EXPO_PUBLIC_TERMS_URL et EXPO_PUBLIC_PRIVACY_URL ne sont pas renseignées dans .env — l'app
+              sera refusée à la revue App Store tant que ces liens sont absents.
+            </Text>
+          )}
+        </View>
+      ) : null}
     </ScrollView>
   );
 }

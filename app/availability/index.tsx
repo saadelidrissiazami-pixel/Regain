@@ -27,6 +27,9 @@ export default function AvailabilityScreen() {
   const [endTime, setEndTime] = useState('19:00');
   const [label, setLabel] = useState('');
   const [formError, setFormError] = useState<string | null>(null);
+  // Confirmation en deux temps plutôt qu'Alert.alert, qui n'est pas implémenté
+  // par react-native-web et rendrait la suppression impossible dans l'aperçu.
+  const [confirmingDeleteId, setConfirmingDeleteId] = useState<string | null>(null);
 
   const slotsQuery = useQuery({
     queryKey: ['availability', userId],
@@ -66,6 +69,14 @@ export default function AvailabilityScreen() {
       queryClient.setQueryData(['weekPlan', userId, weekStart], data);
       scheduleActivityReminders(data).catch(() => {});
       router.push('/(tabs)/planning');
+    },
+  });
+
+  const deleteMutation = useMutation({
+    mutationFn: (id: string) => deleteAvailabilitySlot(id),
+    onSuccess: () => {
+      setConfirmingDeleteId(null);
+      queryClient.invalidateQueries({ queryKey: ['availability', userId] });
     },
   });
 
@@ -221,14 +232,36 @@ export default function AvailabilityScreen() {
               </Text>
               {slot.label ? <Text className="font-body mt-0.5 text-xs text-ink-soft">{slot.label}</Text> : null}
             </View>
-            <Pressable onPress={() => deleteAvailabilitySlot(slot.id).then(() => queryClient.invalidateQueries({ queryKey: ['availability', userId] }))}>
-              <Text className="font-label text-sm text-accent">
-                Supprimer
-              </Text>
-            </Pressable>
+            {deleteMutation.isPending && deleteMutation.variables === slot.id ? (
+              <ActivityIndicator size="small" color="#FF6B57" />
+            ) : confirmingDeleteId === slot.id ? (
+              <View className="flex-row items-center">
+                <Pressable onPress={() => deleteMutation.mutate(slot.id)} className="mr-3">
+                  <Text className="font-label text-sm text-accent">Confirmer</Text>
+                </Pressable>
+                <Pressable onPress={() => setConfirmingDeleteId(null)}>
+                  <Text className="font-body text-sm text-ink-soft">Annuler</Text>
+                </Pressable>
+              </View>
+            ) : (
+              <Pressable
+                onPress={() => {
+                  deleteMutation.reset();
+                  setConfirmingDeleteId(slot.id);
+                }}
+              >
+                <Text className="font-label text-sm text-accent">Supprimer</Text>
+              </Pressable>
+            )}
           </View>
         );
       })}
+
+      {deleteMutation.isError ? (
+        <Text className="font-body mb-2 text-xs text-red-700">
+          Suppression impossible : {(deleteMutation.error as Error).message}
+        </Text>
+      ) : null}
 
       {(slotsQuery.data?.length ?? 0) > 0 ? (
         <>

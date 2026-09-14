@@ -1,3 +1,4 @@
+import { readFunctionError } from './functionError';
 import { supabase } from './supabase';
 
 export type CoachMessage = {
@@ -21,8 +22,10 @@ export async function fetchCoachHistory(userId: string): Promise<CoachMessage[]>
 export async function sendCoachMessage(message: string): Promise<string> {
   const { data, error } = await supabase.functions.invoke('coach', { body: { message } });
   if (error) {
+    const serverMessage = await readFunctionError(error);
     throw new Error(
-      "Le coach IA n'est pas encore configuré côté serveur (fonction non déployée ou clé API manquante)."
+      serverMessage ??
+        "Le coach IA n'est pas joignable (fonction non déployée ou clé API manquante côté serveur)."
     );
   }
   if (data?.error) throw new Error(data.error);

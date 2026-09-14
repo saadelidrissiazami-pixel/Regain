@@ -21,8 +21,7 @@ grant select on
   public.wellbeing_programs
 to anon, authenticated;
 
-alter default privileges in schema public
-  grant select, insert, update, delete on tables to authenticated;
-
-alter default privileges in schema public
-  grant select on tables to anon;
+-- NOTE : ces privilèges par défaut sur les futures tables ont été révoqués en
+-- 0015 — ils ouvraient automatiquement toute nouvelle table de `public`, y
+-- compris une table où l'on aurait oublié `enable row level security`. Chaque
+-- table doit désormais recevoir ses GRANT explicitement, comme ci-dessus.

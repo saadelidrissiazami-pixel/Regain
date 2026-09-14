@@ -2,6 +2,11 @@
 -- 3 activités par catégorie, taguées par objectif (voir src/features/onboarding/options.ts)
 -- pour permettre au moteur de règles de matcher énergie / budget / objectifs.
 
+-- Le titre identifie l'activité : sans cette contrainte, réappliquer ce fichier
+-- (le README demande de les coller à la main dans le SQL Editor) dupliquait tout
+-- le catalogue.
+create unique index if not exists activities_catalog_title_key on public.activities_catalog (title);
+
 insert into public.activities_catalog (title, category, duration_minutes, energy_required, indoor_outdoor, cost_level, tags) values
 -- physique
 ('Marche rapide 30 min', 'physique', 30, 'moyen', 'outdoor', 'gratuit', array['plus_mouvement','plus_energie','reduire_ecrans']),
@@ -38,4 +43,5 @@ insert into public.activities_catalog (title, category, duration_minutes, energy
 -- temps_libre
 ('Activité créative libre (dessin, musique...)', 'temps_libre', 45, 'moyen', 'indoor', 'gratuit', array['reduire_ecrans','confiance_en_soi']),
 ('Explorer un nouveau quartier', 'temps_libre', 60, 'moyen', 'outdoor', 'gratuit', array['reduire_ecrans','plus_social']),
-('Temps libre sans objectif', 'temps_libre', 30, 'bas', 'indifferent', 'gratuit', array['routine_stable']);
+('Temps libre sans objectif', 'temps_libre', 30, 'bas', 'indifferent', 'gratuit', array['routine_stable'])
+on conflict (title) do nothing;

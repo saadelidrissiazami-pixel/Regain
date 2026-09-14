@@ -9,6 +9,12 @@ const corsHeaders = {
   'Access-Control-Allow-Headers': 'authorization, x-client-info, apikey, content-type',
 };
 
+// Garde-fous de coût : l'API Anthropic est facturée à l'usage et cette fonction est
+// appelable par n'importe quel compte authentifié.
+const MAX_MESSAGE_CHARS = 2000;
+const RATE_LIMIT_MESSAGES = 30;
+const RATE_LIMIT_WINDOW_MINUTES = 60;
+
 const SYSTEM_PROMPT = `Tu es le coach personnel de Regain, une application qui aide des personnes en reconstruction de routine (post-burnout, changement de vie) à mieux utiliser leur temps libre, en alternative au temps passif (réseaux sociaux, streaming).
 
 Règles :
@@ -35,16 +41,31 @@ Deno.serve(async (req) => {
 
     const { message } = await req.json();
     if (!message || typeof message !== 'string') throw new Error('Message manquant');
+    if (message.length > MAX_MESSAGE_CHARS) {
+      throw new Error(`Message trop long (${MAX_MESSAGE_CHARS} caractères maximum).`);
+    }
 
-    const admin = createClient(Deno.env.get('SUPABASE_URL')!, Deno.env.get('SUPABASE_SERVICE_ROLE_KEY')!);
+    // Le client authentifié suffit : les policies RLS de user_preferences et
+    // coach_messages limitent déjà chaque utilisateur à ses propres lignes. Pas
+    // besoin de la clé service_role, qui les contournerait toutes.
+    const since = new Date(Date.now() - RATE_LIMIT_WINDOW_MINUTES * 60_000).toISOString();
+    const { count: recentCount } = await supabase
+      .from('coach_messages')
+      .select('id', { count: 'exact', head: true })
+      .eq('role', 'user')
+      .gte('created_at', since);
+
+    if ((recentCount ?? 0) >= RATE_LIMIT_MESSAGES) {
+      throw new Error('Vous avez atteint la limite de messages pour cette heure. Réessayez un peu plus tard.');
+    }
 
     const [{ data: prefs }, { data: history }] = await Promise.all([
-      admin
+      supabase
         .from('user_preferences')
         .select('primary_goals, budget_level')
         .eq('user_id', user.id)
         .maybeSingle(),
-      admin
+      supabase
         .from('coach_messages')
         .select('role, content')
         .eq('user_id', user.id)
@@ -74,13 +95,15 @@ Deno.serve(async (req) => {
     });
 
     if (!anthropicRes.ok) {
-      const errText = await anthropicRes.text();
-      throw new Error(`Erreur IA (${anthropicRes.status}): ${errText.slice(0, 200)}`);
+      // Le détail de l'erreur amont reste côté serveur : il peut contenir des
+      // informations sur la configuration du compte Anthropic.
+      console.error('Anthropic error', anthropicRes.status, (await anthropicRes.text()).slice(0, 500));
+      throw new Error("Le coach n'a pas pu répondre pour le moment. Réessayez dans un instant.");
     }
     const anthropicBody = await anthropicRes.json();
     const reply = anthropicBody.content?.[0]?.text ?? "Désolé, je n'ai pas de réponse à proposer là.";
 
-    await admin.from('coach_messages').insert([
+    await supabase.from('coach_messages').insert([
       { user_id: user.id, role: 'user', content: message },
       { user_id: user.id, role: 'assistant', content: reply },
     ]);
