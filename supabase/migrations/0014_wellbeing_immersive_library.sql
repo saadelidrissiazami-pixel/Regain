@@ -24,4 +24,5 @@ insert into public.wellbeing_programs (title, category, session_count, premium_o
 ('La sortie de 3 minutes', 'En public', 1, false, 'public-sortie-3-minutes', 3),
 ('Le mode observateur', 'En public', 1, false, 'public-mode-observateur', 4),
 ('Le bouton pause', 'En public', 1, false, 'public-bouton-pause', 4),
-('Le kit d''urgence 2 minutes', 'En public', 1, false, 'public-kit-urgence', 2);
+('Le kit d''urgence 2 minutes', 'En public', 1, false, 'public-kit-urgence', 2)
+on conflict (slug) do nothing;

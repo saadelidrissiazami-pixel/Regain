@@ -28,4 +28,5 @@ insert into public.wellbeing_programs (title, category, session_count, premium_o
 ('Scan corporel complet', 'Sommeil', 1, false, 'sommeil-scan-corporel', 6),
 
 ('Ancrage rapide', 'En public', 1, false, 'public-ancrage-rapide', 1),
-('Respirer dans la foule', 'En public', 1, false, 'public-respirer-foule', 4);
+('Respirer dans la foule', 'En public', 1, false, 'public-respirer-foule', 4)
+on conflict (slug) do nothing;

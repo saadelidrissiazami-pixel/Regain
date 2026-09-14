@@ -13,11 +13,6 @@ export async function fetchAvailabilitySlots(userId: string): Promise<Availabili
   return data;
 }
 
-export async function createAvailabilitySlot(userId: string, slot: NewAvailabilitySlot) {
-  const { error } = await supabase.from('availability_slots').insert({ user_id: userId, ...slot });
-  if (error) throw error;
-}
-
 export async function createAvailabilitySlots(userId: string, slots: NewAvailabilitySlot[]) {
   const { error } = await supabase
     .from('availability_slots')
