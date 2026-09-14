@@ -1,6 +1,6 @@
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { Link } from 'expo-router';
-import { useCallback, useState } from 'react';
+import { useState } from 'react';
 import { ActivityIndicator, Pressable, RefreshControl, ScrollView, Text, View } from 'react-native';
 
 import { CategoryBadge } from '../../src/components/CategoryBadge';
@@ -118,11 +118,11 @@ export default function PlanningScreen() {
   const allDone = (planQuery.data?.length ?? 0) > 0 && activeItems.length === 0;
 
   const [refreshing, setRefreshing] = useState(false);
-  const onRefresh = useCallback(async () => {
+  const onRefresh = async () => {
     setRefreshing(true);
     await Promise.all([availabilityQuery.refetch(), planQuery.refetch()]);
     setRefreshing(false);
-  }, [availabilityQuery.refetch, planQuery.refetch]);
+  };
 
   return (
     <ScrollView

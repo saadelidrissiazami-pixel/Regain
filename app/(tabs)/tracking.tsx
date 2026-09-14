@@ -1,5 +1,5 @@
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
-import { useCallback, useState } from 'react';
+import { useState } from 'react';
 import { ActivityIndicator, Pressable, RefreshControl, ScrollView, Text, View } from 'react-native';
 
 import { CategoryBadge } from '../../src/components/CategoryBadge';
@@ -53,11 +53,11 @@ export default function TrackingScreen() {
   const maxMinutes = Math.max(1, ...categoryEntries.map(([, minutes]) => minutes));
 
   const [refreshing, setRefreshing] = useState(false);
-  const onRefresh = useCallback(async () => {
+  const onRefresh = async () => {
     setRefreshing(true);
     await Promise.all([statsQuery.refetch(), streakQuery.refetch(), historyQuery.refetch()]);
     setRefreshing(false);
-  }, [statsQuery.refetch, streakQuery.refetch, historyQuery.refetch]);
+  };
 
   return (
     <ScrollView

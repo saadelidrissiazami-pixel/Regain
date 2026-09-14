@@ -20,8 +20,6 @@ export default function OnboardingScreen() {
   const {
     control,
     handleSubmit,
-    watch,
-    setValue,
     formState: { errors },
   } = useForm<OnboardingFormValues>({
     resolver: zodResolver(onboardingSchema),
@@ -31,8 +29,6 @@ export default function OnboardingScreen() {
       energyBySlot: { matin: 'moyen', apres_midi: 'moyen', soir: 'moyen' },
     },
   });
-
-  const selectedGoals = watch('primaryGoals');
 
   const mutation = useMutation({
     mutationFn: (values: OnboardingFormValues) => {
@@ -46,11 +42,6 @@ export default function OnboardingScreen() {
     onError: (e: Error) => setServerError(e.message),
   });
 
-  const toggleGoal = (value: string) => {
-    const current = selectedGoals ?? [];
-    setValue('primaryGoals', current.includes(value) ? current.filter((g) => g !== value) : [...current, value]);
-  };
-
   return (
     <ScrollView className="flex-1 bg-paper px-6 pt-16" contentContainerStyle={{ paddingBottom: 60 }}>
       <Text className="font-label mb-1 text-sm text-primary">
@@ -63,16 +54,28 @@ export default function OnboardingScreen() {
       <Text className="font-display mb-2.5 text-sm text-ink">
         Quels sont vos objectifs ?
       </Text>
-      <View className="mb-1 flex-row flex-wrap">
-        {GOAL_OPTIONS.map((goal) => (
-          <Chip
-            key={goal.value}
-            label={goal.label}
-            selected={(selectedGoals ?? []).includes(goal.value)}
-            onPress={() => toggleGoal(goal.value)}
-          />
-        ))}
-      </View>
+      <Controller
+        control={control}
+        name="primaryGoals"
+        render={({ field: { value, onChange } }) => (
+          <View className="mb-1 flex-row flex-wrap">
+            {GOAL_OPTIONS.map((goal) => (
+              <Chip
+                key={goal.value}
+                label={goal.label}
+                selected={value.includes(goal.value)}
+                onPress={() =>
+                  onChange(
+                    value.includes(goal.value)
+                      ? value.filter((selected) => selected !== goal.value)
+                      : [...value, goal.value]
+                  )
+                }
+              />
+            ))}
+          </View>
+        )}
+      />
       {errors.primaryGoals ? (
         <Text className="font-body mb-6 text-xs text-red-700">{errors.primaryGoals.message}</Text>
       ) : (

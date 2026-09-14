@@ -1,7 +1,7 @@
 import { useQuery } from '@tanstack/react-query';
 import { LinearGradient } from 'expo-linear-gradient';
 import { Link } from 'expo-router';
-import { useCallback, useState } from 'react';
+import { useState } from 'react';
 import { ActivityIndicator, Pressable, RefreshControl, ScrollView, Text, View } from 'react-native';
 
 import { usePremium } from '../../src/lib/premium';
@@ -52,11 +52,11 @@ export default function WellbeingScreen() {
   );
 
   const [refreshing, setRefreshing] = useState(false);
-  const onRefresh = useCallback(async () => {
+  const onRefresh = async () => {
     setRefreshing(true);
     await Promise.all([programsQuery.refetch(), completedQuery.refetch()]);
     setRefreshing(false);
-  }, [programsQuery.refetch, completedQuery.refetch]);
+  };
 
   return (
     <ScrollView

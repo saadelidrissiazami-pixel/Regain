@@ -2,7 +2,7 @@ import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { LinearGradient } from 'expo-linear-gradient';
 import { router, useLocalSearchParams } from 'expo-router';
 import * as Speech from 'expo-speech';
-import { useEffect, useLayoutEffect, useRef, useState } from 'react';
+import { useEffect, useState } from 'react';
 import { ActivityIndicator, Animated, Pressable, Text, View } from 'react-native';
 
 import { CONTENT_BY_SLUG } from '../../src/features/wellbeing/content';
@@ -10,6 +10,21 @@ import { usePremium } from '../../src/lib/premium';
 import { speakGently as speak } from '../../src/lib/voice';
 import { fetchPrograms, markProgramCompleted } from '../../src/lib/wellbeing';
 import { useAuthStore } from '../../src/store/authStore';
+
+// Position dans le cycle -> phase courante et secondes restantes. Tout l'état du
+// lecteur se déduit d'un unique compteur de secondes écoulées : pas de machine à
+// états à maintenir, donc pas d'enchaînement de setState à orchestrer.
+function resolvePhase(phases: { label: string; seconds: number }[], withinCycle: number) {
+  let offset = 0;
+  for (let index = 0; index < phases.length; index++) {
+    if (withinCycle < offset + phases[index].seconds) {
+      return { index, secondsLeft: phases[index].seconds - (withinCycle - offset) };
+    }
+    offset += phases[index].seconds;
+  }
+  const last = phases.length - 1;
+  return { index: last, secondsLeft: phases[last].seconds };
+}
 
 function BreathingPlayer({
   content,
@@ -20,49 +35,33 @@ function BreathingPlayer({
   onDone: () => void;
   audioOn: boolean;
 }) {
-  const [cycle, setCycle] = useState(0);
-  const [phaseIndex, setPhaseIndex] = useState(0);
-  const [secondsLeft, setSecondsLeft] = useState(content.phases[0].seconds);
-  const [finished, setFinished] = useState(false);
-  const scale = useRef(new Animated.Value(1)).current;
+  const [elapsed, setElapsed] = useState(0);
+  // useState plutôt que useRef : la valeur animée est lue pendant le rendu.
+  const [scale] = useState(() => new Animated.Value(1));
 
+  const cycleSeconds = content.phases.reduce((total, phase) => total + phase.seconds, 0);
+  const totalSeconds = cycleSeconds * content.cycles;
+  const finished = elapsed >= totalSeconds;
+
+  const cycle = finished ? content.cycles - 1 : Math.floor(elapsed / cycleSeconds);
+  const { index: phaseIndex, secondsLeft } = resolvePhase(content.phases, finished ? 0 : elapsed % cycleSeconds);
   const phase = content.phases[phaseIndex];
 
   useEffect(() => {
-    const target = phase.label.startsWith('Inspirez') ? 1.4 : phase.label.startsWith('Expirez') ? 1 : 1.4;
-    Animated.timing(scale, { toValue: target, duration: phase.seconds * 1000, useNativeDriver: true }).start();
-  }, [phaseIndex, cycle]);
-
-  useEffect(() => {
-    if (audioOn && !finished) speak(phase.label);
-  }, [phaseIndex, cycle, audioOn]);
-
-  // Décompte pur : l'updater ne fait que décrémenter. Enchaîner les phases *à
-  // l'intérieur* d'un updater (comme avant) viole le contrat de pureté de React,
-  // qui se réserve le droit de rejouer l'updater — le minuteur sautait alors une
-  // phase sur deux dès que StrictMode était actif.
-  useEffect(() => {
     if (finished) return;
-    const timer = setInterval(() => setSecondsLeft((s) => (s > 0 ? s - 1 : 0)), 1000);
+    const timer = setInterval(() => setElapsed((seconds) => seconds + 1), 1000);
     return () => clearInterval(timer);
   }, [finished]);
 
-  // Transition de phase, hors updater. useLayoutEffect plutôt que useEffect pour
-  // que le « 0 » intermédiaire ne soit jamais peint.
-  useLayoutEffect(() => {
-    if (finished || secondsLeft > 0) return;
+  useEffect(() => {
+    if (finished) return;
+    const target = phase.label.startsWith('Expirez') ? 1 : 1.4;
+    Animated.timing(scale, { toValue: target, duration: phase.seconds * 1000, useNativeDriver: true }).start();
+  }, [phaseIndex, cycle, finished, phase.label, phase.seconds, scale]);
 
-    const nextPhaseIndex = (phaseIndex + 1) % content.phases.length;
-    if (nextPhaseIndex === 0) {
-      if (cycle + 1 >= content.cycles) {
-        setFinished(true);
-        return;
-      }
-      setCycle(cycle + 1);
-    }
-    setPhaseIndex(nextPhaseIndex);
-    setSecondsLeft(content.phases[nextPhaseIndex].seconds);
-  }, [secondsLeft, phaseIndex, cycle, finished, content]);
+  useEffect(() => {
+    if (audioOn && !finished) speak(phase.label);
+  }, [phaseIndex, cycle, audioOn, finished, phase.label]);
 
   if (finished) {
     return (
@@ -122,7 +121,7 @@ function GuidedPlayer({
     return () => {
       if (audioOn) Speech.stop();
     };
-  }, [index, audioOn]);
+  }, [index, audioOn, paragraphs]);
 
   return (
     <View className="flex-1 justify-between px-8 pb-10">
