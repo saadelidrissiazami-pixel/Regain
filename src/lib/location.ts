@@ -113,3 +113,112 @@ export function generateWalkingLoop(start: Coords, totalMinutes: number): Walkin
 
   return legs;
 }
+
+// Les rues allongent un trajet d'environ 25 % par rapport au carré tracé à vol d'oiseau.
+const STREET_DETOUR_FACTOR = 1.25;
+
+/** Points de passage d'une boucle (départ → 3 coins → départ), à router ensuite sur les rues. */
+export function generateLoopWaypoints(start: Coords, totalMinutes: number): Coords[] {
+  const sideM = Math.max(120, (totalMinutes * WALKING_SPEED_M_PER_MIN) / (4 * STREET_DETOUR_FACTOR));
+  const firstBearing = Math.floor(Math.random() * 4) * 90;
+
+  const points = [start];
+  let current = start;
+  for (let i = 0; i < 3; i++) {
+    current = destinationPoint(current, (firstBearing + i * 90) % 360, sideM);
+    points.push(current);
+  }
+  points.push(start);
+  return points;
+}
+
+export type RouteStep = { instruction: string; distanceM: number };
+
+export type WalkingRoute = {
+  path: Coords[];
+  distanceM: number;
+  durationS: number;
+  steps: RouteStep[];
+};
+
+type OsrmStep = {
+  name: string;
+  distance: number;
+  maneuver: { type: string; modifier?: string };
+};
+
+type OsrmResponse = {
+  code: string;
+  routes?: {
+    distance: number;
+    duration: number;
+    geometry: { coordinates: [number, number][] };
+    legs: { steps: OsrmStep[] }[];
+  }[];
+};
+
+// Serveur OSRM piéton de FOSSGIS (données OpenStreetMap) : gratuit et sans clé, mais limité à
+// 1 requête/s et à un usage modéré. À remplacer par un service dédié (instance OSRM/Valhalla
+// auto-hébergée, ou fournisseur payant) avant un lancement public. L'attribution OpenStreetMap
+// et un lien de signalement d'erreur sont obligatoires là où l'itinéraire est affiché.
+const OSRM_FOOT_URL = 'https://routing.openstreetmap.de/routed-foot/route/v1/foot';
+
+const DIRECTION_LABELS: Record<string, string> = {
+  left: 'à gauche',
+  right: 'à droite',
+  'slight left': 'légèrement à gauche',
+  'slight right': 'légèrement à droite',
+  'sharp left': 'franchement à gauche',
+  'sharp right': 'franchement à droite',
+  straight: 'tout droit',
+};
+
+function describeStep(step: OsrmStep): string {
+  const { type, modifier } = step.maneuver;
+  const street = step.name ? ` sur ${step.name}` : '';
+
+  if (type === 'depart') return `Partez${street}`;
+  if (type === 'arrive') return 'Vous êtes de retour à votre point de départ';
+  if (modifier === 'uturn') return `Faites demi-tour${street}`;
+  if (type === 'roundabout' || type === 'rotary') return `Prenez le rond-point${street}`;
+
+  const direction = modifier ? DIRECTION_LABELS[modifier] : undefined;
+  if (!direction || direction === 'tout droit') return `Continuez tout droit${street}`;
+  return `Tournez ${direction}${street}`;
+}
+
+const MIN_STEP_METERS = 15;
+
+export async function fetchWalkingRoute(waypoints: Coords[]): Promise<WalkingRoute> {
+  const coordinates = waypoints.map((p) => `${p.longitude.toFixed(6)},${p.latitude.toFixed(6)}`).join(';');
+  const response = await fetch(`${OSRM_FOOT_URL}/${coordinates}?overview=full&geometries=geojson&steps=true`, {
+    headers: { Accept: 'application/json', 'User-Agent': 'Regain/1.0 (application mobile bien-etre)' },
+  });
+  if (!response.ok) throw new Error('Itinéraire indisponible');
+
+  const data: OsrmResponse = await response.json();
+  const route = data.routes?.[0];
+  if (data.code !== 'Ok' || !route) throw new Error('Itinéraire introuvable');
+
+  // Chaque étape intermédiaire de la boucle renvoie son propre « départ / arrivée » : on ne garde
+  // que le tout premier départ et la toute dernière arrivée, et on écarte les micro-segments.
+  const steps: RouteStep[] = [];
+  route.legs.forEach((leg, legIndex) => {
+    const isFirstLeg = legIndex === 0;
+    const isLastLeg = legIndex === route.legs.length - 1;
+    for (const step of leg.steps) {
+      const type = step.maneuver.type;
+      if (type === 'depart' && !isFirstLeg) continue;
+      if (type === 'arrive' && !isLastLeg) continue;
+      if (type !== 'depart' && type !== 'arrive' && step.distance < MIN_STEP_METERS) continue;
+      steps.push({ instruction: describeStep(step), distanceM: step.distance });
+    }
+  });
+
+  return {
+    path: route.geometry.coordinates.map(([longitude, latitude]) => ({ latitude, longitude })),
+    distanceM: route.distance,
+    durationS: route.duration,
+    steps,
+  };
+}
