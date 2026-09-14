@@ -11,7 +11,7 @@ import { router, Stack } from 'expo-router';
 import * as SplashScreen from 'expo-splash-screen';
 import { StatusBar } from 'expo-status-bar';
 import { useEffect } from 'react';
-import { Platform, Text, TextInput } from 'react-native';
+import { Platform } from 'react-native';
 import { SafeAreaProvider } from 'react-native-safe-area-context';
 
 import { queryClient } from '../src/lib/queryClient';
@@ -19,14 +19,6 @@ import { initPurchases } from '../src/lib/purchases';
 import { useAuthStore } from '../src/store/authStore';
 
 SplashScreen.preventAutoHideAsync().catch(() => {});
-
-// Applique Nunito comme police par défaut à tous les <Text>/<TextInput> sans
-// avoir à répéter une className sur chaque composant de l'app.
-const defaultTextStyle = { fontFamily: 'Nunito_400Regular' };
-// @ts-expect-error — patch global de defaultProps, technique standard RN pour une police par défaut
-Text.defaultProps = { ...(Text.defaultProps ?? {}), style: [defaultTextStyle, Text.defaultProps?.style] };
-// @ts-expect-error
-TextInput.defaultProps = { ...(TextInput.defaultProps ?? {}), style: [defaultTextStyle, TextInput.defaultProps?.style] };
 
 export default function RootLayout() {
   const init = useAuthStore((s) => s.init);

@@ -1,8 +1,8 @@
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { Link } from 'expo-router';
 import { useCallback, useState } from 'react';
-import { ActivityIndicator, Pressable, RefreshControl, ScrollView, Text, View } from 'react-native';
-
+import { ActivityIndicator, Pressable, RefreshControl, ScrollView, View } from 'react-native';
+import { Text } from '../../src/components/typography';
 import { CategoryBadge } from '../../src/components/CategoryBadge';
 import { EnergyCheckin } from '../../src/components/EnergyCheckin';
 import { ENERGY_SLOTS } from '../../src/features/onboarding/options';
@@ -17,10 +17,9 @@ import {
   markActivityUndone,
   type PlannedActivityRow,
 } from '../../src/lib/planning';
-import { getWeekStart } from '../../src/lib/week';
+import { useWeekStart } from '../../src/lib/useCurrentDate';
 import { useAuthStore } from '../../src/store/authStore';
 
-const weekStart = getWeekStart();
 
 function firstName(email?: string | null) {
   if (!email) return '';
@@ -78,6 +77,7 @@ export default function PlanningScreen() {
   const session = useAuthStore((s) => s.session);
   const userId = session?.user.id;
   const queryClient = useQueryClient();
+  const weekStart = useWeekStart();
 
   const availabilityQuery = useQuery({
     queryKey: ['availability', userId],

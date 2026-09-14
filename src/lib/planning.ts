@@ -54,12 +54,19 @@ export async function fetchWeekPlan(userId: string, weekStart: string): Promise<
 }
 
 export async function generateAndSaveWeekPlan(userId: string, weekStart = getWeekStart()) {
-  const [availability, catalog, prefs, categoryAffinity] = await Promise.all([
+  const [availability, catalog, prefs, categoryAffinity, existing] = await Promise.all([
     fetchAvailabilitySlots(userId),
     fetchCatalog(),
     fetchPreferences(userId),
     fetchCategoryAffinity(userId),
+    fetchWeekPlan(userId, weekStart),
   ]);
+
+  // Ce qui a déjà été fait n'est jamais effacé ni remplacé par une régénération :
+  // ces activités gardent leur créneau, qui devient indisponible pour la génération.
+  const keptItems = existing
+    .filter((item) => item.status === 'realise')
+    .map((item) => ({ date: item.date, timeSlot: item.time_slot, activity: item.activities_catalog }));
 
   const items = generateWeeklyPlan({
     availability: availability as AvailabilitySlot[],
@@ -69,22 +76,19 @@ export async function generateAndSaveWeekPlan(userId: string, weekStart = getWee
     budgetLevel: prefs.budget_level ?? 'modere',
     weekStart,
     categoryAffinity,
+    keptItems,
   });
 
-  await supabase.from('planned_activities').delete().eq('user_id', userId).eq('week_start_date', weekStart);
-
-  if (items.length === 0) return [];
-
-  const { error } = await supabase.from('planned_activities').insert(
-    items.map((item) => ({
-      user_id: userId,
+  // Suppression des anciennes propositions + insertion des nouvelles dans une seule
+  // transaction Postgres, pour ne jamais laisser l'utilisateur sans planning.
+  const { error } = await supabase.rpc('replace_week_plan', {
+    p_week_start: weekStart,
+    p_items: items.map((item) => ({
       activity_id: item.activity.id,
-      week_start_date: weekStart,
       date: item.date,
       time_slot: item.timeSlot,
-      status: 'propose',
-    }))
-  );
+    })),
+  });
   if (error) throw error;
 
   return fetchWeekPlan(userId, weekStart);

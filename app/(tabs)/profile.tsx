@@ -1,9 +1,10 @@
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { Link, router } from 'expo-router';
-import { Pressable, ScrollView, Switch, Text, View } from 'react-native';
-
+import { Pressable, ScrollView, Switch, View } from 'react-native';
+import { Text } from '../../src/components/typography';
 import { areRemindersEnabled, disableDailyReminder, enableDailyReminder, scheduleActivityReminders } from '../../src/lib/notifications';
 import { usePremium } from '../../src/lib/premium';
+import { logOutPurchases } from '../../src/lib/purchases';
 import { fetchWeekPlan } from '../../src/lib/planning';
 import { supabase } from '../../src/lib/supabase';
 import { getWeekStart } from '../../src/lib/week';
@@ -37,6 +38,10 @@ export default function ProfileScreen() {
 
   const handleSignOut = async () => {
     await supabase.auth.signOut();
+    // Sans ce nettoyage, les données du compte précédent (catalogue, planning, droits
+    // Premium RevenueCat) restent visibles pour le compte suivant sur le même appareil.
+    await logOutPurchases().catch(() => {});
+    queryClient.clear();
     router.replace('/');
   };
 

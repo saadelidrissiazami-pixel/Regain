@@ -3,8 +3,8 @@ import { LinearGradient } from 'expo-linear-gradient';
 import { router, useLocalSearchParams } from 'expo-router';
 import * as Speech from 'expo-speech';
 import { useEffect, useRef, useState } from 'react';
-import { Animated, Pressable, Text, TextInput, View } from 'react-native';
-
+import { ActivityIndicator, Animated, Pressable, View } from 'react-native';
+import { Text, TextInput } from '../../src/components/typography';
 import { CONTENT_BY_SLUG } from '../../src/features/wellbeing/content';
 import type { GroundingStep } from '../../src/features/wellbeing/types';
 import { usePremium } from '../../src/lib/premium';
@@ -91,26 +91,29 @@ function BreathingPlayer({
     if (stage === 'active' && audioOn) speak(phase.label);
   }, [phaseIndex, cycle, audioOn, stage]);
 
+  // Le tick ne fait que décrémenter : React peut rejouer un updater (StrictMode le fait),
+  // donc il doit rester pur. Le changement de phase vit dans son propre effet.
   useEffect(() => {
     if (stage !== 'active') return;
-    const timer = setInterval(() => {
-      setSecondsLeft((s) => {
-        if (s > 1) return s - 1;
-        const nextPhaseIndex = (phaseIndex + 1) % content.phases.length;
-        if (nextPhaseIndex === 0) {
-          const nextCycle = cycle + 1;
-          if (nextCycle >= content.cycles) {
-            setStage(content.outro?.length ? 'outro' : 'finished');
-            return 0;
-          }
-          setCycle(nextCycle);
-        }
-        setPhaseIndex(nextPhaseIndex);
-        return content.phases[nextPhaseIndex].seconds;
-      });
-    }, 1000);
+    const timer = setInterval(() => setSecondsLeft((s) => Math.max(0, s - 1)), 1000);
     return () => clearInterval(timer);
-  }, [phaseIndex, cycle, stage]);
+  }, [stage]);
+
+  useEffect(() => {
+    if (stage !== 'active' || secondsLeft > 0) return;
+
+    const nextPhaseIndex = (phaseIndex + 1) % content.phases.length;
+    if (nextPhaseIndex === 0) {
+      const nextCycle = cycle + 1;
+      if (nextCycle >= content.cycles) {
+        setStage(content.outro?.length ? 'outro' : 'finished');
+        return;
+      }
+      setCycle(nextCycle);
+    }
+    setPhaseIndex(nextPhaseIndex);
+    setSecondsLeft(content.phases[nextPhaseIndex].seconds);
+  }, [secondsLeft, stage, phaseIndex, cycle]);
 
   if (stage === 'intro') {
     return (
@@ -407,7 +410,7 @@ export default function WellbeingSessionScreen() {
   const { slug } = useLocalSearchParams<{ slug: string }>();
   const session = useAuthStore((s) => s.session);
   const queryClient = useQueryClient();
-  const { isPremium } = usePremium();
+  const { isPremium, isLoading: premiumLoading } = usePremium();
   const [completed, setCompleted] = useState(false);
   const [showNote, setShowNote] = useState(false);
   const [noteDraft, setNoteDraft] = useState('');
@@ -455,6 +458,14 @@ export default function WellbeingSessionScreen() {
     return (
       <View className="flex-1 items-center justify-center bg-paper px-8">
         <Text className="text-sm text-ink-soft">Séance introuvable.</Text>
+      </View>
+    );
+  }
+
+  if (program.premium_only && premiumLoading) {
+    return (
+      <View className="flex-1 items-center justify-center bg-paper px-8">
+        <ActivityIndicator color="#FF6B57" />
       </View>
     );
   }

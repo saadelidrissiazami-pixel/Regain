@@ -32,8 +32,19 @@ export function generateWeeklyPlan(params: {
   budgetLevel: BudgetLevel;
   weekStart: string;
   categoryAffinity?: CategoryAffinity;
+  /** Activités déjà réalisées cette semaine : leur créneau est occupé et ne doit pas être regénéré. */
+  keptItems?: GeneratedItem[];
 }): GeneratedItem[] {
-  const { availability, catalog, primaryGoals, energyBySlot, budgetLevel, weekStart, categoryAffinity = {} } = params;
+  const {
+    availability,
+    catalog,
+    primaryGoals,
+    energyBySlot,
+    budgetLevel,
+    weekStart,
+    categoryAffinity = {},
+    keptItems = [],
+  } = params;
   const weekEnd = getDateForDayOfWeek(weekStart, 6);
 
   const resolvedSlots = availability
@@ -46,9 +57,17 @@ export function generateWeeklyPlan(params: {
 
   const categoryCounts: Record<string, number> = {};
   const usedActivityIds = new Set<string>();
+  const occupiedSlots = new Set<string>();
   const results: GeneratedItem[] = [];
 
+  for (const item of keptItems) {
+    categoryCounts[item.activity.category] = (categoryCounts[item.activity.category] ?? 0) + 1;
+    usedActivityIds.add(item.activity.id);
+    occupiedSlots.add(`${item.date}|${item.timeSlot}`);
+  }
+
   for (const { slot, date } of resolvedSlots) {
+    if (occupiedSlots.has(`${date}|${slot.time_slot}`)) continue;
     const userEnergy = energyBySlot[slot.time_slot] ?? 'moyen';
     const availableMinutes = durationMinutes(slot.start_time, slot.end_time);
 

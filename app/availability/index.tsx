@@ -1,7 +1,8 @@
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { router } from 'expo-router';
 import { useState } from 'react';
-import { ActivityIndicator, Pressable, ScrollView, Text, TextInput, View } from 'react-native';
+import { ActivityIndicator, Pressable, ScrollView, View } from 'react-native';
+import { Text, TextInput } from '../../src/components/typography';
 import { LinearGradient } from 'expo-linear-gradient';
 
 import { Chip } from '../../src/components/Chip';
@@ -10,17 +11,16 @@ import { DAYS_OF_WEEK } from '../../src/lib/days';
 import { scheduleActivityReminders } from '../../src/lib/notifications';
 import { generateAndSaveWeekPlan } from '../../src/lib/planning';
 import { formatTimeRange, TIME_OPTIONS, timeSlotFromStartTime } from '../../src/lib/time';
-import { getUpcomingDates } from '../../src/lib/upcomingDates';
-import { getWeekStart } from '../../src/lib/week';
+import { useUpcomingDates, useWeekStart } from '../../src/lib/useCurrentDate';
 import { useAuthStore } from '../../src/store/authStore';
 
-const UPCOMING_DATES = getUpcomingDates(14);
-const weekStart = getWeekStart();
 
 export default function AvailabilityScreen() {
   const session = useAuthStore((s) => s.session);
   const userId = session?.user.id;
   const queryClient = useQueryClient();
+  const weekStart = useWeekStart();
+  const upcomingDates = useUpcomingDates(14);
 
   const [kind, setKind] = useState<'recurring' | 'specific'>('recurring');
   const [selectedDays, setSelectedDays] = useState<Set<number>>(new Set([0]));
@@ -60,6 +60,16 @@ export default function AvailabilityScreen() {
       queryClient.invalidateQueries({ queryKey: ['availability', userId] });
     },
     onError: (e: Error) => setFormError(e.message),
+  });
+
+  const [pendingDeleteId, setPendingDeleteId] = useState<string | null>(null);
+
+  const deleteMutation = useMutation({
+    mutationFn: (slotId: string) => deleteAvailabilitySlot(slotId),
+    onSuccess: () => {
+      setPendingDeleteId(null);
+      queryClient.invalidateQueries({ queryKey: ['availability', userId] });
+    },
   });
 
   const generateMutation = useMutation({
@@ -135,7 +145,7 @@ export default function AvailabilityScreen() {
           <Text className="mb-2.5 text-xs text-ink-soft">Vous pouvez en choisir plusieurs à la fois.</Text>
           <ScrollView horizontal showsHorizontalScrollIndicator={false} className="mb-4">
             <View className="flex-row">
-              {UPCOMING_DATES.map((d) => (
+              {upcomingDates.map((d) => (
                 <Chip
                   key={d.value}
                   label={d.label}
@@ -203,6 +213,11 @@ export default function AvailabilityScreen() {
       <Text style={{ fontFamily: 'Nunito_800ExtraBold' }} className="mb-3 text-sm text-ink-soft">
         Créneaux enregistrés
       </Text>
+      {deleteMutation.isError ? (
+        <Text className="mb-2 text-xs text-red-700">
+          Suppression impossible : {(deleteMutation.error as Error).message}
+        </Text>
+      ) : null}
       {slotsQuery.isLoading ? <ActivityIndicator color="#FF6B57" /> : null}
       {slotsQuery.data?.length === 0 ? (
         <Text className="text-sm text-ink-soft">Aucun créneau pour l'instant.</Text>
@@ -210,7 +225,7 @@ export default function AvailabilityScreen() {
       {slotsQuery.data?.map((slot) => {
         const when = slot.is_recurring
           ? DAYS_OF_WEEK.find((d) => d.value === slot.day_of_week)?.label
-          : UPCOMING_DATES.find((d) => d.value === slot.specific_date)?.label ?? slot.specific_date;
+          : upcomingDates.find((d) => d.value === slot.specific_date)?.label ?? slot.specific_date;
         return (
           <View
             key={slot.id}
@@ -223,11 +238,26 @@ export default function AvailabilityScreen() {
               </Text>
               {slot.label ? <Text className="mt-0.5 text-xs text-ink-soft">{slot.label}</Text> : null}
             </View>
-            <Pressable onPress={() => deleteAvailabilitySlot(slot.id).then(() => queryClient.invalidateQueries({ queryKey: ['availability', userId] }))}>
-              <Text style={{ fontFamily: 'Nunito_700Bold' }} className="text-sm text-accent">
-                Supprimer
-              </Text>
-            </Pressable>
+            {deleteMutation.isPending && deleteMutation.variables === slot.id ? (
+              <ActivityIndicator size="small" color="#FF6B57" />
+            ) : pendingDeleteId === slot.id ? (
+              <View className="flex-row items-center">
+                <Pressable onPress={() => deleteMutation.mutate(slot.id)} className="mr-3">
+                  <Text style={{ fontFamily: 'Nunito_700Bold' }} className="text-sm text-red-700">
+                    Confirmer
+                  </Text>
+                </Pressable>
+                <Pressable onPress={() => setPendingDeleteId(null)}>
+                  <Text className="text-sm text-ink-soft">Annuler</Text>
+                </Pressable>
+              </View>
+            ) : (
+              <Pressable onPress={() => setPendingDeleteId(slot.id)}>
+                <Text style={{ fontFamily: 'Nunito_700Bold' }} className="text-sm text-accent">
+                  Supprimer
+                </Text>
+              </Pressable>
+            )}
           </View>
         );
       })}

@@ -1,5 +1,5 @@
-import { Text, View } from 'react-native';
-
+import { View } from 'react-native';
+import { Text } from '../typography';
 import { pickBookForGoals } from '../../features/activities/books';
 
 export function BookSuggestionCard({ primaryGoals }: { primaryGoals: string[] }) {

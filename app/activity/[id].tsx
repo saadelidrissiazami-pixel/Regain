@@ -1,7 +1,7 @@
 import { useQuery } from '@tanstack/react-query';
 import { Link, router, useLocalSearchParams } from 'expo-router';
-import { ActivityIndicator, Pressable, ScrollView, Text, View } from 'react-native';
-
+import { ActivityIndicator, Pressable, ScrollView, View } from 'react-native';
+import { Text } from '../../src/components/typography';
 import { BookSuggestionCard } from '../../src/components/activity/BookSuggestionCard';
 import { NeighborhoodHistoryCard } from '../../src/components/activity/NeighborhoodHistoryCard';
 import { WalkingLoopCard } from '../../src/components/activity/WalkingLoopCard';

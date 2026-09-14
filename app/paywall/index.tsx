@@ -1,9 +1,9 @@
-import { useQuery } from '@tanstack/react-query';
+import { useQuery, useQueryClient } from '@tanstack/react-query';
 import { LinearGradient } from 'expo-linear-gradient';
 import { router } from 'expo-router';
 import { useState } from 'react';
-import { ActivityIndicator, Pressable, ScrollView, Text, View } from 'react-native';
-
+import { ActivityIndicator, Pressable, ScrollView, View } from 'react-native';
+import { Text } from '../../src/components/typography';
 import { isPurchasesConfigured, fetchOfferings, purchasePackage, restorePurchases } from '../../src/lib/purchases';
 
 const BENEFITS = [
@@ -16,6 +16,7 @@ const BENEFITS = [
 export default function PaywallScreen() {
   const [purchasing, setPurchasing] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const queryClient = useQueryClient();
 
   const offeringsQuery = useQuery({
     queryKey: ['offerings'],
@@ -28,6 +29,7 @@ export default function PaywallScreen() {
     setPurchasing(true);
     try {
       await purchasePackage(pkg);
+      await queryClient.invalidateQueries({ queryKey: ['premium'] });
       router.back();
     } catch (e) {
       setError((e as Error).message);
@@ -41,6 +43,7 @@ export default function PaywallScreen() {
     setPurchasing(true);
     try {
       await restorePurchases();
+      await queryClient.invalidateQueries({ queryKey: ['premium'] });
       router.back();
     } catch (e) {
       setError((e as Error).message);

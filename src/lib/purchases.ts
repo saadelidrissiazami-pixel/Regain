@@ -9,7 +9,9 @@ const ANDROID_KEY = process.env.EXPO_PUBLIC_REVENUECAT_ANDROID_KEY;
 
 export const isPurchasesConfigured = isSupported && !!(Platform.OS === 'ios' ? IOS_KEY : ANDROID_KEY);
 
-let initialized = false;
+// Identifiant RevenueCat actuellement actif. Sans ce suivi, un second compte connecté sur le
+// même appareil hériterait de l'appUserID — et donc des droits Premium — du compte précédent.
+let configuredUserId: string | null = null;
 
 async function getPurchases() {
   const module = await import('react-native-purchases');
@@ -17,11 +19,23 @@ async function getPurchases() {
 }
 
 export async function initPurchases(userId: string) {
-  if (!isPurchasesConfigured || initialized) return;
+  if (!isPurchasesConfigured || configuredUserId === userId) return;
   const Purchases = await getPurchases();
-  const apiKey = Platform.OS === 'ios' ? IOS_KEY! : ANDROID_KEY!;
-  Purchases.configure({ apiKey, appUserID: userId });
-  initialized = true;
+
+  if (configuredUserId === null) {
+    const apiKey = Platform.OS === 'ios' ? IOS_KEY! : ANDROID_KEY!;
+    Purchases.configure({ apiKey, appUserID: userId });
+  } else {
+    await Purchases.logIn(userId);
+  }
+  configuredUserId = userId;
+}
+
+export async function logOutPurchases() {
+  if (!isPurchasesConfigured || configuredUserId === null) return;
+  const Purchases = await getPurchases();
+  await Purchases.logOut();
+  configuredUserId = null;
 }
 
 export async function fetchOfferings() {

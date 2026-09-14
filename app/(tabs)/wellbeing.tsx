@@ -2,8 +2,8 @@ import { useQuery } from '@tanstack/react-query';
 import { LinearGradient } from 'expo-linear-gradient';
 import { Link } from 'expo-router';
 import { useCallback, useState } from 'react';
-import { ActivityIndicator, Pressable, RefreshControl, ScrollView, Text, View } from 'react-native';
-
+import { ActivityIndicator, Pressable, RefreshControl, ScrollView, View } from 'react-native';
+import { Text } from '../../src/components/typography';
 import { usePremium } from '../../src/lib/premium';
 import { fetchCompletedProgramIds, fetchPrograms } from '../../src/lib/wellbeing';
 import { useAuthStore } from '../../src/store/authStore';
@@ -24,7 +24,9 @@ const FEATURED_SLUG = 'detachement-regard-autres';
 export default function WellbeingScreen() {
   const session = useAuthStore((s) => s.session);
   const userId = session?.user.id;
-  const { isPremium } = usePremium();
+  // Tant que l'entitlement RevenueCat n'est pas résolu, on n'affiche pas de cadenas :
+  // sinon un abonné voit ses séances verrouillées pendant la résolution.
+  const { isPremium, isLoading: premiumLoading } = usePremium();
 
   const programsQuery = useQuery({ queryKey: ['wellbeingPrograms'], queryFn: fetchPrograms });
   const completedQuery = useQuery({
@@ -137,7 +139,7 @@ export default function WellbeingScreen() {
               <View className="px-3 pb-3">
                 {programs.map((program) => {
                   const done = completedQuery.data?.has(program.id);
-                  const locked = program.premium_only && !isPremium;
+                  const locked = program.premium_only && !isPremium && !premiumLoading;
                   return (
                     <Link key={program.id} href={locked ? '/paywall' : `/wellbeing/${program.slug}`} asChild>
                       <Pressable className="mb-2 flex-row items-center rounded-2xl border border-line bg-paper p-4">

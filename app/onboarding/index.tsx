@@ -3,7 +3,8 @@ import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { router } from 'expo-router';
 import { useState } from 'react';
 import { Controller, useForm } from 'react-hook-form';
-import { ActivityIndicator, Pressable, ScrollView, Text, View } from 'react-native';
+import { ActivityIndicator, Pressable, ScrollView, View } from 'react-native';
+import { Text } from '../../src/components/typography';
 import { LinearGradient } from 'expo-linear-gradient';
 
 import { Chip } from '../../src/components/Chip';
@@ -17,7 +18,13 @@ export default function OnboardingScreen() {
   const queryClient = useQueryClient();
   const [serverError, setServerError] = useState<string | null>(null);
 
-  const { control, handleSubmit, watch, setValue } = useForm<OnboardingFormValues>({
+  const {
+    control,
+    handleSubmit,
+    watch,
+    setValue,
+    formState: { errors },
+  } = useForm<OnboardingFormValues>({
     resolver: zodResolver(onboardingSchema),
     defaultValues: {
       primaryGoals: [],
@@ -57,7 +64,7 @@ export default function OnboardingScreen() {
       <Text style={{ fontFamily: 'Nunito_800ExtraBold' }} className="mb-2.5 text-sm text-ink">
         Quels sont vos objectifs ?
       </Text>
-      <View className="mb-7 flex-row flex-wrap">
+      <View className="mb-2 flex-row flex-wrap">
         {GOAL_OPTIONS.map((goal) => (
           <Chip
             key={goal.value}
@@ -67,6 +74,11 @@ export default function OnboardingScreen() {
           />
         ))}
       </View>
+      {errors.primaryGoals ? (
+        <Text className="mb-5 text-xs text-red-700">{errors.primaryGoals.message}</Text>
+      ) : (
+        <View className="mb-5" />
+      )}
 
       <Text style={{ fontFamily: 'Nunito_800ExtraBold' }} className="mb-2.5 text-sm text-ink">
         Quel est votre budget pour vos activités ?

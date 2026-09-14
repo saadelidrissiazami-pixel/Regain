@@ -1,7 +1,7 @@
 import type { ActivityCategory } from '../features/planning/types';
 import { fetchWeekPlan } from './planning';
 import { supabase } from './supabase';
-import { toISODateUTC } from './week';
+import { toLocalISODate } from './week';
 
 export type WeekStats = {
   activeDays: number;
@@ -24,28 +24,36 @@ export async function fetchWeekStats(userId: string, weekStart: string): Promise
   return { activeDays, completedCount: completed.length, totalCount: items.length, minutesByCategory };
 }
 
+const STREAK_LOOKBACK_DAYS = 400;
+
 export async function fetchStreak(userId: string): Promise<number> {
+  const since = new Date();
+  since.setDate(since.getDate() - STREAK_LOOKBACK_DAYS);
+
   const { data, error } = await supabase
     .from('activity_logs')
     .select('completed_at')
     .eq('user_id', userId)
+    .gte('completed_at', since.toISOString())
     .order('completed_at', { ascending: false });
   if (error) throw error;
 
-  const days = new Set(data.map((row) => (row.completed_at as string).slice(0, 10)));
+  // completed_at est un timestamptz : sa date UTC peut désigner la veille pour une activité
+  // cochée en soirée. On compare donc des dates locales des deux côtés.
+  const days = new Set(data.map((row) => toLocalISODate(new Date(row.completed_at as string))));
 
   const cursor = new Date();
-  let cursorDate = toISODateUTC(cursor.getFullYear(), cursor.getMonth(), cursor.getDate());
+  let cursorDate = toLocalISODate(cursor);
   if (!days.has(cursorDate)) {
     cursor.setDate(cursor.getDate() - 1);
-    cursorDate = toISODateUTC(cursor.getFullYear(), cursor.getMonth(), cursor.getDate());
+    cursorDate = toLocalISODate(cursor);
   }
 
   let streak = 0;
   while (days.has(cursorDate)) {
     streak += 1;
     cursor.setDate(cursor.getDate() - 1);
-    cursorDate = toISODateUTC(cursor.getFullYear(), cursor.getMonth(), cursor.getDate());
+    cursorDate = toLocalISODate(cursor);
   }
   return streak;
 }

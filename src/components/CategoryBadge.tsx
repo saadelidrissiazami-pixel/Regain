@@ -1,5 +1,5 @@
-import { Text, View } from 'react-native';
-
+import { View } from 'react-native';
+import { Text } from './typography';
 import { CATEGORY_COLORS, CATEGORY_LABELS, type ActivityCategory } from '../features/planning/types';
 
 export function CategoryBadge({ category, suffix }: { category: ActivityCategory; suffix?: string }) {

@@ -2,8 +2,8 @@ import { useMutation } from '@tanstack/react-query';
 import { LinearGradient } from 'expo-linear-gradient';
 import { Link } from 'expo-router';
 import { useState } from 'react';
-import { ActivityIndicator, Pressable, Text, View } from 'react-native';
-
+import { ActivityIndicator, Pressable, View } from 'react-native';
+import { Text } from './typography';
 import type { EnergyLevel } from '../features/planning/catalog';
 import { ENERGY_LEVELS } from '../features/onboarding/options';
 import { isLowEnergy, LOW_ENERGY_SLUG, randomQuote } from '../features/planning/quotes';
