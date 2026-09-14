@@ -10,10 +10,7 @@ export function Chip({ selected, label, onPress }: ChipProps) {
         selected ? 'border-primary bg-primary' : 'border-line bg-surface'
       }`}
     >
-      <Text
-        style={{ fontFamily: 'Nunito_700Bold' }}
-        className={selected ? 'text-sm text-white' : 'text-sm text-ink'}
-      >
+      <Text className={`font-label text-sm ${selected ? 'text-white' : 'text-ink'}`}>
         {label}
       </Text>
     </Pressable>

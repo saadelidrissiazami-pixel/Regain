@@ -1,6 +1,6 @@
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { Link } from 'expo-router';
-import { useCallback, useState } from 'react';
+import { useState } from 'react';
 import { ActivityIndicator, Pressable, RefreshControl, ScrollView, Text, View } from 'react-native';
 
 import { CategoryBadge } from '../../src/components/CategoryBadge';
@@ -17,10 +17,8 @@ import {
   markActivityUndone,
   type PlannedActivityRow,
 } from '../../src/lib/planning';
-import { getWeekStart } from '../../src/lib/week';
+import { useWeekStart } from '../../src/lib/useToday';
 import { useAuthStore } from '../../src/store/authStore';
-
-const weekStart = getWeekStart();
 
 function firstName(email?: string | null) {
   if (!email) return '';
@@ -51,12 +49,11 @@ function ActivityCard({
             suffix={ENERGY_SLOTS.find((s) => s.key === item.time_slot)?.label}
           />
           <Text
-            style={{ fontFamily: 'Nunito_700Bold' }}
-            className={`mt-2 text-base ${done ? 'text-ink-soft line-through' : 'text-ink'}`}
+            className={`font-label mt-2 text-base ${done ? 'text-ink-soft line-through' : 'text-ink'}`}
           >
             {item.activities_catalog.title}
           </Text>
-          <Text className="mt-0.5 text-xs text-ink-soft">{item.activities_catalog.duration_minutes} min · Voir le détail →</Text>
+          <Text className="font-body mt-0.5 text-xs text-ink-soft">{item.activities_catalog.duration_minutes} min · Voir le détail →</Text>
         </Pressable>
       </Link>
       <Pressable
@@ -67,7 +64,7 @@ function ActivityCard({
         {toggling ? (
           <ActivityIndicator size="small" color={done ? '#FFFFFF' : '#FF6B57'} />
         ) : done ? (
-          <Text className="text-sm text-white">✓</Text>
+          <Text className="font-body text-sm text-white">✓</Text>
         ) : null}
       </Pressable>
     </View>
@@ -75,6 +72,7 @@ function ActivityCard({
 }
 
 export default function PlanningScreen() {
+  const weekStart = useWeekStart();
   const session = useAuthStore((s) => s.session);
   const userId = session?.user.id;
   const queryClient = useQueryClient();
@@ -120,11 +118,11 @@ export default function PlanningScreen() {
   const allDone = (planQuery.data?.length ?? 0) > 0 && activeItems.length === 0;
 
   const [refreshing, setRefreshing] = useState(false);
-  const onRefresh = useCallback(async () => {
+  const onRefresh = async () => {
     setRefreshing(true);
     await Promise.all([availabilityQuery.refetch(), planQuery.refetch()]);
     setRefreshing(false);
-  }, [availabilityQuery.refetch, planQuery.refetch]);
+  };
 
   return (
     <ScrollView
@@ -132,19 +130,19 @@ export default function PlanningScreen() {
       contentContainerStyle={{ paddingBottom: 40 }}
       refreshControl={<RefreshControl refreshing={refreshing} onRefresh={onRefresh} tintColor="#FF6B57" />}
     >
-      <Text style={{ fontFamily: 'Nunito_700Bold' }} className="mb-1 text-sm text-primary">
+      <Text className="font-label mb-1 text-sm text-primary">
         Bonjour {firstName(session?.user.email)} 👋
       </Text>
-      <Text style={{ fontFamily: 'Nunito_800ExtraBold' }} className="mb-6 text-[28px] leading-8 text-ink">
+      <Text className="font-display mb-6 text-[28px] leading-8 text-ink">
         Votre semaine
       </Text>
 
       <Link href="/availability" asChild>
         <Pressable className="mb-3 flex-row items-center justify-between rounded-2xl border border-line bg-surface p-4 shadow-sm">
-          <Text style={{ fontFamily: 'Nunito_700Bold' }} className="text-sm text-ink">
+          <Text className="font-label text-sm text-ink">
             📅 Gérer mes disponibilités
           </Text>
-          <Text className="text-base text-primary">→</Text>
+          <Text className="font-body text-base text-primary">→</Text>
         </Pressable>
       </Link>
 
@@ -152,7 +150,7 @@ export default function PlanningScreen() {
 
       {!availabilityQuery.isLoading && !hasAvailability ? (
         <View className="mb-4 rounded-2xl border border-line bg-surface p-4 shadow-sm">
-          <Text className="text-sm text-ink">
+          <Text className="font-body text-sm text-ink">
             Ajoutez d'abord quelques disponibilités pour que Regain puisse vous proposer un planning.
           </Text>
         </View>
@@ -165,7 +163,7 @@ export default function PlanningScreen() {
           {generateMutation.isPending ? (
             <ActivityIndicator color="#FFFFFF" />
           ) : (
-            <Text style={{ fontFamily: 'Nunito_800ExtraBold' }} className="text-white">
+            <Text className="font-display text-white">
               {(planQuery.data?.length ?? 0) > 0 ? '🔄 Régénérer mon planning' : '✨ Générer mon planning de la semaine'}
             </Text>
           )}
@@ -173,7 +171,7 @@ export default function PlanningScreen() {
       )}
 
       {generateMutation.isError ? (
-        <Text className="mb-4 text-xs text-red-700">{(generateMutation.error as Error).message}</Text>
+        <Text className="font-body mb-4 text-xs text-red-700">{(generateMutation.error as Error).message}</Text>
       ) : null}
 
       {days.length > 0 ? (
@@ -185,17 +183,17 @@ export default function PlanningScreen() {
           {calendarSyncMutation.isPending ? (
             <ActivityIndicator color="#FF6B57" />
           ) : (
-            <Text style={{ fontFamily: 'Nunito_700Bold' }} className="text-ink">
+            <Text className="font-label text-ink">
               📆 Synchroniser avec mon calendrier
             </Text>
           )}
         </Pressable>
       ) : null}
       {calendarSyncMutation.isError ? (
-        <Text className="mb-4 text-xs text-red-700">{(calendarSyncMutation.error as Error).message}</Text>
+        <Text className="font-body mb-4 text-xs text-red-700">{(calendarSyncMutation.error as Error).message}</Text>
       ) : null}
       {calendarSyncMutation.isSuccess ? (
-        <Text className="mb-4 text-xs text-calm">
+        <Text className="font-body mb-4 text-xs text-calm">
           {calendarSyncMutation.data} activité{calendarSyncMutation.data > 1 ? 's' : ''} ajoutée
           {calendarSyncMutation.data > 1 ? 's' : ''} au calendrier « Regain ».
         </Text>
@@ -205,11 +203,11 @@ export default function PlanningScreen() {
 
       {allDone ? (
         <View className="items-center rounded-2xl border border-line bg-surface p-6 shadow-sm">
-          <Text className="mb-2 text-3xl">🎉</Text>
-          <Text style={{ fontFamily: 'Nunito_800ExtraBold' }} className="text-center text-base text-ink">
+          <Text className="font-body mb-2 text-3xl">🎉</Text>
+          <Text className="font-display text-center text-base text-ink">
             Tout est fait pour cette semaine
           </Text>
-          <Text className="mt-1 text-center text-xs text-ink-soft">
+          <Text className="font-body mt-1 text-center text-xs text-ink-soft">
             Retrouvez ce que vous avez accompli dans l'Historique, sur l'onglet Suivi.
           </Text>
         </View>
@@ -219,7 +217,7 @@ export default function PlanningScreen() {
         const items = activeItems.filter((item) => item.date === date);
         return (
           <View key={date} className="mb-5">
-            <Text style={{ fontFamily: 'Nunito_800ExtraBold' }} className="mb-2 text-sm text-ink-soft">
+            <Text className="font-display mb-2 text-sm text-ink-soft">
               {formatDayLabel(date)}
             </Text>
             {items.map((item) => (

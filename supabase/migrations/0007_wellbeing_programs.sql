@@ -9,4 +9,5 @@ insert into public.wellbeing_programs (title, category, session_count, premium_o
 ('Ancrage du matin', 'Méditation', 1, false, 'meditation-matin'),
 ('Clarifier sa journée', 'Journaling', 1, false, 'journaling-clarifier'),
 ('Se rappeler une réussite', 'Confiance en soi', 1, false, 'confiance-reussite'),
-('Relâcher les tensions avant de dormir', 'Sommeil', 1, false, 'sommeil-relacher');
+('Relâcher les tensions avant de dormir', 'Sommeil', 1, false, 'sommeil-relacher')
+on conflict (slug) do nothing;

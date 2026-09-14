@@ -1,5 +1,5 @@
-import type { BudgetLevel, CatalogActivity, EnergyLevel } from '../features/planning/catalog';
-import { generateWeeklyPlan, type EnergyBySlot } from '../features/planning/ruleEngine';
+import type { BudgetLevel, CatalogActivity } from '../features/planning/catalog';
+import { generateWeeklyPlan, slotKey, type EnergyBySlot } from '../features/planning/ruleEngine';
 import type { AvailabilitySlot } from '../features/availability/types';
 import { fetchAvailabilitySlots } from './availability';
 import { fetchCategoryAffinity } from './personalization';
@@ -54,12 +54,19 @@ export async function fetchWeekPlan(userId: string, weekStart: string): Promise<
 }
 
 export async function generateAndSaveWeekPlan(userId: string, weekStart = getWeekStart()) {
-  const [availability, catalog, prefs, categoryAffinity] = await Promise.all([
+  const [availability, catalog, prefs, categoryAffinity, currentPlan] = await Promise.all([
     fetchAvailabilitySlots(userId),
     fetchCatalog(),
     fetchPreferences(userId),
     fetchCategoryAffinity(userId),
+    fetchWeekPlan(userId, weekStart),
   ]);
+
+  // Ce qui est déjà réalisé cette semaine est conservé tel quel : on ne regénère
+  // que les créneaux encore libres, pour ne pas effacer l'historique de la semaine.
+  const occupiedSlots = new Set(
+    currentPlan.filter((row) => row.status === 'realise').map((row) => slotKey(row.date, row.time_slot))
+  );
 
   const items = generateWeeklyPlan({
     availability: availability as AvailabilitySlot[],
@@ -69,22 +76,19 @@ export async function generateAndSaveWeekPlan(userId: string, weekStart = getWee
     budgetLevel: prefs.budget_level ?? 'modere',
     weekStart,
     categoryAffinity,
+    occupiedSlots,
   });
 
-  await supabase.from('planned_activities').delete().eq('user_id', userId).eq('week_start_date', weekStart);
-
-  if (items.length === 0) return [];
-
-  const { error } = await supabase.from('planned_activities').insert(
-    items.map((item) => ({
-      user_id: userId,
+  // Un seul appel transactionnel : soit l'ancien planning est remplacé en entier,
+  // soit rien ne bouge — jamais d'état intermédiaire sans planning du tout.
+  const { error } = await supabase.rpc('replace_week_plan', {
+    p_week_start: weekStart,
+    p_items: items.map((item) => ({
       activity_id: item.activity.id,
-      week_start_date: weekStart,
       date: item.date,
       time_slot: item.timeSlot,
-      status: 'propose',
-    }))
-  );
+    })),
+  });
   if (error) throw error;
 
   return fetchWeekPlan(userId, weekStart);

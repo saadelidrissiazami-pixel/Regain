@@ -6,7 +6,7 @@ export function CategoryBadge({ category, suffix }: { category: ActivityCategory
   const color = CATEGORY_COLORS[category];
   return (
     <View className="flex-row items-center self-start rounded-full px-2.5 py-1" style={{ backgroundColor: color }}>
-      <Text style={{ fontFamily: 'Nunito_700Bold' }} className="text-[11px] uppercase tracking-wide text-white">
+      <Text className="font-label text-[11px] uppercase tracking-wide text-white">
         {CATEGORY_LABELS[category]}
         {suffix ? ` · ${suffix}` : ''}
       </Text>

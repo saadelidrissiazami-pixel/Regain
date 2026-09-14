@@ -10,14 +10,12 @@ import { DAYS_OF_WEEK } from '../../src/lib/days';
 import { scheduleActivityReminders } from '../../src/lib/notifications';
 import { generateAndSaveWeekPlan } from '../../src/lib/planning';
 import { formatTimeRange, TIME_OPTIONS, timeSlotFromStartTime } from '../../src/lib/time';
-import { getUpcomingDates } from '../../src/lib/upcomingDates';
-import { getWeekStart } from '../../src/lib/week';
+import { useUpcomingDates, useWeekStart } from '../../src/lib/useToday';
 import { useAuthStore } from '../../src/store/authStore';
 
-const UPCOMING_DATES = getUpcomingDates(14);
-const weekStart = getWeekStart();
-
 export default function AvailabilityScreen() {
+  const upcomingDates = useUpcomingDates(14);
+  const weekStart = useWeekStart();
   const session = useAuthStore((s) => s.session);
   const userId = session?.user.id;
   const queryClient = useQueryClient();
@@ -29,6 +27,9 @@ export default function AvailabilityScreen() {
   const [endTime, setEndTime] = useState('19:00');
   const [label, setLabel] = useState('');
   const [formError, setFormError] = useState<string | null>(null);
+  // Confirmation en deux temps plutôt qu'Alert.alert, qui n'est pas implémenté
+  // par react-native-web et rendrait la suppression impossible dans l'aperçu.
+  const [confirmingDeleteId, setConfirmingDeleteId] = useState<string | null>(null);
 
   const slotsQuery = useQuery({
     queryKey: ['availability', userId],
@@ -71,10 +72,19 @@ export default function AvailabilityScreen() {
     },
   });
 
+  const deleteMutation = useMutation({
+    mutationFn: (id: string) => deleteAvailabilitySlot(id),
+    onSuccess: () => {
+      setConfirmingDeleteId(null);
+      queryClient.invalidateQueries({ queryKey: ['availability', userId] });
+    },
+  });
+
   const toggleDay = (value: number) => {
     setSelectedDays((prev) => {
       const next = new Set(prev);
-      next.has(value) ? next.delete(value) : next.add(value);
+      if (next.has(value)) next.delete(value);
+      else next.add(value);
       return next;
     });
   };
@@ -82,7 +92,8 @@ export default function AvailabilityScreen() {
   const toggleDate = (value: string) => {
     setSelectedDates((prev) => {
       const next = new Set(prev);
-      next.has(value) ? next.delete(value) : next.add(value);
+      if (next.has(value)) next.delete(value);
+      else next.add(value);
       return next;
     });
   };
@@ -90,19 +101,19 @@ export default function AvailabilityScreen() {
   return (
     <ScrollView className="flex-1 bg-paper px-6 pt-16" contentContainerStyle={{ paddingBottom: 60 }}>
       <Pressable onPress={() => router.back()} className="mb-5">
-        <Text style={{ fontFamily: 'Nunito_700Bold' }} className="text-sm text-ink-soft">
+        <Text className="font-label text-sm text-ink-soft">
           ← Retour
         </Text>
       </Pressable>
 
-      <Text style={{ fontFamily: 'Nunito_700Bold' }} className="mb-1 text-sm text-primary">
+      <Text className="font-label mb-1 text-sm text-primary">
         Planning
       </Text>
-      <Text style={{ fontFamily: 'Nunito_800ExtraBold' }} className="mb-7 text-[28px] leading-8 text-ink">
+      <Text className="font-display mb-7 text-[28px] leading-8 text-ink">
         Mes disponibilités
       </Text>
 
-      <Text style={{ fontFamily: 'Nunito_800ExtraBold' }} className="mb-2.5 text-sm text-ink">
+      <Text className="font-display mb-2.5 text-sm text-ink">
         Type de créneau
       </Text>
       <View className="mb-4 flex-row flex-wrap">
@@ -112,10 +123,10 @@ export default function AvailabilityScreen() {
 
       {kind === 'recurring' ? (
         <>
-          <Text style={{ fontFamily: 'Nunito_800ExtraBold' }} className="mb-1 text-sm text-ink">
+          <Text className="font-display mb-1 text-sm text-ink">
             Jours
           </Text>
-          <Text className="mb-2.5 text-xs text-ink-soft">Vous pouvez en choisir plusieurs à la fois.</Text>
+          <Text className="font-body mb-2.5 text-xs text-ink-soft">Vous pouvez en choisir plusieurs à la fois.</Text>
           <View className="mb-4 flex-row flex-wrap">
             {DAYS_OF_WEEK.map((day) => (
               <Chip
@@ -129,13 +140,13 @@ export default function AvailabilityScreen() {
         </>
       ) : (
         <>
-          <Text style={{ fontFamily: 'Nunito_800ExtraBold' }} className="mb-1 text-sm text-ink">
+          <Text className="font-display mb-1 text-sm text-ink">
             Dates
           </Text>
-          <Text className="mb-2.5 text-xs text-ink-soft">Vous pouvez en choisir plusieurs à la fois.</Text>
+          <Text className="font-body mb-2.5 text-xs text-ink-soft">Vous pouvez en choisir plusieurs à la fois.</Text>
           <ScrollView horizontal showsHorizontalScrollIndicator={false} className="mb-4">
             <View className="flex-row">
-              {UPCOMING_DATES.map((d) => (
+              {upcomingDates.map((d) => (
                 <Chip
                   key={d.value}
                   label={d.label}
@@ -148,7 +159,7 @@ export default function AvailabilityScreen() {
         </>
       )}
 
-      <Text style={{ fontFamily: 'Nunito_800ExtraBold' }} className="mb-1 text-sm text-ink">
+      <Text className="font-display mb-1 text-sm text-ink">
         De
       </Text>
       <ScrollView horizontal showsHorizontalScrollIndicator={false} className="mb-3">
@@ -159,7 +170,7 @@ export default function AvailabilityScreen() {
         </View>
       </ScrollView>
 
-      <Text style={{ fontFamily: 'Nunito_800ExtraBold' }} className="mb-1 text-sm text-ink">
+      <Text className="font-display mb-1 text-sm text-ink">
         À
       </Text>
       <ScrollView horizontal showsHorizontalScrollIndicator={false} className="mb-4">
@@ -170,18 +181,18 @@ export default function AvailabilityScreen() {
         </View>
       </ScrollView>
 
-      <Text style={{ fontFamily: 'Nunito_800ExtraBold' }} className="mb-2.5 text-sm text-ink">
+      <Text className="font-display mb-2.5 text-sm text-ink">
         Note (optionnel)
       </Text>
       <TextInput
-        className="mb-4 rounded-2xl border border-line bg-surface px-4 py-3.5 text-ink"
+        className="font-body mb-4 rounded-2xl border border-line bg-surface px-4 py-3.5 text-ink"
         placeholder="Ex. Sport, libre pour sorties…"
         placeholderTextColor="#B5AB9A"
         value={label}
         onChangeText={setLabel}
       />
 
-      {formError ? <Text className="mb-3 text-xs text-red-700">{formError}</Text> : null}
+      {formError ? <Text className="font-body mb-3 text-xs text-red-700">{formError}</Text> : null}
 
       <Pressable
         onPress={() => createMutation.mutate()}
@@ -192,7 +203,7 @@ export default function AvailabilityScreen() {
           {createMutation.isPending ? (
             <ActivityIndicator color="#FFFFFF" />
           ) : (
-            <Text style={{ fontFamily: 'Nunito_800ExtraBold' }} className="text-center text-white">
+            <Text className="font-display text-center text-white">
               Ajouter ce{kind === 'recurring' && selectedDays.size > 1 ? 's' : ''} créneau
               {kind === 'recurring' && selectedDays.size > 1 ? 'x' : kind === 'specific' && selectedDates.size > 1 ? 'x' : ''}
             </Text>
@@ -200,37 +211,59 @@ export default function AvailabilityScreen() {
         </LinearGradient>
       </Pressable>
 
-      <Text style={{ fontFamily: 'Nunito_800ExtraBold' }} className="mb-3 text-sm text-ink-soft">
+      <Text className="font-display mb-3 text-sm text-ink-soft">
         Créneaux enregistrés
       </Text>
       {slotsQuery.isLoading ? <ActivityIndicator color="#FF6B57" /> : null}
       {slotsQuery.data?.length === 0 ? (
-        <Text className="text-sm text-ink-soft">Aucun créneau pour l'instant.</Text>
+        <Text className="font-body text-sm text-ink-soft">Aucun créneau pour l'instant.</Text>
       ) : null}
       {slotsQuery.data?.map((slot) => {
         const when = slot.is_recurring
           ? DAYS_OF_WEEK.find((d) => d.value === slot.day_of_week)?.label
-          : UPCOMING_DATES.find((d) => d.value === slot.specific_date)?.label ?? slot.specific_date;
+          : upcomingDates.find((d) => d.value === slot.specific_date)?.label ?? slot.specific_date;
         return (
           <View
             key={slot.id}
             className="mb-2.5 flex-row items-center justify-between rounded-2xl border border-line bg-surface p-4 shadow-sm"
           >
             <View className="flex-1 pr-3">
-              <Text style={{ fontFamily: 'Nunito_700Bold' }} className="text-sm text-ink">
+              <Text className="font-label text-sm text-ink">
                 {when} · {formatTimeRange(slot.start_time, slot.end_time)}
                 {slot.is_recurring ? ' (chaque semaine)' : ''}
               </Text>
-              {slot.label ? <Text className="mt-0.5 text-xs text-ink-soft">{slot.label}</Text> : null}
+              {slot.label ? <Text className="font-body mt-0.5 text-xs text-ink-soft">{slot.label}</Text> : null}
             </View>
-            <Pressable onPress={() => deleteAvailabilitySlot(slot.id).then(() => queryClient.invalidateQueries({ queryKey: ['availability', userId] }))}>
-              <Text style={{ fontFamily: 'Nunito_700Bold' }} className="text-sm text-accent">
-                Supprimer
-              </Text>
-            </Pressable>
+            {deleteMutation.isPending && deleteMutation.variables === slot.id ? (
+              <ActivityIndicator size="small" color="#FF6B57" />
+            ) : confirmingDeleteId === slot.id ? (
+              <View className="flex-row items-center">
+                <Pressable onPress={() => deleteMutation.mutate(slot.id)} className="mr-3">
+                  <Text className="font-label text-sm text-accent">Confirmer</Text>
+                </Pressable>
+                <Pressable onPress={() => setConfirmingDeleteId(null)}>
+                  <Text className="font-body text-sm text-ink-soft">Annuler</Text>
+                </Pressable>
+              </View>
+            ) : (
+              <Pressable
+                onPress={() => {
+                  deleteMutation.reset();
+                  setConfirmingDeleteId(slot.id);
+                }}
+              >
+                <Text className="font-label text-sm text-accent">Supprimer</Text>
+              </Pressable>
+            )}
           </View>
         );
       })}
+
+      {deleteMutation.isError ? (
+        <Text className="font-body mb-2 text-xs text-red-700">
+          Suppression impossible : {(deleteMutation.error as Error).message}
+        </Text>
+      ) : null}
 
       {(slotsQuery.data?.length ?? 0) > 0 ? (
         <>
@@ -242,13 +275,13 @@ export default function AvailabilityScreen() {
             {generateMutation.isPending ? (
               <ActivityIndicator color="#FFFFFF" />
             ) : (
-              <Text style={{ fontFamily: 'Nunito_800ExtraBold' }} className="text-white">
+              <Text className="font-display text-white">
                 ✨ Générer mon planning
               </Text>
             )}
           </Pressable>
           {generateMutation.isError ? (
-            <Text className="text-xs text-red-700">{(generateMutation.error as Error).message}</Text>
+            <Text className="font-body text-xs text-red-700">{(generateMutation.error as Error).message}</Text>
           ) : null}
         </>
       ) : null}

@@ -2,14 +2,29 @@ import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { LinearGradient } from 'expo-linear-gradient';
 import { router, useLocalSearchParams } from 'expo-router';
 import * as Speech from 'expo-speech';
-import { useEffect, useRef, useState } from 'react';
-import { Animated, Pressable, Text, View } from 'react-native';
+import { useEffect, useState } from 'react';
+import { ActivityIndicator, Animated, Pressable, Text, View } from 'react-native';
 
 import { CONTENT_BY_SLUG } from '../../src/features/wellbeing/content';
 import { usePremium } from '../../src/lib/premium';
 import { speakGently as speak } from '../../src/lib/voice';
 import { fetchPrograms, markProgramCompleted } from '../../src/lib/wellbeing';
 import { useAuthStore } from '../../src/store/authStore';
+
+// Position dans le cycle -> phase courante et secondes restantes. Tout l'état du
+// lecteur se déduit d'un unique compteur de secondes écoulées : pas de machine à
+// états à maintenir, donc pas d'enchaînement de setState à orchestrer.
+function resolvePhase(phases: { label: string; seconds: number }[], withinCycle: number) {
+  let offset = 0;
+  for (let index = 0; index < phases.length; index++) {
+    if (withinCycle < offset + phases[index].seconds) {
+      return { index, secondsLeft: phases[index].seconds - (withinCycle - offset) };
+    }
+    offset += phases[index].seconds;
+  }
+  const last = phases.length - 1;
+  return { index: last, secondsLeft: phases[last].seconds };
+}
 
 function BreathingPlayer({
   content,
@@ -20,55 +35,45 @@ function BreathingPlayer({
   onDone: () => void;
   audioOn: boolean;
 }) {
-  const [cycle, setCycle] = useState(0);
-  const [phaseIndex, setPhaseIndex] = useState(0);
-  const [secondsLeft, setSecondsLeft] = useState(content.phases[0].seconds);
-  const [finished, setFinished] = useState(false);
-  const scale = useRef(new Animated.Value(1)).current;
+  const [elapsed, setElapsed] = useState(0);
+  // useState plutôt que useRef : la valeur animée est lue pendant le rendu.
+  const [scale] = useState(() => new Animated.Value(1));
 
+  const cycleSeconds = content.phases.reduce((total, phase) => total + phase.seconds, 0);
+  const totalSeconds = cycleSeconds * content.cycles;
+  const finished = elapsed >= totalSeconds;
+
+  const cycle = finished ? content.cycles - 1 : Math.floor(elapsed / cycleSeconds);
+  const { index: phaseIndex, secondsLeft } = resolvePhase(content.phases, finished ? 0 : elapsed % cycleSeconds);
   const phase = content.phases[phaseIndex];
 
   useEffect(() => {
-    const target = phase.label.startsWith('Inspirez') ? 1.4 : phase.label.startsWith('Expirez') ? 1 : 1.4;
-    Animated.timing(scale, { toValue: target, duration: phase.seconds * 1000, useNativeDriver: true }).start();
-  }, [phaseIndex, cycle]);
-
-  useEffect(() => {
-    if (audioOn && !finished) speak(phase.label);
-  }, [phaseIndex, cycle, audioOn]);
+    if (finished) return;
+    const timer = setInterval(() => setElapsed((seconds) => seconds + 1), 1000);
+    return () => clearInterval(timer);
+  }, [finished]);
 
   useEffect(() => {
     if (finished) return;
-    const timer = setInterval(() => {
-      setSecondsLeft((s) => {
-        if (s > 1) return s - 1;
-        const nextPhaseIndex = (phaseIndex + 1) % content.phases.length;
-        if (nextPhaseIndex === 0) {
-          const nextCycle = cycle + 1;
-          if (nextCycle >= content.cycles) {
-            setFinished(true);
-            return 0;
-          }
-          setCycle(nextCycle);
-        }
-        setPhaseIndex(nextPhaseIndex);
-        return content.phases[nextPhaseIndex].seconds;
-      });
-    }, 1000);
-    return () => clearInterval(timer);
-  }, [phaseIndex, cycle, finished]);
+    const target = phase.label.startsWith('Expirez') ? 1 : 1.4;
+    Animated.timing(scale, { toValue: target, duration: phase.seconds * 1000, useNativeDriver: true }).start();
+  }, [phaseIndex, cycle, finished, phase.label, phase.seconds, scale]);
+
+  useEffect(() => {
+    if (audioOn && !finished) speak(phase.label);
+  }, [phaseIndex, cycle, audioOn, finished, phase.label]);
 
   if (finished) {
     return (
       <View className="flex-1 items-center justify-center px-8">
-        <Text className="mb-3 text-5xl">🎉</Text>
-        <Text style={{ fontFamily: 'Nunito_800ExtraBold' }} className="mb-2 text-center text-2xl text-ink">
+        <Text className="font-body mb-3 text-5xl">🎉</Text>
+        <Text className="font-display mb-2 text-center text-2xl text-ink">
           Bien joué
         </Text>
-        <Text className="mb-8 text-center text-sm text-ink-soft">Vous avez pris ce moment pour vous.</Text>
+        <Text className="font-body mb-8 text-center text-sm text-ink-soft">Vous avez pris ce moment pour vous.</Text>
         <Pressable onPress={onDone} className="w-full overflow-hidden rounded-full shadow-sm">
           <LinearGradient colors={['#F0A324', '#FF6B57']} start={{ x: 0, y: 0 }} end={{ x: 1, y: 0 }} style={{ paddingVertical: 15 }}>
-            <Text style={{ fontFamily: 'Nunito_800ExtraBold' }} className="text-center text-white">
+            <Text className="font-display text-center text-white">
               Terminer
             </Text>
           </LinearGradient>
@@ -84,15 +89,15 @@ function BreathingPlayer({
         className="mb-10 h-40 w-40 items-center justify-center rounded-full bg-calm-soft"
       >
         <View className="h-24 w-24 items-center justify-center rounded-full bg-calm">
-          <Text style={{ fontFamily: 'Nunito_800ExtraBold' }} className="text-3xl text-white">
+          <Text className="font-display text-3xl text-white">
             {secondsLeft}
           </Text>
         </View>
       </Animated.View>
-      <Text style={{ fontFamily: 'Nunito_800ExtraBold' }} className="text-center text-xl text-ink">
+      <Text className="font-display text-center text-xl text-ink">
         {phase.label}
       </Text>
-      <Text className="mt-2 text-xs text-ink-soft">
+      <Text className="font-body mt-2 text-xs text-ink-soft">
         Cycle {cycle + 1} / {content.cycles}
       </Text>
     </View>
@@ -116,12 +121,12 @@ function GuidedPlayer({
     return () => {
       if (audioOn) Speech.stop();
     };
-  }, [index, audioOn]);
+  }, [index, audioOn, paragraphs]);
 
   return (
     <View className="flex-1 justify-between px-8 pb-10">
       <View className="flex-1 items-center justify-center">
-        <Text style={{ fontFamily: 'Nunito_700Bold' }} className="text-center text-xl leading-8 text-ink">
+        <Text className="font-label text-center text-xl leading-8 text-ink">
           {paragraphs[index]}
         </Text>
       </View>
@@ -137,7 +142,7 @@ function GuidedPlayer({
           className="overflow-hidden rounded-full shadow-sm"
         >
           <LinearGradient colors={['#F0A324', '#FF6B57']} start={{ x: 0, y: 0 }} end={{ x: 1, y: 0 }} style={{ paddingVertical: 15 }}>
-            <Text style={{ fontFamily: 'Nunito_800ExtraBold' }} className="text-center text-white">
+            <Text className="font-display text-center text-white">
               {isLast ? 'Terminer' : 'Suivant'}
             </Text>
           </LinearGradient>
@@ -155,7 +160,7 @@ export default function WellbeingSessionScreen() {
   const { slug } = useLocalSearchParams<{ slug: string }>();
   const session = useAuthStore((s) => s.session);
   const queryClient = useQueryClient();
-  const { isPremium } = usePremium();
+  const { isPremium, isLoading: premiumLoading } = usePremium();
   const [completed, setCompleted] = useState(false);
   const [audioOn, setAudioOn] = useState(true);
 
@@ -193,7 +198,17 @@ export default function WellbeingSessionScreen() {
   if (!content || !program) {
     return (
       <View className="flex-1 items-center justify-center bg-paper px-8">
-        <Text className="text-sm text-ink-soft">Séance introuvable.</Text>
+        <Text className="font-body text-sm text-ink-soft">Séance introuvable.</Text>
+      </View>
+    );
+  }
+
+  // On attend la réponse de RevenueCat avant de décider : sinon un abonné verrait
+  // l'écran de verrouillage pendant la résolution de son abonnement.
+  if (program.premium_only && premiumLoading) {
+    return (
+      <View className="flex-1 items-center justify-center bg-paper px-8">
+        <ActivityIndicator color="#FF6B57" />
       </View>
     );
   }
@@ -201,12 +216,12 @@ export default function WellbeingSessionScreen() {
   if (program.premium_only && !isPremium) {
     return (
       <View className="flex-1 items-center justify-center bg-paper px-8">
-        <Text className="mb-3 text-4xl">🔒</Text>
-        <Text style={{ fontFamily: 'Nunito_800ExtraBold' }} className="mb-2 text-center text-xl text-ink">
+        <Text className="font-body mb-3 text-4xl">🔒</Text>
+        <Text className="font-display mb-2 text-center text-xl text-ink">
           Programme premium
         </Text>
         <Pressable onPress={() => router.replace('/paywall')} className="mt-4 rounded-full bg-primary px-6 py-3">
-          <Text style={{ fontFamily: 'Nunito_800ExtraBold' }} className="text-white">
+          <Text className="font-display text-white">
             Voir Premium
           </Text>
         </Pressable>
@@ -218,7 +233,7 @@ export default function WellbeingSessionScreen() {
     <View className="flex-1 bg-paper pt-16">
       <View className="mb-4 flex-row items-center justify-between px-6">
         <Pressable onPress={() => router.back()}>
-          <Text style={{ fontFamily: 'Nunito_700Bold' }} className="text-sm text-ink-soft">
+          <Text className="font-label text-sm text-ink-soft">
             ✕ Fermer
           </Text>
         </Pressable>
@@ -238,7 +253,7 @@ export default function WellbeingSessionScreen() {
             }}
             className={`flex-row items-center rounded-full px-3 py-1.5 ${audioOn ? 'bg-primary-soft' : 'bg-surface'}`}
           >
-            <Text style={{ fontFamily: 'Nunito_700Bold' }} className={`text-xs ${audioOn ? 'text-primary' : 'text-ink-soft'}`}>
+            <Text className={`font-label text-xs ${audioOn ? 'text-primary' : 'text-ink-soft'}`}>
               {audioOn ? '🔊 Guidage audio' : '🔇 Muet'}
             </Text>
           </Pressable>
@@ -247,13 +262,13 @@ export default function WellbeingSessionScreen() {
 
       {completed ? (
         <View className="flex-1 items-center justify-center px-8">
-          <Text className="mb-3 text-5xl">✅</Text>
-          <Text style={{ fontFamily: 'Nunito_800ExtraBold' }} className="mb-2 text-center text-2xl text-ink">
+          <Text className="font-body mb-3 text-5xl">✅</Text>
+          <Text className="font-display mb-2 text-center text-2xl text-ink">
             Séance terminée
           </Text>
           <Pressable onPress={() => router.back()} className="mt-6 w-full overflow-hidden rounded-full shadow-sm">
             <LinearGradient colors={['#F0A324', '#FF6B57']} start={{ x: 0, y: 0 }} end={{ x: 1, y: 0 }} style={{ paddingVertical: 15 }}>
-              <Text style={{ fontFamily: 'Nunito_800ExtraBold' }} className="text-center text-white">
+              <Text className="font-display text-center text-white">
                 Retour à Bien-être
               </Text>
             </LinearGradient>
