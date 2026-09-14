@@ -66,10 +66,10 @@ export default function TrackingScreen() {
       contentContainerStyle={{ paddingBottom: 40 }}
       refreshControl={<RefreshControl refreshing={refreshing} onRefresh={onRefresh} tintColor="#FF6B57" />}
     >
-      <Text style={{ fontFamily: 'Nunito_700Bold' }} className="mb-1 text-sm text-primary">
+      <Text className="font-label mb-1 text-sm text-primary">
         Continuez comme ça
       </Text>
-      <Text style={{ fontFamily: 'Nunito_800ExtraBold' }} className="mb-6 text-[28px] leading-8 text-ink">
+      <Text className="font-display mb-6 text-[28px] leading-8 text-ink">
         Votre progression
       </Text>
 
@@ -90,11 +90,11 @@ export default function TrackingScreen() {
         />
       </View>
 
-      <Text style={{ fontFamily: 'Nunito_800ExtraBold' }} className="mb-3 text-sm text-ink-soft">
+      <Text className="font-display mb-3 text-sm text-ink-soft">
         Temps par catégorie cette semaine
       </Text>
       {categoryEntries.length === 0 ? (
-        <Text className="mb-6 text-sm text-ink-soft">
+        <Text className="font-body mb-6 text-sm text-ink-soft">
           Aucune activité réalisée pour l'instant — cochez-les depuis votre planning.
         </Text>
       ) : (
@@ -102,10 +102,10 @@ export default function TrackingScreen() {
           {categoryEntries.map(([category, minutes]) => (
             <View key={category} className="mb-3">
               <View className="mb-1.5 flex-row justify-between">
-                <Text style={{ fontFamily: 'Nunito_700Bold' }} className="text-sm text-ink">
+                <Text className="font-label text-sm text-ink">
                   {CATEGORY_LABELS[category]}
                 </Text>
-                <Text className="text-sm text-ink-soft">{minutes} min</Text>
+                <Text className="font-body text-sm text-ink-soft">{minutes} min</Text>
               </View>
               <View className="h-2.5 overflow-hidden rounded-full bg-line">
                 <View
@@ -118,27 +118,27 @@ export default function TrackingScreen() {
         </View>
       )}
 
-      <Text style={{ fontFamily: 'Nunito_800ExtraBold' }} className="mb-3 text-sm text-ink-soft">
+      <Text className="font-display mb-3 text-sm text-ink-soft">
         Historique
       </Text>
       {historyQuery.isLoading ? <ActivityIndicator color="#FF6B57" /> : null}
       {historyQuery.data?.length === 0 ? (
-        <Text className="text-sm text-ink-soft">Rien de coché pour l'instant.</Text>
+        <Text className="font-body text-sm text-ink-soft">Rien de coché pour l'instant.</Text>
       ) : null}
       {historyQuery.data?.map((item) => (
         <View key={item.id} className="mb-2.5 flex-row items-center rounded-2xl border border-line bg-surface p-4 shadow-sm">
           <View className="flex-1 pr-3">
             <CategoryBadge category={item.activities_catalog.category} />
-            <Text style={{ fontFamily: 'Nunito_700Bold' }} className="mt-2 text-base text-ink">
+            <Text className="font-label mt-2 text-base text-ink">
               {item.activities_catalog.title}
             </Text>
-            <Text className="mt-0.5 text-xs text-ink-soft">{formatDayLabel(item.date)}</Text>
+            <Text className="font-body mt-0.5 text-xs text-ink-soft">{formatDayLabel(item.date)}</Text>
           </View>
           <Pressable onPress={() => undoMutation.mutate(item.id)} disabled={undoMutation.isPending}>
             {undoMutation.isPending && undoMutation.variables === item.id ? (
               <ActivityIndicator size="small" color="#FF6B57" />
             ) : (
-              <Text style={{ fontFamily: 'Nunito_700Bold' }} className="text-sm text-accent">
+              <Text className="font-label text-sm text-accent">
                 Annuler
               </Text>
             )}

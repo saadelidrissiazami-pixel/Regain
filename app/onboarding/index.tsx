@@ -47,14 +47,14 @@ export default function OnboardingScreen() {
 
   return (
     <ScrollView className="flex-1 bg-paper px-6 pt-16" contentContainerStyle={{ paddingBottom: 60 }}>
-      <Text style={{ fontFamily: 'Nunito_700Bold' }} className="mb-1 text-sm text-primary">
+      <Text className="font-label mb-1 text-sm text-primary">
         Bienvenue sur Regain 🌱
       </Text>
-      <Text style={{ fontFamily: 'Nunito_800ExtraBold' }} className="mb-7 text-[28px] leading-8 text-ink">
+      <Text className="font-display mb-7 text-[28px] leading-8 text-ink">
         Parlons de vous
       </Text>
 
-      <Text style={{ fontFamily: 'Nunito_800ExtraBold' }} className="mb-2.5 text-sm text-ink">
+      <Text className="font-display mb-2.5 text-sm text-ink">
         Quels sont vos objectifs ?
       </Text>
       <View className="mb-7 flex-row flex-wrap">
@@ -68,7 +68,7 @@ export default function OnboardingScreen() {
         ))}
       </View>
 
-      <Text style={{ fontFamily: 'Nunito_800ExtraBold' }} className="mb-2.5 text-sm text-ink">
+      <Text className="font-display mb-2.5 text-sm text-ink">
         Quel est votre budget pour vos activités ?
       </Text>
       <Controller
@@ -83,12 +83,12 @@ export default function OnboardingScreen() {
         )}
       />
 
-      <Text style={{ fontFamily: 'Nunito_800ExtraBold' }} className="mb-2.5 text-sm text-ink">
+      <Text className="font-display mb-2.5 text-sm text-ink">
         Votre énergie habituelle...
       </Text>
       {ENERGY_SLOTS.map((slot) => (
         <View key={slot.key} className="mb-4">
-          <Text style={{ fontFamily: 'Nunito_700Bold' }} className="mb-2 text-xs uppercase tracking-wide text-ink-soft">
+          <Text className="font-label mb-2 text-xs uppercase tracking-wide text-ink-soft">
             {slot.label}
           </Text>
           <Controller
@@ -105,7 +105,7 @@ export default function OnboardingScreen() {
         </View>
       ))}
 
-      {serverError ? <Text className="mb-3 text-xs text-red-700">{serverError}</Text> : null}
+      {serverError ? <Text className="font-body mb-3 text-xs text-red-700">{serverError}</Text> : null}
 
       <Pressable
         onPress={handleSubmit((values) => mutation.mutate(values))}
@@ -116,7 +116,7 @@ export default function OnboardingScreen() {
           {mutation.isPending ? (
             <ActivityIndicator color="#FFFFFF" />
           ) : (
-            <Text style={{ fontFamily: 'Nunito_800ExtraBold' }} className="text-center text-white">
+            <Text className="font-display text-center text-white">
               Commencer
             </Text>
           )}

@@ -33,13 +33,13 @@ export function EnergyCheckin({ userId }: { userId?: string }) {
       end={{ x: 1, y: 1 }}
       style={{ borderRadius: 20, padding: 16, marginBottom: 16 }}
     >
-      <Text style={{ fontFamily: 'Nunito_700Bold' }} className="text-[11px] uppercase tracking-wide text-white/90">
+      <Text className="font-label text-[11px] uppercase tracking-wide text-white/90">
         Check-in d'énergie
       </Text>
 
       {!selected ? (
         <>
-          <Text style={{ fontFamily: 'Nunito_800ExtraBold' }} className="mb-3 mt-1 text-base text-white">
+          <Text className="font-display mb-3 mt-1 text-base text-white">
             Comment vous sentez-vous là, maintenant ?
           </Text>
           <View className="flex-row flex-wrap gap-2">
@@ -53,7 +53,7 @@ export function EnergyCheckin({ userId }: { userId?: string }) {
                 {mutation.isPending && mutation.variables === level.value ? (
                   <ActivityIndicator size="small" color="#FFFFFF" />
                 ) : (
-                  <Text style={{ fontFamily: 'Nunito_700Bold' }} className="text-sm text-white">
+                  <Text className="font-label text-sm text-white">
                     {level.label}
                   </Text>
                 )}
@@ -63,26 +63,26 @@ export function EnergyCheckin({ userId }: { userId?: string }) {
         </>
       ) : isLowEnergy(selected) ? (
         <>
-          <Text style={{ fontFamily: 'Nunito_800ExtraBold' }} className="mt-1 text-base text-white">
+          <Text className="font-display mt-1 text-base text-white">
             L'énergie manque un peu ? Une courte respiration peut aider.
           </Text>
           <Link href={`/wellbeing/${LOW_ENERGY_SLUG}`} asChild>
             <Pressable className="mt-3 self-start rounded-full bg-white px-4 py-2.5">
-              <Text style={{ fontFamily: 'Nunito_800ExtraBold' }} className="text-sm text-primary">
+              <Text className="font-display text-sm text-primary">
                 🌬️ Respiration guidée →
               </Text>
             </Pressable>
           </Link>
         </>
       ) : (
-        <Text style={{ fontFamily: 'Nunito_800ExtraBold' }} className="mt-1 text-base text-white">
+        <Text className="font-display mt-1 text-base text-white">
           {quote}
         </Text>
       )}
 
       {selected ? (
         <Pressable onPress={reset} className="mt-3 self-start">
-          <Text className="text-xs text-white/80">Refaire le check-in</Text>
+          <Text className="font-body text-xs text-white/80">Refaire le check-in</Text>
         </Pressable>
       ) : null}
     </LinearGradient>

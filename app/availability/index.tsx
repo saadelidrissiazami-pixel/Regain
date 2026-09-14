@@ -90,19 +90,19 @@ export default function AvailabilityScreen() {
   return (
     <ScrollView className="flex-1 bg-paper px-6 pt-16" contentContainerStyle={{ paddingBottom: 60 }}>
       <Pressable onPress={() => router.back()} className="mb-5">
-        <Text style={{ fontFamily: 'Nunito_700Bold' }} className="text-sm text-ink-soft">
+        <Text className="font-label text-sm text-ink-soft">
           ← Retour
         </Text>
       </Pressable>
 
-      <Text style={{ fontFamily: 'Nunito_700Bold' }} className="mb-1 text-sm text-primary">
+      <Text className="font-label mb-1 text-sm text-primary">
         Planning
       </Text>
-      <Text style={{ fontFamily: 'Nunito_800ExtraBold' }} className="mb-7 text-[28px] leading-8 text-ink">
+      <Text className="font-display mb-7 text-[28px] leading-8 text-ink">
         Mes disponibilités
       </Text>
 
-      <Text style={{ fontFamily: 'Nunito_800ExtraBold' }} className="mb-2.5 text-sm text-ink">
+      <Text className="font-display mb-2.5 text-sm text-ink">
         Type de créneau
       </Text>
       <View className="mb-4 flex-row flex-wrap">
@@ -112,10 +112,10 @@ export default function AvailabilityScreen() {
 
       {kind === 'recurring' ? (
         <>
-          <Text style={{ fontFamily: 'Nunito_800ExtraBold' }} className="mb-1 text-sm text-ink">
+          <Text className="font-display mb-1 text-sm text-ink">
             Jours
           </Text>
-          <Text className="mb-2.5 text-xs text-ink-soft">Vous pouvez en choisir plusieurs à la fois.</Text>
+          <Text className="font-body mb-2.5 text-xs text-ink-soft">Vous pouvez en choisir plusieurs à la fois.</Text>
           <View className="mb-4 flex-row flex-wrap">
             {DAYS_OF_WEEK.map((day) => (
               <Chip
@@ -129,10 +129,10 @@ export default function AvailabilityScreen() {
         </>
       ) : (
         <>
-          <Text style={{ fontFamily: 'Nunito_800ExtraBold' }} className="mb-1 text-sm text-ink">
+          <Text className="font-display mb-1 text-sm text-ink">
             Dates
           </Text>
-          <Text className="mb-2.5 text-xs text-ink-soft">Vous pouvez en choisir plusieurs à la fois.</Text>
+          <Text className="font-body mb-2.5 text-xs text-ink-soft">Vous pouvez en choisir plusieurs à la fois.</Text>
           <ScrollView horizontal showsHorizontalScrollIndicator={false} className="mb-4">
             <View className="flex-row">
               {UPCOMING_DATES.map((d) => (
@@ -148,7 +148,7 @@ export default function AvailabilityScreen() {
         </>
       )}
 
-      <Text style={{ fontFamily: 'Nunito_800ExtraBold' }} className="mb-1 text-sm text-ink">
+      <Text className="font-display mb-1 text-sm text-ink">
         De
       </Text>
       <ScrollView horizontal showsHorizontalScrollIndicator={false} className="mb-3">
@@ -159,7 +159,7 @@ export default function AvailabilityScreen() {
         </View>
       </ScrollView>
 
-      <Text style={{ fontFamily: 'Nunito_800ExtraBold' }} className="mb-1 text-sm text-ink">
+      <Text className="font-display mb-1 text-sm text-ink">
         À
       </Text>
       <ScrollView horizontal showsHorizontalScrollIndicator={false} className="mb-4">
@@ -170,18 +170,18 @@ export default function AvailabilityScreen() {
         </View>
       </ScrollView>
 
-      <Text style={{ fontFamily: 'Nunito_800ExtraBold' }} className="mb-2.5 text-sm text-ink">
+      <Text className="font-display mb-2.5 text-sm text-ink">
         Note (optionnel)
       </Text>
       <TextInput
-        className="mb-4 rounded-2xl border border-line bg-surface px-4 py-3.5 text-ink"
+        className="font-body mb-4 rounded-2xl border border-line bg-surface px-4 py-3.5 text-ink"
         placeholder="Ex. Sport, libre pour sorties…"
         placeholderTextColor="#B5AB9A"
         value={label}
         onChangeText={setLabel}
       />
 
-      {formError ? <Text className="mb-3 text-xs text-red-700">{formError}</Text> : null}
+      {formError ? <Text className="font-body mb-3 text-xs text-red-700">{formError}</Text> : null}
 
       <Pressable
         onPress={() => createMutation.mutate()}
@@ -192,7 +192,7 @@ export default function AvailabilityScreen() {
           {createMutation.isPending ? (
             <ActivityIndicator color="#FFFFFF" />
           ) : (
-            <Text style={{ fontFamily: 'Nunito_800ExtraBold' }} className="text-center text-white">
+            <Text className="font-display text-center text-white">
               Ajouter ce{kind === 'recurring' && selectedDays.size > 1 ? 's' : ''} créneau
               {kind === 'recurring' && selectedDays.size > 1 ? 'x' : kind === 'specific' && selectedDates.size > 1 ? 'x' : ''}
             </Text>
@@ -200,12 +200,12 @@ export default function AvailabilityScreen() {
         </LinearGradient>
       </Pressable>
 
-      <Text style={{ fontFamily: 'Nunito_800ExtraBold' }} className="mb-3 text-sm text-ink-soft">
+      <Text className="font-display mb-3 text-sm text-ink-soft">
         Créneaux enregistrés
       </Text>
       {slotsQuery.isLoading ? <ActivityIndicator color="#FF6B57" /> : null}
       {slotsQuery.data?.length === 0 ? (
-        <Text className="text-sm text-ink-soft">Aucun créneau pour l'instant.</Text>
+        <Text className="font-body text-sm text-ink-soft">Aucun créneau pour l'instant.</Text>
       ) : null}
       {slotsQuery.data?.map((slot) => {
         const when = slot.is_recurring
@@ -217,14 +217,14 @@ export default function AvailabilityScreen() {
             className="mb-2.5 flex-row items-center justify-between rounded-2xl border border-line bg-surface p-4 shadow-sm"
           >
             <View className="flex-1 pr-3">
-              <Text style={{ fontFamily: 'Nunito_700Bold' }} className="text-sm text-ink">
+              <Text className="font-label text-sm text-ink">
                 {when} · {formatTimeRange(slot.start_time, slot.end_time)}
                 {slot.is_recurring ? ' (chaque semaine)' : ''}
               </Text>
-              {slot.label ? <Text className="mt-0.5 text-xs text-ink-soft">{slot.label}</Text> : null}
+              {slot.label ? <Text className="font-body mt-0.5 text-xs text-ink-soft">{slot.label}</Text> : null}
             </View>
             <Pressable onPress={() => deleteAvailabilitySlot(slot.id).then(() => queryClient.invalidateQueries({ queryKey: ['availability', userId] }))}>
-              <Text style={{ fontFamily: 'Nunito_700Bold' }} className="text-sm text-accent">
+              <Text className="font-label text-sm text-accent">
                 Supprimer
               </Text>
             </Pressable>
@@ -242,13 +242,13 @@ export default function AvailabilityScreen() {
             {generateMutation.isPending ? (
               <ActivityIndicator color="#FFFFFF" />
             ) : (
-              <Text style={{ fontFamily: 'Nunito_800ExtraBold' }} className="text-white">
+              <Text className="font-display text-white">
                 ✨ Générer mon planning
               </Text>
             )}
           </Pressable>
           {generateMutation.isError ? (
-            <Text className="text-xs text-red-700">{(generateMutation.error as Error).message}</Text>
+            <Text className="font-body text-xs text-red-700">{(generateMutation.error as Error).message}</Text>
           ) : null}
         </>
       ) : null}

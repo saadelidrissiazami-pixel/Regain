@@ -61,14 +61,14 @@ function BreathingPlayer({
   if (finished) {
     return (
       <View className="flex-1 items-center justify-center px-8">
-        <Text className="mb-3 text-5xl">🎉</Text>
-        <Text style={{ fontFamily: 'Nunito_800ExtraBold' }} className="mb-2 text-center text-2xl text-ink">
+        <Text className="font-body mb-3 text-5xl">🎉</Text>
+        <Text className="font-display mb-2 text-center text-2xl text-ink">
           Bien joué
         </Text>
-        <Text className="mb-8 text-center text-sm text-ink-soft">Vous avez pris ce moment pour vous.</Text>
+        <Text className="font-body mb-8 text-center text-sm text-ink-soft">Vous avez pris ce moment pour vous.</Text>
         <Pressable onPress={onDone} className="w-full overflow-hidden rounded-full shadow-sm">
           <LinearGradient colors={['#F0A324', '#FF6B57']} start={{ x: 0, y: 0 }} end={{ x: 1, y: 0 }} style={{ paddingVertical: 15 }}>
-            <Text style={{ fontFamily: 'Nunito_800ExtraBold' }} className="text-center text-white">
+            <Text className="font-display text-center text-white">
               Terminer
             </Text>
           </LinearGradient>
@@ -84,15 +84,15 @@ function BreathingPlayer({
         className="mb-10 h-40 w-40 items-center justify-center rounded-full bg-calm-soft"
       >
         <View className="h-24 w-24 items-center justify-center rounded-full bg-calm">
-          <Text style={{ fontFamily: 'Nunito_800ExtraBold' }} className="text-3xl text-white">
+          <Text className="font-display text-3xl text-white">
             {secondsLeft}
           </Text>
         </View>
       </Animated.View>
-      <Text style={{ fontFamily: 'Nunito_800ExtraBold' }} className="text-center text-xl text-ink">
+      <Text className="font-display text-center text-xl text-ink">
         {phase.label}
       </Text>
-      <Text className="mt-2 text-xs text-ink-soft">
+      <Text className="font-body mt-2 text-xs text-ink-soft">
         Cycle {cycle + 1} / {content.cycles}
       </Text>
     </View>
@@ -121,7 +121,7 @@ function GuidedPlayer({
   return (
     <View className="flex-1 justify-between px-8 pb-10">
       <View className="flex-1 items-center justify-center">
-        <Text style={{ fontFamily: 'Nunito_700Bold' }} className="text-center text-xl leading-8 text-ink">
+        <Text className="font-label text-center text-xl leading-8 text-ink">
           {paragraphs[index]}
         </Text>
       </View>
@@ -137,7 +137,7 @@ function GuidedPlayer({
           className="overflow-hidden rounded-full shadow-sm"
         >
           <LinearGradient colors={['#F0A324', '#FF6B57']} start={{ x: 0, y: 0 }} end={{ x: 1, y: 0 }} style={{ paddingVertical: 15 }}>
-            <Text style={{ fontFamily: 'Nunito_800ExtraBold' }} className="text-center text-white">
+            <Text className="font-display text-center text-white">
               {isLast ? 'Terminer' : 'Suivant'}
             </Text>
           </LinearGradient>
@@ -193,7 +193,7 @@ export default function WellbeingSessionScreen() {
   if (!content || !program) {
     return (
       <View className="flex-1 items-center justify-center bg-paper px-8">
-        <Text className="text-sm text-ink-soft">Séance introuvable.</Text>
+        <Text className="font-body text-sm text-ink-soft">Séance introuvable.</Text>
       </View>
     );
   }
@@ -201,12 +201,12 @@ export default function WellbeingSessionScreen() {
   if (program.premium_only && !isPremium) {
     return (
       <View className="flex-1 items-center justify-center bg-paper px-8">
-        <Text className="mb-3 text-4xl">🔒</Text>
-        <Text style={{ fontFamily: 'Nunito_800ExtraBold' }} className="mb-2 text-center text-xl text-ink">
+        <Text className="font-body mb-3 text-4xl">🔒</Text>
+        <Text className="font-display mb-2 text-center text-xl text-ink">
           Programme premium
         </Text>
         <Pressable onPress={() => router.replace('/paywall')} className="mt-4 rounded-full bg-primary px-6 py-3">
-          <Text style={{ fontFamily: 'Nunito_800ExtraBold' }} className="text-white">
+          <Text className="font-display text-white">
             Voir Premium
           </Text>
         </Pressable>
@@ -218,7 +218,7 @@ export default function WellbeingSessionScreen() {
     <View className="flex-1 bg-paper pt-16">
       <View className="mb-4 flex-row items-center justify-between px-6">
         <Pressable onPress={() => router.back()}>
-          <Text style={{ fontFamily: 'Nunito_700Bold' }} className="text-sm text-ink-soft">
+          <Text className="font-label text-sm text-ink-soft">
             ✕ Fermer
           </Text>
         </Pressable>
@@ -238,7 +238,7 @@ export default function WellbeingSessionScreen() {
             }}
             className={`flex-row items-center rounded-full px-3 py-1.5 ${audioOn ? 'bg-primary-soft' : 'bg-surface'}`}
           >
-            <Text style={{ fontFamily: 'Nunito_700Bold' }} className={`text-xs ${audioOn ? 'text-primary' : 'text-ink-soft'}`}>
+            <Text className={`font-label text-xs ${audioOn ? 'text-primary' : 'text-ink-soft'}`}>
               {audioOn ? '🔊 Guidage audio' : '🔇 Muet'}
             </Text>
           </Pressable>
@@ -247,13 +247,13 @@ export default function WellbeingSessionScreen() {
 
       {completed ? (
         <View className="flex-1 items-center justify-center px-8">
-          <Text className="mb-3 text-5xl">✅</Text>
-          <Text style={{ fontFamily: 'Nunito_800ExtraBold' }} className="mb-2 text-center text-2xl text-ink">
+          <Text className="font-body mb-3 text-5xl">✅</Text>
+          <Text className="font-display mb-2 text-center text-2xl text-ink">
             Séance terminée
           </Text>
           <Pressable onPress={() => router.back()} className="mt-6 w-full overflow-hidden rounded-full shadow-sm">
             <LinearGradient colors={['#F0A324', '#FF6B57']} start={{ x: 0, y: 0 }} end={{ x: 1, y: 0 }} style={{ paddingVertical: 15 }}>
-              <Text style={{ fontFamily: 'Nunito_800ExtraBold' }} className="text-center text-white">
+              <Text className="font-display text-center text-white">
                 Retour à Bien-être
               </Text>
             </LinearGradient>

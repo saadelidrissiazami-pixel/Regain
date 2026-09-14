@@ -10,15 +10,14 @@ export function ScreenHeader({ eyebrow, title, subtitle }: ScreenHeaderProps) {
   return (
     <View className="mb-7">
       <Text
-        style={{ fontFamily: 'Nunito_800ExtraBold' }}
-        className="mb-1.5 text-xs uppercase tracking-widest text-primary"
+        className="font-display mb-1.5 text-xs uppercase tracking-widest text-primary"
       >
         {eyebrow}
       </Text>
-      <Text style={{ fontFamily: 'Nunito_800ExtraBold' }} className="text-[28px] leading-8 text-ink">
+      <Text className="font-display text-[28px] leading-8 text-ink">
         {title}
       </Text>
-      {subtitle ? <Text className="mt-1.5 text-sm text-ink-soft">{subtitle}</Text> : null}
+      {subtitle ? <Text className="font-body mt-1.5 text-sm text-ink-soft">{subtitle}</Text> : null}
     </View>
   );
 }

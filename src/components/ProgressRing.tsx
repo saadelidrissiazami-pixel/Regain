@@ -46,12 +46,12 @@ export function ProgressRing({
           </Svg>
         </View>
         <View style={{ position: 'absolute', inset: 0 }} className="items-center justify-center">
-          <Text style={{ fontFamily: 'Nunito_800ExtraBold' }} className="text-xl text-ink">
+          <Text className="font-display text-xl text-ink">
             {value}
           </Text>
         </View>
       </View>
-      <Text style={{ fontFamily: 'Nunito_700Bold' }} className="mt-2 text-xs text-ink-soft">
+      <Text className="font-label mt-2 text-xs text-ink-soft">
         {label}
       </Text>
     </View>

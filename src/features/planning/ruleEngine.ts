@@ -14,6 +14,11 @@ export type GeneratedItem = {
 
 const SLOT_ORDER: TimeSlot[] = ['matin', 'apres_midi', 'soir'];
 
+// Clé d'un créneau du planning (un jour + un moment de la journée).
+export function slotKey(date: string, timeSlot: TimeSlot): string {
+  return `${date}|${timeSlot}`;
+}
+
 function resolveSlotDate(slot: AvailabilitySlot, weekStart: string, weekEnd: string): string | null {
   if (slot.is_recurring && slot.day_of_week !== null) {
     return getDateForDayOfWeek(weekStart, slot.day_of_week);
@@ -32,8 +37,20 @@ export function generateWeeklyPlan(params: {
   budgetLevel: BudgetLevel;
   weekStart: string;
   categoryAffinity?: CategoryAffinity;
+  // Créneaux déjà occupés par une activité réalisée : on ne les replanifie pas,
+  // pour ne pas écraser ce que l'utilisateur a déjà fait cette semaine.
+  occupiedSlots?: Set<string>;
 }): GeneratedItem[] {
-  const { availability, catalog, primaryGoals, energyBySlot, budgetLevel, weekStart, categoryAffinity = {} } = params;
+  const {
+    availability,
+    catalog,
+    primaryGoals,
+    energyBySlot,
+    budgetLevel,
+    weekStart,
+    categoryAffinity = {},
+    occupiedSlots = new Set<string>(),
+  } = params;
   const weekEnd = getDateForDayOfWeek(weekStart, 6);
 
   const resolvedSlots = availability
@@ -49,6 +66,8 @@ export function generateWeeklyPlan(params: {
   const results: GeneratedItem[] = [];
 
   for (const { slot, date } of resolvedSlots) {
+    if (occupiedSlots.has(slotKey(date, slot.time_slot))) continue;
+
     const userEnergy = energyBySlot[slot.time_slot] ?? 'moyen';
     const availableMinutes = durationMinutes(slot.start_time, slot.end_time);
 
