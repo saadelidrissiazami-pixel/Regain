@@ -89,7 +89,9 @@ const COMPASS_LABELS: { bearing: number; label: string }[] = [
 // centrée sur la position de l'utilisateur, dimensionnée pour durer ~ le temps de l'activité.
 export function generateWalkingLoop(start: Coords, totalMinutes: number): WalkingLeg[] {
   const totalDistanceM = totalMinutes * WALKING_SPEED_M_PER_MIN;
-  const legDistanceM = Math.max(150, totalDistanceM / 4);
+  // Boucle de secours, sans routage : les rues réelles la rallongeront, donc on la dimensionne
+  // avec le même coefficient de détour pour ne pas dépasser la durée de l'activité.
+  const legDistanceM = Math.max(100, totalDistanceM / (4 * STREET_DETOUR_FACTOR));
 
   let current = start;
   const legs: WalkingLeg[] = [];
@@ -114,14 +116,20 @@ export function generateWalkingLoop(start: Coords, totalMinutes: number): Walkin
   return legs;
 }
 
-// Les rues allongent un trajet d'environ 25 % par rapport au carré tracé à vol d'oiseau.
-const STREET_DETOUR_FACTOR = 1.25;
+// Les rues allongent un trajet d'environ 35 % par rapport au carré tracé à vol d'oiseau
+// (mesuré à Paris). Ce n'est qu'un point de départ : fetchLoopWithinDuration corrige ensuite
+// l'écart réel, qui varie selon le quartier.
+const STREET_DETOUR_FACTOR = 1.35;
 
-/** Points de passage d'une boucle (départ → 3 coins → départ), à router ensuite sur les rues. */
-export function generateLoopWaypoints(start: Coords, totalMinutes: number): Coords[] {
-  const sideM = Math.max(120, (totalMinutes * WALKING_SPEED_M_PER_MIN) / (4 * STREET_DETOUR_FACTOR));
-  const firstBearing = Math.floor(Math.random() * 4) * 90;
+function initialSideM(totalMinutes: number): number {
+  return Math.max(120, (totalMinutes * WALKING_SPEED_M_PER_MIN) / (4 * STREET_DETOUR_FACTOR));
+}
 
+function randomBearing(): number {
+  return Math.floor(Math.random() * 4) * 90;
+}
+
+function loopWaypoints(start: Coords, sideM: number, firstBearing: number): Coords[] {
   const points = [start];
   let current = start;
   for (let i = 0; i < 3; i++) {
@@ -130,6 +138,50 @@ export function generateLoopWaypoints(start: Coords, totalMinutes: number): Coor
   }
   points.push(start);
   return points;
+}
+
+/** Points de passage d'une boucle (départ → 3 coins → départ), à router ensuite sur les rues. */
+export function generateLoopWaypoints(start: Coords, totalMinutes: number, firstBearing = randomBearing()): Coords[] {
+  return loopWaypoints(start, initialSideM(totalMinutes), firstBearing);
+}
+
+// Fourchette acceptée : jamais plus long que l'activité, et pas beaucoup plus court non plus.
+const MIN_DURATION_RATIO = 0.8;
+const AIM_DURATION_RATIO = 0.92;
+const MAX_ROUTE_ATTEMPTS = 4;
+// Politique d'usage du serveur FOSSGIS : une requête par seconde au maximum.
+const ROUTING_MIN_INTERVAL_MS = 1100;
+
+export class RouteTooLongError extends Error {}
+
+/**
+ * Boucle routée sur les rues dont la durée de marche ne dépasse jamais `totalMinutes`.
+ * Les rues rallongent le trajet de façon imprévisible : on route, on mesure la durée réelle,
+ * puis on rétrécit (ou agrandit) la boucle proportionnellement et on recommence.
+ */
+export async function fetchLoopWithinDuration(
+  start: Coords,
+  totalMinutes: number,
+  { minIntervalMs = ROUTING_MIN_INTERVAL_MS }: { minIntervalMs?: number } = {}
+): Promise<WalkingRoute> {
+  const targetS = totalMinutes * 60;
+  const firstBearing = randomBearing();
+  let sideM = initialSideM(totalMinutes);
+  let bestWithinTarget: WalkingRoute | null = null;
+
+  for (let attempt = 0; attempt < MAX_ROUTE_ATTEMPTS; attempt++) {
+    if (attempt > 0) await new Promise((resolve) => setTimeout(resolve, minIntervalMs));
+    const route = await fetchWalkingRoute(loopWaypoints(start, sideM, firstBearing));
+
+    if (route.durationS <= targetS) {
+      if (route.durationS >= targetS * MIN_DURATION_RATIO) return route;
+      if (!bestWithinTarget || route.durationS > bestWithinTarget.durationS) bestWithinTarget = route;
+    }
+    sideM = Math.max(40, sideM * ((targetS * AIM_DURATION_RATIO) / route.durationS));
+  }
+
+  if (bestWithinTarget) return bestWithinTarget;
+  throw new RouteTooLongError('Aucune boucle assez courte trouvée autour de cette position');
 }
 
 export type RouteStep = { instruction: string; distanceM: number };

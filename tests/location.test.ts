@@ -1,6 +1,12 @@
 import { afterEach, describe, expect, it, vi } from 'vitest';
 
-import { fetchWalkingRoute, generateLoopWaypoints, type Coords } from '../src/lib/location';
+import {
+  RouteTooLongError,
+  fetchLoopWithinDuration,
+  fetchWalkingRoute,
+  generateLoopWaypoints,
+  type Coords,
+} from '../src/lib/location';
 
 // Module natif, inutilisable sous Node : seules les fonctions pures et le routage sont testés ici.
 vi.mock('expo-location', () => ({}));
@@ -25,9 +31,9 @@ describe('generateLoopWaypoints', () => {
   });
 
   it('dimensionne la boucle sur la durée, en tenant compte du détour des rues', () => {
-    // 30 min × 75 m/min = 2 250 m de marche ; 4 côtés, rues ≈ +25 % → côté de 450 m.
+    // 30 min × 75 m/min = 2 250 m de marche ; 4 côtés, rues ≈ +35 % → côté d'environ 417 m.
     const points = generateLoopWaypoints(START, 30);
-    expect(distanceMeters(points[0], points[1])).toBeCloseTo(450, 0);
+    expect(distanceMeters(points[0], points[1])).toBeCloseTo(2250 / (4 * 1.35), 0);
   });
 });
 
@@ -115,5 +121,88 @@ describe('fetchWalkingRoute', () => {
     );
 
     await expect(fetchWalkingRoute([START, START])).rejects.toThrow('Itinéraire introuvable');
+  });
+});
+
+describe('fetchLoopWithinDuration', () => {
+  afterEach(() => {
+    vi.unstubAllGlobals();
+  });
+
+  function routeWithDuration(durationS: number) {
+    return {
+      ok: true,
+      json: async () => ({ ...OSRM_FIXTURE, routes: [{ ...OSRM_FIXTURE.routes[0], duration: durationS }] }),
+    };
+  }
+
+  function firstCornerDistance(url: string): number {
+    const [lon, lat] = url.split('/foot/')[1].split('?')[0].split(';')[1].split(',').map(Number);
+    return distanceMeters(START, { latitude: lat, longitude: lon });
+  }
+
+  it('accepte directement une boucle qui tient dans la durée', async () => {
+    const fetchMock = vi.fn().mockResolvedValue(routeWithDuration(1700));
+    vi.stubGlobal('fetch', fetchMock);
+
+    const route = await fetchLoopWithinDuration(START, 30, { minIntervalMs: 0 });
+
+    expect(route.durationS).toBe(1700);
+    expect(fetchMock).toHaveBeenCalledTimes(1);
+  });
+
+  it('rétrécit la boucle quand le parcours dépasse la durée de l’activité', async () => {
+    // 33 min pour une activité de 30 min : c'est le cas réellement observé à Paris.
+    const fetchMock = vi
+      .fn()
+      .mockResolvedValueOnce(routeWithDuration(1980))
+      .mockResolvedValueOnce(routeWithDuration(1650));
+    vi.stubGlobal('fetch', fetchMock);
+
+    const route = await fetchLoopWithinDuration(START, 30, { minIntervalMs: 0 });
+
+    expect(route.durationS).toBe(1650);
+    expect(fetchMock).toHaveBeenCalledTimes(2);
+    expect(firstCornerDistance(fetchMock.mock.calls[1][0])).toBeLessThan(
+      firstCornerDistance(fetchMock.mock.calls[0][0])
+    );
+  });
+
+  it('agrandit la boucle quand elle est nettement plus courte que prévu', async () => {
+    const fetchMock = vi
+      .fn()
+      .mockResolvedValueOnce(routeWithDuration(900))
+      .mockResolvedValueOnce(routeWithDuration(1640));
+    vi.stubGlobal('fetch', fetchMock);
+
+    const route = await fetchLoopWithinDuration(START, 30, { minIntervalMs: 0 });
+
+    expect(route.durationS).toBe(1640);
+    expect(firstCornerDistance(fetchMock.mock.calls[1][0])).toBeGreaterThan(
+      firstCornerDistance(fetchMock.mock.calls[0][0])
+    );
+  });
+
+  it('ne rend jamais une boucle plus longue que la durée demandée', async () => {
+    const fetchMock = vi
+      .fn()
+      .mockResolvedValueOnce(routeWithDuration(2000))
+      .mockResolvedValueOnce(routeWithDuration(1200))
+      .mockResolvedValueOnce(routeWithDuration(1900))
+      .mockResolvedValueOnce(routeWithDuration(1300));
+    vi.stubGlobal('fetch', fetchMock);
+
+    const route = await fetchLoopWithinDuration(START, 30, { minIntervalMs: 0 });
+
+    expect(route.durationS).toBe(1300);
+    expect(fetchMock).toHaveBeenCalledTimes(4);
+  });
+
+  it('échoue si aucune boucle ne tient dans la durée après tous les essais', async () => {
+    vi.stubGlobal('fetch', vi.fn().mockResolvedValue(routeWithDuration(2500)));
+
+    await expect(fetchLoopWithinDuration(START, 30, { minIntervalMs: 0 })).rejects.toBeInstanceOf(
+      RouteTooLongError
+    );
   });
 });

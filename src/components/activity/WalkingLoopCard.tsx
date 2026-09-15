@@ -3,8 +3,7 @@ import { ActivityIndicator, Linking, Pressable, View } from 'react-native';
 
 import {
   LocationPermissionDeniedError,
-  fetchWalkingRoute,
-  generateLoopWaypoints,
+  fetchLoopWithinDuration,
   generateWalkingLoop,
   requestAndGetLocation,
   reverseGeocode,
@@ -31,7 +30,7 @@ export function WalkingLoopCard({ durationMinutes }: { durationMinutes: number }
       const start = await requestAndGetLocation();
       const [place, route] = await Promise.allSettled([
         reverseGeocode(start),
-        fetchWalkingRoute(generateLoopWaypoints(start, durationMinutes)),
+        fetchLoopWithinDuration(start, durationMinutes),
       ]);
 
       setStartLabel(
@@ -74,7 +73,12 @@ export function WalkingLoopCard({ durationMinutes }: { durationMinutes: number }
           </Pressable>
         </>
       ) : status === 'loading' ? (
-        <ActivityIndicator color="#FF6B57" />
+        <View className="flex-row items-center">
+          <ActivityIndicator color="#FF6B57" />
+          <Text className="ml-2 text-sm text-ink-soft">
+            Ajustement du parcours pour tenir en {durationMinutes} min…
+          </Text>
+        </View>
       ) : status === 'error' ? (
         <Text className="text-sm text-ink-soft">{errorMessage}</Text>
       ) : result?.kind === 'route' ? (
@@ -85,7 +89,8 @@ export function WalkingLoopCard({ durationMinutes }: { durationMinutes: number }
             {(result.route.distanceM / 1000).toFixed(1)} km · environ {Math.round(result.route.durationS / 60)} min
           </Text>
           <Text className="mb-3 text-xs text-ink-soft">
-            Boucle au départ de {startLabel ?? 'votre position'}, retour au même endroit.
+            Boucle au départ de {startLabel ?? 'votre position'}, retour au même endroit — ajustée pour tenir
+            en {durationMinutes} min maximum.
           </Text>
 
           {result.route.steps.map((step, i) => (
