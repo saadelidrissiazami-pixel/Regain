@@ -6,13 +6,7 @@ import { ActivityIndicator, Pressable, ScrollView, View } from 'react-native';
 
 import { Chip } from '../../src/components/Chip';
 import { Text, TextInput } from '../../src/components/typography';
-import {
-  createCheckin,
-  fetchFitnessProfile,
-  requestFitnessPlan,
-  targetsForProfile,
-  updateFitnessWeight,
-} from '../../src/lib/fitness';
+import { createCheckin, createFitnessPlan, fetchFitnessProfile, updateFitnessWeight } from '../../src/lib/fitness';
 import { useAuthStore } from '../../src/store/authStore';
 
 const ENERGY_LEVELS = [
@@ -59,9 +53,9 @@ export default function FitnessCheckinScreen() {
       });
       if (weight !== null) await updateFitnessWeight(userId, weight);
 
-      // Les cibles sont recalculées ici avec le nouveau poids ; l'agent ajuste séances et menus.
+      // Nouveau programme : cibles recalculées avec le poids du jour, volume ajusté selon le bilan.
       const updatedProfile = weight !== null ? { ...profile, weight_kg: weight } : profile;
-      return requestFitnessPlan('adjust_plan', targetsForProfile(updatedProfile));
+      return createFitnessPlan(userId, updatedProfile, { sessions_done: sessionsDone, energy });
     },
     onSuccess: (plan) => {
       queryClient.setQueryData(['fitnessPlan', userId], plan);
@@ -143,7 +137,7 @@ export default function FitnessCheckinScreen() {
         <View className="flex-row items-center rounded-2xl bg-surface p-4">
           <ActivityIndicator color="#FF6B57" />
           <Text className="ml-3 flex-1 text-sm text-ink-soft">
-            Votre coach ajuste votre programme… Cela peut prendre jusqu&apos;à une minute.
+            Ajustement de votre programme…
           </Text>
         </View>
       ) : (

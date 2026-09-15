@@ -1,4 +1,5 @@
 import { ageFromBirthYear, computeNutritionTargets, type NutritionTargets } from '../features/fitness/nutrition';
+import { generateFitnessPlan } from '../features/fitness/planGenerator';
 import type {
   FitnessCheckin,
   FitnessCheckinInput,
@@ -68,31 +69,29 @@ export function targetsForProfile(profile: FitnessProfileInput): NutritionTarget
   });
 }
 
-// invoke() renvoie une error pour tout statut non-2xx : on relaie le message réel de la
-// fonction (quota, refus, panne) plutôt que de supposer qu'elle n'est pas déployée.
-async function invokeFitnessCoach<T>(body: Record<string, unknown>): Promise<T> {
-  const { data, error } = await supabase.functions.invoke<T>('fitness-coach', { body });
-  if (error) {
-    const response = (error as { context?: Response }).context;
-    if (response?.status === 404) {
-      throw new Error("Le coach forme n'est pas encore déployé côté serveur.");
-    }
-    const payload = await response?.json().catch(() => null);
-    throw new Error(payload?.error ?? 'Le coach est momentanément indisponible. Réessayez dans un instant.');
-  }
-  if (!data) throw new Error("Le coach n'a pas renvoyé de réponse.");
-  return data;
-}
-
-export async function requestFitnessPlan(
-  action: 'generate_plan' | 'adjust_plan',
-  targets: NutritionTargets
+/**
+ * Génère un programme par règles (sans IA, gratuit) et l'enregistre. Le nombre de programmes
+ * déjà créés sert de graine : chaque nouvelle semaine varie les exercices et les recettes.
+ */
+export async function createFitnessPlan(
+  userId: string,
+  profile: FitnessProfileInput,
+  checkin?: Pick<FitnessCheckinInput, 'sessions_done' | 'energy'>
 ): Promise<FitnessPlan> {
-  const { plan } = await invokeFitnessCoach<{ plan: FitnessPlan }>({ action, targets });
-  return plan;
-}
+  const { count, error: countError } = await supabase
+    .from('fitness_plans')
+    .select('id', { count: 'exact', head: true })
+    .eq('user_id', userId);
+  if (countError) throw countError;
 
-export async function sendFitnessChatMessage(message: string): Promise<string> {
-  const { reply } = await invokeFitnessCoach<{ reply: string }>({ action: 'chat', message });
-  return reply;
+  const targets = targetsForProfile(profile);
+  const generated = generateFitnessPlan(profile, targets, { seed: count ?? 0, checkin });
+
+  const { data, error } = await supabase
+    .from('fitness_plans')
+    .insert({ user_id: userId, targets, ...generated })
+    .select()
+    .single();
+  if (error) throw error;
+  return data as FitnessPlan;
 }

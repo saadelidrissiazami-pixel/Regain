@@ -15,3 +15,23 @@ Pour le réactiver :
 
 Le reste de l'infrastructure (`src/lib/coach.ts`, `supabase/functions/coach/`, la table
 `coach_messages`) est déjà en place et n'a pas besoin d'être touché.
+
+## Coach forme IA (programmes générés par Claude + chat)
+
+Le coach forme tourne aujourd'hui avec un générateur par règles, gratuit et sans IA
+(`src/features/fitness/planGenerator.ts`). La version IA est prête à côté :
+
+- `supabase/functions/fitness-coach/` : Edge Function (programme, ajustement hebdo, chat) ;
+- `fitnessAi.ts` : client de cette fonction (`requestFitnessPlan`, `sendFitnessChatMessage`) ;
+- `fitness-chat.tsx` : écran de chat.
+
+Pour la réactiver :
+1. Créer une clé API sur console.anthropic.com, puis
+   `npx supabase secrets set ANTHROPIC_API_KEY=...` et `npx supabase functions deploy fitness-coach`.
+2. Déplacer `fitnessAi.ts` vers `src/lib/` et `fitness-chat.tsx` vers `app/fitness/chat.tsx`,
+   en corrigeant les chemins d'import.
+3. Dans `app/(tabs)/fitness.tsx` et `app/fitness/checkin.tsx`, remplacer `createFitnessPlan`
+   par `requestFitnessPlan('generate_plan' | 'adjust_plan', targets)`, et remettre le lien
+   « Parler à mon coach » vers `/fitness/chat`.
+
+Les cibles caloriques restent calculées en code dans les deux versions : l'IA ne les fixe jamais.

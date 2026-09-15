@@ -3,10 +3,10 @@ import { router } from 'expo-router';
 import { useRef, useState } from 'react';
 import { ActivityIndicator, KeyboardAvoidingView, Platform, Pressable, ScrollView, View } from 'react-native';
 
-import { Text, TextInput } from '../../src/components/typography';
-import { fetchCoachHistory, type CoachMessage } from '../../src/lib/coach';
-import { sendFitnessChatMessage } from '../../src/lib/fitness';
-import { useAuthStore } from '../../src/store/authStore';
+import { Text, TextInput } from '../src/components/typography';
+import { fetchCoachHistory, type CoachMessage } from '../src/lib/coach';
+import { sendFitnessChatMessage } from './fitnessAi';
+import { useAuthStore } from '../src/store/authStore';
 
 function Bubble({ message }: { message: Pick<CoachMessage, 'role' | 'content'> }) {
   const isUser = message.role === 'user';

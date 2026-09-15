@@ -7,7 +7,7 @@ import { ActivityIndicator, Pressable, ScrollView, View } from 'react-native';
 import { Text } from '../../src/components/typography';
 import type { NutritionTargets } from '../../src/features/fitness/nutrition';
 import type { FitnessPlan, ShoppingItem, WorkoutSession } from '../../src/features/fitness/types';
-import { fetchFitnessProfile, fetchLatestFitnessPlan, requestFitnessPlan, targetsForProfile } from '../../src/lib/fitness';
+import { createFitnessPlan, fetchFitnessProfile, fetchLatestFitnessPlan, targetsForProfile } from '../../src/lib/fitness';
 import { usePremium } from '../../src/lib/premium';
 import { useAuthStore } from '../../src/store/authStore';
 
@@ -215,7 +215,7 @@ export default function FitnessScreen() {
   const targets = profile ? targetsForProfile(profile) : null;
 
   const generateMutation = useMutation({
-    mutationFn: () => requestFitnessPlan('generate_plan', targets!),
+    mutationFn: () => createFitnessPlan(userId!, profile!),
     onSuccess: (plan) => queryClient.setQueryData(['fitnessPlan', userId], plan),
   });
 
@@ -230,7 +230,7 @@ export default function FitnessScreen() {
   return (
     <ScrollView className="flex-1 bg-paper px-5 pt-16" contentContainerStyle={{ paddingBottom: 40 }}>
       <Text style={{ fontFamily: 'Nunito_700Bold' }} className="mb-1 text-sm text-primary">
-        Votre coach IA
+        Votre coach
       </Text>
       <Text style={{ fontFamily: 'Nunito_800ExtraBold' }} className="mb-6 text-[28px] leading-8 text-ink">
         Forme
@@ -243,8 +243,8 @@ export default function FitnessScreen() {
             Un coach forme rien que pour vous
           </Text>
           <Text className="mb-4 text-sm leading-5 text-ink-soft">
-            Programme de musculation personnalisé, menus et liste de courses calés sur vos calories, bilan
-            chaque semaine et un coach à qui poser vos questions. Réservé aux membres Premium.
+            Programme de musculation personnalisé, menus et liste de courses calés sur vos calories, et un
+            bilan chaque semaine pour tout ajuster. Réservé aux membres Premium.
           </Text>
           <Link href="/paywall" asChild>
             <Pressable className="items-center rounded-full bg-primary px-4 py-3">
@@ -302,8 +302,7 @@ export default function FitnessScreen() {
                 <View className="mb-4 flex-row items-center rounded-2xl bg-surface p-4">
                   <ActivityIndicator color="#FF6B57" />
                   <Text className="ml-3 flex-1 text-sm text-ink-soft">
-                    Votre coach prépare vos séances, vos menus et votre liste de courses… Cela peut prendre
-                    jusqu&apos;à une minute.
+                    Préparation de vos séances, de vos menus et de votre liste de courses…
                   </Text>
                 </View>
               ) : (
@@ -320,16 +319,9 @@ export default function FitnessScreen() {
           {planQuery.data ? (
             <View className="mb-3">
               <Link href="/fitness/checkin" asChild>
-                <Pressable className="mb-2.5 items-center rounded-full bg-primary px-4 py-3.5 shadow-sm">
+                <Pressable className="items-center rounded-full bg-primary px-4 py-3.5 shadow-sm">
                   <Text style={{ fontFamily: 'Nunito_800ExtraBold' }} className="text-white">
                     📋 Faire mon bilan de la semaine
-                  </Text>
-                </Pressable>
-              </Link>
-              <Link href="/fitness/chat" asChild>
-                <Pressable className="items-center rounded-full border border-line bg-surface px-4 py-3.5">
-                  <Text style={{ fontFamily: 'Nunito_700Bold' }} className="text-ink">
-                    💬 Parler à mon coach
                   </Text>
                 </Pressable>
               </Link>
