@@ -8,6 +8,7 @@ import { Text } from '../../src/components/typography';
 import { isPurchasesConfigured, fetchOfferings, purchasePackage, restorePurchases } from '../../src/lib/purchases';
 
 const BENEFITS = [
+  { icon: '🏋️', text: 'Coach forme IA : musculation sur mesure, menus, liste de courses et calories' },
   { icon: '🎯', text: 'Personnalisation avancée du planning' },
   { icon: '📚', text: 'Programmes bien-être premium' },
   { icon: '📈', text: 'Historique de progression complet' },

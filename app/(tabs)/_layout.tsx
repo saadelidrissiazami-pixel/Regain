@@ -39,6 +39,15 @@ export default function TabsLayout() {
         }}
       />
       <Tabs.Screen
+        name="fitness"
+        options={{
+          title: 'Forme',
+          tabBarIcon: ({ color, focused, size }) => (
+            <Ionicons name={focused ? 'barbell' : 'barbell-outline'} size={size} color={color} />
+          ),
+        }}
+      />
+      <Tabs.Screen
         name="tracking"
         options={{
           title: 'Suivi',

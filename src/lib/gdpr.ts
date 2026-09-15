@@ -15,6 +15,9 @@ const EXPORTED_TABLES: { table: string; column: string }[] = [
   { table: 'wellbeing_sessions_completed', column: 'user_id' },
   { table: 'coach_messages', column: 'user_id' },
   { table: 'subscriptions', column: 'user_id' },
+  { table: 'fitness_profiles', column: 'user_id' },
+  { table: 'fitness_plans', column: 'user_id' },
+  { table: 'fitness_checkins', column: 'user_id' },
 ];
 
 export async function buildUserDataExport(userId: string): Promise<string> {
