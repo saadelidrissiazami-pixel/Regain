@@ -24,15 +24,15 @@ Ceci demande un compte que je ne peux pas créer à votre place :
 4. Appliquez, **dans l'ordre**, tous les fichiers de [`supabase/migrations/`](supabase/migrations) via le *SQL Editor* du dashboard Supabase (ou `supabase db push` si vous avez la CLI installée).
 5. Dans **Authentication → Sign In / Providers → Email**, désactivez *Confirm email* pour tester sans boîte mail (à réactiver avant la mise en production).
 
-## Abonnements Premium (optionnel — Phase 6)
+## Abonnements Premium (optionnel)
 
-Le code du paywall et de la logique d'abonnement (RevenueCat) est déjà en place ([src/lib/purchases.ts](src/lib/purchases.ts)). Sans configuration, l'écran Premium affiche un message d'information au lieu de planter. Pour l'activer :
+Le paywall et la logique d'abonnement (RevenueCat) sont prêts : formules mensuelle et annuelle, essai gratuit, restauration, gestion de l'abonnement, mise à jour en direct du statut. Suivez **[docs/abonnements.md](docs/abonnements.md)** : on peut tout tester gratuitement avec le Test Store RevenueCat avant de créer les comptes Apple / Google.
 
-1. Créez un compte [RevenueCat](https://www.revenuecat.com), ainsi qu'un compte Apple Developer (payant) et/ou Google Play Console.
-2. Configurez vos produits d'achat intégré (abonnement mensuel/annuel) dans App Store Connect / Play Console, puis reliez-les dans RevenueCat.
-3. Renseignez `EXPO_PUBLIC_REVENUECAT_IOS_KEY` / `EXPO_PUBLIC_REVENUECAT_ANDROID_KEY` dans `.env`.
+Les achats intégrés nécessitent un **build de développement** — ils ne fonctionnent pas dans Expo Go ni dans l'aperçu web (Premium y reste débloqué pour tester).
 
-Ces achats intégrés nécessitent un **build natif** (EAS Build) — ils ne fonctionnent pas dans Expo Go ni dans l'aperçu web.
+## Synchronisation calendrier
+
+*Profil → Calendrier* ajoute automatiquement chaque planning dans un calendrier « Regain » sur l'appareil (iCloud sur iPhone quand c'est possible), aux heures réelles de vos disponibilités, avec une alerte 15 min avant (sauf si les rappels Regain sont déjà actifs). Le bouton « Synchroniser avec mon calendrier » de l'onglet Planning le fait à la demande. Couper la synchro retire les activités à venir. Comme les achats, le calendrier n'est **pas accessible dans Expo Go** : il faut un build de développement.
 
 ## Coach IA conversationnel (optionnel — V2)
 
@@ -51,7 +51,7 @@ Le chat ([app/(tabs)/coach.tsx](app/(tabs)/coach.tsx)) appelle une Edge Function
 3. `npx eas build --profile preview --platform ios` (nécessite un compte Apple Developer, 99$/an) ou `--platform android` (compte Google Play Console, 25$ une fois).
 4. Distribuez le build via TestFlight (iOS) ou le canal de test interne (Android).
 
-La configuration des profils de build est déjà prête dans [`eas.json`](eas.json).
+La configuration des profils de build est déjà prête dans [`eas.json`](eas.json). EAS Build ne lit pas `.env` : déclarez vos variables `EXPO_PUBLIC_*` sur expo.dev (voir [docs/abonnements.md](docs/abonnements.md#étape-4--variables-denvironnement-des-builds-eas)).
 
 ## Structure du projet
 

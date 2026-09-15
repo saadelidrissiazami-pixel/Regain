@@ -1,11 +1,26 @@
 import { useQuery, useQueryClient } from '@tanstack/react-query';
 import { LinearGradient } from 'expo-linear-gradient';
 import { router } from 'expo-router';
-import { useState } from 'react';
+import { useMemo, useState } from 'react';
 import { ActivityIndicator, Linking, Pressable, ScrollView, View } from 'react-native';
+import type { PurchasesPackage } from 'react-native-purchases';
 import { PRIVACY_URL, SUBSCRIPTION_DISCLOSURE, TERMS_URL, hasLegalUrls } from '../../src/config/legal';
 import { Text } from '../../src/components/typography';
-import { isPurchasesConfigured, fetchOfferings, purchasePackage, restorePurchases } from '../../src/lib/purchases';
+import {
+  annualSavingsPercent,
+  defaultPackage,
+  describePackage,
+  sortPackages,
+} from '../../src/features/subscriptions/packages';
+import {
+  fetchOfferings,
+  isPurchasesConfigured,
+  isUsingTestStore,
+  purchasePackage,
+  purchasesUnavailableReason,
+  restorePurchases,
+} from '../../src/lib/purchases';
+import { useAuthStore } from '../../src/store/authStore';
 
 const BENEFITS = [
   { icon: '🏋️', text: 'Coach forme : musculation sur mesure, menus, liste de courses et calories' },
@@ -15,10 +30,56 @@ const BENEFITS = [
   { icon: '🔔', text: 'Rappels et suggestions adaptatifs' },
 ];
 
+function PackageOption({
+  pkg,
+  savings,
+  selected,
+  onSelect,
+}: {
+  pkg: PurchasesPackage;
+  savings: number | null;
+  selected: boolean;
+  onSelect: () => void;
+}) {
+  const display = describePackage(pkg, savings);
+  return (
+    <Pressable
+      onPress={onSelect}
+      className={`mb-3 rounded-2xl border-2 p-4 ${selected ? 'border-primary bg-primary-soft' : 'border-line bg-surface'}`}
+    >
+      <View className="flex-row items-center justify-between">
+        <Text style={{ fontFamily: 'Nunito_800ExtraBold' }} className="text-base text-ink">
+          {display.title}
+        </Text>
+        {display.badge ? (
+          <View className="rounded-full bg-primary px-2.5 py-0.5">
+            <Text style={{ fontFamily: 'Nunito_800ExtraBold' }} className="text-xs text-white">
+              {display.badge}
+            </Text>
+          </View>
+        ) : null}
+      </View>
+      <Text style={{ fontFamily: 'Nunito_700Bold' }} className="mt-1 text-sm text-ink">
+        {display.price}
+        {display.period ? ` ${display.period}` : ''}
+      </Text>
+      {display.perMonth ? <Text className="text-xs text-ink-soft">{display.perMonth}</Text> : null}
+      {display.intro ? (
+        <Text style={{ fontFamily: 'Nunito_700Bold' }} className="mt-1 text-xs text-calm">
+          {display.intro}, puis {display.price} {display.period}
+        </Text>
+      ) : null}
+    </Pressable>
+  );
+}
+
 export default function PaywallScreen() {
-  const [purchasing, setPurchasing] = useState(false);
-  const [error, setError] = useState<string | null>(null);
+  const userId = useAuthStore((s) => s.session?.user.id);
   const queryClient = useQueryClient();
+  const [busy, setBusy] = useState<'purchase' | 'restore' | null>(null);
+  const [error, setError] = useState<string | null>(null);
+  const [notice, setNotice] = useState<string | null>(null);
+  const [selectedId, setSelectedId] = useState<string | null>(null);
 
   const offeringsQuery = useQuery({
     queryKey: ['offerings'],
@@ -26,31 +87,48 @@ export default function PaywallScreen() {
     enabled: isPurchasesConfigured,
   });
 
-  const handlePurchase = async (pkg: any) => {
+  const packages = useMemo(() => sortPackages(offeringsQuery.data?.availablePackages ?? []), [offeringsQuery.data]);
+  const savings = annualSavingsPercent(packages);
+  const selected = packages.find((p) => p.identifier === selectedId) ?? defaultPackage(packages);
+  const selectedDisplay = selected ? describePackage(selected, savings) : null;
+
+  const unlockPremium = () => {
+    queryClient.setQueryData(['premium', userId], true);
+    router.back();
+  };
+
+  const handlePurchase = async () => {
+    if (!selected) return;
     setError(null);
-    setPurchasing(true);
+    setNotice(null);
+    setBusy('purchase');
     try {
-      await purchasePackage(pkg);
-      await queryClient.invalidateQueries({ queryKey: ['premium'] });
-      router.back();
+      const outcome = await purchasePackage(selected);
+      if (outcome === 'premium') unlockPremium();
+      if (outcome === 'not-activated') {
+        setNotice(
+          "Paiement enregistré, mais Premium n'est pas encore actif (achat en attente de validation ?). " +
+            'Réessayez « Restaurer mes achats » dans quelques instants.'
+        );
+      }
     } catch (e) {
       setError((e as Error).message);
     } finally {
-      setPurchasing(false);
+      setBusy(null);
     }
   };
 
   const handleRestore = async () => {
     setError(null);
-    setPurchasing(true);
+    setNotice(null);
+    setBusy('restore');
     try {
-      await restorePurchases();
-      await queryClient.invalidateQueries({ queryKey: ['premium'] });
-      router.back();
+      if (await restorePurchases()) unlockPremium();
+      else setNotice("Aucun abonnement Premium actif n'a été retrouvé pour ce compte App Store / Google Play.");
     } catch (e) {
       setError((e as Error).message);
     } finally {
-      setPurchasing(false);
+      setBusy(null);
     }
   };
 
@@ -79,44 +157,61 @@ export default function PaywallScreen() {
         </View>
       ))}
 
-      {!isPurchasesConfigured ? (
+      {purchasesUnavailableReason ? (
         <View className="mt-4 rounded-2xl border border-line bg-accent-soft p-4">
-          <Text className="text-sm text-ink">
-            Les abonnements ne sont pas encore configurés (clé RevenueCat manquante). Ajoutez
-            EXPO_PUBLIC_REVENUECAT_IOS_KEY / EXPO_PUBLIC_REVENUECAT_ANDROID_KEY à .env une fois votre compte
-            RevenueCat et vos produits d'achat intégré créés.
-          </Text>
+          <Text className="text-sm text-ink">{purchasesUnavailableReason}</Text>
         </View>
       ) : offeringsQuery.isLoading ? (
         <ActivityIndicator className="mt-4" color="#FF6B57" />
-      ) : offeringsQuery.data ? (
-        <View className="mt-4">
-          {offeringsQuery.data.availablePackages.map((pkg: any) => (
-            <Pressable
-              key={pkg.identifier}
-              onPress={() => handlePurchase(pkg)}
-              disabled={purchasing}
-              className="mb-3 overflow-hidden rounded-full shadow-sm"
-            >
-              <LinearGradient colors={['#F0A324', '#FF6B57']} start={{ x: 0, y: 0 }} end={{ x: 1, y: 0 }} style={{ paddingVertical: 15 }}>
-                {purchasing ? (
-                  <ActivityIndicator color="#FFFFFF" />
-                ) : (
-                  <Text style={{ fontFamily: 'Nunito_800ExtraBold' }} className="text-center text-white">
-                    {pkg.product.title} — {pkg.product.priceString}
-                  </Text>
-                )}
-              </LinearGradient>
-            </Pressable>
-          ))}
-          <Pressable onPress={handleRestore} className="items-center py-2">
-            <Text className="text-sm text-ink-soft">Restaurer mes achats</Text>
+      ) : offeringsQuery.isError ? (
+        <View className="mt-4 rounded-2xl border border-line bg-surface p-4">
+          <Text className="text-sm text-ink">Impossible de charger les offres : {(offeringsQuery.error as Error).message}</Text>
+          <Pressable onPress={() => offeringsQuery.refetch()} className="mt-2">
+            <Text style={{ fontFamily: 'Nunito_700Bold' }} className="text-sm text-primary">
+              Réessayer
+            </Text>
           </Pressable>
         </View>
-      ) : (
+      ) : packages.length === 0 ? (
         <Text className="mt-4 text-sm text-ink-soft">Aucune offre disponible pour le moment.</Text>
+      ) : (
+        <View className="mt-4">
+          {isUsingTestStore ? (
+            <Text className="mb-3 text-center text-xs text-accent">
+              🧪 Mode test RevenueCat : les achats sont simulés, rien n'est débité.
+            </Text>
+          ) : null}
+          {packages.map((pkg) => (
+            <PackageOption
+              key={pkg.identifier}
+              pkg={pkg}
+              savings={savings}
+              selected={pkg.identifier === selected?.identifier}
+              onSelect={() => setSelectedId(pkg.identifier)}
+            />
+          ))}
+          <Pressable onPress={handlePurchase} disabled={busy !== null} className="mb-3 mt-1 overflow-hidden rounded-full shadow-sm">
+            <LinearGradient colors={['#F0A324', '#FF6B57']} start={{ x: 0, y: 0 }} end={{ x: 1, y: 0 }} style={{ paddingVertical: 15 }}>
+              {busy === 'purchase' ? (
+                <ActivityIndicator color="#FFFFFF" />
+              ) : (
+                <Text style={{ fontFamily: 'Nunito_800ExtraBold' }} className="text-center text-white">
+                  {selectedDisplay?.intro?.includes('gratuit') ? "Commencer l'essai gratuit" : 'Continuer'}
+                </Text>
+              )}
+            </LinearGradient>
+          </Pressable>
+          <Pressable onPress={handleRestore} disabled={busy !== null} className="items-center py-2">
+            {busy === 'restore' ? (
+              <ActivityIndicator size="small" color="#FF6B57" />
+            ) : (
+              <Text className="text-sm text-ink-soft">Restaurer mes achats</Text>
+            )}
+          </Pressable>
+        </View>
       )}
 
+      {notice ? <Text className="mt-3 text-xs text-ink">{notice}</Text> : null}
       {error ? <Text className="mt-3 text-xs text-red-700">{error}</Text> : null}
 
       <Text className="mt-6 text-[11px] leading-4 text-ink-soft">{SUBSCRIPTION_DISCLOSURE}</Text>

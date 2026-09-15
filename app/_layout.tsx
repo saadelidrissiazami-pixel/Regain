@@ -15,7 +15,7 @@ import { Platform } from 'react-native';
 import { SafeAreaProvider } from 'react-native-safe-area-context';
 
 import { queryClient } from '../src/lib/queryClient';
-import { initPurchases } from '../src/lib/purchases';
+import { initPurchases, onPremiumChange } from '../src/lib/purchases';
 import { useAuthStore } from '../src/store/authStore';
 
 SplashScreen.preventAutoHideAsync().catch(() => {});
@@ -35,9 +35,13 @@ export default function RootLayout() {
     init();
   }, [init]);
 
+  const userId = session?.user.id;
   useEffect(() => {
-    if (session?.user.id) initPurchases(session.user.id).catch(() => {});
-  }, [session?.user.id]);
+    if (!userId) return;
+    initPurchases(userId).catch(() => {});
+    // Achat, renouvellement ou expiration : le Premium se met à jour sans relancer l'app.
+    return onPremiumChange((premium) => queryClient.setQueryData(['premium', userId], premium));
+  }, [userId]);
 
   useEffect(() => {
     if (fontsLoaded) SplashScreen.hideAsync().catch(() => {});

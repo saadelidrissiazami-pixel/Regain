@@ -7,7 +7,7 @@ import { CategoryBadge } from '../../src/components/CategoryBadge';
 import { EnergyCheckin } from '../../src/components/EnergyCheckin';
 import { ENERGY_SLOTS } from '../../src/features/onboarding/options';
 import { fetchAvailabilitySlots } from '../../src/lib/availability';
-import { syncWeekPlanToCalendar } from '../../src/lib/deviceCalendar';
+import { autoSyncWeekPlan, calendarUnavailableReason, syncWeekPlanToCalendar } from '../../src/lib/deviceCalendar';
 import { formatDayLabel } from '../../src/lib/formatDate';
 import { scheduleActivityReminders } from '../../src/lib/notifications';
 import {
@@ -95,7 +95,9 @@ export default function PlanningScreen() {
     mutationFn: () => generateAndSaveWeekPlan(userId!, weekStart),
     onSuccess: (data) => {
       queryClient.setQueryData(['weekPlan', userId, weekStart], data);
-      scheduleActivityReminders(data).catch(() => {});
+      const availability = availabilityQuery.data ?? [];
+      scheduleActivityReminders(data, availability).catch(() => {});
+      autoSyncWeekPlan(data, availability, weekStart).catch(() => {});
     },
   });
 
@@ -111,7 +113,7 @@ export default function PlanningScreen() {
   });
 
   const calendarSyncMutation = useMutation({
-    mutationFn: () => syncWeekPlanToCalendar(planQuery.data ?? [], weekStart),
+    mutationFn: () => syncWeekPlanToCalendar(planQuery.data ?? [], availabilityQuery.data ?? [], weekStart),
   });
 
   const hasAvailability = (availabilityQuery.data?.length ?? 0) > 0;
@@ -178,7 +180,9 @@ export default function PlanningScreen() {
         <Text className="mb-4 text-xs text-red-700">{(generateMutation.error as Error).message}</Text>
       ) : null}
 
-      {days.length > 0 ? (
+      {days.length > 0 && calendarUnavailableReason ? (
+        <Text className="mb-5 text-center text-xs text-ink-soft">📆 {calendarUnavailableReason}</Text>
+      ) : days.length > 0 ? (
         <Pressable
           onPress={() => calendarSyncMutation.mutate()}
           disabled={calendarSyncMutation.isPending}

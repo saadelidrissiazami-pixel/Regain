@@ -1,10 +1,11 @@
 import { Platform } from 'react-native';
 
+import type { AvailabilitySlot } from '../features/availability/types';
+import { activityStartDate } from '../features/planning/schedule';
 import type { PlannedActivityRow } from './planning';
 
 const MORNING_NUDGE_ID = 'morning-nudge';
 const ACTIVITY_PREFIX = 'activity-';
-const TIME_SLOT_HOURS: Record<string, number> = { matin: 9, apres_midi: 14, soir: 19 };
 const REMINDER_LEAD_MINUTES = 15;
 
 const isSupported = Platform.OS !== 'web';
@@ -74,7 +75,7 @@ export async function cancelActivityReminders() {
 
 // N'affecte que le planning courant : appelé après chaque génération, seulement si les
 // rappels sont déjà activés (on ne redemande jamais la permission ici).
-export async function scheduleActivityReminders(items: PlannedActivityRow[]) {
+export async function scheduleActivityReminders(items: PlannedActivityRow[], availability: AvailabilitySlot[] = []) {
   if (!isSupported) return;
   if (!(await areRemindersEnabled())) return;
 
@@ -84,9 +85,8 @@ export async function scheduleActivityReminders(items: PlannedActivityRow[]) {
 
   const now = new Date();
   for (const item of items) {
-    const hour = TIME_SLOT_HOURS[item.time_slot] ?? 9;
-    const activityDate = new Date(`${item.date}T00:00:00`);
-    activityDate.setHours(hour, 0, 0, 0);
+    if (item.status === 'realise') continue;
+    const activityDate = activityStartDate(item, availability);
 
     const reminderDate = new Date(activityDate.getTime() - REMINDER_LEAD_MINUTES * 60_000);
     if (reminderDate <= now) continue;
