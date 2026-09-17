@@ -302,8 +302,10 @@ export default function FitnessScreen() {
         </Text>
       </Appear>
 
+      {/* Une clé par état : sans elle, React réutilise la même View d'un état à l'autre et NativeWind
+          plante sur iOS quand une ombre (shadow-sm) apparaît sur une vue déjà affichée. */}
       {!isPremium ? (
-        <View className="rounded-2xl border border-line bg-surface p-5 shadow-sm">
+        <View key="teaser" className="rounded-2xl border border-line bg-surface p-5 shadow-sm">
           <Text className="mb-2 text-3xl">🏋️</Text>
           <Text style={{ fontFamily: 'Nunito_800ExtraBold' }} className="mb-2 text-lg text-ink">
             Un coach forme rien que pour vous
@@ -321,7 +323,7 @@ export default function FitnessScreen() {
           </Link>
         </View>
       ) : profileQuery.isLoading || planQuery.isLoading ? (
-        <View>
+        <View key="loading">
           <Skeleton height={130} />
           <Skeleton height={80} />
           <Skeleton height={60} />
@@ -329,7 +331,7 @@ export default function FitnessScreen() {
         </View>
       ) : profileQuery.isError || planQuery.isError ? (
         // Sans cet état, une panne réseau ferait croire à l'utilisateur qu'il n'a pas de profil.
-        <View className="rounded-2xl border border-line bg-surface p-5 shadow-sm">
+        <View key="error" className="rounded-2xl border border-line bg-surface p-5 shadow-sm">
           <Text className="mb-4 text-sm text-ink-soft">
             Impossible de charger votre espace forme pour le moment.
           </Text>
@@ -346,7 +348,7 @@ export default function FitnessScreen() {
           </Pressable>
         </View>
       ) : !profile ? (
-        <View className="rounded-2xl border border-line bg-surface p-5 shadow-sm">
+        <View key="welcome" className="rounded-2xl border border-line bg-surface p-5 shadow-sm">
           <Text style={{ fontFamily: 'Nunito_800ExtraBold' }} className="mb-2 text-lg text-ink">
             Faisons connaissance
           </Text>
@@ -370,14 +372,14 @@ export default function FitnessScreen() {
             <>
               {targets ? <TargetsCard targets={targets} /> : null}
               {generateMutation.isPending ? (
-                <View className="mb-4 flex-row items-center rounded-2xl bg-surface p-4">
+                <View key="generating" className="mb-4 flex-row items-center rounded-2xl bg-surface p-4">
                   <ActivityIndicator color="#FF6B57" />
                   <Text className="ml-3 flex-1 text-sm text-ink-soft">
                     Préparation de vos séances, de vos menus et de votre liste de courses…
                   </Text>
                 </View>
               ) : (
-                <View className="mb-4">
+                <View key="generate" className="mb-4">
                   <GradientButton label="✨ Générer mon programme" onPress={() => generateMutation.mutate()} />
                 </View>
               )}
