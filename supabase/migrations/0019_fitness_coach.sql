@@ -4,7 +4,7 @@
 -- reconnue et un plancher de sécurité ; l'agent IA compose séances et menus DANS ces limites.
 -- Pas de default privileges depuis 0018 : chaque table reçoit ses GRANT explicites.
 
-create table public.fitness_profiles (
+create table if not exists public.fitness_profiles (
   user_id uuid primary key references public.profiles (id) on delete cascade,
   goals text[] not null default '{}',
   sex text not null check (sex in ('femme', 'homme')),
@@ -22,7 +22,7 @@ create table public.fitness_profiles (
   updated_at timestamptz not null default now()
 );
 
-create table public.fitness_plans (
+create table if not exists public.fitness_plans (
   id uuid primary key default gen_random_uuid(),
   user_id uuid not null references public.profiles (id) on delete cascade,
   targets jsonb not null,
@@ -33,9 +33,9 @@ create table public.fitness_plans (
   created_at timestamptz not null default now()
 );
 
-create index fitness_plans_user_created_idx on public.fitness_plans (user_id, created_at desc);
+create index if not exists fitness_plans_user_created_idx on public.fitness_plans (user_id, created_at desc);
 
-create table public.fitness_checkins (
+create table if not exists public.fitness_checkins (
   id uuid primary key default gen_random_uuid(),
   user_id uuid not null references public.profiles (id) on delete cascade,
   weight_kg numeric(5, 1) check (weight_kg between 35 and 250),
@@ -45,16 +45,19 @@ create table public.fitness_checkins (
   created_at timestamptz not null default now()
 );
 
-create index fitness_checkins_user_created_idx on public.fitness_checkins (user_id, created_at desc);
+create index if not exists fitness_checkins_user_created_idx on public.fitness_checkins (user_id, created_at desc);
 
 alter table public.fitness_profiles enable row level security;
 alter table public.fitness_plans enable row level security;
 alter table public.fitness_checkins enable row level security;
 
+drop policy if exists "own fitness profile" on public.fitness_profiles;
 create policy "own fitness profile" on public.fitness_profiles
   for all using (auth.uid() = user_id) with check (auth.uid() = user_id);
+drop policy if exists "own fitness plans" on public.fitness_plans;
 create policy "own fitness plans" on public.fitness_plans
   for all using (auth.uid() = user_id) with check (auth.uid() = user_id);
+drop policy if exists "own fitness checkins" on public.fitness_checkins;
 create policy "own fitness checkins" on public.fitness_checkins
   for all using (auth.uid() = user_id) with check (auth.uid() = user_id);
 
