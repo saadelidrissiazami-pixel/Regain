@@ -1,4 +1,5 @@
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
+import { Link } from 'expo-router';
 import { useCallback, useState } from 'react';
 import { ActivityIndicator, RefreshControl, ScrollView, View } from 'react-native';
 import { FadeOutRight } from 'react-native-reanimated';
@@ -7,11 +8,63 @@ import { CategoryBadge } from '../../src/components/CategoryBadge';
 import { Appear, PressableScale, ProgressBar, Skeleton, Wiggle } from '../../src/components/motion';
 import { ProgressRing } from '../../src/components/ProgressRing';
 import { CATEGORY_COLORS, CATEGORY_LABELS } from '../../src/features/planning/types';
+import { averageMood, moodOption } from '../../src/features/wellbeing/reflection';
+import { fetchWellbeingJournal, type JournalEntry } from '../../src/lib/wellbeing';
 import { formatDayLabel } from '../../src/lib/formatDate';
 import { fetchCompletedActivities, markActivityUndone } from '../../src/lib/planning';
 import { fetchStreak, fetchWeekStats } from '../../src/lib/tracking';
 import { useWeekStart } from '../../src/lib/useCurrentDate';
 import { useAuthStore } from '../../src/store/authStore';
+
+const MOOD_BAR_COUNT = 10;
+const MOOD_BAR_MAX_HEIGHT = 56;
+
+/** Derniers ressentis de séance, du plus ancien au plus récent. */
+function MoodTrend({ entries }: { entries: JournalEntry[] }) {
+  const rated = entries.filter((entry) => typeof entry.mood === 'number');
+  const recent = rated.slice(0, MOOD_BAR_COUNT).reverse();
+  const average = averageMood(rated.map((entry) => entry.mood));
+  const averageMoodOption = moodOption(average === null ? null : Math.round(average));
+
+  return (
+    <View className="mb-6 rounded-2xl border border-line bg-surface p-4 shadow-sm">
+      <View className="mb-3 flex-row items-center justify-between">
+        <View className="flex-1 pr-3">
+          <Text style={{ fontFamily: 'Nunito_800ExtraBold' }} className="text-sm text-ink">
+            Votre ressenti après les séances
+          </Text>
+          <Text className="mt-0.5 text-xs text-ink-soft">
+            {average === null
+              ? 'Notez votre ressenti à la fin d’une séance de bien-être.'
+              : `${average} sur 5 en moyenne, sur ${rated.length} séance${rated.length > 1 ? 's' : ''}`}
+          </Text>
+        </View>
+        {averageMoodOption ? <Text className="text-3xl">{averageMoodOption.emoji}</Text> : null}
+      </View>
+
+      {recent.length > 0 ? (
+        <View className="flex-row items-end justify-between" style={{ height: MOOD_BAR_MAX_HEIGHT }}>
+          {recent.map((entry) => (
+            <View
+              key={entry.id}
+              accessibilityLabel={moodOption(entry.mood)?.label}
+              style={{ height: ((entry.mood ?? 0) / 5) * MOOD_BAR_MAX_HEIGHT }}
+              className="flex-1 mx-0.5 rounded-t-lg bg-calm"
+            />
+          ))}
+        </View>
+      ) : null}
+
+      <Link href="/wellbeing/journal" asChild>
+        <PressableScale scaleTo={0.98} className="mt-3 items-center rounded-full border border-line bg-paper py-2.5">
+          <Text style={{ fontFamily: 'Nunito_700Bold' }} className="text-sm text-ink">
+            📔 Relire mon journal
+          </Text>
+        </PressableScale>
+      </Link>
+    </View>
+  );
+}
 
 export default function TrackingScreen() {
   const session = useAuthStore((s) => s.session);
@@ -37,6 +90,12 @@ export default function TrackingScreen() {
     enabled: !!userId,
   });
 
+  const journalQuery = useQuery({
+    queryKey: ['wellbeingJournal', userId],
+    queryFn: () => fetchWellbeingJournal(userId!, 30),
+    enabled: !!userId,
+  });
+
   const undoMutation = useMutation({
     mutationFn: (plannedActivityId: string) => markActivityUndone(userId!, plannedActivityId),
     onSuccess: () => {
@@ -59,11 +118,12 @@ export default function TrackingScreen() {
   const refetchStats = statsQuery.refetch;
   const refetchStreak = streakQuery.refetch;
   const refetchHistory = historyQuery.refetch;
+  const refetchJournal = journalQuery.refetch;
   const onRefresh = useCallback(async () => {
     setRefreshing(true);
-    await Promise.all([refetchStats(), refetchStreak(), refetchHistory()]);
+    await Promise.all([refetchStats(), refetchStreak(), refetchHistory(), refetchJournal()]);
     setRefreshing(false);
-  }, [refetchStats, refetchStreak, refetchHistory]);
+  }, [refetchStats, refetchStreak, refetchHistory, refetchJournal]);
 
   return (
     <ScrollView
@@ -104,6 +164,10 @@ export default function TrackingScreen() {
       </Appear>
 
       <Appear index={2}>
+        <MoodTrend entries={journalQuery.data ?? []} />
+      </Appear>
+
+      <Appear index={3}>
         <Text style={{ fontFamily: 'Nunito_800ExtraBold' }} className="mb-3 text-sm text-ink-soft">
           Temps par catégorie cette semaine
         </Text>

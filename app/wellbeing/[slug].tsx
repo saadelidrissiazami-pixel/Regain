@@ -3,13 +3,20 @@ import { LinearGradient } from 'expo-linear-gradient';
 import { router, useLocalSearchParams } from 'expo-router';
 import * as Speech from 'expo-speech';
 import { useCallback, useEffect, useReducer, useState } from 'react';
-import { ActivityIndicator, Animated, Pressable, View } from 'react-native';
+import { ActivityIndicator, Animated, Pressable, ScrollView, View } from 'react-native';
 import { Text, TextInput } from '../../src/components/typography';
+import { Appear, haptic, Pop, PressableScale } from '../../src/components/motion';
 import { CONTENT_BY_SLUG } from '../../src/features/wellbeing/content';
+import {
+  cleanReflections,
+  MOOD_OPTIONS,
+  promptsForCategory,
+  type Reflection,
+} from '../../src/features/wellbeing/reflection';
 import type { GroundingStep } from '../../src/features/wellbeing/types';
 import { usePremium } from '../../src/lib/premium';
 import { speakGently as speak } from '../../src/lib/voice';
-import { fetchPrograms, markProgramCompleted } from '../../src/lib/wellbeing';
+import { fetchPrograms, markProgramCompleted, type SessionReview } from '../../src/lib/wellbeing';
 import { useAuthStore } from '../../src/store/authStore';
 
 function ParagraphStepper({
@@ -376,37 +383,129 @@ function PrepCountdown({ onDone, audioOn }: { onDone: () => void; audioOn: boole
   );
 }
 
-function NoteScreen({ onSubmit, initialNote = '' }: { onSubmit: (note: string) => void; initialNote?: string }) {
-  const [note, setNote] = useState(initialNote);
+function MoodPicker({ value, onChange }: { value: number | null; onChange: (value: number) => void }) {
+  return (
+    <View className="mb-1 flex-row justify-between">
+      {MOOD_OPTIONS.map((option) => {
+        const selected = value === option.value;
+        return (
+          <PressableScale
+            key={option.value}
+            onPress={() => {
+              haptic.selection();
+              onChange(option.value);
+            }}
+            feedback={null}
+            scaleTo={0.9}
+            wrapperStyle={{ flex: 1, marginHorizontal: 3 }}
+            accessibilityRole="radio"
+            accessibilityState={{ selected }}
+            accessibilityLabel={option.label}
+            className={`items-center rounded-2xl border py-3 ${
+              selected ? 'border-primary bg-primary-soft' : 'border-line bg-surface'
+            }`}
+          >
+            <Pop trigger={selected}>
+              <Text className="text-2xl">{option.emoji}</Text>
+            </Pop>
+          </PressableScale>
+        );
+      })}
+    </View>
+  );
+}
+
+/** Fin de séance : ressenti chiffré, questions ouvertes puis note libre. Tout est facultatif. */
+function SessionReviewScreen({
+  category,
+  initialNote,
+  saving,
+  error,
+  onSubmit,
+}: {
+  category?: string;
+  initialNote?: string;
+  saving: boolean;
+  error?: string;
+  onSubmit: (review: Required<Pick<SessionReview, 'mood' | 'reflections' | 'note'>>) => void;
+}) {
+  const prompts = promptsForCategory(category);
+  const [mood, setMood] = useState<number | null>(null);
+  const [answers, setAnswers] = useState<string[]>(() => prompts.map(() => ''));
+  const [note, setNote] = useState(initialNote ?? '');
+
+  const selectedMood = MOOD_OPTIONS.find((option) => option.value === mood);
+  const reflections: Reflection[] = prompts.map((prompt, i) => ({ prompt, answer: answers[i] ?? '' }));
 
   return (
-    <View className="flex-1 px-8 pb-10">
-      <Text style={{ fontFamily: 'Nunito_800ExtraBold' }} className="mb-2 text-center text-xl text-ink">
-        Un mot sur cette séance ?
-      </Text>
-      <Text className="mb-5 text-center text-sm text-ink-soft">
-        Comment vous sentez-vous, à quoi avez-vous pensé ? Ces notes resteront privées et pourront être analysées
-        plus tard par votre coach IA.
-      </Text>
-      <TextInput
-        value={note}
-        onChangeText={setNote}
-        multiline
-        placeholder="Écrivez librement ici… (optionnel)"
-        placeholderTextColor="#B8AFA3"
-        className="mb-6 min-h-[120px] rounded-2xl border border-line bg-surface p-4 text-base text-ink"
-        style={{ fontFamily: 'Nunito_700Bold', textAlignVertical: 'top' }}
-      />
-      <View className="mt-auto">
-        <Pressable onPress={() => onSubmit(note)} className="overflow-hidden rounded-full shadow-sm">
+    <ScrollView className="flex-1 px-7" contentContainerStyle={{ paddingBottom: 40 }} keyboardShouldPersistTaps="handled">
+      <Appear>
+        <Text style={{ fontFamily: 'Nunito_800ExtraBold' }} className="mb-1 text-center text-xl text-ink">
+          Comment vous sentez-vous ?
+        </Text>
+        <Text className="mb-4 text-center text-sm text-ink-soft">
+          Votre ressenti juste après la séance. Il nourrit votre suivi.
+        </Text>
+        <MoodPicker value={mood} onChange={setMood} />
+        <Text style={{ fontFamily: 'Nunito_700Bold' }} className="mb-6 h-5 text-center text-xs text-primary">
+          {selectedMood?.label ?? ''}
+        </Text>
+      </Appear>
+
+      {prompts.map((prompt, i) => (
+        <Appear key={prompt} index={i + 1}>
+          <Text style={{ fontFamily: 'Nunito_700Bold' }} className="mb-1.5 text-sm text-ink">
+            {prompt}
+          </Text>
+          <TextInput
+            value={answers[i]}
+            onChangeText={(text) => setAnswers((current) => current.map((a, j) => (i === j ? text : a)))}
+            multiline
+            placeholder="Votre réponse… (facultatif)"
+            placeholderTextColor="#B8AFA3"
+            className="mb-4 min-h-[80px] rounded-2xl border border-line bg-surface p-4 text-base text-ink"
+            style={{ fontFamily: 'Nunito_700Bold', textAlignVertical: 'top' }}
+          />
+        </Appear>
+      ))}
+
+      <Appear index={prompts.length + 1}>
+        <Text style={{ fontFamily: 'Nunito_700Bold' }} className="mb-1.5 text-sm text-ink">
+          Autre chose à noter ?
+        </Text>
+        <TextInput
+          value={note}
+          onChangeText={setNote}
+          multiline
+          placeholder="Écrivez librement ici… (facultatif)"
+          placeholderTextColor="#B8AFA3"
+          className="mb-2 min-h-[90px] rounded-2xl border border-line bg-surface p-4 text-base text-ink"
+          style={{ fontFamily: 'Nunito_700Bold', textAlignVertical: 'top' }}
+        />
+        <Text className="mb-5 text-xs text-ink-soft">
+          Ces réponses restent privées : vous les relisez dans votre journal, sur l'onglet Bien-être.
+        </Text>
+
+        {error ? <Text className="mb-3 text-xs text-red-700">{error}</Text> : null}
+
+        <PressableScale
+          onPress={() => onSubmit({ mood, reflections: cleanReflections(reflections), note })}
+          disabled={saving}
+          feedback="medium"
+          className="overflow-hidden rounded-full shadow-sm"
+        >
           <LinearGradient colors={['#F0A324', '#FF6B57']} start={{ x: 0, y: 0 }} end={{ x: 1, y: 0 }} style={{ paddingVertical: 15 }}>
-            <Text style={{ fontFamily: 'Nunito_800ExtraBold' }} className="text-center text-white">
-              {note.trim() ? 'Enregistrer et terminer' : 'Terminer'}
-            </Text>
+            {saving ? (
+              <ActivityIndicator color="#FFFFFF" />
+            ) : (
+              <Text style={{ fontFamily: 'Nunito_800ExtraBold' }} className="text-center text-white">
+                Enregistrer et terminer
+              </Text>
+            )}
           </LinearGradient>
-        </Pressable>
-      </View>
-    </View>
+        </PressableScale>
+      </Appear>
+    </ScrollView>
   );
 }
 
@@ -432,9 +531,12 @@ export default function WellbeingSessionScreen() {
   const content = slug ? getContent(slug) : undefined;
 
   const completeMutation = useMutation({
-    mutationFn: (note: string) => markProgramCompleted(session!.user.id, program!.id, note),
+    mutationFn: (review: SessionReview) => markProgramCompleted(session!.user.id, program!.id, review),
     onSuccess: () => {
+      haptic.success();
       queryClient.invalidateQueries({ queryKey: ['completedPrograms', session?.user.id] });
+      queryClient.invalidateQueries({ queryKey: ['wellbeingJournal', session?.user.id] });
+      setCompleted(true);
     },
   });
 
@@ -448,10 +550,12 @@ export default function WellbeingSessionScreen() {
     setShowNote(true);
   };
 
-  const handleSubmitNote = (note: string) => {
-    if (program && session?.user.id) completeMutation.mutate(note);
-    setShowNote(false);
-    setCompleted(true);
+  const handleSubmitReview = (review: SessionReview) => {
+    if (!program || !session?.user.id) {
+      setCompleted(true);
+      return;
+    }
+    completeMutation.mutate(review);
   };
 
   useEffect(() => {
@@ -533,6 +637,14 @@ export default function WellbeingSessionScreen() {
           <Text style={{ fontFamily: 'Nunito_800ExtraBold' }} className="mb-2 text-center text-2xl text-ink">
             Séance terminée
           </Text>
+          <Text className="mb-2 text-center text-sm text-ink-soft">
+            Vos réponses vous attendent dans votre journal.
+          </Text>
+          <Pressable onPress={() => router.replace('/wellbeing/journal')} className="mt-2">
+            <Text style={{ fontFamily: 'Nunito_700Bold' }} className="text-sm text-primary underline">
+              Relire mon journal
+            </Text>
+          </Pressable>
           <Pressable onPress={() => router.back()} className="mt-6 w-full overflow-hidden rounded-full shadow-sm">
             <LinearGradient colors={['#F0A324', '#FF6B57']} start={{ x: 0, y: 0 }} end={{ x: 1, y: 0 }} style={{ paddingVertical: 15 }}>
               <Text style={{ fontFamily: 'Nunito_800ExtraBold' }} className="text-center text-white">
@@ -542,7 +654,13 @@ export default function WellbeingSessionScreen() {
           </Pressable>
         </View>
       ) : showNote ? (
-        <NoteScreen onSubmit={handleSubmitNote} initialNote={noteDraft} />
+        <SessionReviewScreen
+          category={program.category}
+          initialNote={noteDraft}
+          saving={completeMutation.isPending}
+          error={completeMutation.isError ? (completeMutation.error as Error).message : undefined}
+          onSubmit={handleSubmitReview}
+        />
       ) : preparing ? (
         <PrepCountdown onDone={handlePrepDone} audioOn={audioOn} />
       ) : content.type === 'breathing' ? (

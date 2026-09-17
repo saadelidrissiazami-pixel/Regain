@@ -7,7 +7,8 @@ import Animated, { FadeIn, FadeOut } from 'react-native-reanimated';
 import { Appear, Chevron, haptic, PressableScale, Skeleton } from '../../src/components/motion';
 import { Text } from '../../src/components/typography';
 import { usePremium } from '../../src/lib/premium';
-import { fetchCompletedProgramIds, fetchPrograms } from '../../src/lib/wellbeing';
+import { moodOption } from '../../src/features/wellbeing/reflection';
+import { fetchCompletedProgramIds, fetchPrograms, fetchWellbeingJournal } from '../../src/lib/wellbeing';
 import { useAuthStore } from '../../src/store/authStore';
 import type { WellbeingProgram } from '../../src/features/wellbeing/types';
 
@@ -36,6 +37,13 @@ export default function WellbeingScreen() {
     queryFn: () => fetchCompletedProgramIds(userId!),
     enabled: !!userId,
   });
+  const journalQuery = useQuery({
+    queryKey: ['wellbeingJournal', userId],
+    queryFn: () => fetchWellbeingJournal(userId!, 20),
+    enabled: !!userId,
+  });
+  const lastEntry = journalQuery.data?.[0];
+  const lastMood = moodOption(lastEntry?.mood);
 
   const featured = programsQuery.data?.find((p) => p.slug === FEATURED_SLUG);
 
@@ -111,6 +119,28 @@ export default function WellbeingScreen() {
         </Appear>
       ) : null}
 
+      <Appear index={2}>
+        <Link href="/wellbeing/journal" asChild>
+          <PressableScale
+            scaleTo={0.98}
+            className="mb-5 flex-row items-center justify-between rounded-2xl border border-line bg-surface p-4 shadow-sm"
+          >
+            <View className="flex-1 pr-3">
+              <Text style={{ fontFamily: 'Nunito_800ExtraBold' }} className="text-sm text-ink">
+                📔 Mon journal
+              </Text>
+              <Text className="mt-0.5 text-xs text-ink-soft">
+                {lastEntry
+                  ? `Dernière séance : ${lastEntry.program?.title ?? 'séance'}${lastMood ? ` · ${lastMood.label}` : ''}`
+                  : 'Vos ressentis et vos réponses, séance après séance.'}
+              </Text>
+            </View>
+            {lastMood ? <Text className="mr-2 text-xl">{lastMood.emoji}</Text> : null}
+            <Text className="text-base text-primary">→</Text>
+          </PressableScale>
+        </Link>
+      </Appear>
+
       {programsQuery.isLoading ? (
         <View>
           <Skeleton height={96} style={{ marginBottom: 24 }} />
@@ -126,7 +156,7 @@ export default function WellbeingScreen() {
         const doneCount = programs.filter((p) => completedQuery.data?.has(p.id)).length;
 
         return (
-          <Appear key={category} index={categoryIndex + 2}>
+          <Appear key={category} index={categoryIndex + 3}>
             <View className="mb-3 overflow-hidden rounded-2xl border border-line bg-surface shadow-sm">
               <Pressable
                 onPress={() => toggleCategory(category)}

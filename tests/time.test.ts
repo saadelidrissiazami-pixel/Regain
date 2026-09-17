@@ -1,5 +1,6 @@
 import { describe, expect, it } from 'vitest';
 
+import { formatDateTimeLabel } from '../src/lib/formatDate';
 import { durationMinutes, formatTimeRange, TIME_SELECT_OPTIONS, timeSlotFromStartTime } from '../src/lib/time';
 
 describe('timeSlotFromStartTime', () => {
@@ -41,5 +42,13 @@ describe('TIME_SELECT_OPTIONS', () => {
       'Soir',
     ]);
     expect(TIME_SELECT_OPTIONS).toHaveLength(36);
+  });
+});
+
+describe('formatDateTimeLabel', () => {
+  it('écrit le jour et l’heure en français', () => {
+    const label = formatDateTimeLabel('2026-09-17T17:20:00Z');
+    expect(label).toMatch(/^Jeudi 17 sept/);
+    expect(label).toMatch(/\d{2}:\d{2}/);
   });
 });
