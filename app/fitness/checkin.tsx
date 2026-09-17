@@ -4,17 +4,22 @@ import { router } from 'expo-router';
 import { useState } from 'react';
 import { ActivityIndicator, Pressable, ScrollView, View } from 'react-native';
 
-import { Chip } from '../../src/components/Chip';
+import { AdjustmentsList } from '../../src/components/AdjustmentsList';
+import { Appear, haptic, PressableScale } from '../../src/components/motion';
+import { Segmented } from '../../src/components/Segmented';
+import { Select } from '../../src/components/Select';
 import { Text, TextInput } from '../../src/components/typography';
-import { createCheckin, createFitnessPlan, fetchFitnessProfile, updateFitnessWeight } from '../../src/lib/fitness';
+import { summarizeAdjustments, type PlanAdjustment } from '../../src/features/fitness/planDiff';
+import type { FitnessPlan } from '../../src/features/fitness/types';
+import { createCheckin, createFitnessPlan, fetchFitnessProfile, fetchLatestFitnessPlan, updateFitnessWeight } from '../../src/lib/fitness';
 import { useAuthStore } from '../../src/store/authStore';
 
 const ENERGY_LEVELS = [
-  { value: 1, label: 'Épuisé·e' },
-  { value: 2, label: 'Fatigué·e' },
-  { value: 3, label: 'Correct' },
-  { value: 4, label: 'En forme' },
-  { value: 5, label: 'Au top' },
+  { value: 1, label: 'Épuisé·e', hint: 'Rien dans le réservoir' },
+  { value: 2, label: 'Fatigué·e', hint: 'Les séances ont été dures' },
+  { value: 3, label: 'Correct', hint: 'Ni plus ni moins que d’habitude' },
+  { value: 4, label: 'En forme', hint: 'Bonne semaine' },
+  { value: 5, label: 'Au top', hint: 'Prêt·e à en faire plus' },
 ];
 
 export default function FitnessCheckinScreen() {
@@ -35,7 +40,7 @@ export default function FitnessCheckinScreen() {
   const profile = profileQuery.data;
 
   const submitMutation = useMutation({
-    mutationFn: async () => {
+    mutationFn: async (): Promise<{ plan: FitnessPlan; adjustments: PlanAdjustment[] }> => {
       if (!userId || !profile) throw new Error('Profil forme introuvable.');
       if (sessionsDone === null || energy === null) {
         throw new Error('Indiquez vos séances faites et votre niveau d’énergie.');
@@ -54,17 +59,78 @@ export default function FitnessCheckinScreen() {
       if (weight !== null) await updateFitnessWeight(userId, weight);
 
       // Nouveau programme : cibles recalculées avec le poids du jour, volume ajusté selon le bilan.
+      const previous = queryClient.getQueryData<FitnessPlan | null>(['fitnessPlan', userId]) ?? (await fetchLatestFitnessPlan(userId));
       const updatedProfile = weight !== null ? { ...profile, weight_kg: weight } : profile;
-      return createFitnessPlan(userId, updatedProfile, { sessions_done: sessionsDone, energy });
+      const plan = await createFitnessPlan(userId, updatedProfile, { sessions_done: sessionsDone, energy });
+
+      return {
+        plan,
+        adjustments: summarizeAdjustments({
+          previous,
+          next: plan,
+          checkin: { sessions_done: sessionsDone, energy },
+          daysPerWeek: profile.days_per_week,
+          previousWeightKg: Number(profile.weight_kg),
+          newWeightKg: weight,
+        }),
+      };
     },
-    onSuccess: (plan) => {
+    onSuccess: ({ plan }) => {
+      haptic.success();
       queryClient.setQueryData(['fitnessPlan', userId], plan);
       queryClient.invalidateQueries({ queryKey: ['fitnessProfile', userId] });
-      router.back();
+      queryClient.invalidateQueries({ queryKey: ['fitnessCheckins', userId] });
+      queryClient.invalidateQueries({ queryKey: ['fitnessPlans', userId] });
     },
   });
 
+  const result = submitMutation.data;
+
   const plannedSessions = profile?.days_per_week ?? 3;
+
+  // Après l'envoi : ce que le bilan a changé, avant de revenir au programme.
+  if (result) {
+    return (
+      <ScrollView className="flex-1 bg-paper px-6 pt-16" contentContainerStyle={{ paddingBottom: 60 }}>
+        <Appear>
+          <Text className="mb-3 text-4xl">✅</Text>
+          <Text style={{ fontFamily: 'Nunito_800ExtraBold' }} className="mb-1 text-[28px] leading-8 text-ink">
+            Bilan pris en compte
+          </Text>
+          <Text className="mb-5 text-sm text-ink-soft">
+            Votre programme de la semaine, vos menus et votre liste de courses viennent d'être ajustés.
+          </Text>
+        </Appear>
+
+        <View className="mb-4 rounded-2xl border border-line bg-surface p-4 shadow-sm">
+          <AdjustmentsList adjustments={result.adjustments} />
+        </View>
+
+        {result.plan.coach_notes ? (
+          <Appear index={1}>
+            <View className="mb-5 rounded-2xl bg-calm-soft p-4">
+              <Text style={{ fontFamily: 'Nunito_700Bold' }} className="mb-1 text-xs text-calm">
+                Le mot de votre coach
+              </Text>
+              <Text className="text-sm leading-5 text-ink">{result.plan.coach_notes}</Text>
+            </View>
+          </Appear>
+        ) : null}
+
+        <PressableScale
+          onPress={() => router.back()}
+          feedback="medium"
+          className="overflow-hidden rounded-full shadow-sm"
+        >
+          <LinearGradient colors={['#F0A324', '#FF6B57']} start={{ x: 0, y: 0 }} end={{ x: 1, y: 0 }} style={{ paddingVertical: 15 }}>
+            <Text style={{ fontFamily: 'Nunito_800ExtraBold' }} className="text-center text-white">
+              Voir mon programme
+            </Text>
+          </LinearGradient>
+        </PressableScale>
+      </ScrollView>
+    );
+  }
 
   return (
     <ScrollView className="flex-1 bg-paper px-6 pt-16" contentContainerStyle={{ paddingBottom: 60 }}>
@@ -86,23 +152,22 @@ export default function FitnessCheckinScreen() {
 
       {profileQuery.isLoading ? <ActivityIndicator color="#FF6B57" /> : null}
 
-      <Text style={{ fontFamily: 'Nunito_800ExtraBold' }} className="mb-2.5 text-sm text-ink">
-        Séances faites (sur {plannedSessions} prévues)
-      </Text>
-      <View className="mb-4 flex-row flex-wrap">
-        {Array.from({ length: plannedSessions + 1 }, (_, n) => n).map((n) => (
-          <Chip key={n} label={String(n)} selected={sessionsDone === n} onPress={() => setSessionsDone(n)} />
-        ))}
-      </View>
+      <Segmented
+        label="Séances faites"
+        value={sessionsDone ?? -1}
+        onChange={setSessionsDone}
+        options={Array.from({ length: plannedSessions + 1 }, (_, n) => ({ value: n, label: String(n) }))}
+      />
+      <Text className="mb-4 text-xs text-ink-soft">Sur {plannedSessions} prévues. Zéro aussi est une réponse.</Text>
 
-      <Text style={{ fontFamily: 'Nunito_800ExtraBold' }} className="mb-2.5 text-sm text-ink">
-        Votre énergie cette semaine
-      </Text>
-      <View className="mb-4 flex-row flex-wrap">
-        {ENERGY_LEVELS.map((level) => (
-          <Chip key={level.value} label={level.label} selected={energy === level.value} onPress={() => setEnergy(level.value)} />
-        ))}
-      </View>
+      <Select
+        label="Votre énergie cette semaine"
+        title="Comment avez-vous tenu ?"
+        placeholder="Choisir"
+        value={energy}
+        options={ENERGY_LEVELS}
+        onChange={setEnergy}
+      />
 
       <Text style={{ fontFamily: 'Nunito_800ExtraBold' }} className="mb-2.5 text-sm text-ink">
         Poids actuel (optionnel)
@@ -141,9 +206,10 @@ export default function FitnessCheckinScreen() {
           </Text>
         </View>
       ) : (
-        <Pressable
+        <PressableScale
           onPress={() => submitMutation.mutate()}
           disabled={!profile}
+          feedback="medium"
           className="overflow-hidden rounded-full shadow-sm"
         >
           <LinearGradient colors={['#F0A324', '#FF6B57']} start={{ x: 0, y: 0 }} end={{ x: 1, y: 0 }} style={{ paddingVertical: 15 }}>
@@ -151,7 +217,7 @@ export default function FitnessCheckinScreen() {
               Envoyer mon bilan
             </Text>
           </LinearGradient>
-        </Pressable>
+        </PressableScale>
       )}
     </ScrollView>
   );

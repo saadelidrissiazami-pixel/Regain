@@ -30,16 +30,20 @@ export async function updateFitnessWeight(userId: string, weightKg: number) {
   if (error) throw error;
 }
 
-export async function fetchLatestFitnessPlan(userId: string): Promise<FitnessPlan | null> {
+/** Derniers programmes, du plus récent au plus ancien : le précédent sert à montrer ce qui a changé. */
+export async function fetchLatestFitnessPlans(userId: string, limit = 2): Promise<FitnessPlan[]> {
   const { data, error } = await supabase
     .from('fitness_plans')
     .select('*')
     .eq('user_id', userId)
     .order('created_at', { ascending: false })
-    .limit(1)
-    .maybeSingle();
+    .limit(limit);
   if (error) throw error;
-  return data as FitnessPlan | null;
+  return (data ?? []) as FitnessPlan[];
+}
+
+export async function fetchLatestFitnessPlan(userId: string): Promise<FitnessPlan | null> {
+  return (await fetchLatestFitnessPlans(userId, 1))[0] ?? null;
 }
 
 export async function fetchRecentCheckins(userId: string, limit = 8): Promise<FitnessCheckin[]> {

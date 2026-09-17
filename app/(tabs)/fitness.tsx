@@ -5,11 +5,20 @@ import { useState } from 'react';
 import { ActivityIndicator, Pressable, ScrollView, View } from 'react-native';
 import Animated, { FadeIn, FadeOut } from 'react-native-reanimated';
 
+import { AdjustmentsList } from '../../src/components/AdjustmentsList';
 import { Appear, Chevron, haptic, Pop, PressableScale, Skeleton, useAnimatedNumber } from '../../src/components/motion';
 import { Text } from '../../src/components/typography';
 import type { NutritionTargets } from '../../src/features/fitness/nutrition';
 import type { FitnessPlan, MealDay, ShoppingItem, WorkoutSession } from '../../src/features/fitness/types';
-import { createFitnessPlan, fetchFitnessProfile, fetchLatestFitnessPlan, targetsForProfile } from '../../src/lib/fitness';
+import { summarizeAdjustments } from '../../src/features/fitness/planDiff';
+import { formatDateTimeLabel } from '../../src/lib/formatDate';
+import {
+  createFitnessPlan,
+  fetchFitnessProfile,
+  fetchLatestFitnessPlans,
+  fetchRecentCheckins,
+  targetsForProfile,
+} from '../../src/lib/fitness';
 import { usePremium } from '../../src/lib/premium';
 import { useAuthStore } from '../../src/store/authStore';
 
@@ -268,7 +277,19 @@ export default function FitnessScreen() {
 
   const planQuery = useQuery({
     queryKey: ['fitnessPlan', userId],
-    queryFn: () => fetchLatestFitnessPlan(userId!),
+    queryFn: async () => (await fetchLatestFitnessPlans(userId!, 1))[0] ?? null,
+    enabled: !!userId && isPremium,
+  });
+
+  // Programme précédent + derniers bilans : servent à montrer ce que le bilan a changé.
+  const plansQuery = useQuery({
+    queryKey: ['fitnessPlans', userId],
+    queryFn: () => fetchLatestFitnessPlans(userId!, 2),
+    enabled: !!userId && isPremium,
+  });
+  const checkinsQuery = useQuery({
+    queryKey: ['fitnessCheckins', userId],
+    queryFn: () => fetchRecentCheckins(userId!, 2),
     enabled: !!userId && isPremium,
   });
 
@@ -280,8 +301,24 @@ export default function FitnessScreen() {
     onSuccess: (plan) => {
       haptic.success();
       queryClient.setQueryData(['fitnessPlan', userId], plan);
+      queryClient.invalidateQueries({ queryKey: ['fitnessPlans', userId] });
     },
   });
+
+  // Le programme affiché suit-il un bilan ? Si oui, on rappelle ce qu'il a changé.
+  const plans = plansQuery.data ?? [];
+  const lastCheckin = checkinsQuery.data?.[0];
+  const adjustments =
+    profile && lastCheckin && plans[0] && plans[0].created_at > lastCheckin.created_at
+      ? summarizeAdjustments({
+          previous: plans[1] ?? null,
+          next: plans[0],
+          checkin: lastCheckin,
+          daysPerWeek: profile.days_per_week,
+          previousWeightKg: checkinsQuery.data?.[1]?.weight_kg ?? null,
+          newWeightKg: lastCheckin.weight_kg,
+        })
+      : null;
 
   if (premiumLoading) {
     return (
@@ -366,6 +403,17 @@ export default function FitnessScreen() {
         </View>
       ) : (
         <>
+          {adjustments && planQuery.data ? (
+            <Appear>
+              <View className="mb-4 rounded-2xl border border-primary-soft bg-primary-soft p-4">
+                <Text style={{ fontFamily: 'Nunito_700Bold' }} className="mb-2 text-[11px] uppercase tracking-wide text-primary">
+                  Ajusté après votre bilan du {formatDateTimeLabel(lastCheckin!.created_at)}
+                </Text>
+                <AdjustmentsList adjustments={adjustments} />
+              </View>
+            </Appear>
+          ) : null}
+
           {planQuery.data ? (
             <PlanView plan={planQuery.data} />
           ) : (
@@ -398,6 +446,11 @@ export default function FitnessScreen() {
                   </Text>
                 </PressableScale>
               </Link>
+              {lastCheckin ? (
+                <Text className="mt-2 text-center text-xs text-ink-soft">
+                  Dernier bilan : {formatDateTimeLabel(lastCheckin.created_at)}
+                </Text>
+              ) : null}
             </View>
           ) : null}
 
