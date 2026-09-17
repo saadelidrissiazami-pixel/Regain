@@ -25,3 +25,16 @@ export function durationMinutes(start: string, end: string): number {
 export function formatTimeRange(start: string, end: string): string {
   return `${start.slice(0, 5)}–${end.slice(0, 5)}`;
 }
+
+const TIME_GROUP_LABELS: Record<TimeSlot, string> = {
+  matin: 'Matin',
+  apres_midi: 'Après-midi',
+  soir: 'Soir',
+};
+
+/** Options d'horaires pour une liste déroulante, groupées par moment de la journée. */
+export const TIME_SELECT_OPTIONS: { value: string; label: string; group: string }[] = TIME_OPTIONS.map((time) => ({
+  value: time,
+  label: time,
+  group: TIME_GROUP_LABELS[timeSlotFromStartTime(time)],
+}));

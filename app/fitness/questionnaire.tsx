@@ -5,7 +5,9 @@ import { router } from 'expo-router';
 import { Controller, useForm } from 'react-hook-form';
 import { ActivityIndicator, Pressable, ScrollView, View } from 'react-native';
 
-import { Chip } from '../../src/components/Chip';
+import { Segmented } from '../../src/components/Segmented';
+import { Select, SelectMulti } from '../../src/components/Select';
+import { PressableScale } from '../../src/components/motion';
 import { Text, TextInput } from '../../src/components/typography';
 import {
   ACTIVITY_LEVELS,
@@ -25,8 +27,15 @@ import type { FitnessProfile } from '../../src/features/fitness/types';
 import { fetchFitnessProfile, saveFitnessProfile } from '../../src/lib/fitness';
 import { useAuthStore } from '../../src/store/authStore';
 
-const DAYS_OPTIONS = [1, 2, 3, 4, 5, 6];
-const SESSION_MINUTES_OPTIONS = [30, 45, 60, 75, 90];
+const DAYS_OPTIONS = [1, 2, 3, 4, 5, 6].map((days) => ({
+  value: days,
+  label: `${days} séance${days > 1 ? 's' : ''} par semaine`,
+}));
+const SESSION_MINUTES_OPTIONS = [30, 45, 60, 75, 90].map((minutes) => ({
+  value: minutes,
+  label: `${minutes} minutes`,
+  hint: minutes <= 30 ? 'Séances courtes et efficaces' : minutes >= 75 ? 'Séances longues, échauffement compris' : undefined,
+}));
 
 function SectionTitle({ children }: { children: string }) {
   return (
@@ -68,18 +77,14 @@ function QuestionnaireForm({ userId, initialProfile }: { userId: string; initial
         control={control}
         name="goals"
         render={({ field: { value, onChange } }) => (
-          <View className="mb-1 flex-row flex-wrap">
-            {FITNESS_GOALS.map((goal) => (
-              <Chip
-                key={goal.value}
-                label={goal.label}
-                selected={value.includes(goal.value)}
-                onPress={() =>
-                  onChange(value.includes(goal.value) ? value.filter((g) => g !== goal.value) : [...value, goal.value])
-                }
-              />
-            ))}
-          </View>
+          <SelectMulti
+            label="Objectifs"
+            title="Que cherchez-vous ?"
+            placeholder="Choisir un ou plusieurs objectifs"
+            values={value}
+            options={[...FITNESS_GOALS]}
+            onChange={onChange}
+          />
         )}
       />
       <FieldError message={errors.goals?.message} />
@@ -92,11 +97,7 @@ function QuestionnaireForm({ userId, initialProfile }: { userId: string; initial
         control={control}
         name="sex"
         render={({ field: { value, onChange } }) => (
-          <View className="mb-2 flex-row flex-wrap">
-            {SEX_OPTIONS.map((opt) => (
-              <Chip key={opt.value} label={opt.label} selected={value === opt.value} onPress={() => onChange(opt.value)} />
-            ))}
-          </View>
+          <Segmented label="Sexe" value={value} onChange={onChange} options={[...SEX_OPTIONS]} />
         )}
       />
       <Controller
@@ -156,20 +157,13 @@ function QuestionnaireForm({ userId, initialProfile }: { userId: string; initial
         control={control}
         name="activityLevel"
         render={({ field: { value, onChange } }) => (
-          <View>
-            {ACTIVITY_LEVELS.map((level) => (
-              <Pressable
-                key={level.value}
-                onPress={() => onChange(level.value)}
-                className={`mb-2 rounded-2xl border p-3.5 ${value === level.value ? 'border-primary bg-primary-soft' : 'border-line bg-surface'}`}
-              >
-                <Text style={{ fontFamily: 'Nunito_700Bold' }} className="text-sm text-ink">
-                  {level.label}
-                </Text>
-                <Text className="text-xs text-ink-soft">{level.hint}</Text>
-              </Pressable>
-            ))}
-          </View>
+          <Select
+            label="Niveau d'activité"
+            title="Votre activité au quotidien"
+            value={value}
+            options={[...ACTIVITY_LEVELS]}
+            onChange={onChange}
+          />
         )}
       />
 
@@ -178,11 +172,7 @@ function QuestionnaireForm({ userId, initialProfile }: { userId: string; initial
         control={control}
         name="experience"
         render={({ field: { value, onChange } }) => (
-          <View className="flex-row flex-wrap">
-            {EXPERIENCE_LEVELS.map((opt) => (
-              <Chip key={opt.value} label={opt.label} selected={value === opt.value} onPress={() => onChange(opt.value)} />
-            ))}
-          </View>
+          <Segmented label="Niveau" value={value} onChange={onChange} options={[...EXPERIENCE_LEVELS]} />
         )}
       />
 
@@ -191,11 +181,13 @@ function QuestionnaireForm({ userId, initialProfile }: { userId: string; initial
         control={control}
         name="equipment"
         render={({ field: { value, onChange } }) => (
-          <View className="flex-row flex-wrap">
-            {EQUIPMENT_OPTIONS.map((opt) => (
-              <Chip key={opt.value} label={opt.label} selected={value === opt.value} onPress={() => onChange(opt.value)} />
-            ))}
-          </View>
+          <Select
+            label="Matériel"
+            title="Avec quoi vous entraînez-vous ?"
+            value={value}
+            options={[...EQUIPMENT_OPTIONS]}
+            onChange={onChange}
+          />
         )}
       />
 
@@ -204,11 +196,13 @@ function QuestionnaireForm({ userId, initialProfile }: { userId: string; initial
         control={control}
         name="daysPerWeek"
         render={({ field: { value, onChange } }) => (
-          <View className="flex-row flex-wrap">
-            {DAYS_OPTIONS.map((days) => (
-              <Chip key={days} label={String(days)} selected={value === days} onPress={() => onChange(days)} />
-            ))}
-          </View>
+          <Select
+            label="Séances par semaine"
+            title="Combien de séances par semaine ?"
+            value={value}
+            options={DAYS_OPTIONS}
+            onChange={onChange}
+          />
         )}
       />
 
@@ -217,11 +211,13 @@ function QuestionnaireForm({ userId, initialProfile }: { userId: string; initial
         control={control}
         name="sessionMinutes"
         render={({ field: { value, onChange } }) => (
-          <View className="flex-row flex-wrap">
-            {SESSION_MINUTES_OPTIONS.map((minutes) => (
-              <Chip key={minutes} label={`${minutes} min`} selected={value === minutes} onPress={() => onChange(minutes)} />
-            ))}
-          </View>
+          <Select
+            label="Durée d'une séance"
+            title="Combien de temps par séance ?"
+            value={value}
+            options={SESSION_MINUTES_OPTIONS}
+            onChange={onChange}
+          />
         )}
       />
 
@@ -230,11 +226,13 @@ function QuestionnaireForm({ userId, initialProfile }: { userId: string; initial
         control={control}
         name="diet"
         render={({ field: { value, onChange } }) => (
-          <View className="mb-2 flex-row flex-wrap">
-            {DIET_OPTIONS.map((opt) => (
-              <Chip key={opt.value} label={opt.label} selected={value === opt.value} onPress={() => onChange(opt.value)} />
-            ))}
-          </View>
+          <Select
+            label="Régime alimentaire"
+            title="Votre alimentation"
+            value={value}
+            options={[...DIET_OPTIONS]}
+            onChange={onChange}
+          />
         )}
       />
       <Controller
@@ -278,9 +276,10 @@ function QuestionnaireForm({ userId, initialProfile }: { userId: string; initial
         <Text className="mb-3 text-xs text-red-700">{(saveMutation.error as Error).message}</Text>
       ) : null}
 
-      <Pressable
+      <PressableScale
         onPress={handleSubmit((values) => saveMutation.mutate(values))}
         disabled={saveMutation.isPending}
+        feedback="medium"
         className="overflow-hidden rounded-full shadow-sm"
       >
         <LinearGradient colors={['#F0A324', '#FF6B57']} start={{ x: 0, y: 0 }} end={{ x: 1, y: 0 }} style={{ paddingVertical: 15 }}>
@@ -292,7 +291,7 @@ function QuestionnaireForm({ userId, initialProfile }: { userId: string; initial
             </Text>
           )}
         </LinearGradient>
-      </Pressable>
+      </PressableScale>
     </>
   );
 }

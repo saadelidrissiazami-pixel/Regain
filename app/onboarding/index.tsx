@@ -3,11 +3,13 @@ import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { router } from 'expo-router';
 import { useState } from 'react';
 import { Controller, useForm, useWatch } from 'react-hook-form';
-import { ActivityIndicator, Pressable, ScrollView, View } from 'react-native';
+import { ActivityIndicator, ScrollView, View } from 'react-native';
 import { Text } from '../../src/components/typography';
 import { LinearGradient } from 'expo-linear-gradient';
 
-import { Chip } from '../../src/components/Chip';
+import { Segmented } from '../../src/components/Segmented';
+import { SelectMulti } from '../../src/components/Select';
+import { Appear, PressableScale } from '../../src/components/motion';
 import { completeOnboarding } from '../../src/lib/profile';
 import { useAuthStore } from '../../src/store/authStore';
 import { BUDGET_OPTIONS, ENERGY_LEVELS, ENERGY_SLOTS, GOAL_OPTIONS } from '../../src/features/onboarding/options';
@@ -47,33 +49,28 @@ export default function OnboardingScreen() {
     onError: (e: Error) => setServerError(e.message),
   });
 
-  const toggleGoal = (value: string) => {
-    const current = selectedGoals ?? [];
-    setValue('primaryGoals', current.includes(value) ? current.filter((g) => g !== value) : [...current, value]);
-  };
-
   return (
     <ScrollView className="flex-1 bg-paper px-6 pt-16" contentContainerStyle={{ paddingBottom: 60 }}>
-      <Text style={{ fontFamily: 'Nunito_700Bold' }} className="mb-1 text-sm text-primary">
-        Bienvenue sur Regain 🌱
-      </Text>
-      <Text style={{ fontFamily: 'Nunito_800ExtraBold' }} className="mb-7 text-[28px] leading-8 text-ink">
-        Parlons de vous
-      </Text>
+      <Appear>
+        <Text style={{ fontFamily: 'Nunito_700Bold' }} className="mb-1 text-sm text-primary">
+          Bienvenue sur Regain 🌱
+        </Text>
+        <Text style={{ fontFamily: 'Nunito_800ExtraBold' }} className="mb-7 text-[28px] leading-8 text-ink">
+          Parlons de vous
+        </Text>
+      </Appear>
 
       <Text style={{ fontFamily: 'Nunito_800ExtraBold' }} className="mb-2.5 text-sm text-ink">
         Quels sont vos objectifs ?
       </Text>
-      <View className="mb-2 flex-row flex-wrap">
-        {GOAL_OPTIONS.map((goal) => (
-          <Chip
-            key={goal.value}
-            label={goal.label}
-            selected={(selectedGoals ?? []).includes(goal.value)}
-            onPress={() => toggleGoal(goal.value)}
-          />
-        ))}
-      </View>
+      <SelectMulti
+        label="Objectifs"
+        title="Quels sont vos objectifs ?"
+        placeholder="Choisir un ou plusieurs objectifs"
+        values={selectedGoals ?? []}
+        options={[...GOAL_OPTIONS]}
+        onChange={(values) => setValue('primaryGoals', values)}
+      />
       {errors.primaryGoals ? (
         <Text className="mb-5 text-xs text-red-700">{errors.primaryGoals.message}</Text>
       ) : (
@@ -87,10 +84,8 @@ export default function OnboardingScreen() {
         control={control}
         name="budgetLevel"
         render={({ field: { value, onChange } }) => (
-          <View className="mb-7 flex-row flex-wrap">
-            {BUDGET_OPTIONS.map((opt) => (
-              <Chip key={opt.value} label={opt.label} selected={value === opt.value} onPress={() => onChange(opt.value)} />
-            ))}
+          <View className="mb-4">
+            <Segmented label="Budget" value={value} onChange={onChange} options={[...BUDGET_OPTIONS]} />
           </View>
         )}
       />
@@ -107,11 +102,7 @@ export default function OnboardingScreen() {
             control={control}
             name={`energyBySlot.${slot.key}` as const}
             render={({ field: { value, onChange } }) => (
-              <View className="flex-row flex-wrap">
-                {ENERGY_LEVELS.map((level) => (
-                  <Chip key={level.value} label={level.label} selected={value === level.value} onPress={() => onChange(level.value)} />
-                ))}
-              </View>
+              <Segmented label={slot.label} value={value} onChange={onChange} options={[...ENERGY_LEVELS]} />
             )}
           />
         </View>
@@ -119,9 +110,10 @@ export default function OnboardingScreen() {
 
       {serverError ? <Text className="mb-3 text-xs text-red-700">{serverError}</Text> : null}
 
-      <Pressable
+      <PressableScale
         onPress={handleSubmit((values) => mutation.mutate(values))}
         disabled={mutation.isPending}
+        feedback="medium"
         className="mt-4 overflow-hidden rounded-full shadow-sm"
       >
         <LinearGradient colors={['#F0A324', '#FF6B57']} start={{ x: 0, y: 0 }} end={{ x: 1, y: 0 }} style={{ paddingVertical: 15 }}>
@@ -133,7 +125,7 @@ export default function OnboardingScreen() {
             </Text>
           )}
         </LinearGradient>
-      </Pressable>
+      </PressableScale>
     </ScrollView>
   );
 }

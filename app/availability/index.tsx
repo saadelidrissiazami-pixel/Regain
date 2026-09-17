@@ -6,11 +6,14 @@ import { Text, TextInput } from '../../src/components/typography';
 import { LinearGradient } from 'expo-linear-gradient';
 
 import { Chip } from '../../src/components/Chip';
+import { Segmented } from '../../src/components/Segmented';
+import { Select } from '../../src/components/Select';
+import { Appear, PressableScale } from '../../src/components/motion';
 import { createAvailabilitySlots, deleteAvailabilitySlot, fetchAvailabilitySlots } from '../../src/lib/availability';
 import { DAYS_OF_WEEK } from '../../src/lib/days';
 import { scheduleActivityReminders } from '../../src/lib/notifications';
 import { generateAndSaveWeekPlan } from '../../src/lib/planning';
-import { formatTimeRange, TIME_OPTIONS, timeSlotFromStartTime } from '../../src/lib/time';
+import { formatTimeRange, TIME_SELECT_OPTIONS, timeSlotFromStartTime } from '../../src/lib/time';
 import { useUpcomingDates, useWeekStart } from '../../src/lib/useCurrentDate';
 import { useAuthStore } from '../../src/store/authStore';
 
@@ -123,10 +126,15 @@ export default function AvailabilityScreen() {
       <Text style={{ fontFamily: 'Nunito_800ExtraBold' }} className="mb-2.5 text-sm text-ink">
         Type de créneau
       </Text>
-      <View className="mb-4 flex-row flex-wrap">
-        <Chip label="Chaque semaine" selected={kind === 'recurring'} onPress={() => setKind('recurring')} />
-        <Chip label="Dates précises" selected={kind === 'specific'} onPress={() => setKind('specific')} />
-      </View>
+      <Segmented
+        label="Type de créneau"
+        value={kind}
+        onChange={setKind}
+        options={[
+          { value: 'recurring', label: 'Chaque semaine' },
+          { value: 'specific', label: 'Dates précises' },
+        ]}
+      />
 
       {kind === 'recurring' ? (
         <>
@@ -166,27 +174,23 @@ export default function AvailabilityScreen() {
         </>
       )}
 
-      <Text style={{ fontFamily: 'Nunito_800ExtraBold' }} className="mb-1 text-sm text-ink">
-        De
+      <Text style={{ fontFamily: 'Nunito_800ExtraBold' }} className="mb-2.5 mt-1 text-sm text-ink">
+        Horaires
       </Text>
-      <ScrollView horizontal showsHorizontalScrollIndicator={false} className="mb-3">
-        <View className="flex-row">
-          {TIME_OPTIONS.map((t) => (
-            <Chip key={t} label={t} selected={startTime === t} onPress={() => setStartTime(t)} />
-          ))}
+      <View className="flex-row gap-3">
+        <View className="flex-1">
+          <Select
+            label="De"
+            title="Heure de début"
+            value={startTime}
+            options={TIME_SELECT_OPTIONS}
+            onChange={setStartTime}
+          />
         </View>
-      </ScrollView>
-
-      <Text style={{ fontFamily: 'Nunito_800ExtraBold' }} className="mb-1 text-sm text-ink">
-        À
-      </Text>
-      <ScrollView horizontal showsHorizontalScrollIndicator={false} className="mb-4">
-        <View className="flex-row">
-          {TIME_OPTIONS.map((t) => (
-            <Chip key={t} label={t} selected={endTime === t} onPress={() => setEndTime(t)} />
-          ))}
+        <View className="flex-1">
+          <Select label="À" title="Heure de fin" value={endTime} options={TIME_SELECT_OPTIONS} onChange={setEndTime} />
         </View>
-      </ScrollView>
+      </View>
 
       <Text style={{ fontFamily: 'Nunito_800ExtraBold' }} className="mb-2.5 text-sm text-ink">
         Note (optionnel)
@@ -201,9 +205,10 @@ export default function AvailabilityScreen() {
 
       {formError ? <Text className="mb-3 text-xs text-red-700">{formError}</Text> : null}
 
-      <Pressable
+      <PressableScale
         onPress={() => createMutation.mutate()}
         disabled={createMutation.isPending}
+        feedback="medium"
         className="mb-8 overflow-hidden rounded-full shadow-sm"
       >
         <LinearGradient colors={['#F0A324', '#FF6B57']} start={{ x: 0, y: 0 }} end={{ x: 1, y: 0 }} style={{ paddingVertical: 15 }}>
@@ -216,7 +221,7 @@ export default function AvailabilityScreen() {
             </Text>
           )}
         </LinearGradient>
-      </Pressable>
+      </PressableScale>
 
       <Text style={{ fontFamily: 'Nunito_800ExtraBold' }} className="mb-3 text-sm text-ink-soft">
         Créneaux enregistrés
@@ -230,51 +235,51 @@ export default function AvailabilityScreen() {
       {slotsQuery.data?.length === 0 ? (
         <Text className="text-sm text-ink-soft">Aucun créneau pour l'instant.</Text>
       ) : null}
-      {slotsQuery.data?.map((slot) => {
+      {slotsQuery.data?.map((slot, slotIndex) => {
         const when = slot.is_recurring
           ? DAYS_OF_WEEK.find((d) => d.value === slot.day_of_week)?.label
           : upcomingDates.find((d) => d.value === slot.specific_date)?.label ?? slot.specific_date;
         return (
-          <View
-            key={slot.id}
-            className="mb-2.5 flex-row items-center justify-between rounded-2xl border border-line bg-surface p-4 shadow-sm"
-          >
-            <View className="flex-1 pr-3">
-              <Text style={{ fontFamily: 'Nunito_700Bold' }} className="text-sm text-ink">
-                {when} · {formatTimeRange(slot.start_time, slot.end_time)}
-                {slot.is_recurring ? ' (chaque semaine)' : ''}
-              </Text>
-              {slot.label ? <Text className="mt-0.5 text-xs text-ink-soft">{slot.label}</Text> : null}
-            </View>
-            {deleteMutation.isPending && deleteMutation.variables === slot.id ? (
-              <ActivityIndicator size="small" color="#FF6B57" />
-            ) : pendingDeleteId === slot.id ? (
-              <View className="flex-row items-center">
-                <Pressable onPress={() => deleteMutation.mutate(slot.id)} className="mr-3">
-                  <Text style={{ fontFamily: 'Nunito_700Bold' }} className="text-sm text-red-700">
-                    Confirmer
+          <Appear key={slot.id} index={slotIndex}>
+            <View className="mb-2.5 flex-row items-center justify-between rounded-2xl border border-line bg-surface p-4 shadow-sm">
+              <View className="flex-1 pr-3">
+                <Text style={{ fontFamily: 'Nunito_700Bold' }} className="text-sm text-ink">
+                  {when} · {formatTimeRange(slot.start_time, slot.end_time)}
+                  {slot.is_recurring ? ' (chaque semaine)' : ''}
+                </Text>
+                {slot.label ? <Text className="mt-0.5 text-xs text-ink-soft">{slot.label}</Text> : null}
+              </View>
+              {deleteMutation.isPending && deleteMutation.variables === slot.id ? (
+                <ActivityIndicator size="small" color="#FF6B57" />
+              ) : pendingDeleteId === slot.id ? (
+                <View className="flex-row items-center">
+                  <Pressable onPress={() => deleteMutation.mutate(slot.id)} className="mr-3">
+                    <Text style={{ fontFamily: 'Nunito_700Bold' }} className="text-sm text-red-700">
+                      Confirmer
+                    </Text>
+                  </Pressable>
+                  <Pressable onPress={() => setPendingDeleteId(null)}>
+                    <Text className="text-sm text-ink-soft">Annuler</Text>
+                  </Pressable>
+                </View>
+              ) : (
+                <Pressable onPress={() => setPendingDeleteId(slot.id)}>
+                  <Text style={{ fontFamily: 'Nunito_700Bold' }} className="text-sm text-accent">
+                    Supprimer
                   </Text>
                 </Pressable>
-                <Pressable onPress={() => setPendingDeleteId(null)}>
-                  <Text className="text-sm text-ink-soft">Annuler</Text>
-                </Pressable>
-              </View>
-            ) : (
-              <Pressable onPress={() => setPendingDeleteId(slot.id)}>
-                <Text style={{ fontFamily: 'Nunito_700Bold' }} className="text-sm text-accent">
-                  Supprimer
-                </Text>
-              </Pressable>
-            )}
-          </View>
+              )}
+            </View>
+          </Appear>
         );
       })}
 
       {(slotsQuery.data?.length ?? 0) > 0 ? (
         <>
-          <Pressable
+          <PressableScale
             onPress={() => generateMutation.mutate()}
             disabled={generateMutation.isPending}
+            feedback="medium"
             className="mb-2 mt-6 items-center rounded-full bg-primary px-4 py-3.5 shadow-sm"
           >
             {generateMutation.isPending ? (
@@ -284,7 +289,7 @@ export default function AvailabilityScreen() {
                 ✨ Générer mon planning
               </Text>
             )}
-          </Pressable>
+          </PressableScale>
           {generateMutation.isError ? (
             <Text className="text-xs text-red-700">{(generateMutation.error as Error).message}</Text>
           ) : null}
