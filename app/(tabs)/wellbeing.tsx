@@ -2,7 +2,9 @@ import { useQuery } from '@tanstack/react-query';
 import { LinearGradient } from 'expo-linear-gradient';
 import { Link } from 'expo-router';
 import { useCallback, useState } from 'react';
-import { ActivityIndicator, Pressable, RefreshControl, ScrollView, View } from 'react-native';
+import { Pressable, RefreshControl, ScrollView, View } from 'react-native';
+import Animated, { FadeIn, FadeOut } from 'react-native-reanimated';
+import { Appear, Chevron, haptic, PressableScale, Skeleton } from '../../src/components/motion';
 import { Text } from '../../src/components/typography';
 import { usePremium } from '../../src/lib/premium';
 import { fetchCompletedProgramIds, fetchPrograms } from '../../src/lib/wellbeing';
@@ -53,6 +55,7 @@ export default function WellbeingScreen() {
 
   const [expandedCategories, setExpandedCategories] = useState<Set<string>>(new Set());
   const toggleCategory = (category: string) => {
+    haptic.selection();
     setExpandedCategories((prev) => {
       const next = new Set(prev);
       if (next.has(category)) {
@@ -79,91 +82,105 @@ export default function WellbeingScreen() {
       contentContainerStyle={{ paddingBottom: 40 }}
       refreshControl={<RefreshControl refreshing={refreshing} onRefresh={onRefresh} tintColor="#1E9C86" />}
     >
-      <Text style={{ fontFamily: 'Nunito_700Bold' }} className="mb-1 text-sm text-calm">
-        Prenez un moment
-      </Text>
-      <Text style={{ fontFamily: 'Nunito_800ExtraBold' }} className="mb-6 text-[28px] leading-8 text-ink">
-        Bien-être
-      </Text>
+      <Appear>
+        <Text style={{ fontFamily: 'Nunito_700Bold' }} className="mb-1 text-sm text-calm">
+          Prenez un moment
+        </Text>
+        <Text style={{ fontFamily: 'Nunito_800ExtraBold' }} className="mb-6 text-[28px] leading-8 text-ink">
+          Bien-être
+        </Text>
+      </Appear>
 
       {featured ? (
-        <Link href={`/wellbeing/${featured.slug}`} asChild>
-          <Pressable className="mb-6 overflow-hidden rounded-2xl shadow-sm">
-            <LinearGradient colors={['#1E9C86', '#4E9BDE']} start={{ x: 0, y: 0 }} end={{ x: 1, y: 1 }} style={{ padding: 18 }}>
-              <Text style={{ fontFamily: 'Nunito_700Bold' }} className="text-[11px] uppercase tracking-wide text-white/90">
-                🎧 Dans les transports ? En public ?
-              </Text>
-              <Text style={{ fontFamily: 'Nunito_800ExtraBold' }} className="mt-1 text-lg text-white">
-                Se détacher du regard des autres
-              </Text>
-              <Text className="mt-1 text-xs text-white/85">
-                Les yeux ouverts, discrètement — où que vous soyez. →
-              </Text>
-            </LinearGradient>
-          </Pressable>
-        </Link>
+        <Appear index={1}>
+          <Link href={`/wellbeing/${featured.slug}`} asChild>
+            <PressableScale scaleTo={0.97} className="mb-6 overflow-hidden rounded-2xl shadow-sm">
+              <LinearGradient colors={['#1E9C86', '#4E9BDE']} start={{ x: 0, y: 0 }} end={{ x: 1, y: 1 }} style={{ padding: 18 }}>
+                <Text style={{ fontFamily: 'Nunito_700Bold' }} className="text-[11px] uppercase tracking-wide text-white/90">
+                  🎧 Dans les transports ? En public ?
+                </Text>
+                <Text style={{ fontFamily: 'Nunito_800ExtraBold' }} className="mt-1 text-lg text-white">
+                  Se détacher du regard des autres
+                </Text>
+                <Text className="mt-1 text-xs text-white/85">
+                  Les yeux ouverts, discrètement — où que vous soyez. →
+                </Text>
+              </LinearGradient>
+            </PressableScale>
+          </Link>
+        </Appear>
       ) : null}
 
-      {programsQuery.isLoading ? <ActivityIndicator color="#1E9C86" /> : null}
+      {programsQuery.isLoading ? (
+        <View>
+          <Skeleton height={96} style={{ marginBottom: 24 }} />
+          {[0, 1, 2, 3].map((i) => (
+            <Skeleton key={i} height={64} />
+          ))}
+        </View>
+      ) : null}
 
-      {categories.map((category) => {
+      {categories.map((category, categoryIndex) => {
         const programs = byCategory.get(category)!;
         const isExpanded = expandedCategories.has(category);
         const doneCount = programs.filter((p) => completedQuery.data?.has(p.id)).length;
 
         return (
-          <View key={category} className="mb-3 overflow-hidden rounded-2xl border border-line bg-surface shadow-sm">
-            <Pressable
-              onPress={() => toggleCategory(category)}
-              className="flex-row items-center justify-between px-4 py-3.5"
-            >
-              <View className="flex-row items-center">
-                <Text className="mr-2 text-lg">{CATEGORY_ICONS[category] ?? '✨'}</Text>
-                <View>
-                  <Text style={{ fontFamily: 'Nunito_800ExtraBold' }} className="text-sm text-ink">
-                    {category}
-                  </Text>
-                  <Text className="mt-0.5 text-xs text-ink-soft">
-                    {programs.length} séance{programs.length > 1 ? 's' : ''}
-                    {doneCount > 0 ? ` · ${doneCount} terminée${doneCount > 1 ? 's' : ''}` : ''}
-                  </Text>
-                </View>
-              </View>
-              <Text
-                style={{ transform: [{ rotate: isExpanded ? '90deg' : '0deg' }] }}
-                className="text-base text-ink-soft"
+          <Appear key={category} index={categoryIndex + 2}>
+            <View className="mb-3 overflow-hidden rounded-2xl border border-line bg-surface shadow-sm">
+              <Pressable
+                onPress={() => toggleCategory(category)}
+                className="flex-row items-center justify-between px-4 py-3.5"
               >
-                ›
-              </Text>
-            </Pressable>
+                <View className="flex-row items-center">
+                  <Text className="mr-2 text-lg">{CATEGORY_ICONS[category] ?? '✨'}</Text>
+                  <View>
+                    <Text style={{ fontFamily: 'Nunito_800ExtraBold' }} className="text-sm text-ink">
+                      {category}
+                    </Text>
+                    <Text className="mt-0.5 text-xs text-ink-soft">
+                      {programs.length} séance{programs.length > 1 ? 's' : ''}
+                      {doneCount > 0 ? ` · ${doneCount} terminée${doneCount > 1 ? 's' : ''}` : ''}
+                    </Text>
+                  </View>
+                </View>
+                <Chevron open={isExpanded}>
+                  <Text className="text-base text-ink-soft">›</Text>
+                </Chevron>
+              </Pressable>
 
-            {isExpanded ? (
-              <View className="px-3 pb-3">
-                {programs.map((program) => {
-                  const done = completedQuery.data?.has(program.id);
-                  const locked = program.premium_only && !isPremium && !premiumLoading;
-                  return (
-                    <Link key={program.id} href={locked ? '/paywall' : `/wellbeing/${program.slug}`} asChild>
-                      <Pressable className="mb-2 flex-row items-center rounded-2xl border border-line bg-paper p-4">
-                        <View className="mr-3 h-10 w-10 items-center justify-center rounded-full bg-calm-soft">
-                          <Text style={{ fontFamily: 'Nunito_800ExtraBold' }} className="text-xs text-calm">
-                            {program.duration_minutes}′
-                          </Text>
-                        </View>
-                        <View className="flex-1">
-                          <Text style={{ fontFamily: 'Nunito_700Bold' }} className="text-base text-ink">
-                            {program.title}
-                          </Text>
-                          <Text className="mt-0.5 text-xs text-ink-soft">{program.duration_minutes} min</Text>
-                        </View>
-                        {locked ? <Text className="text-lg">🔒</Text> : done ? <Text className="text-lg">✅</Text> : null}
-                      </Pressable>
-                    </Link>
-                  );
-                })}
-              </View>
-            ) : null}
-          </View>
+              {isExpanded ? (
+                <Animated.View entering={FadeIn.duration(220)} exiting={FadeOut.duration(140)}>
+                  <View className="px-3 pb-3">
+                    {programs.map((program, programIndex) => {
+                      const done = completedQuery.data?.has(program.id);
+                      const locked = program.premium_only && !isPremium && !premiumLoading;
+                      return (
+                        <Appear key={program.id} index={programIndex}>
+                          <Link href={locked ? '/paywall' : `/wellbeing/${program.slug}`} asChild>
+                            <PressableScale scaleTo={0.97} className="mb-2 flex-row items-center rounded-2xl border border-line bg-paper p-4">
+                              <View className="mr-3 h-10 w-10 items-center justify-center rounded-full bg-calm-soft">
+                                <Text style={{ fontFamily: 'Nunito_800ExtraBold' }} className="text-xs text-calm">
+                                  {program.duration_minutes}′
+                                </Text>
+                              </View>
+                              <View className="flex-1">
+                                <Text style={{ fontFamily: 'Nunito_700Bold' }} className="text-base text-ink">
+                                  {program.title}
+                                </Text>
+                                <Text className="mt-0.5 text-xs text-ink-soft">{program.duration_minutes} min</Text>
+                              </View>
+                              {locked ? <Text className="text-lg">🔒</Text> : done ? <Text className="text-lg">✅</Text> : null}
+                            </PressableScale>
+                          </Link>
+                        </Appear>
+                      );
+                    })}
+                  </View>
+                </Animated.View>
+              ) : null}
+            </View>
+          </Appear>
         );
       })}
 

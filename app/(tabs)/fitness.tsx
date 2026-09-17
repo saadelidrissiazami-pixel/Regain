@@ -3,10 +3,12 @@ import { LinearGradient } from 'expo-linear-gradient';
 import { Link } from 'expo-router';
 import { useState } from 'react';
 import { ActivityIndicator, Pressable, ScrollView, View } from 'react-native';
+import Animated, { FadeIn, FadeOut } from 'react-native-reanimated';
 
+import { Appear, Chevron, haptic, Pop, PressableScale, Skeleton, useAnimatedNumber } from '../../src/components/motion';
 import { Text } from '../../src/components/typography';
 import type { NutritionTargets } from '../../src/features/fitness/nutrition';
-import type { FitnessPlan, ShoppingItem, WorkoutSession } from '../../src/features/fitness/types';
+import type { FitnessPlan, MealDay, ShoppingItem, WorkoutSession } from '../../src/features/fitness/types';
 import { createFitnessPlan, fetchFitnessProfile, fetchLatestFitnessPlan, targetsForProfile } from '../../src/lib/fitness';
 import { usePremium } from '../../src/lib/premium';
 import { useAuthStore } from '../../src/store/authStore';
@@ -19,13 +21,22 @@ const STRATEGY_LABELS: Record<NutritionTargets['strategy'], string> = {
 
 function GradientButton({ label, onPress, disabled }: { label: string; onPress: () => void; disabled?: boolean }) {
   return (
-    <Pressable onPress={onPress} disabled={disabled} className="overflow-hidden rounded-full shadow-sm">
+    <PressableScale onPress={onPress} disabled={disabled} feedback="medium" className="overflow-hidden rounded-full shadow-sm">
       <LinearGradient colors={['#F0A324', '#FF6B57']} start={{ x: 0, y: 0 }} end={{ x: 1, y: 0 }} style={{ paddingVertical: 15 }}>
         <Text style={{ fontFamily: 'Nunito_800ExtraBold' }} className="text-center text-white">
           {label}
         </Text>
       </LinearGradient>
-    </Pressable>
+    </PressableScale>
+  );
+}
+
+function CountUp({ value, suffix = '' }: { value: number; suffix?: string }) {
+  return (
+    <>
+      {Math.round(useAnimatedNumber(value))}
+      {suffix}
+    </>
   );
 }
 
@@ -36,7 +47,7 @@ function TargetsCard({ targets }: { targets: NutritionTargets }) {
         Vos cibles quotidiennes
       </Text>
       <Text style={{ fontFamily: 'Nunito_800ExtraBold' }} className="mt-1 text-2xl text-ink">
-        {targets.calories} kcal
+        <CountUp value={targets.calories} suffix=" kcal" />
       </Text>
       <Text className="text-xs text-ink-soft">{STRATEGY_LABELS[targets.strategy]}</Text>
       <View className="mt-3 flex-row justify-between">
@@ -47,7 +58,7 @@ function TargetsCard({ targets }: { targets: NutritionTargets }) {
         ].map((macro) => (
           <View key={macro.label} className="flex-1 items-center rounded-xl bg-paper py-2">
             <Text style={{ fontFamily: 'Nunito_800ExtraBold' }} className="text-base text-ink">
-              {macro.value} g
+              <CountUp value={macro.value} suffix=" g" />
             </Text>
             <Text className="text-[11px] text-ink-soft">{macro.label}</Text>
           </View>
@@ -66,7 +77,13 @@ function SessionCard({ session }: { session: WorkoutSession }) {
   const [open, setOpen] = useState(false);
   return (
     <View className="mb-2.5 overflow-hidden rounded-2xl border border-line bg-surface shadow-sm">
-      <Pressable onPress={() => setOpen((v) => !v)} className="flex-row items-center justify-between px-4 py-3.5">
+      <Pressable
+        onPress={() => {
+          haptic.selection();
+          setOpen((v) => !v);
+        }}
+        className="flex-row items-center justify-between px-4 py-3.5"
+      >
         <View className="flex-1 pr-3">
           <Text style={{ fontFamily: 'Nunito_800ExtraBold' }} className="text-sm text-ink">
             {session.day_label} · {session.focus}
@@ -75,11 +92,12 @@ function SessionCard({ session }: { session: WorkoutSession }) {
             {session.duration_minutes} min · {session.exercises.length} exercices
           </Text>
         </View>
-        <Text style={{ transform: [{ rotate: open ? '90deg' : '0deg' }] }} className="text-base text-ink-soft">
-          ›
-        </Text>
+        <Chevron open={open}>
+          <Text className="text-base text-ink-soft">›</Text>
+        </Chevron>
       </Pressable>
       {open ? (
+        <Animated.View entering={FadeIn.duration(220)} exiting={FadeOut.duration(140)}>
         <View className="px-4 pb-4">
           <Text className="mb-2 text-xs text-ink-soft">🔥 Échauffement : {session.warmup}</Text>
           {session.exercises.map((exercise, i) => (
@@ -95,6 +113,7 @@ function SessionCard({ session }: { session: WorkoutSession }) {
           ))}
           <Text className="text-xs text-ink-soft">🧘 Retour au calme : {session.cooldown}</Text>
         </View>
+        </Animated.View>
       ) : null}
     </View>
   );
@@ -104,7 +123,8 @@ function ShoppingList({ items }: { items: ShoppingItem[] }) {
   const [checked, setChecked] = useState<Set<number>>(new Set());
   const categories = Array.from(new Set(items.map((item) => item.category)));
 
-  const toggle = (index: number) =>
+  const toggle = (index: number) => {
+    haptic.selection();
     setChecked((prev) => {
       const next = new Set(prev);
       if (next.has(index)) {
@@ -114,6 +134,7 @@ function ShoppingList({ items }: { items: ShoppingItem[] }) {
       }
       return next;
     });
+  };
 
   return (
     <View className="mb-4 rounded-2xl border border-line bg-surface p-4 shadow-sm">
@@ -125,13 +146,15 @@ function ShoppingList({ items }: { items: ShoppingItem[] }) {
           {items.map((item, index) =>
             item.category === category ? (
               <Pressable key={index} onPress={() => toggle(index)} className="flex-row items-center py-1.5">
-                <View
-                  className={`mr-3 h-5 w-5 items-center justify-center rounded-md border ${
-                    checked.has(index) ? 'border-calm bg-calm' : 'border-line'
-                  }`}
-                >
-                  {checked.has(index) ? <Text className="text-[11px] text-white">✓</Text> : null}
-                </View>
+                <Pop trigger={checked.has(index)} style={{ marginRight: 12 }}>
+                  <View
+                    className={`h-5 w-5 items-center justify-center rounded-md border ${
+                      checked.has(index) ? 'border-calm bg-calm' : 'border-line'
+                    }`}
+                  >
+                    {checked.has(index) ? <Text className="text-[11px] text-white">✓</Text> : null}
+                  </View>
+                </Pop>
                 <Text className={`flex-1 text-sm ${checked.has(index) ? 'text-ink-soft line-through' : 'text-ink'}`}>
                   {item.item}
                 </Text>
@@ -145,44 +168,82 @@ function ShoppingList({ items }: { items: ShoppingItem[] }) {
   );
 }
 
+function MealDayCard({ day, defaultOpen }: { day: MealDay; defaultOpen: boolean }) {
+  const [open, setOpen] = useState(defaultOpen);
+  const protein = day.meals.reduce((sum, meal) => sum + meal.protein_g, 0);
+  return (
+    <View className="mb-2.5 overflow-hidden rounded-2xl border border-line bg-surface shadow-sm">
+      <Pressable
+        onPress={() => {
+          haptic.selection();
+          setOpen((v) => !v);
+        }}
+        className="flex-row items-center justify-between px-4 py-3.5"
+      >
+        <View className="flex-1 pr-3">
+          <Text style={{ fontFamily: 'Nunito_800ExtraBold' }} className="text-sm text-ink">
+            {day.day_label} · {day.total_calories} kcal
+          </Text>
+          <Text className="mt-0.5 text-xs text-ink-soft">
+            {day.meals.length} repas · {protein} g de protéines
+          </Text>
+        </View>
+        <Chevron open={open}>
+          <Text className="text-base text-ink-soft">›</Text>
+        </Chevron>
+      </Pressable>
+      {open ? (
+        <Animated.View entering={FadeIn.duration(220)} exiting={FadeOut.duration(140)}>
+          <View className="px-4 pb-3">
+            {day.meals.map((meal, j) => (
+              <View key={j} className="mb-2">
+                <Text style={{ fontFamily: 'Nunito_700Bold' }} className="text-sm text-ink">
+                  {meal.name} <Text className="text-xs text-ink-soft">· {meal.calories} kcal · {meal.protein_g} g prot.</Text>
+                </Text>
+                <Text className="text-xs text-ink-soft">{meal.description}</Text>
+              </View>
+            ))}
+          </View>
+        </Animated.View>
+      ) : null}
+    </View>
+  );
+}
+
 function PlanView({ plan }: { plan: FitnessPlan }) {
   return (
     <>
-      <TargetsCard targets={plan.targets} />
+      <Appear index={1}>
+        <TargetsCard targets={plan.targets} />
+      </Appear>
 
       {plan.coach_notes ? (
-        <View className="mb-5 rounded-2xl bg-calm-soft p-4">
-          <Text style={{ fontFamily: 'Nunito_700Bold' }} className="mb-1 text-xs text-calm">
-            Le mot de votre coach
-          </Text>
-          <Text className="text-sm leading-5 text-ink">{plan.coach_notes}</Text>
-        </View>
+        <Appear index={2}>
+          <View className="mb-5 rounded-2xl bg-calm-soft p-4">
+            <Text style={{ fontFamily: 'Nunito_700Bold' }} className="mb-1 text-xs text-calm">
+              Le mot de votre coach
+            </Text>
+            <Text className="text-sm leading-5 text-ink">{plan.coach_notes}</Text>
+          </View>
+        </Appear>
       ) : null}
 
       <Text style={{ fontFamily: 'Nunito_800ExtraBold' }} className="mb-2.5 text-sm text-ink-soft">
         🏋️ Vos séances de la semaine
       </Text>
       {plan.program.map((session, i) => (
-        <SessionCard key={i} session={session} />
+        <Appear key={i} index={i + 3}>
+          <SessionCard session={session} />
+        </Appear>
       ))}
 
       <Text style={{ fontFamily: 'Nunito_800ExtraBold' }} className="mb-2.5 mt-4 text-sm text-ink-soft">
         🍽️ Vos journées types
       </Text>
       {plan.meals.map((day, i) => (
-        <View key={i} className="mb-2.5 rounded-2xl border border-line bg-surface p-4 shadow-sm">
-          <Text style={{ fontFamily: 'Nunito_800ExtraBold' }} className="mb-2 text-sm text-ink">
-            {day.day_label} · {day.total_calories} kcal
-          </Text>
-          {day.meals.map((meal, j) => (
-            <View key={j} className="mb-1.5">
-              <Text style={{ fontFamily: 'Nunito_700Bold' }} className="text-sm text-ink">
-                {meal.name} <Text className="text-xs text-ink-soft">· {meal.calories} kcal · {meal.protein_g} g prot.</Text>
-              </Text>
-              <Text className="text-xs text-ink-soft">{meal.description}</Text>
-            </View>
-          ))}
-        </View>
+        <Appear key={i} index={i + 3 + plan.program.length}>
+          <MealDayCard day={day} defaultOpen={i === 0} />
+        </Appear>
       ))}
 
       <Text style={{ fontFamily: 'Nunito_800ExtraBold' }} className="mb-2.5 mt-4 text-sm text-ink-soft">
@@ -216,7 +277,10 @@ export default function FitnessScreen() {
 
   const generateMutation = useMutation({
     mutationFn: () => createFitnessPlan(userId!, profile!),
-    onSuccess: (plan) => queryClient.setQueryData(['fitnessPlan', userId], plan),
+    onSuccess: (plan) => {
+      haptic.success();
+      queryClient.setQueryData(['fitnessPlan', userId], plan);
+    },
   });
 
   if (premiumLoading) {
@@ -229,12 +293,14 @@ export default function FitnessScreen() {
 
   return (
     <ScrollView className="flex-1 bg-paper px-5 pt-16" contentContainerStyle={{ paddingBottom: 40 }}>
-      <Text style={{ fontFamily: 'Nunito_700Bold' }} className="mb-1 text-sm text-primary">
-        Votre coach
-      </Text>
-      <Text style={{ fontFamily: 'Nunito_800ExtraBold' }} className="mb-6 text-[28px] leading-8 text-ink">
-        Forme
-      </Text>
+      <Appear>
+        <Text style={{ fontFamily: 'Nunito_700Bold' }} className="mb-1 text-sm text-primary">
+          Votre coach
+        </Text>
+        <Text style={{ fontFamily: 'Nunito_800ExtraBold' }} className="mb-6 text-[28px] leading-8 text-ink">
+          Forme
+        </Text>
+      </Appear>
 
       {!isPremium ? (
         <View className="rounded-2xl border border-line bg-surface p-5 shadow-sm">
@@ -255,7 +321,12 @@ export default function FitnessScreen() {
           </Link>
         </View>
       ) : profileQuery.isLoading || planQuery.isLoading ? (
-        <ActivityIndicator color="#FF6B57" />
+        <View>
+          <Skeleton height={130} />
+          <Skeleton height={80} />
+          <Skeleton height={60} />
+          <Skeleton height={60} />
+        </View>
       ) : profileQuery.isError || planQuery.isError ? (
         // Sans cet état, une panne réseau ferait croire à l'utilisateur qu'il n'a pas de profil.
         <View className="rounded-2xl border border-line bg-surface p-5 shadow-sm">
@@ -319,11 +390,11 @@ export default function FitnessScreen() {
           {planQuery.data ? (
             <View className="mb-3">
               <Link href="/fitness/checkin" asChild>
-                <Pressable className="items-center rounded-full bg-primary px-4 py-3.5 shadow-sm">
+                <PressableScale feedback="medium" className="items-center rounded-full bg-primary px-4 py-3.5 shadow-sm">
                   <Text style={{ fontFamily: 'Nunito_800ExtraBold' }} className="text-white">
                     📋 Faire mon bilan de la semaine
                   </Text>
-                </Pressable>
+                </PressableScale>
               </Link>
             </View>
           ) : null}

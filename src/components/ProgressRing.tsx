@@ -1,6 +1,7 @@
 import { View } from 'react-native';
 import { Text } from './typography';
 import Svg, { Circle } from 'react-native-svg';
+import { useAnimatedNumber } from './motion';
 
 type ProgressRingProps = {
   progress: number; // 0..1
@@ -9,7 +10,10 @@ type ProgressRingProps = {
   color?: string;
   trackColor?: string;
   label: string;
-  value: string;
+  /** Nombre affiché au centre, qui défile jusqu'à sa valeur. */
+  value: number;
+  /** Si fourni, affiché après la valeur (« 3/6 »). */
+  total?: number;
 };
 
 export function ProgressRing({
@@ -20,10 +24,13 @@ export function ProgressRing({
   trackColor = '#FFE4DD',
   label,
   value,
+  total,
 }: ProgressRingProps) {
   const radius = (size - strokeWidth) / 2;
   const circumference = 2 * Math.PI * radius;
-  const offset = circumference * (1 - Math.min(Math.max(progress, 0), 1));
+  const animatedProgress = useAnimatedNumber(Math.min(Math.max(progress, 0), 1), 900);
+  const animatedValue = Math.round(useAnimatedNumber(value, 900));
+  const offset = circumference * (1 - animatedProgress);
 
   return (
     <View className="items-center">
@@ -48,7 +55,7 @@ export function ProgressRing({
         </View>
         <View style={{ position: 'absolute', inset: 0 }} className="items-center justify-center">
           <Text style={{ fontFamily: 'Nunito_800ExtraBold' }} className="text-xl text-ink">
-            {value}
+            {total === undefined ? animatedValue : `${animatedValue}/${total}`}
           </Text>
         </View>
       </View>

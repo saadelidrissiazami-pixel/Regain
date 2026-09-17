@@ -1,8 +1,10 @@
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { useCallback, useState } from 'react';
-import { ActivityIndicator, Pressable, RefreshControl, ScrollView, View } from 'react-native';
+import { ActivityIndicator, RefreshControl, ScrollView, View } from 'react-native';
+import { FadeOutRight } from 'react-native-reanimated';
 import { Text } from '../../src/components/typography';
 import { CategoryBadge } from '../../src/components/CategoryBadge';
+import { Appear, PressableScale, ProgressBar, Skeleton, Wiggle } from '../../src/components/motion';
 import { ProgressRing } from '../../src/components/ProgressRing';
 import { CATEGORY_COLORS, CATEGORY_LABELS } from '../../src/features/planning/types';
 import { formatDayLabel } from '../../src/lib/formatDate';
@@ -10,7 +12,6 @@ import { fetchCompletedActivities, markActivityUndone } from '../../src/lib/plan
 import { fetchStreak, fetchWeekStats } from '../../src/lib/tracking';
 import { useWeekStart } from '../../src/lib/useCurrentDate';
 import { useAuthStore } from '../../src/store/authStore';
-
 
 export default function TrackingScreen() {
   const session = useAuthStore((s) => s.session);
@@ -47,6 +48,7 @@ export default function TrackingScreen() {
   });
 
   const stats = statsQuery.data;
+  const streak = streakQuery.data ?? 0;
   const categoryEntries = Object.entries(stats?.minutesByCategory ?? {}) as [
     keyof typeof CATEGORY_LABELS,
     number,
@@ -69,54 +71,68 @@ export default function TrackingScreen() {
       contentContainerStyle={{ paddingBottom: 40 }}
       refreshControl={<RefreshControl refreshing={refreshing} onRefresh={onRefresh} tintColor="#FF6B57" />}
     >
-      <Text style={{ fontFamily: 'Nunito_700Bold' }} className="mb-1 text-sm text-primary">
-        Continuez comme ça
-      </Text>
-      <Text style={{ fontFamily: 'Nunito_800ExtraBold' }} className="mb-6 text-[28px] leading-8 text-ink">
-        Votre progression
-      </Text>
-
-      <View className="mb-6 flex-row items-center justify-around rounded-2xl border border-line bg-surface p-5 shadow-sm">
-        <ProgressRing
-          progress={(streakQuery.data ?? 0) / 7}
-          value={`${streakQuery.data ?? 0}`}
-          label="jours de suite"
-          color="#FF6B57"
-          trackColor="#FFE4DD"
-        />
-        <ProgressRing
-          progress={stats ? (stats.totalCount > 0 ? stats.completedCount / stats.totalCount : 0) : 0}
-          value={stats ? `${stats.completedCount}/${stats.totalCount}` : '0/0'}
-          label="activités faites"
-          color="#1E9C86"
-          trackColor="#D9F1EB"
-        />
-      </View>
-
-      <Text style={{ fontFamily: 'Nunito_800ExtraBold' }} className="mb-3 text-sm text-ink-soft">
-        Temps par catégorie cette semaine
-      </Text>
-      {categoryEntries.length === 0 ? (
-        <Text className="mb-6 text-sm text-ink-soft">
-          Aucune activité réalisée pour l'instant — cochez-les depuis votre planning.
+      <Appear>
+        <Text style={{ fontFamily: 'Nunito_700Bold' }} className="mb-1 text-sm text-primary">
+          {streak >= 2 ? `${streak} jours d'affilée, bravo !` : 'Continuez comme ça'}
         </Text>
+        <Text style={{ fontFamily: 'Nunito_800ExtraBold' }} className="mb-6 text-[28px] leading-8 text-ink">
+          Votre progression
+        </Text>
+      </Appear>
+
+      <Appear index={1}>
+        <View className="mb-6 flex-row items-center justify-around rounded-2xl border border-line bg-surface p-5 shadow-sm">
+          <View className="items-center">
+            <ProgressRing progress={streak / 7} value={streak} label="jours de suite" color="#FF6B57" trackColor="#FFE4DD" />
+            {streak > 0 ? (
+              <View style={{ position: 'absolute', top: -6, right: -6 }}>
+                <Wiggle>
+                  <Text className="text-xl">🔥</Text>
+                </Wiggle>
+              </View>
+            ) : null}
+          </View>
+          <ProgressRing
+            progress={stats && stats.totalCount > 0 ? stats.completedCount / stats.totalCount : 0}
+            value={stats?.completedCount ?? 0}
+            total={stats?.totalCount ?? 0}
+            label="activités faites"
+            color="#1E9C86"
+            trackColor="#D9F1EB"
+          />
+        </View>
+      </Appear>
+
+      <Appear index={2}>
+        <Text style={{ fontFamily: 'Nunito_800ExtraBold' }} className="mb-3 text-sm text-ink-soft">
+          Temps par catégorie cette semaine
+        </Text>
+      </Appear>
+      {statsQuery.isLoading ? (
+        <View className="mb-6">
+          <Skeleton height={28} />
+          <Skeleton height={28} />
+        </View>
+      ) : categoryEntries.length === 0 ? (
+        <Appear index={3}>
+          <Text className="mb-6 text-sm text-ink-soft">
+            Aucune activité réalisée pour l'instant — cochez-les depuis votre planning.
+          </Text>
+        </Appear>
       ) : (
         <View className="mb-6">
-          {categoryEntries.map(([category, minutes]) => (
-            <View key={category} className="mb-3">
-              <View className="mb-1.5 flex-row justify-between">
-                <Text style={{ fontFamily: 'Nunito_700Bold' }} className="text-sm text-ink">
-                  {CATEGORY_LABELS[category]}
-                </Text>
-                <Text className="text-sm text-ink-soft">{minutes} min</Text>
+          {categoryEntries.map(([category, minutes], i) => (
+            <Appear key={category} index={i + 3}>
+              <View className="mb-3">
+                <View className="mb-1.5 flex-row justify-between">
+                  <Text style={{ fontFamily: 'Nunito_700Bold' }} className="text-sm text-ink">
+                    {CATEGORY_LABELS[category]}
+                  </Text>
+                  <Text className="text-sm text-ink-soft">{minutes} min</Text>
+                </View>
+                <ProgressBar progress={minutes / maxMinutes} color={CATEGORY_COLORS[category]} delay={150 + i * 90} />
               </View>
-              <View className="h-2.5 overflow-hidden rounded-full bg-line">
-                <View
-                  className="h-2.5 rounded-full"
-                  style={{ width: `${(minutes / maxMinutes) * 100}%`, backgroundColor: CATEGORY_COLORS[category] }}
-                />
-              </View>
-            </View>
+            </Appear>
           ))}
         </View>
       )}
@@ -124,29 +140,41 @@ export default function TrackingScreen() {
       <Text style={{ fontFamily: 'Nunito_800ExtraBold' }} className="mb-3 text-sm text-ink-soft">
         Historique
       </Text>
-      {historyQuery.isLoading ? <ActivityIndicator color="#FF6B57" /> : null}
+      {historyQuery.isLoading ? (
+        <View>
+          <Skeleton height={84} />
+          <Skeleton height={84} />
+        </View>
+      ) : null}
       {historyQuery.data?.length === 0 ? (
         <Text className="text-sm text-ink-soft">Rien de coché pour l'instant.</Text>
       ) : null}
-      {historyQuery.data?.map((item) => (
-        <View key={item.id} className="mb-2.5 flex-row items-center rounded-2xl border border-line bg-surface p-4 shadow-sm">
-          <View className="flex-1 pr-3">
-            <CategoryBadge category={item.activities_catalog.category} />
-            <Text style={{ fontFamily: 'Nunito_700Bold' }} className="mt-2 text-base text-ink">
-              {item.activities_catalog.title}
-            </Text>
-            <Text className="mt-0.5 text-xs text-ink-soft">{formatDayLabel(item.date)}</Text>
-          </View>
-          <Pressable onPress={() => undoMutation.mutate(item.id)} disabled={undoMutation.isPending}>
-            {undoMutation.isPending && undoMutation.variables === item.id ? (
-              <ActivityIndicator size="small" color="#FF6B57" />
-            ) : (
-              <Text style={{ fontFamily: 'Nunito_700Bold' }} className="text-sm text-accent">
-                Annuler
+      {historyQuery.data?.map((item, i) => (
+        <Appear key={item.id} index={i + 4} exiting={FadeOutRight.duration(260)}>
+          <View className="mb-2.5 flex-row items-center rounded-2xl border border-line bg-surface p-4 shadow-sm">
+            <View className="flex-1 pr-3">
+              <CategoryBadge category={item.activities_catalog.category} />
+              <Text style={{ fontFamily: 'Nunito_700Bold' }} className="mt-2 text-base text-ink">
+                {item.activities_catalog.title}
               </Text>
-            )}
-          </Pressable>
-        </View>
+              <Text className="mt-0.5 text-xs text-ink-soft">{formatDayLabel(item.date)}</Text>
+            </View>
+            <PressableScale
+              onPress={() => undoMutation.mutate(item.id)}
+              disabled={undoMutation.isPending}
+              feedback="selection"
+              className="px-1 py-2"
+            >
+              {undoMutation.isPending && undoMutation.variables === item.id ? (
+                <ActivityIndicator size="small" color="#FF6B57" />
+              ) : (
+                <Text style={{ fontFamily: 'Nunito_700Bold' }} className="text-sm text-accent">
+                  Annuler
+                </Text>
+              )}
+            </PressableScale>
+          </View>
+        </Appear>
       ))}
     </ScrollView>
   );

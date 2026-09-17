@@ -7,7 +7,7 @@ import { fromLocalISODate, getWeekStart, toLocalISODate } from './week';
 // Une app mobile reste en mémoire plusieurs jours : calculer la date au chargement du module
 // ferait vivre l'utilisateur dans la semaine passée jusqu'au prochain redémarrage complet.
 // On recalcule donc au retour au premier plan, et seulement si le jour a réellement changé.
-function useTodayKey(): string {
+export function useToday(): string {
   const [today, setToday] = useState(() => toLocalISODate(new Date()));
 
   useEffect(() => {
@@ -21,11 +21,11 @@ function useTodayKey(): string {
 }
 
 export function useWeekStart(): string {
-  const today = useTodayKey();
+  const today = useToday();
   return useMemo(() => getWeekStart(fromLocalISODate(today)), [today]);
 }
 
 export function useUpcomingDates(count = 14) {
-  const today = useTodayKey();
+  const today = useToday();
   return useMemo(() => getUpcomingDates(count, fromLocalISODate(today)), [today, count]);
 }

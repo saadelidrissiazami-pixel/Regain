@@ -5,6 +5,7 @@ import { useMemo, useState } from 'react';
 import { ActivityIndicator, Linking, Pressable, ScrollView, View } from 'react-native';
 import type { PurchasesPackage } from 'react-native-purchases';
 import { PRIVACY_URL, SUBSCRIPTION_DISCLOSURE, TERMS_URL, hasLegalUrls } from '../../src/config/legal';
+import { Appear } from '../../src/components/motion';
 import { Text } from '../../src/components/typography';
 import {
   annualSavingsPercent,
@@ -148,13 +149,15 @@ export default function PaywallScreen() {
       </Text>
       <Text className="mb-7 text-sm text-ink-soft">Allez plus loin dans la reconstruction de votre routine.</Text>
 
-      {BENEFITS.map((b) => (
-        <View key={b.text} className="mb-3 flex-row items-center rounded-2xl border border-line bg-surface p-4 shadow-sm">
-          <Text className="mr-3 text-xl">{b.icon}</Text>
-          <Text style={{ fontFamily: 'Nunito_700Bold' }} className="flex-1 text-sm text-ink">
-            {b.text}
-          </Text>
-        </View>
+      {BENEFITS.map((b, i) => (
+        <Appear key={b.text} index={i}>
+          <View className="mb-3 flex-row items-center rounded-2xl border border-line bg-surface p-4 shadow-sm">
+            <Text className="mr-3 text-xl">{b.icon}</Text>
+            <Text style={{ fontFamily: 'Nunito_700Bold' }} className="flex-1 text-sm text-ink">
+              {b.text}
+            </Text>
+          </View>
+        </Appear>
       ))}
 
       {purchasesUnavailableReason ? (
