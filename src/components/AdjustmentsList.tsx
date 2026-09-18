@@ -13,7 +13,7 @@ export function AdjustmentsList({ adjustments }: { adjustments: PlanAdjustment[]
           <View className={`flex-row ${i === adjustments.length - 1 ? '' : 'mb-3'}`}>
             <Text className="mr-3 text-lg">{adjustment.icon}</Text>
             <View className="flex-1">
-              <Text style={{ fontFamily: 'Nunito_700Bold' }} className="text-sm text-ink">
+              <Text style={{ fontFamily: 'Figtree_700Bold' }} className="text-sm text-ink">
                 {adjustment.label}
               </Text>
               {adjustment.detail ? <Text className="mt-0.5 text-xs text-ink-soft">{adjustment.detail}</Text> : null}

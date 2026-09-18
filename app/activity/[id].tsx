@@ -42,17 +42,17 @@ export default function ActivityDetailScreen() {
   return (
     <ScrollView className="flex-1 bg-paper px-6 pt-16" contentContainerStyle={{ paddingBottom: 60 }}>
       <Pressable onPress={() => router.back()} className="mb-5">
-        <Text style={{ fontFamily: 'Nunito_700Bold' }} className="text-sm text-ink-soft">
+        <Text style={{ fontFamily: 'Figtree_700Bold' }} className="text-sm text-ink-soft">
           ← Retour
         </Text>
       </Pressable>
 
-      {activityQuery.isLoading ? <ActivityIndicator color="#FF6B57" /> : null}
+      {activityQuery.isLoading ? <ActivityIndicator className="text-primary" /> : null}
 
       {activity ? (
         <>
           <CategoryBadge category={activity.category} />
-          <Text style={{ fontFamily: 'Nunito_800ExtraBold' }} className="mb-1 mt-3 text-[26px] leading-8 text-ink">
+          <Text style={{ fontFamily: 'BricolageGrotesque_800ExtraBold' }} className="mb-1 mt-3 text-[26px] leading-8 text-ink">
             {activity.title}
           </Text>
           <Text className="mb-6 text-sm text-ink-soft">
@@ -61,7 +61,7 @@ export default function ActivityDetailScreen() {
 
           {fit ? (
             <View className="mb-6 rounded-2xl border border-line bg-surface p-4 shadow-sm">
-              <Text style={{ fontFamily: 'Nunito_800ExtraBold' }} className="mb-2.5 text-sm text-ink">
+              <Text style={{ fontFamily: 'BricolageGrotesque_800ExtraBold' }} className="mb-2.5 text-sm text-ink">
                 Pour vous, précisément
               </Text>
 
@@ -69,7 +69,7 @@ export default function ActivityDetailScreen() {
                 {fit.matchedGoalLabels.length > 0 ? (
                   <>
                     🎯 Sert vos objectifs :{' '}
-                    <Text style={{ fontFamily: 'Nunito_700Bold' }} className="text-ink">
+                    <Text style={{ fontFamily: 'Figtree_700Bold' }} className="text-ink">
                       {fit.matchedGoalLabels.join(', ')}
                     </Text>
                   </>
@@ -84,7 +84,7 @@ export default function ActivityDetailScreen() {
                 ) : fit.goodEnergySlotLabels.length > 0 ? (
                   <>
                     ⚡️ Plutôt bien adaptée le{' '}
-                    <Text style={{ fontFamily: 'Nunito_700Bold' }} className="text-ink">
+                    <Text style={{ fontFamily: 'Figtree_700Bold' }} className="text-ink">
                       {fit.goodEnergySlotLabels.join(', ').toLowerCase()}
                     </Text>
                     , selon votre énergie habituelle.
@@ -102,7 +102,7 @@ export default function ActivityDetailScreen() {
 
           {activity.steps.length > 0 ? (
             <>
-              <Text style={{ fontFamily: 'Nunito_800ExtraBold' }} className="mb-3 text-sm text-ink-soft">
+              <Text style={{ fontFamily: 'BricolageGrotesque_800ExtraBold' }} className="mb-3 text-sm text-ink-soft">
                 Étapes
               </Text>
               {activity.steps.map((step, i) => (
@@ -111,7 +111,7 @@ export default function ActivityDetailScreen() {
                     <Text className="text-3xl">{step.icon}</Text>
                   </View>
                   <View className="flex-1">
-                    <Text style={{ fontFamily: 'Nunito_700Bold' }} className="text-base text-ink">
+                    <Text style={{ fontFamily: 'Figtree_700Bold' }} className="text-base text-ink">
                       {i + 1}. {step.title}
                     </Text>
                     <Text className="mt-1 text-sm leading-5 text-ink-soft">{step.description}</Text>
@@ -137,7 +137,7 @@ export default function ActivityDetailScreen() {
 
           {complementary.length > 0 ? (
             <>
-              <Text style={{ fontFamily: 'Nunito_800ExtraBold' }} className="mb-3 mt-6 text-sm text-ink-soft">
+              <Text style={{ fontFamily: 'BricolageGrotesque_800ExtraBold' }} className="mb-3 mt-6 text-sm text-ink-soft">
                 Dans la même veine
               </Text>
               {complementary.map((a) => (
@@ -145,7 +145,7 @@ export default function ActivityDetailScreen() {
                   <Pressable className="mb-2.5 flex-row items-center rounded-2xl border border-line bg-surface p-4 shadow-sm">
                     <View className="flex-1 pr-3">
                       <CategoryBadge category={a.category} />
-                      <Text style={{ fontFamily: 'Nunito_700Bold' }} className="mt-2 text-base text-ink">
+                      <Text style={{ fontFamily: 'Figtree_700Bold' }} className="mt-2 text-base text-ink">
                         {a.title}
                       </Text>
                       <Text className="mt-0.5 text-xs text-ink-soft">{a.duration_minutes} min</Text>

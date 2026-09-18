@@ -2,6 +2,7 @@ import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { Link, router } from 'expo-router';
 import { useState } from 'react';
 import { ActivityIndicator, Linking, Pressable, ScrollView, Switch, View } from 'react-native';
+import { Segmented } from '../../src/components/Segmented';
 import { Text } from '../../src/components/typography';
 import { fetchAvailabilitySlots } from '../../src/lib/availability';
 import {
@@ -18,6 +19,7 @@ import { fetchWeekPlan } from '../../src/lib/planning';
 import { supabase } from '../../src/lib/supabase';
 import { getWeekStart } from '../../src/lib/week';
 import { useAuthStore } from '../../src/store/authStore';
+import { useTheme } from '../../src/theme/ThemeProvider';
 
 async function fetchCurrentWeek(userId: string) {
   const weekStart = getWeekStart();
@@ -26,6 +28,7 @@ async function fetchCurrentWeek(userId: string) {
 }
 
 export default function ProfileScreen() {
+  const theme = useTheme();
   const session = useAuthStore((s) => s.session);
   const email = session?.user.email ?? '';
   const initial = email.charAt(0).toUpperCase() || '?';
@@ -96,20 +99,20 @@ export default function ProfileScreen() {
     <ScrollView className="flex-1 bg-paper px-5 pt-16" contentContainerStyle={{ paddingBottom: 40 }}>
       <View className="mb-7 items-center">
         <View className="mb-3 h-20 w-20 items-center justify-center rounded-full bg-primary shadow-sm">
-          <Text style={{ fontFamily: 'Nunito_800ExtraBold' }} className="text-3xl text-white">
+          <Text style={{ fontFamily: 'BricolageGrotesque_800ExtraBold' }} className="text-3xl text-on-primary">
             {initial}
           </Text>
         </View>
-        <Text style={{ fontFamily: 'Nunito_800ExtraBold' }} className="text-lg text-ink">
+        <Text style={{ fontFamily: 'BricolageGrotesque_800ExtraBold' }} className="text-lg text-ink">
           {email}
         </Text>
       </View>
 
       <View className="mb-3 rounded-2xl border border-line bg-surface p-4 shadow-sm">
-        <Text style={{ fontFamily: 'Nunito_700Bold' }} className="text-[11px] uppercase tracking-wide text-primary">
+        <Text style={{ fontFamily: 'Figtree_700Bold' }} className="text-[11px] uppercase tracking-wide text-primary">
           Abonnement
         </Text>
-        <Text style={{ fontFamily: 'Nunito_700Bold' }} className="mt-1 text-base text-ink">
+        <Text style={{ fontFamily: 'Figtree_700Bold' }} className="mt-1 text-base text-ink">
           {isPremium ? 'Premium ✨' : 'Gratuit'}
         </Text>
         {isDevUnlock ? (
@@ -120,7 +123,7 @@ export default function ProfileScreen() {
             </Text>
             <Link href="/paywall" asChild>
               <Pressable className="mt-3 items-center rounded-full border border-line bg-paper px-4 py-2.5">
-                <Text style={{ fontFamily: 'Nunito_700Bold' }} className="text-sm text-ink">
+                <Text style={{ fontFamily: 'Figtree_700Bold' }} className="text-sm text-ink">
                   Voir l'écran d'abonnement
                 </Text>
               </Pressable>
@@ -136,7 +139,7 @@ export default function ProfileScreen() {
               disabled={manageSubscription.isPending}
               className="mt-3 items-center rounded-full border border-line bg-paper px-4 py-2.5"
             >
-              <Text style={{ fontFamily: 'Nunito_700Bold' }} className="text-sm text-ink">
+              <Text style={{ fontFamily: 'Figtree_700Bold' }} className="text-sm text-ink">
                 Gérer mon abonnement
               </Text>
             </Pressable>
@@ -148,7 +151,7 @@ export default function ProfileScreen() {
             </Text>
             <Link href="/paywall" asChild>
               <Pressable className="mt-3 items-center rounded-full bg-primary px-4 py-2.5">
-                <Text style={{ fontFamily: 'Nunito_800ExtraBold' }} className="text-sm text-white">
+                <Text style={{ fontFamily: 'BricolageGrotesque_800ExtraBold' }} className="text-sm text-on-primary">
                   Découvrir Premium
                 </Text>
               </Pressable>
@@ -158,9 +161,29 @@ export default function ProfileScreen() {
       </View>
 
       <View className="mb-3 rounded-2xl border border-line bg-surface p-4 shadow-sm">
+        <Text style={{ fontFamily: 'Figtree_700Bold' }} className="text-[11px] uppercase tracking-wide text-primary">
+          Couleurs de l'app
+        </Text>
+        <Text className="mb-3 mt-0.5 text-sm text-ink-soft">
+          En automatique, elles suivent l'heure : abricot le matin, vert d'eau l'après-midi, indigo sombre le soir.
+        </Text>
+        <Segmented
+          label="Couleurs de l'app"
+          value={theme.mode}
+          onChange={theme.setMode}
+          options={[
+            { value: 'auto', label: 'Auto' },
+            { value: 'matin', label: 'Matin' },
+            { value: 'apres_midi', label: 'Après-midi' },
+            { value: 'soir', label: 'Soir' },
+          ]}
+        />
+      </View>
+
+      <View className="mb-3 rounded-2xl border border-line bg-surface p-4 shadow-sm">
         <View className="flex-row items-center justify-between">
           <View className="flex-1 pr-3">
-            <Text style={{ fontFamily: 'Nunito_700Bold' }} className="text-[11px] uppercase tracking-wide text-primary">
+            <Text style={{ fontFamily: 'Figtree_700Bold' }} className="text-[11px] uppercase tracking-wide text-primary">
               Rappels
             </Text>
             <Text className="mt-0.5 text-sm text-ink-soft">
@@ -171,8 +194,8 @@ export default function ProfileScreen() {
             value={!!remindersQuery.data}
             onValueChange={(v) => toggleReminders.mutate(v)}
             disabled={remindersQuery.isLoading || toggleReminders.isPending}
-            trackColor={{ false: '#EEE4D6', true: '#FF6B57' }}
-            thumbColor="#FFFFFF"
+            trackColor={{ false: theme.line, true: theme.primary }}
+            thumbColor={theme.surface}
           />
         </View>
         {toggleReminders.isError ? (
@@ -183,7 +206,7 @@ export default function ProfileScreen() {
       <View className="mb-3 rounded-2xl border border-line bg-surface p-4 shadow-sm">
         <View className="flex-row items-center justify-between">
           <View className="flex-1 pr-3">
-            <Text style={{ fontFamily: 'Nunito_700Bold' }} className="text-[11px] uppercase tracking-wide text-primary">
+            <Text style={{ fontFamily: 'Figtree_700Bold' }} className="text-[11px] uppercase tracking-wide text-primary">
               Calendrier
             </Text>
             <Text className="mt-0.5 text-sm text-ink-soft">
@@ -195,15 +218,15 @@ export default function ProfileScreen() {
               value={!!calendarQuery.data}
               onValueChange={(v) => toggleCalendar.mutate(v)}
               disabled={calendarQuery.isLoading || toggleCalendar.isPending}
-              trackColor={{ false: '#EEE4D6', true: '#FF6B57' }}
-              thumbColor="#FFFFFF"
+              trackColor={{ false: theme.line, true: theme.primary }}
+              thumbColor={theme.surface}
             />
           )}
         </View>
         {calendarUnavailableReason ? (
           <Text className="mt-2 text-xs text-ink-soft">{calendarUnavailableReason}</Text>
         ) : null}
-        {toggleCalendar.isPending ? <ActivityIndicator className="mt-2" size="small" color="#FF6B57" /> : null}
+        {toggleCalendar.isPending ? <ActivityIndicator className="mt-2 text-primary" size="small" /> : null}
         {toggleCalendar.isError ? (
           <Text className="mt-2 text-xs text-red-700">{(toggleCalendar.error as Error).message}</Text>
         ) : null}
@@ -219,7 +242,7 @@ export default function ProfileScreen() {
       </View>
 
       <View className="mb-3 rounded-2xl border border-line bg-surface p-4 shadow-sm">
-        <Text style={{ fontFamily: 'Nunito_700Bold' }} className="text-[11px] uppercase tracking-wide text-primary">
+        <Text style={{ fontFamily: 'Figtree_700Bold' }} className="text-[11px] uppercase tracking-wide text-primary">
           Confidentialité
         </Text>
         <Text className="mt-1 text-sm text-ink-soft">
@@ -233,9 +256,9 @@ export default function ProfileScreen() {
           className="mt-3 items-center rounded-full border border-line bg-paper px-4 py-3"
         >
           {exportMutation.isPending ? (
-            <ActivityIndicator size="small" color="#FF6B57" />
+            <ActivityIndicator className="text-primary" size="small" />
           ) : (
-            <Text style={{ fontFamily: 'Nunito_700Bold' }} className="text-sm text-ink">
+            <Text style={{ fontFamily: 'Figtree_700Bold' }} className="text-sm text-ink">
               Exporter mes données
             </Text>
           )}
@@ -261,9 +284,9 @@ export default function ProfileScreen() {
                 className="mr-3 rounded-full bg-red-700 px-4 py-2.5"
               >
                 {deleteMutation.isPending ? (
-                  <ActivityIndicator size="small" color="#FFFFFF" />
+                  <ActivityIndicator className="text-white" size="small" />
                 ) : (
-                  <Text style={{ fontFamily: 'Nunito_800ExtraBold' }} className="text-sm text-white">
+                  <Text style={{ fontFamily: 'BricolageGrotesque_800ExtraBold' }} className="text-sm text-white">
                     Supprimer définitivement
                   </Text>
                 )}
@@ -278,7 +301,7 @@ export default function ProfileScreen() {
           </View>
         ) : (
           <Pressable onPress={() => setConfirmingDelete(true)} className="mt-2 items-center px-4 py-3">
-            <Text style={{ fontFamily: 'Nunito_700Bold' }} className="text-sm text-accent">
+            <Text style={{ fontFamily: 'Figtree_700Bold' }} className="text-sm text-accent">
               Supprimer mon compte
             </Text>
           </Pressable>
@@ -289,7 +312,7 @@ export default function ProfileScreen() {
         onPress={handleSignOut}
         className="mt-2 items-center rounded-full border border-line bg-surface px-4 py-3.5"
       >
-        <Text style={{ fontFamily: 'Nunito_700Bold' }} className="text-ink">
+        <Text style={{ fontFamily: 'Figtree_700Bold' }} className="text-ink">
           Se déconnecter
         </Text>
       </Pressable>

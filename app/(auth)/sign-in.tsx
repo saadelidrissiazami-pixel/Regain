@@ -8,7 +8,6 @@ import { Text, TextInput } from '../../src/components/typography';
 import { z } from 'zod';
 
 import { router } from 'expo-router';
-import { LinearGradient } from 'expo-linear-gradient';
 
 import { supabase } from '../../src/lib/supabase';
 
@@ -62,7 +61,7 @@ export default function SignInScreen() {
         </View>
       </Animated.View>
       <Appear index={1} key={mode}>
-        <Text style={{ fontFamily: 'Nunito_800ExtraBold' }} className="mb-1 text-[28px] text-ink">
+        <Text style={{ fontFamily: 'BricolageGrotesque_800ExtraBold' }} className="mb-1 text-[28px] text-ink">
           {mode === 'sign-in' ? 'Content de vous revoir' : 'Bienvenue sur Regain'}
         </Text>
         <Text className="mb-7 text-sm text-ink-soft">
@@ -79,7 +78,7 @@ export default function SignInScreen() {
               <TextInput
                 className="mb-1 rounded-2xl border border-line bg-surface px-4 py-3.5 text-ink"
                 placeholder="Adresse e-mail"
-                placeholderTextColor="#B5AB9A"
+
                 autoCapitalize="none"
                 keyboardType="email-address"
                 onBlur={onBlur}
@@ -97,7 +96,7 @@ export default function SignInScreen() {
               <TextInput
                 className="mb-1 mt-2 rounded-2xl border border-line bg-surface px-4 py-3.5 text-ink"
                 placeholder="Mot de passe"
-                placeholderTextColor="#B5AB9A"
+
                 secureTextEntry
                 onBlur={onBlur}
                 onChangeText={onChange}
@@ -113,16 +112,14 @@ export default function SignInScreen() {
       {info ? <Text className="mt-2 text-xs text-primary">{info}</Text> : null}
 
       <Appear index={3}>
-        <PressableScale onPress={handleSubmit(onSubmit)} disabled={submitting} feedback="medium" className="mt-6 overflow-hidden rounded-full shadow-sm">
-          <LinearGradient colors={['#F0A324', '#FF6B57']} start={{ x: 0, y: 0 }} end={{ x: 1, y: 0 }} style={{ paddingVertical: 15 }}>
-            {submitting ? (
-              <ActivityIndicator color="#FFFFFF" />
-            ) : (
-              <Text style={{ fontFamily: 'Nunito_800ExtraBold' }} className="text-center text-white">
-                {mode === 'sign-in' ? 'Se connecter' : "S'inscrire"}
-              </Text>
-            )}
-          </LinearGradient>
+        <PressableScale onPress={handleSubmit(onSubmit)} disabled={submitting} feedback="medium" className="mt-6 items-center rounded-full bg-ink px-5 py-4">
+          {submitting ? (
+            <ActivityIndicator className="text-paper" />
+          ) : (
+            <Text style={{ fontFamily: 'BricolageGrotesque_800ExtraBold' }} className="text-center text-base text-paper">
+              {mode === 'sign-in' ? 'Se connecter' : "S'inscrire"}
+            </Text>
+          )}
         </PressableScale>
       </Appear>
 
@@ -135,7 +132,7 @@ export default function SignInScreen() {
       >
         <Text className="text-sm text-ink-soft">
           {mode === 'sign-in' ? 'Pas encore de compte ? ' : 'Déjà un compte ? '}
-          <Text style={{ fontFamily: 'Nunito_700Bold' }} className="text-primary">
+          <Text style={{ fontFamily: 'Figtree_700Bold' }} className="text-primary">
             {mode === 'sign-in' ? 'Inscrivez-vous' : 'Connectez-vous'}
           </Text>
         </Text>

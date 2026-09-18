@@ -1,5 +1,4 @@
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
-import { LinearGradient } from 'expo-linear-gradient';
 import { Link } from 'expo-router';
 import { useState } from 'react';
 import { ActivityIndicator, Pressable, ScrollView, View } from 'react-native';
@@ -30,12 +29,10 @@ const STRATEGY_LABELS: Record<NutritionTargets['strategy'], string> = {
 
 function GradientButton({ label, onPress, disabled }: { label: string; onPress: () => void; disabled?: boolean }) {
   return (
-    <PressableScale onPress={onPress} disabled={disabled} feedback="medium" className="overflow-hidden rounded-full shadow-sm">
-      <LinearGradient colors={['#F0A324', '#FF6B57']} start={{ x: 0, y: 0 }} end={{ x: 1, y: 0 }} style={{ paddingVertical: 15 }}>
-        <Text style={{ fontFamily: 'Nunito_800ExtraBold' }} className="text-center text-white">
-          {label}
-        </Text>
-      </LinearGradient>
+    <PressableScale onPress={onPress} disabled={disabled} feedback="medium" className="items-center rounded-full bg-ink px-5 py-4">
+      <Text style={{ fontFamily: 'BricolageGrotesque_800ExtraBold' }} className="text-center text-base text-paper">
+        {label}
+      </Text>
     </PressableScale>
   );
 }
@@ -52,10 +49,10 @@ function CountUp({ value, suffix = '' }: { value: number; suffix?: string }) {
 function TargetsCard({ targets }: { targets: NutritionTargets }) {
   return (
     <View className="mb-4 rounded-2xl border border-line bg-surface p-4 shadow-sm">
-      <Text style={{ fontFamily: 'Nunito_700Bold' }} className="text-[11px] uppercase tracking-wide text-primary">
+      <Text style={{ fontFamily: 'Figtree_700Bold' }} className="text-[11px] uppercase tracking-wide text-primary">
         Vos cibles quotidiennes
       </Text>
-      <Text style={{ fontFamily: 'Nunito_800ExtraBold' }} className="mt-1 text-2xl text-ink">
+      <Text style={{ fontFamily: 'BricolageGrotesque_800ExtraBold' }} className="mt-1 text-2xl text-ink">
         <CountUp value={targets.calories} suffix=" kcal" />
       </Text>
       <Text className="text-xs text-ink-soft">{STRATEGY_LABELS[targets.strategy]}</Text>
@@ -66,7 +63,7 @@ function TargetsCard({ targets }: { targets: NutritionTargets }) {
           { label: 'Lipides', value: targets.fatG },
         ].map((macro) => (
           <View key={macro.label} className="flex-1 items-center rounded-xl bg-paper py-2">
-            <Text style={{ fontFamily: 'Nunito_800ExtraBold' }} className="text-base text-ink">
+            <Text style={{ fontFamily: 'BricolageGrotesque_800ExtraBold' }} className="text-base text-ink">
               <CountUp value={macro.value} suffix=" g" />
             </Text>
             <Text className="text-[11px] text-ink-soft">{macro.label}</Text>
@@ -94,7 +91,7 @@ function SessionCard({ session }: { session: WorkoutSession }) {
         className="flex-row items-center justify-between px-4 py-3.5"
       >
         <View className="flex-1 pr-3">
-          <Text style={{ fontFamily: 'Nunito_800ExtraBold' }} className="text-sm text-ink">
+          <Text style={{ fontFamily: 'BricolageGrotesque_800ExtraBold' }} className="text-sm text-ink">
             {session.day_label} · {session.focus}
           </Text>
           <Text className="mt-0.5 text-xs text-ink-soft">
@@ -111,7 +108,7 @@ function SessionCard({ session }: { session: WorkoutSession }) {
           <Text className="mb-2 text-xs text-ink-soft">🔥 Échauffement : {session.warmup}</Text>
           {session.exercises.map((exercise, i) => (
             <View key={i} className="mb-2 rounded-xl bg-paper p-3">
-              <Text style={{ fontFamily: 'Nunito_700Bold' }} className="text-sm text-ink">
+              <Text style={{ fontFamily: 'Figtree_700Bold' }} className="text-sm text-ink">
                 {exercise.name}
               </Text>
               <Text className="text-xs text-ink-soft">
@@ -149,7 +146,7 @@ function ShoppingList({ items }: { items: ShoppingItem[] }) {
     <View className="mb-4 rounded-2xl border border-line bg-surface p-4 shadow-sm">
       {categories.map((category) => (
         <View key={category} className="mb-3">
-          <Text style={{ fontFamily: 'Nunito_800ExtraBold' }} className="mb-1.5 text-xs uppercase tracking-wide text-ink-soft">
+          <Text style={{ fontFamily: 'BricolageGrotesque_800ExtraBold' }} className="mb-1.5 text-xs uppercase tracking-wide text-ink-soft">
             {category}
           </Text>
           {items.map((item, index) =>
@@ -161,7 +158,7 @@ function ShoppingList({ items }: { items: ShoppingItem[] }) {
                       checked.has(index) ? 'border-calm bg-calm' : 'border-line'
                     }`}
                   >
-                    {checked.has(index) ? <Text className="text-[11px] text-white">✓</Text> : null}
+                    {checked.has(index) ? <Text className="text-[11px] text-paper">✓</Text> : null}
                   </View>
                 </Pop>
                 <Text className={`flex-1 text-sm ${checked.has(index) ? 'text-ink-soft line-through' : 'text-ink'}`}>
@@ -190,7 +187,7 @@ function MealDayCard({ day, defaultOpen }: { day: MealDay; defaultOpen: boolean 
         className="flex-row items-center justify-between px-4 py-3.5"
       >
         <View className="flex-1 pr-3">
-          <Text style={{ fontFamily: 'Nunito_800ExtraBold' }} className="text-sm text-ink">
+          <Text style={{ fontFamily: 'BricolageGrotesque_800ExtraBold' }} className="text-sm text-ink">
             {day.day_label} · {day.total_calories} kcal
           </Text>
           <Text className="mt-0.5 text-xs text-ink-soft">
@@ -206,7 +203,7 @@ function MealDayCard({ day, defaultOpen }: { day: MealDay; defaultOpen: boolean 
           <View className="px-4 pb-3">
             {day.meals.map((meal, j) => (
               <View key={j} className="mb-2">
-                <Text style={{ fontFamily: 'Nunito_700Bold' }} className="text-sm text-ink">
+                <Text style={{ fontFamily: 'Figtree_700Bold' }} className="text-sm text-ink">
                   {meal.name} <Text className="text-xs text-ink-soft">· {meal.calories} kcal · {meal.protein_g} g prot.</Text>
                 </Text>
                 <Text className="text-xs text-ink-soft">{meal.description}</Text>
@@ -229,7 +226,7 @@ function PlanView({ plan }: { plan: FitnessPlan }) {
       {plan.coach_notes ? (
         <Appear index={2}>
           <View className="mb-5 rounded-2xl bg-calm-soft p-4">
-            <Text style={{ fontFamily: 'Nunito_700Bold' }} className="mb-1 text-xs text-calm">
+            <Text style={{ fontFamily: 'Figtree_700Bold' }} className="mb-1 text-xs text-calm">
               Le mot de votre coach
             </Text>
             <Text className="text-sm leading-5 text-ink">{plan.coach_notes}</Text>
@@ -237,7 +234,7 @@ function PlanView({ plan }: { plan: FitnessPlan }) {
         </Appear>
       ) : null}
 
-      <Text style={{ fontFamily: 'Nunito_800ExtraBold' }} className="mb-2.5 text-sm text-ink-soft">
+      <Text style={{ fontFamily: 'BricolageGrotesque_800ExtraBold' }} className="mb-2.5 text-sm text-ink-soft">
         🏋️ Vos séances de la semaine
       </Text>
       {plan.program.map((session, i) => (
@@ -246,7 +243,7 @@ function PlanView({ plan }: { plan: FitnessPlan }) {
         </Appear>
       ))}
 
-      <Text style={{ fontFamily: 'Nunito_800ExtraBold' }} className="mb-2.5 mt-4 text-sm text-ink-soft">
+      <Text style={{ fontFamily: 'BricolageGrotesque_800ExtraBold' }} className="mb-2.5 mt-4 text-sm text-ink-soft">
         🍽️ Vos journées types
       </Text>
       {plan.meals.map((day, i) => (
@@ -255,7 +252,7 @@ function PlanView({ plan }: { plan: FitnessPlan }) {
         </Appear>
       ))}
 
-      <Text style={{ fontFamily: 'Nunito_800ExtraBold' }} className="mb-2.5 mt-4 text-sm text-ink-soft">
+      <Text style={{ fontFamily: 'BricolageGrotesque_800ExtraBold' }} className="mb-2.5 mt-4 text-sm text-ink-soft">
         🛒 Liste de courses de la semaine
       </Text>
       <ShoppingList items={plan.shopping_list} />
@@ -323,7 +320,7 @@ export default function FitnessScreen() {
   if (premiumLoading) {
     return (
       <View className="flex-1 items-center justify-center bg-paper">
-        <ActivityIndicator color="#FF6B57" />
+        <ActivityIndicator className="text-primary" />
       </View>
     );
   }
@@ -331,10 +328,10 @@ export default function FitnessScreen() {
   return (
     <ScrollView className="flex-1 bg-paper px-5 pt-16" contentContainerStyle={{ paddingBottom: 40 }}>
       <Appear>
-        <Text style={{ fontFamily: 'Nunito_700Bold' }} className="mb-1 text-sm text-primary">
+        <Text style={{ fontFamily: 'Figtree_700Bold' }} className="mb-1 text-sm text-primary">
           Votre coach
         </Text>
-        <Text style={{ fontFamily: 'Nunito_800ExtraBold' }} className="mb-6 text-[28px] leading-8 text-ink">
+        <Text style={{ fontFamily: 'BricolageGrotesque_800ExtraBold' }} className="mb-6 text-[28px] leading-8 text-ink">
           Forme
         </Text>
       </Appear>
@@ -344,7 +341,7 @@ export default function FitnessScreen() {
       {!isPremium ? (
         <View key="teaser" className="rounded-2xl border border-line bg-surface p-5 shadow-sm">
           <Text className="mb-2 text-3xl">🏋️</Text>
-          <Text style={{ fontFamily: 'Nunito_800ExtraBold' }} className="mb-2 text-lg text-ink">
+          <Text style={{ fontFamily: 'BricolageGrotesque_800ExtraBold' }} className="mb-2 text-lg text-ink">
             Un coach forme rien que pour vous
           </Text>
           <Text className="mb-4 text-sm leading-5 text-ink-soft">
@@ -352,8 +349,8 @@ export default function FitnessScreen() {
             bilan chaque semaine pour tout ajuster. Réservé aux membres Premium.
           </Text>
           <Link href="/paywall" asChild>
-            <Pressable className="items-center rounded-full bg-primary px-4 py-3">
-              <Text style={{ fontFamily: 'Nunito_800ExtraBold' }} className="text-white">
+            <Pressable className="items-center rounded-full bg-ink px-4 py-3">
+              <Text style={{ fontFamily: 'BricolageGrotesque_800ExtraBold' }} className="text-paper">
                 Découvrir Premium
               </Text>
             </Pressable>
@@ -379,14 +376,14 @@ export default function FitnessScreen() {
             }}
             className="items-center rounded-full border border-line bg-paper px-4 py-3"
           >
-            <Text style={{ fontFamily: 'Nunito_700Bold' }} className="text-ink">
+            <Text style={{ fontFamily: 'Figtree_700Bold' }} className="text-ink">
               Réessayer
             </Text>
           </Pressable>
         </View>
       ) : !profile ? (
         <View key="welcome" className="rounded-2xl border border-line bg-surface p-5 shadow-sm">
-          <Text style={{ fontFamily: 'Nunito_800ExtraBold' }} className="mb-2 text-lg text-ink">
+          <Text style={{ fontFamily: 'BricolageGrotesque_800ExtraBold' }} className="mb-2 text-lg text-ink">
             Faisons connaissance
           </Text>
           <Text className="mb-4 text-sm leading-5 text-ink-soft">
@@ -394,8 +391,8 @@ export default function FitnessScreen() {
             prépare un programme sur mesure.
           </Text>
           <Link href="/fitness/questionnaire" asChild>
-            <Pressable className="items-center rounded-full bg-primary px-4 py-3">
-              <Text style={{ fontFamily: 'Nunito_800ExtraBold' }} className="text-white">
+            <Pressable className="items-center rounded-full bg-ink px-4 py-3">
+              <Text style={{ fontFamily: 'BricolageGrotesque_800ExtraBold' }} className="text-paper">
                 Commencer le questionnaire
               </Text>
             </Pressable>
@@ -406,7 +403,7 @@ export default function FitnessScreen() {
           {adjustments && planQuery.data ? (
             <Appear>
               <View className="mb-4 rounded-2xl border border-primary-soft bg-primary-soft p-4">
-                <Text style={{ fontFamily: 'Nunito_700Bold' }} className="mb-2 text-[11px] uppercase tracking-wide text-primary">
+                <Text style={{ fontFamily: 'Figtree_700Bold' }} className="mb-2 text-[11px] uppercase tracking-wide text-primary">
                   Ajusté après votre bilan du {formatDateTimeLabel(lastCheckin!.created_at)}
                 </Text>
                 <AdjustmentsList adjustments={adjustments} />
@@ -421,7 +418,7 @@ export default function FitnessScreen() {
               {targets ? <TargetsCard targets={targets} /> : null}
               {generateMutation.isPending ? (
                 <View key="generating" className="mb-4 flex-row items-center rounded-2xl bg-surface p-4">
-                  <ActivityIndicator color="#FF6B57" />
+                  <ActivityIndicator className="text-primary" />
                   <Text className="ml-3 flex-1 text-sm text-ink-soft">
                     Préparation de vos séances, de vos menus et de votre liste de courses…
                   </Text>
@@ -440,8 +437,8 @@ export default function FitnessScreen() {
           {planQuery.data ? (
             <View className="mb-3">
               <Link href="/fitness/checkin" asChild>
-                <PressableScale feedback="medium" className="items-center rounded-full bg-primary px-4 py-3.5 shadow-sm">
-                  <Text style={{ fontFamily: 'Nunito_800ExtraBold' }} className="text-white">
+                <PressableScale feedback="medium" className="items-center rounded-full bg-ink px-4 py-3.5 shadow-sm">
+                  <Text style={{ fontFamily: 'BricolageGrotesque_800ExtraBold' }} className="text-paper">
                     📋 Faire mon bilan de la semaine
                   </Text>
                 </PressableScale>

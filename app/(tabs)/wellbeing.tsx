@@ -10,6 +10,7 @@ import { usePremium } from '../../src/lib/premium';
 import { moodOption } from '../../src/features/wellbeing/reflection';
 import { fetchCompletedProgramIds, fetchPrograms, fetchWellbeingJournal } from '../../src/lib/wellbeing';
 import { useAuthStore } from '../../src/store/authStore';
+import { useTheme } from '../../src/theme/ThemeProvider';
 import type { WellbeingProgram } from '../../src/features/wellbeing/types';
 
 const CATEGORY_ICONS: Record<string, string> = {
@@ -25,6 +26,7 @@ const CATEGORY_ORDER = Object.keys(CATEGORY_ICONS);
 const FEATURED_SLUG = 'detachement-regard-autres';
 
 export default function WellbeingScreen() {
+  const theme = useTheme();
   const session = useAuthStore((s) => s.session);
   const userId = session?.user.id;
   // Tant que l'entitlement RevenueCat n'est pas résolu, on n'affiche pas de cadenas :
@@ -88,13 +90,13 @@ export default function WellbeingScreen() {
     <ScrollView
       className="flex-1 bg-paper px-5 pt-16"
       contentContainerStyle={{ paddingBottom: 40 }}
-      refreshControl={<RefreshControl refreshing={refreshing} onRefresh={onRefresh} tintColor="#1E9C86" />}
+      refreshControl={<RefreshControl refreshing={refreshing} onRefresh={onRefresh} tintColor={theme.calm} />}
     >
       <Appear>
-        <Text style={{ fontFamily: 'Nunito_700Bold' }} className="mb-1 text-sm text-calm">
+        <Text style={{ fontFamily: 'Figtree_700Bold' }} className="mb-1 text-sm text-calm">
           Prenez un moment
         </Text>
-        <Text style={{ fontFamily: 'Nunito_800ExtraBold' }} className="mb-6 text-[28px] leading-8 text-ink">
+        <Text style={{ fontFamily: 'BricolageGrotesque_800ExtraBold' }} className="mb-6 text-[28px] leading-8 text-ink">
           Bien-être
         </Text>
       </Appear>
@@ -103,14 +105,14 @@ export default function WellbeingScreen() {
         <Appear index={1}>
           <Link href={`/wellbeing/${featured.slug}`} asChild>
             <PressableScale scaleTo={0.97} className="mb-6 overflow-hidden rounded-2xl shadow-sm">
-              <LinearGradient colors={['#1E9C86', '#4E9BDE']} start={{ x: 0, y: 0 }} end={{ x: 1, y: 1 }} style={{ padding: 18 }}>
-                <Text style={{ fontFamily: 'Nunito_700Bold' }} className="text-[11px] uppercase tracking-wide text-white/90">
+              <LinearGradient colors={[theme.sky, theme.skySoft]} start={{ x: 0, y: 0 }} end={{ x: 1, y: 1 }} style={{ padding: 18 }}>
+                <Text style={{ fontFamily: 'Figtree_700Bold' }} className="text-[11px] uppercase tracking-wide text-ink-soft">
                   🎧 Dans les transports ? En public ?
                 </Text>
-                <Text style={{ fontFamily: 'Nunito_800ExtraBold' }} className="mt-1 text-lg text-white">
+                <Text style={{ fontFamily: 'BricolageGrotesque_800ExtraBold' }} className="mt-1 text-lg text-ink">
                   Se détacher du regard des autres
                 </Text>
-                <Text className="mt-1 text-xs text-white/85">
+                <Text className="mt-1 text-xs text-ink-soft">
                   Les yeux ouverts, discrètement — où que vous soyez. →
                 </Text>
               </LinearGradient>
@@ -126,7 +128,7 @@ export default function WellbeingScreen() {
             className="mb-5 flex-row items-center justify-between rounded-2xl border border-line bg-surface p-4 shadow-sm"
           >
             <View className="flex-1 pr-3">
-              <Text style={{ fontFamily: 'Nunito_800ExtraBold' }} className="text-sm text-ink">
+              <Text style={{ fontFamily: 'BricolageGrotesque_800ExtraBold' }} className="text-sm text-ink">
                 📔 Mon journal
               </Text>
               <Text className="mt-0.5 text-xs text-ink-soft">
@@ -165,7 +167,7 @@ export default function WellbeingScreen() {
                 <View className="flex-row items-center">
                   <Text className="mr-2 text-lg">{CATEGORY_ICONS[category] ?? '✨'}</Text>
                   <View>
-                    <Text style={{ fontFamily: 'Nunito_800ExtraBold' }} className="text-sm text-ink">
+                    <Text style={{ fontFamily: 'BricolageGrotesque_800ExtraBold' }} className="text-sm text-ink">
                       {category}
                     </Text>
                     <Text className="mt-0.5 text-xs text-ink-soft">
@@ -190,12 +192,12 @@ export default function WellbeingScreen() {
                           <Link href={locked ? '/paywall' : `/wellbeing/${program.slug}`} asChild>
                             <PressableScale scaleTo={0.97} className="mb-2 flex-row items-center rounded-2xl border border-line bg-paper p-4">
                               <View className="mr-3 h-10 w-10 items-center justify-center rounded-full bg-calm-soft">
-                                <Text style={{ fontFamily: 'Nunito_800ExtraBold' }} className="text-xs text-calm">
+                                <Text style={{ fontFamily: 'BricolageGrotesque_800ExtraBold' }} className="text-xs text-calm">
                                   {program.duration_minutes}′
                                 </Text>
                               </View>
                               <View className="flex-1">
-                                <Text style={{ fontFamily: 'Nunito_700Bold' }} className="text-base text-ink">
+                                <Text style={{ fontFamily: 'Figtree_700Bold' }} className="text-base text-ink">
                                   {program.title}
                                 </Text>
                                 <Text className="mt-0.5 text-xs text-ink-soft">{program.duration_minutes} min</Text>

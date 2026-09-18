@@ -4,9 +4,7 @@ import type { ComponentProps } from 'react';
 import type { ColorValue } from 'react-native';
 
 import { haptic, Pop } from '../../src/components/motion';
-
-const ACTIVE = '#FF6B57';
-const INACTIVE = '#C9BFAF';
+import { useTheme } from '../../src/theme/ThemeProvider';
 
 type IconName = ComponentProps<typeof Ionicons>['name'];
 
@@ -28,17 +26,18 @@ const TABS = [
 ];
 
 export default function TabsLayout() {
+  const theme = useTheme();
   return (
     <Tabs
       screenListeners={{ tabPress: () => haptic.selection() }}
       screenOptions={{
         headerShown: false,
-        tabBarActiveTintColor: ACTIVE,
-        tabBarInactiveTintColor: INACTIVE,
-        tabBarLabelStyle: { fontFamily: 'Nunito_700Bold', fontSize: 11 },
+        tabBarActiveTintColor: theme.primary,
+        tabBarInactiveTintColor: theme.inkSoft,
+        tabBarLabelStyle: { fontFamily: 'Figtree_700Bold', fontSize: 11 },
         tabBarStyle: {
-          backgroundColor: '#FFFFFF',
-          borderTopColor: '#EEE4D6',
+          backgroundColor: theme.surface,
+          borderTopColor: theme.line,
           height: 84,
           paddingTop: 8,
         },

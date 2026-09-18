@@ -1,13 +1,46 @@
 import { describe, expect, it } from 'vitest';
 
-import { buildWeekView, greetingFor } from '../src/features/planning/weekView';
+import { buildWeekView, formatCountdown, greetingFor, isOver, minutesUntil, todaySubtitle } from '../src/features/planning/weekView';
 
 describe('greetingFor', () => {
-  it('dit bonjour le jour et bonsoir le soir', () => {
+  it('suit les moments de la journée', () => {
     expect(greetingFor(8)).toBe('Bonjour');
-    expect(greetingFor(17)).toBe('Bonjour');
+    expect(greetingFor(12)).toBe('Bon après-midi');
+    expect(greetingFor(17)).toBe('Bon après-midi');
     expect(greetingFor(18)).toBe('Bonsoir');
     expect(greetingFor(2)).toBe('Bonsoir');
+  });
+});
+
+describe('compte à rebours', () => {
+  const now = new Date(2026, 8, 22, 15, 42);
+
+  it("calcule les minutes jusqu'à une heure du jour", () => {
+    expect(minutesUntil('2026-09-22', '17:30', now)).toBe(108);
+    expect(minutesUntil('2026-09-22', '15:00', now)).toBe(-42);
+    expect(minutesUntil('2026-09-23', '09:00', now)).toBe(17 * 60 + 18);
+  });
+
+  it('écrit le délai en clair', () => {
+    expect(formatCountdown(25)).toBe('dans 25 min');
+    expect(formatCountdown(108)).toBe('dans 1 h 48');
+    expect(formatCountdown(180)).toBe('dans 3 h');
+    expect(formatCountdown(65)).toBe('dans 1 h 05');
+    expect(formatCountdown(0)).toBeNull();
+    expect(formatCountdown(-10)).toBeNull();
+  });
+
+  it("considère une activité terminée seulement après sa fin", () => {
+    expect(isOver('2026-09-22', '07:00', 60, now)).toBe(true);
+    expect(isOver('2026-09-22', '15:00', 60, now)).toBe(false);
+    expect(isOver('2026-09-22', '17:30', 20, now)).toBe(false);
+    expect(isOver('2026-09-23', '07:00', 60, now)).toBe(false);
+  });
+
+  it("résume ce qu'il reste aujourd'hui", () => {
+    expect(todaySubtitle(2, 15)).toBe("2 activités aujourd'hui");
+    expect(todaySubtitle(1, 20)).toBe('1 activité ce soir');
+    expect(todaySubtitle(0, 10)).toBe("Rien de prévu d'ici la fin de la journée");
   });
 });
 

@@ -17,7 +17,7 @@ export default function Index() {
   if (!isInitialized || (session && profileQuery.isLoading)) {
     return (
       <View className="flex-1 items-center justify-center bg-paper">
-        <ActivityIndicator color="#3F5943" />
+        <ActivityIndicator className="text-primary" />
       </View>
     );
   }

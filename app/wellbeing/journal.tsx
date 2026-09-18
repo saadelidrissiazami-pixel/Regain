@@ -15,7 +15,7 @@ function EntryCard({ entry }: { entry: JournalEntry }) {
     <View className="mb-3 rounded-2xl border border-line bg-surface p-4 shadow-sm">
       <View className="flex-row items-start justify-between">
         <View className="flex-1 pr-3">
-          <Text style={{ fontFamily: 'Nunito_800ExtraBold' }} className="text-sm text-ink">
+          <Text style={{ fontFamily: 'BricolageGrotesque_800ExtraBold' }} className="text-sm text-ink">
             {entry.program?.title ?? 'Séance'}
           </Text>
           <Text className="mt-0.5 text-xs text-ink-soft">{formatDateTimeLabel(entry.completed_at)}</Text>
@@ -30,7 +30,7 @@ function EntryCard({ entry }: { entry: JournalEntry }) {
 
       {entry.reflections.map((reflection) => (
         <View key={reflection.prompt} className="mt-3">
-          <Text style={{ fontFamily: 'Nunito_700Bold' }} className="text-[11px] uppercase tracking-wide text-ink-soft">
+          <Text style={{ fontFamily: 'Figtree_700Bold' }} className="text-[11px] uppercase tracking-wide text-ink-soft">
             {reflection.prompt}
           </Text>
           <Text className="mt-0.5 text-sm leading-5 text-ink">{reflection.answer}</Text>
@@ -63,16 +63,16 @@ export default function WellbeingJournalScreen() {
   return (
     <ScrollView className="flex-1 bg-paper px-5 pt-16" contentContainerStyle={{ paddingBottom: 40 }}>
       <Pressable onPress={() => router.back()} className="mb-5">
-        <Text style={{ fontFamily: 'Nunito_700Bold' }} className="text-sm text-ink-soft">
+        <Text style={{ fontFamily: 'Figtree_700Bold' }} className="text-sm text-ink-soft">
           ← Retour
         </Text>
       </Pressable>
 
       <Appear>
-        <Text style={{ fontFamily: 'Nunito_700Bold' }} className="mb-1 text-sm text-calm">
+        <Text style={{ fontFamily: 'Figtree_700Bold' }} className="mb-1 text-sm text-calm">
           Bien-être
         </Text>
-        <Text style={{ fontFamily: 'Nunito_800ExtraBold' }} className="mb-6 text-[28px] leading-8 text-ink">
+        <Text style={{ fontFamily: 'BricolageGrotesque_800ExtraBold' }} className="mb-6 text-[28px] leading-8 text-ink">
           Mon journal
         </Text>
       </Appear>
@@ -86,14 +86,14 @@ export default function WellbeingJournalScreen() {
         <View className="rounded-2xl border border-line bg-surface p-4">
           <Text className="text-sm text-ink">Impossible de charger votre journal pour le moment.</Text>
           <Pressable onPress={() => journalQuery.refetch()} className="mt-2">
-            <Text style={{ fontFamily: 'Nunito_700Bold' }} className="text-sm text-primary">
+            <Text style={{ fontFamily: 'Figtree_700Bold' }} className="text-sm text-primary">
               Réessayer
             </Text>
           </Pressable>
         </View>
       ) : entries.length === 0 ? (
         <View className="rounded-2xl border border-line bg-surface p-5">
-          <Text style={{ fontFamily: 'Nunito_800ExtraBold' }} className="mb-1 text-base text-ink">
+          <Text style={{ fontFamily: 'BricolageGrotesque_800ExtraBold' }} className="mb-1 text-base text-ink">
             Rien à relire pour l'instant
           </Text>
           <Text className="text-sm leading-5 text-ink-soft">
@@ -107,7 +107,7 @@ export default function WellbeingJournalScreen() {
             <View className="mb-5 flex-row items-center rounded-2xl border border-line bg-surface p-4 shadow-sm">
               <Text className="mr-3 text-3xl">{averageEmoji ?? '🌱'}</Text>
               <View className="flex-1">
-                <Text style={{ fontFamily: 'Nunito_800ExtraBold' }} className="text-sm text-ink">
+                <Text style={{ fontFamily: 'BricolageGrotesque_800ExtraBold' }} className="text-sm text-ink">
                   {entries.length} séance{entries.length > 1 ? 's' : ''} terminée{entries.length > 1 ? 's' : ''}
                 </Text>
                 <Text className="text-xs text-ink-soft">

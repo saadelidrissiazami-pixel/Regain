@@ -3,6 +3,7 @@ import { Pressable, View } from 'react-native';
 import Animated, { useAnimatedStyle, useSharedValue, withSpring } from 'react-native-reanimated';
 
 import { haptic } from './motion';
+import { useTheme } from '../theme/ThemeProvider';
 import { Text } from './typography';
 
 const PADDING = 4;
@@ -19,6 +20,7 @@ export function Segmented<T extends string | number>({
   onChange: (value: T) => void;
   label?: string;
 }) {
+  const theme = useTheme();
   const [width, setWidth] = useState(0);
   const index = Math.max(0, options.findIndex((option) => option.value === value));
   const segmentWidth = width > 0 ? (width - PADDING * 2) / options.length : 0;
@@ -48,7 +50,7 @@ export function Segmented<T extends string | number>({
               left: PADDING,
               width: segmentWidth,
               borderRadius: 999,
-              backgroundColor: '#FFFFFF',
+              backgroundColor: theme.surface,
               shadowColor: '#2B2620',
               shadowOpacity: 0.08,
               shadowRadius: 6,
@@ -72,8 +74,10 @@ export function Segmented<T extends string | number>({
             className="flex-1 items-center justify-center py-2.5"
           >
             <Text
-              style={{ fontFamily: selected ? 'Nunito_800ExtraBold' : 'Nunito_700Bold' }}
-              className={`text-sm ${selected ? 'text-primary' : 'text-ink-soft'}`}
+              numberOfLines={1}
+              adjustsFontSizeToFit
+              style={{ fontFamily: selected ? 'BricolageGrotesque_800ExtraBold' : 'Figtree_700Bold' }}
+              className={`${options.length > 3 ? 'text-xs' : 'text-sm'} ${selected ? 'text-primary' : 'text-ink-soft'}`}
             >
               {option.label}
             </Text>

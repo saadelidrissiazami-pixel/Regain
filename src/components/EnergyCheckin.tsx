@@ -1,5 +1,4 @@
 import { useMutation } from '@tanstack/react-query';
-import { LinearGradient } from 'expo-linear-gradient';
 import { Link } from 'expo-router';
 import { useState } from 'react';
 import { ActivityIndicator, Pressable, View } from 'react-native';
@@ -36,21 +35,16 @@ export function EnergyCheckin({ userId }: { userId?: string }) {
   const stage = !selected ? 'ask' : isLowEnergy(selected) ? 'low' : 'quote';
 
   return (
-    <LinearGradient
-      colors={['#F0A324', '#FF6B57']}
-      start={{ x: 0, y: 0 }}
-      end={{ x: 1, y: 1 }}
-      style={{ borderRadius: 20, padding: 16, marginBottom: 16 }}
-    >
-      <Text style={{ fontFamily: 'Nunito_700Bold' }} className="text-[11px] uppercase tracking-wide text-white/90">
+    <View className="mb-4 rounded-3xl bg-surface p-4 shadow-sm">
+      <Text style={{ fontFamily: 'Figtree_700Bold' }} className="text-[11px] uppercase tracking-wide text-primary">
         Check-in d'énergie
       </Text>
 
       <Animated.View key={stage} entering={FadeInDown.springify().damping(16)}>
         {stage === 'ask' ? (
           <>
-            <Text style={{ fontFamily: 'Nunito_800ExtraBold' }} className="mb-3 mt-1 text-base text-white">
-              Comment vous sentez-vous là, maintenant ?
+            <Text style={{ fontFamily: 'BricolageGrotesque_800ExtraBold' }} className="mb-3 mt-1 text-base text-ink">
+              Comment vous sentez-vous, là, maintenant ?
             </Text>
             <View className="flex-row flex-wrap gap-2">
               {ENERGY_LEVELS.map((level) => (
@@ -60,12 +54,12 @@ export function EnergyCheckin({ userId }: { userId?: string }) {
                   disabled={mutation.isPending}
                   scaleTo={0.9}
                   feedback="selection"
-                  className="rounded-full bg-white/20 px-4 py-2"
+                  className="rounded-full bg-primary-soft px-4 py-2"
                 >
                   {mutation.isPending && mutation.variables === level.value ? (
-                    <ActivityIndicator size="small" color="#FFFFFF" />
+                    <ActivityIndicator size="small" className="text-primary" />
                   ) : (
-                    <Text style={{ fontFamily: 'Nunito_700Bold' }} className="text-sm text-white">
+                    <Text style={{ fontFamily: 'Figtree_700Bold' }} className="text-sm text-primary">
                       {ENERGY_EMOJI[level.value] ?? ''} {level.label}
                     </Text>
                   )}
@@ -75,19 +69,19 @@ export function EnergyCheckin({ userId }: { userId?: string }) {
           </>
         ) : stage === 'low' ? (
           <>
-            <Text style={{ fontFamily: 'Nunito_800ExtraBold' }} className="mt-1 text-base text-white">
+            <Text style={{ fontFamily: 'BricolageGrotesque_800ExtraBold' }} className="mt-1 text-base text-ink">
               L'énergie manque un peu ? Une courte respiration peut aider.
             </Text>
             <Link href={`/wellbeing/${LOW_ENERGY_SLUG}`} asChild>
-              <PressableScale wrapperStyle={{ alignSelf: 'flex-start' }} className="mt-3 rounded-full bg-white px-4 py-2.5">
-                <Text style={{ fontFamily: 'Nunito_800ExtraBold' }} className="text-sm text-primary">
-                  🌬️ Respiration guidée →
+              <PressableScale wrapperStyle={{ alignSelf: 'flex-start' }} className="mt-3 rounded-full bg-ink px-4 py-2.5">
+                <Text style={{ fontFamily: 'BricolageGrotesque_800ExtraBold' }} className="text-sm text-paper">
+                  Respiration guidée →
                 </Text>
               </PressableScale>
             </Link>
           </>
         ) : (
-          <Text style={{ fontFamily: 'Nunito_800ExtraBold' }} className="mt-1 text-base text-white">
+          <Text style={{ fontFamily: 'BricolageGrotesque_800ExtraBold' }} className="mt-1 text-base text-ink">
             {quote}
           </Text>
         )}
@@ -96,10 +90,10 @@ export function EnergyCheckin({ userId }: { userId?: string }) {
       {selected ? (
         <Animated.View entering={FadeIn.delay(250)}>
           <Pressable onPress={reset} className="mt-3 self-start">
-            <Text className="text-xs text-white/80">Refaire le check-in</Text>
+            <Text className="text-xs text-ink-soft">Refaire le check-in</Text>
           </Pressable>
         </Animated.View>
       ) : null}
-    </LinearGradient>
+    </View>
   );
 }

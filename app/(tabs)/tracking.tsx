@@ -15,6 +15,7 @@ import { fetchCompletedActivities, markActivityUndone } from '../../src/lib/plan
 import { fetchStreak, fetchWeekStats } from '../../src/lib/tracking';
 import { useWeekStart } from '../../src/lib/useCurrentDate';
 import { useAuthStore } from '../../src/store/authStore';
+import { useTheme } from '../../src/theme/ThemeProvider';
 
 const MOOD_BAR_COUNT = 10;
 const MOOD_BAR_MAX_HEIGHT = 56;
@@ -30,7 +31,7 @@ function MoodTrend({ entries }: { entries: JournalEntry[] }) {
     <View className="mb-6 rounded-2xl border border-line bg-surface p-4 shadow-sm">
       <View className="mb-3 flex-row items-center justify-between">
         <View className="flex-1 pr-3">
-          <Text style={{ fontFamily: 'Nunito_800ExtraBold' }} className="text-sm text-ink">
+          <Text style={{ fontFamily: 'BricolageGrotesque_800ExtraBold' }} className="text-sm text-ink">
             Votre ressenti après les séances
           </Text>
           <Text className="mt-0.5 text-xs text-ink-soft">
@@ -57,7 +58,7 @@ function MoodTrend({ entries }: { entries: JournalEntry[] }) {
 
       <Link href="/wellbeing/journal" asChild>
         <PressableScale scaleTo={0.98} className="mt-3 items-center rounded-full border border-line bg-paper py-2.5">
-          <Text style={{ fontFamily: 'Nunito_700Bold' }} className="text-sm text-ink">
+          <Text style={{ fontFamily: 'Figtree_700Bold' }} className="text-sm text-ink">
             📔 Relire mon journal
           </Text>
         </PressableScale>
@@ -67,6 +68,7 @@ function MoodTrend({ entries }: { entries: JournalEntry[] }) {
 }
 
 export default function TrackingScreen() {
+  const theme = useTheme();
   const session = useAuthStore((s) => s.session);
   const userId = session?.user.id;
   const queryClient = useQueryClient();
@@ -129,13 +131,13 @@ export default function TrackingScreen() {
     <ScrollView
       className="flex-1 bg-paper px-5 pt-16"
       contentContainerStyle={{ paddingBottom: 40 }}
-      refreshControl={<RefreshControl refreshing={refreshing} onRefresh={onRefresh} tintColor="#FF6B57" />}
+      refreshControl={<RefreshControl refreshing={refreshing} onRefresh={onRefresh} tintColor={theme.primary} />}
     >
       <Appear>
-        <Text style={{ fontFamily: 'Nunito_700Bold' }} className="mb-1 text-sm text-primary">
+        <Text style={{ fontFamily: 'Figtree_700Bold' }} className="mb-1 text-sm text-primary">
           {streak >= 2 ? `${streak} jours d'affilée, bravo !` : 'Continuez comme ça'}
         </Text>
-        <Text style={{ fontFamily: 'Nunito_800ExtraBold' }} className="mb-6 text-[28px] leading-8 text-ink">
+        <Text style={{ fontFamily: 'BricolageGrotesque_800ExtraBold' }} className="mb-6 text-[28px] leading-8 text-ink">
           Votre progression
         </Text>
       </Appear>
@@ -143,7 +145,7 @@ export default function TrackingScreen() {
       <Appear index={1}>
         <View className="mb-6 flex-row items-center justify-around rounded-2xl border border-line bg-surface p-5 shadow-sm">
           <View className="items-center">
-            <ProgressRing progress={streak / 7} value={streak} label="jours de suite" color="#FF6B57" trackColor="#FFE4DD" />
+            <ProgressRing progress={streak / 7} value={streak} label="jours de suite" color={theme.primary} trackColor={theme.primarySoft} />
             {streak > 0 ? (
               <View style={{ position: 'absolute', top: -6, right: -6 }}>
                 <Wiggle>
@@ -157,8 +159,8 @@ export default function TrackingScreen() {
             value={stats?.completedCount ?? 0}
             total={stats?.totalCount ?? 0}
             label="activités faites"
-            color="#1E9C86"
-            trackColor="#D9F1EB"
+            color={theme.calm}
+            trackColor={theme.calmSoft}
           />
         </View>
       </Appear>
@@ -168,7 +170,7 @@ export default function TrackingScreen() {
       </Appear>
 
       <Appear index={3}>
-        <Text style={{ fontFamily: 'Nunito_800ExtraBold' }} className="mb-3 text-sm text-ink-soft">
+        <Text style={{ fontFamily: 'BricolageGrotesque_800ExtraBold' }} className="mb-3 text-sm text-ink-soft">
           Temps par catégorie cette semaine
         </Text>
       </Appear>
@@ -189,7 +191,7 @@ export default function TrackingScreen() {
             <Appear key={category} index={i + 3}>
               <View className="mb-3">
                 <View className="mb-1.5 flex-row justify-between">
-                  <Text style={{ fontFamily: 'Nunito_700Bold' }} className="text-sm text-ink">
+                  <Text style={{ fontFamily: 'Figtree_700Bold' }} className="text-sm text-ink">
                     {CATEGORY_LABELS[category]}
                   </Text>
                   <Text className="text-sm text-ink-soft">{minutes} min</Text>
@@ -201,7 +203,7 @@ export default function TrackingScreen() {
         </View>
       )}
 
-      <Text style={{ fontFamily: 'Nunito_800ExtraBold' }} className="mb-3 text-sm text-ink-soft">
+      <Text style={{ fontFamily: 'BricolageGrotesque_800ExtraBold' }} className="mb-3 text-sm text-ink-soft">
         Historique
       </Text>
       {historyQuery.isLoading ? (
@@ -218,7 +220,7 @@ export default function TrackingScreen() {
           <View className="mb-2.5 flex-row items-center rounded-2xl border border-line bg-surface p-4 shadow-sm">
             <View className="flex-1 pr-3">
               <CategoryBadge category={item.activities_catalog.category} />
-              <Text style={{ fontFamily: 'Nunito_700Bold' }} className="mt-2 text-base text-ink">
+              <Text style={{ fontFamily: 'Figtree_700Bold' }} className="mt-2 text-base text-ink">
                 {item.activities_catalog.title}
               </Text>
               <Text className="mt-0.5 text-xs text-ink-soft">{formatDayLabel(item.date)}</Text>
@@ -230,9 +232,9 @@ export default function TrackingScreen() {
               className="px-1 py-2"
             >
               {undoMutation.isPending && undoMutation.variables === item.id ? (
-                <ActivityIndicator size="small" color="#FF6B57" />
+                <ActivityIndicator className="text-primary" size="small" />
               ) : (
-                <Text style={{ fontFamily: 'Nunito_700Bold' }} className="text-sm text-accent">
+                <Text style={{ fontFamily: 'Figtree_700Bold' }} className="text-sm text-accent">
                   Annuler
                 </Text>
               )}

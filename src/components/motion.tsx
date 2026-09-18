@@ -1,6 +1,7 @@
 import * as Haptics from 'expo-haptics';
 import { useEffect, useRef, useState, type ComponentProps, type ReactNode } from 'react';
 import { Platform, Pressable, type PressableProps, type StyleProp, type ViewStyle } from 'react-native';
+import { useTheme } from '../theme/ThemeProvider';
 import Animated, {
   FadeInDown,
   LinearTransition,
@@ -134,16 +135,17 @@ export function Chevron({ open, children }: { open: boolean; children: ReactNode
 export function ProgressBar({
   progress,
   color,
-  trackColor = '#EEE4D6',
+  trackColor,
   height = 10,
   delay = 0,
 }: {
   progress: number;
-  color: string;
+  color?: string;
   trackColor?: string;
   height?: number;
   delay?: number;
 }) {
+  const theme = useTheme();
   const width = useSharedValue(0);
   const clamped = Math.min(Math.max(progress, 0), 1);
   useEffect(() => {
@@ -152,8 +154,8 @@ export function ProgressBar({
   }, [clamped, delay, width]);
   const fillStyle = useAnimatedStyle(() => ({ width: `${width.get()}%` }));
   return (
-    <Animated.View style={{ height, borderRadius: height, backgroundColor: trackColor, overflow: 'hidden' }}>
-      <Animated.View style={[{ height, borderRadius: height, backgroundColor: color }, fillStyle]} />
+    <Animated.View style={{ height, borderRadius: height, backgroundColor: trackColor ?? theme.line, overflow: 'hidden' }}>
+      <Animated.View style={[{ height, borderRadius: height, backgroundColor: color ?? theme.primary }, fillStyle]} />
     </Animated.View>
   );
 }
@@ -190,6 +192,7 @@ export function useAnimatedNumber(target: number, duration = 800): number {
 
 /** Bloc gris qui pulse pendant un chargement, à la place d'un simple indicateur. */
 export function Skeleton({ height, style }: { height: number; style?: StyleProp<ViewStyle> }) {
+  const theme = useTheme();
   const opacity = useSharedValue(0.45);
   useEffect(() => {
     opacity.set(withRepeat(withTiming(1, { duration: 750 }), -1, true));
@@ -197,7 +200,7 @@ export function Skeleton({ height, style }: { height: number; style?: StyleProp<
   const animatedStyle = useAnimatedStyle(() => ({ opacity: opacity.get() }));
   return (
     <Animated.View
-      style={[{ height, borderRadius: 16, backgroundColor: '#EEE4D6', marginBottom: 10 }, style, animatedStyle]}
+      style={[{ height, borderRadius: 16, backgroundColor: theme.line, marginBottom: 10 }, style, animatedStyle]}
     />
   );
 }

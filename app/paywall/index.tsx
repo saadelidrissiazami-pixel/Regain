@@ -1,11 +1,10 @@
 import { useQuery, useQueryClient } from '@tanstack/react-query';
-import { LinearGradient } from 'expo-linear-gradient';
 import { router } from 'expo-router';
 import { useMemo, useState } from 'react';
 import { ActivityIndicator, Linking, Pressable, ScrollView, View } from 'react-native';
 import type { PurchasesPackage } from 'react-native-purchases';
 import { PRIVACY_URL, SUBSCRIPTION_DISCLOSURE, TERMS_URL, hasLegalUrls } from '../../src/config/legal';
-import { Appear } from '../../src/components/motion';
+import { Appear, PressableScale } from '../../src/components/motion';
 import { Text } from '../../src/components/typography';
 import {
   annualSavingsPercent,
@@ -49,24 +48,24 @@ function PackageOption({
       className={`mb-3 rounded-2xl border-2 p-4 ${selected ? 'border-primary bg-primary-soft' : 'border-line bg-surface'}`}
     >
       <View className="flex-row items-center justify-between">
-        <Text style={{ fontFamily: 'Nunito_800ExtraBold' }} className="text-base text-ink">
+        <Text style={{ fontFamily: 'BricolageGrotesque_800ExtraBold' }} className="text-base text-ink">
           {display.title}
         </Text>
         {display.badge ? (
           <View className="rounded-full bg-primary px-2.5 py-0.5">
-            <Text style={{ fontFamily: 'Nunito_800ExtraBold' }} className="text-xs text-white">
+            <Text style={{ fontFamily: 'BricolageGrotesque_800ExtraBold' }} className="text-xs text-on-primary">
               {display.badge}
             </Text>
           </View>
         ) : null}
       </View>
-      <Text style={{ fontFamily: 'Nunito_700Bold' }} className="mt-1 text-sm text-ink">
+      <Text style={{ fontFamily: 'Figtree_700Bold' }} className="mt-1 text-sm text-ink">
         {display.price}
         {display.period ? ` ${display.period}` : ''}
       </Text>
       {display.perMonth ? <Text className="text-xs text-ink-soft">{display.perMonth}</Text> : null}
       {display.intro ? (
-        <Text style={{ fontFamily: 'Nunito_700Bold' }} className="mt-1 text-xs text-calm">
+        <Text style={{ fontFamily: 'Figtree_700Bold' }} className="mt-1 text-xs text-calm">
           {display.intro}, puis {display.price} {display.period}
         </Text>
       ) : null}
@@ -136,7 +135,7 @@ export default function PaywallScreen() {
   return (
     <ScrollView className="flex-1 bg-paper px-6 pt-16" contentContainerStyle={{ paddingBottom: 60 }}>
       <Pressable onPress={() => router.back()} className="mb-5">
-        <Text style={{ fontFamily: 'Nunito_700Bold' }} className="text-sm text-ink-soft">
+        <Text style={{ fontFamily: 'Figtree_700Bold' }} className="text-sm text-ink-soft">
           ✕ Fermer
         </Text>
       </Pressable>
@@ -144,7 +143,7 @@ export default function PaywallScreen() {
       <View className="mb-6 h-14 w-14 items-center justify-center rounded-2xl bg-primary shadow-sm">
         <Text className="text-2xl">✨</Text>
       </View>
-      <Text style={{ fontFamily: 'Nunito_800ExtraBold' }} className="mb-1 text-[28px] leading-8 text-ink">
+      <Text style={{ fontFamily: 'BricolageGrotesque_800ExtraBold' }} className="mb-1 text-[28px] leading-8 text-ink">
         Regain Premium
       </Text>
       <Text className="mb-7 text-sm text-ink-soft">Allez plus loin dans la reconstruction de votre routine.</Text>
@@ -153,7 +152,7 @@ export default function PaywallScreen() {
         <Appear key={b.text} index={i}>
           <View className="mb-3 flex-row items-center rounded-2xl border border-line bg-surface p-4 shadow-sm">
             <Text className="mr-3 text-xl">{b.icon}</Text>
-            <Text style={{ fontFamily: 'Nunito_700Bold' }} className="flex-1 text-sm text-ink">
+            <Text style={{ fontFamily: 'Figtree_700Bold' }} className="flex-1 text-sm text-ink">
               {b.text}
             </Text>
           </View>
@@ -165,12 +164,12 @@ export default function PaywallScreen() {
           <Text className="text-sm text-ink">{purchasesUnavailableReason}</Text>
         </View>
       ) : offeringsQuery.isLoading ? (
-        <ActivityIndicator className="mt-4" color="#FF6B57" />
+        <ActivityIndicator className="mt-4 text-primary" />
       ) : offeringsQuery.isError ? (
         <View className="mt-4 rounded-2xl border border-line bg-surface p-4">
           <Text className="text-sm text-ink">Impossible de charger les offres : {(offeringsQuery.error as Error).message}</Text>
           <Pressable onPress={() => offeringsQuery.refetch()} className="mt-2">
-            <Text style={{ fontFamily: 'Nunito_700Bold' }} className="text-sm text-primary">
+            <Text style={{ fontFamily: 'Figtree_700Bold' }} className="text-sm text-primary">
               Réessayer
             </Text>
           </Pressable>
@@ -193,20 +192,18 @@ export default function PaywallScreen() {
               onSelect={() => setSelectedId(pkg.identifier)}
             />
           ))}
-          <Pressable onPress={handlePurchase} disabled={busy !== null} className="mb-3 mt-1 overflow-hidden rounded-full shadow-sm">
-            <LinearGradient colors={['#F0A324', '#FF6B57']} start={{ x: 0, y: 0 }} end={{ x: 1, y: 0 }} style={{ paddingVertical: 15 }}>
-              {busy === 'purchase' ? (
-                <ActivityIndicator color="#FFFFFF" />
-              ) : (
-                <Text style={{ fontFamily: 'Nunito_800ExtraBold' }} className="text-center text-white">
-                  {selectedDisplay?.intro?.includes('gratuit') ? "Commencer l'essai gratuit" : 'Continuer'}
-                </Text>
-              )}
-            </LinearGradient>
-          </Pressable>
+          <PressableScale feedback="medium" onPress={handlePurchase} disabled={busy !== null} className="mb-3 mt-1 items-center rounded-full bg-ink px-5 py-4">
+            {busy === 'purchase' ? (
+              <ActivityIndicator className="text-paper" />
+            ) : (
+              <Text style={{ fontFamily: 'BricolageGrotesque_800ExtraBold' }} className="text-center text-base text-paper">
+                {selectedDisplay?.intro?.includes('gratuit') ? "Commencer l'essai gratuit" : 'Continuer'}
+              </Text>
+            )}
+          </PressableScale>
           <Pressable onPress={handleRestore} disabled={busy !== null} className="items-center py-2">
             {busy === 'restore' ? (
-              <ActivityIndicator size="small" color="#FF6B57" />
+              <ActivityIndicator className="text-primary" size="small" />
             ) : (
               <Text className="text-sm text-ink-soft">Restaurer mes achats</Text>
             )}
@@ -222,12 +219,12 @@ export default function PaywallScreen() {
       {hasLegalUrls ? (
         <View className="mt-3 flex-row">
           <Pressable onPress={() => Linking.openURL(TERMS_URL)} className="mr-4">
-            <Text style={{ fontFamily: 'Nunito_700Bold' }} className="text-xs text-ink-soft underline">
+            <Text style={{ fontFamily: 'Figtree_700Bold' }} className="text-xs text-ink-soft underline">
               Conditions d'utilisation
             </Text>
           </Pressable>
           <Pressable onPress={() => Linking.openURL(PRIVACY_URL)}>
-            <Text style={{ fontFamily: 'Nunito_700Bold' }} className="text-xs text-ink-soft underline">
+            <Text style={{ fontFamily: 'Figtree_700Bold' }} className="text-xs text-ink-soft underline">
               Politique de confidentialité
             </Text>
           </Pressable>

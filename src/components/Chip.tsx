@@ -1,10 +1,12 @@
 import { Ionicons } from '@expo/vector-icons';
 import { Text } from './typography';
 import { PressableScale } from './motion';
+import { useTheme } from '../theme/ThemeProvider';
 
 type ChipProps = { selected: boolean; label: string; onPress: () => void };
 
 export function Chip({ selected, label, onPress }: ChipProps) {
+  const theme = useTheme();
   return (
     <PressableScale
       onPress={onPress}
@@ -17,10 +19,10 @@ export function Chip({ selected, label, onPress }: ChipProps) {
         selected ? 'border-primary bg-primary' : 'border-line bg-surface'
       }`}
     >
-      {selected ? <Ionicons name="checkmark" size={14} color="#FFFFFF" style={{ marginRight: 4 }} /> : null}
+      {selected ? <Ionicons name="checkmark" size={14} color={theme.onPrimary} style={{ marginRight: 4 }} /> : null}
       <Text
-        style={{ fontFamily: 'Nunito_700Bold' }}
-        className={selected ? 'text-sm text-white' : 'text-sm text-ink'}
+        style={{ fontFamily: 'Figtree_700Bold' }}
+        className={selected ? 'text-sm text-on-primary' : 'text-sm text-ink'}
       >
         {label}
       </Text>

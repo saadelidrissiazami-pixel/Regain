@@ -1,5 +1,4 @@
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
-import { LinearGradient } from 'expo-linear-gradient';
 import { router } from 'expo-router';
 import { useState } from 'react';
 import { ActivityIndicator, Pressable, ScrollView, View } from 'react-native';
@@ -94,7 +93,7 @@ export default function FitnessCheckinScreen() {
       <ScrollView className="flex-1 bg-paper px-6 pt-16" contentContainerStyle={{ paddingBottom: 60 }}>
         <Appear>
           <Text className="mb-3 text-4xl">✅</Text>
-          <Text style={{ fontFamily: 'Nunito_800ExtraBold' }} className="mb-1 text-[28px] leading-8 text-ink">
+          <Text style={{ fontFamily: 'BricolageGrotesque_800ExtraBold' }} className="mb-1 text-[28px] leading-8 text-ink">
             Bilan pris en compte
           </Text>
           <Text className="mb-5 text-sm text-ink-soft">
@@ -109,7 +108,7 @@ export default function FitnessCheckinScreen() {
         {result.plan.coach_notes ? (
           <Appear index={1}>
             <View className="mb-5 rounded-2xl bg-calm-soft p-4">
-              <Text style={{ fontFamily: 'Nunito_700Bold' }} className="mb-1 text-xs text-calm">
+              <Text style={{ fontFamily: 'Figtree_700Bold' }} className="mb-1 text-xs text-calm">
                 Le mot de votre coach
               </Text>
               <Text className="text-sm leading-5 text-ink">{result.plan.coach_notes}</Text>
@@ -120,13 +119,11 @@ export default function FitnessCheckinScreen() {
         <PressableScale
           onPress={() => router.back()}
           feedback="medium"
-          className="overflow-hidden rounded-full shadow-sm"
+          className="items-center rounded-full bg-ink px-5 py-4"
         >
-          <LinearGradient colors={['#F0A324', '#FF6B57']} start={{ x: 0, y: 0 }} end={{ x: 1, y: 0 }} style={{ paddingVertical: 15 }}>
-            <Text style={{ fontFamily: 'Nunito_800ExtraBold' }} className="text-center text-white">
-              Voir mon programme
-            </Text>
-          </LinearGradient>
+          <Text style={{ fontFamily: 'BricolageGrotesque_800ExtraBold' }} className="text-center text-base text-paper">
+            Voir mon programme
+          </Text>
         </PressableScale>
       </ScrollView>
     );
@@ -135,14 +132,14 @@ export default function FitnessCheckinScreen() {
   return (
     <ScrollView className="flex-1 bg-paper px-6 pt-16" contentContainerStyle={{ paddingBottom: 60 }}>
       <Pressable onPress={() => router.back()} className="mb-5">
-        <Text style={{ fontFamily: 'Nunito_700Bold' }} className="text-sm text-ink-soft">
+        <Text style={{ fontFamily: 'Figtree_700Bold' }} className="text-sm text-ink-soft">
           ← Retour
         </Text>
       </Pressable>
-      <Text style={{ fontFamily: 'Nunito_700Bold' }} className="mb-1 text-sm text-primary">
+      <Text style={{ fontFamily: 'Figtree_700Bold' }} className="mb-1 text-sm text-primary">
         Coach forme
       </Text>
-      <Text style={{ fontFamily: 'Nunito_800ExtraBold' }} className="mb-2 text-[28px] leading-8 text-ink">
+      <Text style={{ fontFamily: 'BricolageGrotesque_800ExtraBold' }} className="mb-2 text-[28px] leading-8 text-ink">
         Bilan de la semaine
       </Text>
       <Text className="mb-5 text-sm text-ink-soft">
@@ -150,7 +147,7 @@ export default function FitnessCheckinScreen() {
         échec : une semaine chargée, ça arrive.
       </Text>
 
-      {profileQuery.isLoading ? <ActivityIndicator color="#FF6B57" /> : null}
+      {profileQuery.isLoading ? <ActivityIndicator className="text-primary" /> : null}
 
       <Segmented
         label="Séances faites"
@@ -169,19 +166,19 @@ export default function FitnessCheckinScreen() {
         onChange={setEnergy}
       />
 
-      <Text style={{ fontFamily: 'Nunito_800ExtraBold' }} className="mb-2.5 text-sm text-ink">
+      <Text style={{ fontFamily: 'BricolageGrotesque_800ExtraBold' }} className="mb-2.5 text-sm text-ink">
         Poids actuel (optionnel)
       </Text>
       <TextInput
         className="mb-4 rounded-2xl border border-line bg-surface px-4 py-3.5 text-ink"
         placeholder={profile ? `Dernier poids : ${profile.weight_kg} kg` : 'Poids (kg)'}
-        placeholderTextColor="#B5AB9A"
+
         keyboardType="decimal-pad"
         value={weightText}
         onChangeText={setWeightText}
       />
 
-      <Text style={{ fontFamily: 'Nunito_800ExtraBold' }} className="mb-2.5 text-sm text-ink">
+      <Text style={{ fontFamily: 'BricolageGrotesque_800ExtraBold' }} className="mb-2.5 text-sm text-ink">
         Un mot pour votre coach (optionnel)
       </Text>
       <TextInput
@@ -189,7 +186,7 @@ export default function FitnessCheckinScreen() {
         style={{ textAlignVertical: 'top' }}
         multiline
         placeholder="Ce qui a été facile, difficile, une douleur, une envie…"
-        placeholderTextColor="#B5AB9A"
+
         value={note}
         onChangeText={setNote}
       />
@@ -200,7 +197,7 @@ export default function FitnessCheckinScreen() {
 
       {submitMutation.isPending ? (
         <View className="flex-row items-center rounded-2xl bg-surface p-4">
-          <ActivityIndicator color="#FF6B57" />
+          <ActivityIndicator className="text-primary" />
           <Text className="ml-3 flex-1 text-sm text-ink-soft">
             Ajustement de votre programme…
           </Text>
@@ -210,13 +207,11 @@ export default function FitnessCheckinScreen() {
           onPress={() => submitMutation.mutate()}
           disabled={!profile}
           feedback="medium"
-          className="overflow-hidden rounded-full shadow-sm"
+          className="items-center rounded-full bg-ink px-5 py-4"
         >
-          <LinearGradient colors={['#F0A324', '#FF6B57']} start={{ x: 0, y: 0 }} end={{ x: 1, y: 0 }} style={{ paddingVertical: 15 }}>
-            <Text style={{ fontFamily: 'Nunito_800ExtraBold' }} className="text-center text-white">
-              Envoyer mon bilan
-            </Text>
-          </LinearGradient>
+          <Text style={{ fontFamily: 'BricolageGrotesque_800ExtraBold' }} className="text-center text-base text-paper">
+            Envoyer mon bilan
+          </Text>
         </PressableScale>
       )}
     </ScrollView>

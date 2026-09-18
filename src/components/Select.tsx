@@ -5,6 +5,7 @@ import Animated, { FadeIn, FadeOut, SlideInDown, SlideOutDown } from 'react-nati
 
 import { haptic, PressableScale } from './motion';
 import { Text } from './typography';
+import { useTheme } from '../theme/ThemeProvider';
 
 export type SelectOption<T extends string | number> = {
   value: T;
@@ -22,7 +23,7 @@ function SheetHeader({ title, subtitle }: { title: string; subtitle?: string }) 
   return (
     <View className="px-5 pb-2 pt-3">
       <View className="mb-3 h-1 w-10 self-center rounded-full bg-line" />
-      <Text style={{ fontFamily: 'Nunito_800ExtraBold' }} className="text-lg text-ink">
+      <Text style={{ fontFamily: 'BricolageGrotesque_800ExtraBold' }} className="text-lg text-ink">
         {title}
       </Text>
       {subtitle ? <Text className="mt-0.5 text-xs text-ink-soft">{subtitle}</Text> : null}
@@ -47,6 +48,7 @@ function Sheet({
   children: ReactNode;
   footer?: ReactNode;
 }) {
+  const theme = useTheme();
   const { height } = useWindowDimensions();
   const scrollRef = useRef<ScrollView>(null);
 
@@ -64,7 +66,7 @@ function Sheet({
           exiting={SlideOutDown.duration(180)}
           style={{
             maxHeight: height * 0.75,
-            backgroundColor: '#FBF6F0',
+            backgroundColor: theme.paper,
             borderTopLeftRadius: 28,
             borderTopRightRadius: 28,
           }}
@@ -97,6 +99,7 @@ function Row({
   multiple?: boolean;
   onPress: () => void;
 }) {
+  const theme = useTheme();
   return (
     <Pressable
       onPress={onPress}
@@ -109,15 +112,15 @@ function Row({
     >
       <View className="flex-1 pr-3">
         <Text
-          style={{ fontFamily: selected ? 'Nunito_800ExtraBold' : 'Nunito_700Bold' }}
+          style={{ fontFamily: selected ? 'BricolageGrotesque_800ExtraBold' : 'Figtree_700Bold' }}
           className={`text-sm ${selected ? 'text-primary' : 'text-ink'}`}
         >
           {option.label}
         </Text>
         {option.hint ? <Text className="text-xs text-ink-soft">{option.hint}</Text> : null}
       </View>
-      {selected ? <Ionicons name={multiple ? 'checkbox' : 'checkmark-circle'} size={22} color="#FF6B57" /> : null}
-      {!selected && multiple ? <Ionicons name="square-outline" size={22} color="#C9BFAF" /> : null}
+      {selected ? <Ionicons name={multiple ? 'checkbox' : 'checkmark-circle'} size={22} color={theme.primary} /> : null}
+      {!selected && multiple ? <Ionicons name="square-outline" size={22} color={theme.inkSoft} /> : null}
     </Pressable>
   );
 }
@@ -135,6 +138,7 @@ function Field({
   placeholder: string;
   onPress: () => void;
 }) {
+  const theme = useTheme();
   return (
     <PressableScale
       onPress={onPress}
@@ -145,18 +149,18 @@ function Field({
       className="mb-3 flex-row items-center justify-between rounded-2xl border border-line bg-surface px-4 py-3"
     >
       <View className="flex-1 pr-3">
-        <Text style={{ fontFamily: 'Nunito_700Bold' }} className="text-[11px] uppercase tracking-wide text-ink-soft">
+        <Text style={{ fontFamily: 'Figtree_700Bold' }} className="text-[11px] uppercase tracking-wide text-ink-soft">
           {label}
         </Text>
         <Text
-          style={{ fontFamily: 'Nunito_800ExtraBold' }}
+          style={{ fontFamily: 'BricolageGrotesque_800ExtraBold' }}
           className={`mt-0.5 text-base ${value ? 'text-ink' : 'text-ink-soft'}`}
         >
           {value ?? placeholder}
         </Text>
         {hint ? <Text className="text-xs text-ink-soft">{hint}</Text> : null}
       </View>
-      <Ionicons name="chevron-down" size={20} color="#928A7C" />
+      <Ionicons name="chevron-down" size={20} color={theme.inkSoft} />
     </PressableScale>
   );
 }
@@ -205,7 +209,7 @@ function GroupedRows<T extends string | number>({
           <View key={String(option.value)}>
             {header ? (
               <Text
-                style={{ fontFamily: 'Nunito_800ExtraBold', height: GROUP_HEIGHT }}
+                style={{ fontFamily: 'BricolageGrotesque_800ExtraBold', height: GROUP_HEIGHT }}
                 className="px-5 pt-2.5 text-[11px] uppercase tracking-wide text-ink-soft"
               >
                 {header}
@@ -316,9 +320,9 @@ export function SelectMulti<T extends string>({
           <PressableScale
             onPress={() => setOpen(false)}
             feedback="medium"
-            className="items-center rounded-full bg-primary px-4 py-3.5 shadow-sm"
+            className="items-center rounded-full bg-ink px-4 py-3.5 shadow-sm"
           >
-            <Text style={{ fontFamily: 'Nunito_800ExtraBold' }} className="text-white">
+            <Text style={{ fontFamily: 'BricolageGrotesque_800ExtraBold' }} className="text-paper">
               Terminé
             </Text>
           </PressableScale>

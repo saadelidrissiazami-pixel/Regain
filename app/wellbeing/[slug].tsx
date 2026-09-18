@@ -1,5 +1,4 @@
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
-import { LinearGradient } from 'expo-linear-gradient';
 import { router, useLocalSearchParams } from 'expo-router';
 import * as Speech from 'expo-speech';
 import { useCallback, useEffect, useReducer, useState } from 'react';
@@ -43,7 +42,7 @@ function ParagraphStepper({
   return (
     <View className="flex-1 justify-between px-8 pb-10">
       <View className="flex-1 items-center justify-center">
-        <Text style={{ fontFamily: 'Nunito_700Bold' }} className="text-center text-xl leading-8 text-ink">
+        <Text style={{ fontFamily: 'Figtree_700Bold' }} className="text-center text-xl leading-8 text-ink">
           {paragraphs[index]}
         </Text>
       </View>
@@ -54,16 +53,14 @@ function ParagraphStepper({
             <View key={i} className={`h-1.5 w-1.5 rounded-full ${i === index ? 'bg-primary' : 'bg-line'}`} />
           ))}
         </View>
-        <Pressable
+        <PressableScale feedback="medium"
           onPress={() => (isLast ? onFinish() : setIndex((i) => i + 1))}
-          className="overflow-hidden rounded-full shadow-sm"
+          className="items-center rounded-full bg-ink px-5 py-4"
         >
-          <LinearGradient colors={['#F0A324', '#FF6B57']} start={{ x: 0, y: 0 }} end={{ x: 1, y: 0 }} style={{ paddingVertical: 15 }}>
-            <Text style={{ fontFamily: 'Nunito_800ExtraBold' }} className="text-center text-white">
-              {buttonLabel(isLast)}
-            </Text>
-          </LinearGradient>
-        </Pressable>
+          <Text style={{ fontFamily: 'BricolageGrotesque_800ExtraBold' }} className="text-center text-base text-paper">
+            {buttonLabel(isLast)}
+          </Text>
+        </PressableScale>
       </View>
     </View>
   );
@@ -159,17 +156,15 @@ function BreathingPlayer({
     return (
       <View className="flex-1 items-center justify-center px-8">
         <Text className="mb-3 text-5xl">🎉</Text>
-        <Text style={{ fontFamily: 'Nunito_800ExtraBold' }} className="mb-2 text-center text-2xl text-ink">
+        <Text style={{ fontFamily: 'BricolageGrotesque_800ExtraBold' }} className="mb-2 text-center text-2xl text-ink">
           Bien joué
         </Text>
         <Text className="mb-8 text-center text-sm text-ink-soft">Vous avez pris ce moment pour vous.</Text>
-        <Pressable onPress={onDone} className="w-full overflow-hidden rounded-full shadow-sm">
-          <LinearGradient colors={['#F0A324', '#FF6B57']} start={{ x: 0, y: 0 }} end={{ x: 1, y: 0 }} style={{ paddingVertical: 15 }}>
-            <Text style={{ fontFamily: 'Nunito_800ExtraBold' }} className="text-center text-white">
-              Terminer
-            </Text>
-          </LinearGradient>
-        </Pressable>
+        <PressableScale feedback="medium" onPress={onDone} className="w-full items-center rounded-full bg-ink px-5 py-4">
+          <Text style={{ fontFamily: 'BricolageGrotesque_800ExtraBold' }} className="text-center text-base text-paper">
+            Terminer
+          </Text>
+        </PressableScale>
       </View>
     );
   }
@@ -181,12 +176,12 @@ function BreathingPlayer({
         className="mb-10 h-40 w-40 items-center justify-center rounded-full bg-calm-soft"
       >
         <View className="h-24 w-24 items-center justify-center rounded-full bg-calm">
-          <Text style={{ fontFamily: 'Nunito_800ExtraBold' }} className="text-3xl text-white">
+          <Text style={{ fontFamily: 'BricolageGrotesque_800ExtraBold' }} className="text-3xl text-paper">
             {secondsLeft}
           </Text>
         </View>
       </Animated.View>
-      <Text style={{ fontFamily: 'Nunito_800ExtraBold' }} className="text-center text-xl text-ink">
+      <Text style={{ fontFamily: 'BricolageGrotesque_800ExtraBold' }} className="text-center text-xl text-ink">
         {phase.label}
       </Text>
       <Text className="mt-2 text-xs text-ink-soft">
@@ -260,32 +255,30 @@ function GroundingPlayer({
     <View className="flex-1 justify-between px-8 pb-10">
       <View className="flex-1 items-center justify-center">
         {step.kind === 'text' ? (
-          <Text style={{ fontFamily: 'Nunito_700Bold' }} className="text-center text-xl leading-8 text-ink">
+          <Text style={{ fontFamily: 'Figtree_700Bold' }} className="text-center text-xl leading-8 text-ink">
             {step.text}
           </Text>
         ) : step.kind === 'confirm' ? (
           <>
-            <Text style={{ fontFamily: 'Nunito_700Bold' }} className="mb-8 text-center text-xl leading-8 text-ink">
+            <Text style={{ fontFamily: 'Figtree_700Bold' }} className="mb-8 text-center text-xl leading-8 text-ink">
               {step.text}
             </Text>
-            <Pressable onPress={goNext} className="overflow-hidden rounded-full shadow-sm">
-              <LinearGradient colors={['#1E9C86', '#4E9BDE']} start={{ x: 0, y: 0 }} end={{ x: 1, y: 0 }} style={{ paddingHorizontal: 24, paddingVertical: 14 }}>
-                <Text style={{ fontFamily: 'Nunito_800ExtraBold' }} className="text-center text-white">
-                  {step.buttonLabel}
-                </Text>
-              </LinearGradient>
-            </Pressable>
+            <PressableScale onPress={goNext} feedback="medium" className="items-center rounded-full bg-calm px-6 py-3.5">
+              <Text style={{ fontFamily: 'BricolageGrotesque_800ExtraBold' }} className="text-center text-paper">
+                {step.buttonLabel}
+              </Text>
+            </PressableScale>
           </>
         ) : step.kind === 'breath-counter' ? (
           <>
-            <Text style={{ fontFamily: 'Nunito_700Bold' }} className="mb-8 text-center text-xl leading-8 text-ink">
+            <Text style={{ fontFamily: 'Figtree_700Bold' }} className="mb-8 text-center text-xl leading-8 text-ink">
               {step.text}
             </Text>
             <Pressable
               onPress={() => setBreathCount((c) => Math.min(c + 1, step.count))}
               className="h-32 w-32 items-center justify-center rounded-full bg-calm-soft"
             >
-              <Text style={{ fontFamily: 'Nunito_800ExtraBold' }} className="text-3xl text-calm">
+              <Text style={{ fontFamily: 'BricolageGrotesque_800ExtraBold' }} className="text-3xl text-calm">
                 {breathCount}/{step.count}
               </Text>
             </Pressable>
@@ -293,7 +286,7 @@ function GroundingPlayer({
           </>
         ) : (
           <>
-            <Text style={{ fontFamily: 'Nunito_700Bold' }} className="mb-6 text-center text-xl leading-8 text-ink">
+            <Text style={{ fontFamily: 'Figtree_700Bold' }} className="mb-6 text-center text-xl leading-8 text-ink">
               {step.prompt}
             </Text>
             <View className="flex-row flex-wrap justify-center gap-2">
@@ -308,8 +301,8 @@ function GroundingPlayer({
                     }`}
                   >
                     <Text
-                      style={{ fontFamily: 'Nunito_700Bold' }}
-                      className={`text-sm ${selected ? 'text-white' : 'text-ink-soft'}`}
+                      style={{ fontFamily: 'Figtree_700Bold' }}
+                      className={`text-sm ${selected ? 'text-on-primary' : 'text-ink-soft'}`}
                     >
                       {value}
                     </Text>
@@ -332,13 +325,11 @@ function GroundingPlayer({
           ))}
         </View>
         {step.kind === 'text' || (step.kind === 'scale' && answers[step.key] !== undefined) || (step.kind === 'breath-counter' && breathCount >= step.count) ? (
-          <Pressable onPress={goNext} className="overflow-hidden rounded-full shadow-sm">
-            <LinearGradient colors={['#F0A324', '#FF6B57']} start={{ x: 0, y: 0 }} end={{ x: 1, y: 0 }} style={{ paddingVertical: 15 }}>
-              <Text style={{ fontFamily: 'Nunito_800ExtraBold' }} className="text-center text-white">
-                {isLast ? 'Terminer' : 'Suivant'}
-              </Text>
-            </LinearGradient>
-          </Pressable>
+          <PressableScale feedback="medium" onPress={goNext} className="items-center rounded-full bg-ink px-5 py-4">
+            <Text style={{ fontFamily: 'BricolageGrotesque_800ExtraBold' }} className="text-center text-base text-paper">
+              {isLast ? 'Terminer' : 'Suivant'}
+            </Text>
+          </PressableScale>
         ) : null}
       </View>
     </View>
@@ -365,17 +356,17 @@ function PrepCountdown({ onDone, audioOn }: { onDone: () => void; audioOn: boole
 
   return (
     <View className="flex-1 items-center justify-center px-8">
-      <Text style={{ fontFamily: 'Nunito_800ExtraBold' }} className="mb-6 text-center text-xl text-ink">
+      <Text style={{ fontFamily: 'BricolageGrotesque_800ExtraBold' }} className="mb-6 text-center text-xl text-ink">
         Installez-vous, préparez-vous
       </Text>
       <View className="mb-8 h-32 w-32 items-center justify-center rounded-full bg-calm-soft">
-        <Text style={{ fontFamily: 'Nunito_800ExtraBold' }} className="text-5xl text-calm">
+        <Text style={{ fontFamily: 'BricolageGrotesque_800ExtraBold' }} className="text-5xl text-calm">
           {secondsLeft}
         </Text>
       </View>
       <Text className="mb-8 text-center text-sm text-ink-soft">La séance démarre dans un instant.</Text>
       <Pressable onPress={onDone}>
-        <Text style={{ fontFamily: 'Nunito_700Bold' }} className="text-sm text-ink-soft underline">
+        <Text style={{ fontFamily: 'Figtree_700Bold' }} className="text-sm text-ink-soft underline">
           Passer
         </Text>
       </Pressable>
@@ -440,21 +431,21 @@ function SessionReviewScreen({
   return (
     <ScrollView className="flex-1 px-7" contentContainerStyle={{ paddingBottom: 40 }} keyboardShouldPersistTaps="handled">
       <Appear>
-        <Text style={{ fontFamily: 'Nunito_800ExtraBold' }} className="mb-1 text-center text-xl text-ink">
+        <Text style={{ fontFamily: 'BricolageGrotesque_800ExtraBold' }} className="mb-1 text-center text-xl text-ink">
           Comment vous sentez-vous ?
         </Text>
         <Text className="mb-4 text-center text-sm text-ink-soft">
           Votre ressenti juste après la séance. Il nourrit votre suivi.
         </Text>
         <MoodPicker value={mood} onChange={setMood} />
-        <Text style={{ fontFamily: 'Nunito_700Bold' }} className="mb-6 h-5 text-center text-xs text-primary">
+        <Text style={{ fontFamily: 'Figtree_700Bold' }} className="mb-6 h-5 text-center text-xs text-primary">
           {selectedMood?.label ?? ''}
         </Text>
       </Appear>
 
       {prompts.map((prompt, i) => (
         <Appear key={prompt} index={i + 1}>
-          <Text style={{ fontFamily: 'Nunito_700Bold' }} className="mb-1.5 text-sm text-ink">
+          <Text style={{ fontFamily: 'Figtree_700Bold' }} className="mb-1.5 text-sm text-ink">
             {prompt}
           </Text>
           <TextInput
@@ -462,15 +453,15 @@ function SessionReviewScreen({
             onChangeText={(text) => setAnswers((current) => current.map((a, j) => (i === j ? text : a)))}
             multiline
             placeholder="Votre réponse… (facultatif)"
-            placeholderTextColor="#B8AFA3"
+
             className="mb-4 min-h-[80px] rounded-2xl border border-line bg-surface p-4 text-base text-ink"
-            style={{ fontFamily: 'Nunito_700Bold', textAlignVertical: 'top' }}
+            style={{ fontFamily: 'Figtree_700Bold', textAlignVertical: 'top' }}
           />
         </Appear>
       ))}
 
       <Appear index={prompts.length + 1}>
-        <Text style={{ fontFamily: 'Nunito_700Bold' }} className="mb-1.5 text-sm text-ink">
+        <Text style={{ fontFamily: 'Figtree_700Bold' }} className="mb-1.5 text-sm text-ink">
           Autre chose à noter ?
         </Text>
         <TextInput
@@ -478,9 +469,9 @@ function SessionReviewScreen({
           onChangeText={setNote}
           multiline
           placeholder="Écrivez librement ici… (facultatif)"
-          placeholderTextColor="#B8AFA3"
+
           className="mb-2 min-h-[90px] rounded-2xl border border-line bg-surface p-4 text-base text-ink"
-          style={{ fontFamily: 'Nunito_700Bold', textAlignVertical: 'top' }}
+          style={{ fontFamily: 'Figtree_700Bold', textAlignVertical: 'top' }}
         />
         <Text className="mb-5 text-xs text-ink-soft">
           Ces réponses restent privées : vous les relisez dans votre journal, sur l'onglet Bien-être.
@@ -492,17 +483,15 @@ function SessionReviewScreen({
           onPress={() => onSubmit({ mood, reflections: cleanReflections(reflections), note })}
           disabled={saving}
           feedback="medium"
-          className="overflow-hidden rounded-full shadow-sm"
+          className="items-center rounded-full bg-ink px-5 py-4"
         >
-          <LinearGradient colors={['#F0A324', '#FF6B57']} start={{ x: 0, y: 0 }} end={{ x: 1, y: 0 }} style={{ paddingVertical: 15 }}>
-            {saving ? (
-              <ActivityIndicator color="#FFFFFF" />
-            ) : (
-              <Text style={{ fontFamily: 'Nunito_800ExtraBold' }} className="text-center text-white">
-                Enregistrer et terminer
-              </Text>
-            )}
-          </LinearGradient>
+          {saving ? (
+            <ActivityIndicator className="text-paper" />
+          ) : (
+            <Text style={{ fontFamily: 'BricolageGrotesque_800ExtraBold' }} className="text-center text-base text-paper">
+              Enregistrer et terminer
+            </Text>
+          )}
         </PressableScale>
       </Appear>
     </ScrollView>
@@ -579,7 +568,7 @@ export default function WellbeingSessionScreen() {
   if (program.premium_only && premiumLoading) {
     return (
       <View className="flex-1 items-center justify-center bg-paper px-8">
-        <ActivityIndicator color="#FF6B57" />
+        <ActivityIndicator className="text-primary" />
       </View>
     );
   }
@@ -588,11 +577,11 @@ export default function WellbeingSessionScreen() {
     return (
       <View className="flex-1 items-center justify-center bg-paper px-8">
         <Text className="mb-3 text-4xl">🔒</Text>
-        <Text style={{ fontFamily: 'Nunito_800ExtraBold' }} className="mb-2 text-center text-xl text-ink">
+        <Text style={{ fontFamily: 'BricolageGrotesque_800ExtraBold' }} className="mb-2 text-center text-xl text-ink">
           Programme premium
         </Text>
-        <Pressable onPress={() => router.replace('/paywall')} className="mt-4 rounded-full bg-primary px-6 py-3">
-          <Text style={{ fontFamily: 'Nunito_800ExtraBold' }} className="text-white">
+        <Pressable onPress={() => router.replace('/paywall')} className="mt-4 rounded-full bg-ink px-6 py-3">
+          <Text style={{ fontFamily: 'BricolageGrotesque_800ExtraBold' }} className="text-paper">
             Voir Premium
           </Text>
         </Pressable>
@@ -604,7 +593,7 @@ export default function WellbeingSessionScreen() {
     <View className="flex-1 bg-paper pt-16">
       <View className="mb-4 flex-row items-center justify-between px-6">
         <Pressable onPress={() => router.back()}>
-          <Text style={{ fontFamily: 'Nunito_700Bold' }} className="text-sm text-ink-soft">
+          <Text style={{ fontFamily: 'Figtree_700Bold' }} className="text-sm text-ink-soft">
             ✕ Fermer
           </Text>
         </Pressable>
@@ -624,7 +613,7 @@ export default function WellbeingSessionScreen() {
             }}
             className={`flex-row items-center rounded-full px-3 py-1.5 ${audioOn ? 'bg-primary-soft' : 'bg-surface'}`}
           >
-            <Text style={{ fontFamily: 'Nunito_700Bold' }} className={`text-xs ${audioOn ? 'text-primary' : 'text-ink-soft'}`}>
+            <Text style={{ fontFamily: 'Figtree_700Bold' }} className={`text-xs ${audioOn ? 'text-primary' : 'text-ink-soft'}`}>
               {audioOn ? '🔊 Guidage audio' : '🔇 Muet'}
             </Text>
           </Pressable>
@@ -634,24 +623,22 @@ export default function WellbeingSessionScreen() {
       {completed ? (
         <View className="flex-1 items-center justify-center px-8">
           <Text className="mb-3 text-5xl">✅</Text>
-          <Text style={{ fontFamily: 'Nunito_800ExtraBold' }} className="mb-2 text-center text-2xl text-ink">
+          <Text style={{ fontFamily: 'BricolageGrotesque_800ExtraBold' }} className="mb-2 text-center text-2xl text-ink">
             Séance terminée
           </Text>
           <Text className="mb-2 text-center text-sm text-ink-soft">
             Vos réponses vous attendent dans votre journal.
           </Text>
           <Pressable onPress={() => router.replace('/wellbeing/journal')} className="mt-2">
-            <Text style={{ fontFamily: 'Nunito_700Bold' }} className="text-sm text-primary underline">
+            <Text style={{ fontFamily: 'Figtree_700Bold' }} className="text-sm text-primary underline">
               Relire mon journal
             </Text>
           </Pressable>
-          <Pressable onPress={() => router.back()} className="mt-6 w-full overflow-hidden rounded-full shadow-sm">
-            <LinearGradient colors={['#F0A324', '#FF6B57']} start={{ x: 0, y: 0 }} end={{ x: 1, y: 0 }} style={{ paddingVertical: 15 }}>
-              <Text style={{ fontFamily: 'Nunito_800ExtraBold' }} className="text-center text-white">
-                Retour à Bien-être
-              </Text>
-            </LinearGradient>
-          </Pressable>
+          <PressableScale feedback="medium" onPress={() => router.back()} className="mt-6 w-full items-center rounded-full bg-ink px-5 py-4">
+            <Text style={{ fontFamily: 'BricolageGrotesque_800ExtraBold' }} className="text-center text-base text-paper">
+              Retour à Bien-être
+            </Text>
+          </PressableScale>
         </View>
       ) : showNote ? (
         <SessionReviewScreen

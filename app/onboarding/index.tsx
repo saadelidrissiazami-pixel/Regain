@@ -5,7 +5,6 @@ import { useState } from 'react';
 import { Controller, useForm, useWatch } from 'react-hook-form';
 import { ActivityIndicator, ScrollView, View } from 'react-native';
 import { Text } from '../../src/components/typography';
-import { LinearGradient } from 'expo-linear-gradient';
 
 import { Segmented } from '../../src/components/Segmented';
 import { SelectMulti } from '../../src/components/Select';
@@ -52,15 +51,15 @@ export default function OnboardingScreen() {
   return (
     <ScrollView className="flex-1 bg-paper px-6 pt-16" contentContainerStyle={{ paddingBottom: 60 }}>
       <Appear>
-        <Text style={{ fontFamily: 'Nunito_700Bold' }} className="mb-1 text-sm text-primary">
+        <Text style={{ fontFamily: 'Figtree_700Bold' }} className="mb-1 text-sm text-primary">
           Bienvenue sur Regain 🌱
         </Text>
-        <Text style={{ fontFamily: 'Nunito_800ExtraBold' }} className="mb-7 text-[28px] leading-8 text-ink">
+        <Text style={{ fontFamily: 'BricolageGrotesque_800ExtraBold' }} className="mb-7 text-[28px] leading-8 text-ink">
           Parlons de vous
         </Text>
       </Appear>
 
-      <Text style={{ fontFamily: 'Nunito_800ExtraBold' }} className="mb-2.5 text-sm text-ink">
+      <Text style={{ fontFamily: 'BricolageGrotesque_800ExtraBold' }} className="mb-2.5 text-sm text-ink">
         Quels sont vos objectifs ?
       </Text>
       <SelectMulti
@@ -77,7 +76,7 @@ export default function OnboardingScreen() {
         <View className="mb-5" />
       )}
 
-      <Text style={{ fontFamily: 'Nunito_800ExtraBold' }} className="mb-2.5 text-sm text-ink">
+      <Text style={{ fontFamily: 'BricolageGrotesque_800ExtraBold' }} className="mb-2.5 text-sm text-ink">
         Quel est votre budget pour vos activités ?
       </Text>
       <Controller
@@ -90,12 +89,12 @@ export default function OnboardingScreen() {
         )}
       />
 
-      <Text style={{ fontFamily: 'Nunito_800ExtraBold' }} className="mb-2.5 text-sm text-ink">
+      <Text style={{ fontFamily: 'BricolageGrotesque_800ExtraBold' }} className="mb-2.5 text-sm text-ink">
         Votre énergie habituelle...
       </Text>
       {ENERGY_SLOTS.map((slot) => (
         <View key={slot.key} className="mb-4">
-          <Text style={{ fontFamily: 'Nunito_700Bold' }} className="mb-2 text-xs uppercase tracking-wide text-ink-soft">
+          <Text style={{ fontFamily: 'Figtree_700Bold' }} className="mb-2 text-xs uppercase tracking-wide text-ink-soft">
             {slot.label}
           </Text>
           <Controller
@@ -114,17 +113,15 @@ export default function OnboardingScreen() {
         onPress={handleSubmit((values) => mutation.mutate(values))}
         disabled={mutation.isPending}
         feedback="medium"
-        className="mt-4 overflow-hidden rounded-full shadow-sm"
+        className="mt-4 items-center rounded-full bg-ink px-5 py-4"
       >
-        <LinearGradient colors={['#F0A324', '#FF6B57']} start={{ x: 0, y: 0 }} end={{ x: 1, y: 0 }} style={{ paddingVertical: 15 }}>
-          {mutation.isPending ? (
-            <ActivityIndicator color="#FFFFFF" />
-          ) : (
-            <Text style={{ fontFamily: 'Nunito_800ExtraBold' }} className="text-center text-white">
-              Commencer
-            </Text>
-          )}
-        </LinearGradient>
+        {mutation.isPending ? (
+          <ActivityIndicator className="text-paper" />
+        ) : (
+          <Text style={{ fontFamily: 'BricolageGrotesque_800ExtraBold' }} className="text-center text-base text-paper">
+            Commencer
+          </Text>
+        )}
       </PressableScale>
     </ScrollView>
   );

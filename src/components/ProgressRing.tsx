@@ -2,6 +2,7 @@ import { View } from 'react-native';
 import { Text } from './typography';
 import Svg, { Circle } from 'react-native-svg';
 import { useAnimatedNumber } from './motion';
+import { useTheme } from '../theme/ThemeProvider';
 
 type ProgressRingProps = {
   progress: number; // 0..1
@@ -20,12 +21,13 @@ export function ProgressRing({
   progress,
   size = 96,
   strokeWidth = 10,
-  color = '#FF6B57',
-  trackColor = '#FFE4DD',
+  color,
+  trackColor,
   label,
   value,
   total,
 }: ProgressRingProps) {
+  const theme = useTheme();
   const radius = (size - strokeWidth) / 2;
   const circumference = 2 * Math.PI * radius;
   const animatedProgress = useAnimatedNumber(Math.min(Math.max(progress, 0), 1), 900);
@@ -39,12 +41,12 @@ export function ProgressRing({
             rotation/transform, qui déclenchent un bug de react-native-svg sur web. */}
         <View style={{ transform: [{ rotate: '-90deg' }] }}>
           <Svg width={size} height={size}>
-            <Circle cx={size / 2} cy={size / 2} r={radius} stroke={trackColor} strokeWidth={strokeWidth} fill="none" />
+            <Circle cx={size / 2} cy={size / 2} r={radius} stroke={trackColor ?? theme.primarySoft} strokeWidth={strokeWidth} fill="none" />
             <Circle
               cx={size / 2}
               cy={size / 2}
               r={radius}
-              stroke={color}
+              stroke={color ?? theme.primary}
               strokeWidth={strokeWidth}
               fill="none"
               strokeLinecap="round"
@@ -54,12 +56,12 @@ export function ProgressRing({
           </Svg>
         </View>
         <View style={{ position: 'absolute', inset: 0 }} className="items-center justify-center">
-          <Text style={{ fontFamily: 'Nunito_800ExtraBold' }} className="text-xl text-ink">
+          <Text style={{ fontFamily: 'BricolageGrotesque_800ExtraBold' }} className="text-xl text-ink">
             {total === undefined ? animatedValue : `${animatedValue}/${total}`}
           </Text>
         </View>
       </View>
-      <Text style={{ fontFamily: 'Nunito_700Bold' }} className="mt-2 text-xs text-ink-soft">
+      <Text style={{ fontFamily: 'Figtree_700Bold' }} className="mt-2 text-xs text-ink-soft">
         {label}
       </Text>
     </View>

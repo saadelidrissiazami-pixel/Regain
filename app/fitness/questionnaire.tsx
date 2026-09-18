@@ -1,6 +1,5 @@
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
-import { LinearGradient } from 'expo-linear-gradient';
 import { router } from 'expo-router';
 import { Controller, useForm } from 'react-hook-form';
 import { ActivityIndicator, Pressable, ScrollView, View } from 'react-native';
@@ -39,7 +38,7 @@ const SESSION_MINUTES_OPTIONS = [30, 45, 60, 75, 90].map((minutes) => ({
 
 function SectionTitle({ children }: { children: string }) {
   return (
-    <Text style={{ fontFamily: 'Nunito_800ExtraBold' }} className="mb-2.5 mt-5 text-sm text-ink">
+    <Text style={{ fontFamily: 'BricolageGrotesque_800ExtraBold' }} className="mb-2.5 mt-5 text-sm text-ink">
       {children}
     </Text>
   );
@@ -107,7 +106,7 @@ function QuestionnaireForm({ userId, initialProfile }: { userId: string; initial
           <TextInput
             className={inputClass}
             placeholder="Année de naissance (ex. 1990)"
-            placeholderTextColor="#B5AB9A"
+
             keyboardType="number-pad"
             maxLength={4}
             value={value}
@@ -125,7 +124,7 @@ function QuestionnaireForm({ userId, initialProfile }: { userId: string; initial
               <TextInput
                 className={inputClass}
                 placeholder="Taille (cm)"
-                placeholderTextColor="#B5AB9A"
+
                 keyboardType="number-pad"
                 value={value}
                 onChangeText={onChange}
@@ -141,7 +140,7 @@ function QuestionnaireForm({ userId, initialProfile }: { userId: string; initial
               <TextInput
                 className={inputClass}
                 placeholder="Poids (kg)"
-                placeholderTextColor="#B5AB9A"
+
                 keyboardType="decimal-pad"
                 value={value}
                 onChangeText={onChange}
@@ -242,7 +241,7 @@ function QuestionnaireForm({ userId, initialProfile }: { userId: string; initial
           <TextInput
             className={inputClass}
             placeholder="Allergies ou intolérances (optionnel)"
-            placeholderTextColor="#B5AB9A"
+
             value={value}
             onChangeText={onChange}
           />
@@ -260,7 +259,7 @@ function QuestionnaireForm({ userId, initialProfile }: { userId: string; initial
             style={{ textAlignVertical: 'top' }}
             multiline
             placeholder="Blessure, douleur, traitement, grossesse… (optionnel, pour que votre coach adapte le programme)"
-            placeholderTextColor="#B5AB9A"
+
             value={value}
             onChangeText={onChange}
           />
@@ -280,17 +279,15 @@ function QuestionnaireForm({ userId, initialProfile }: { userId: string; initial
         onPress={handleSubmit((values) => saveMutation.mutate(values))}
         disabled={saveMutation.isPending}
         feedback="medium"
-        className="overflow-hidden rounded-full shadow-sm"
+        className="items-center rounded-full bg-ink px-5 py-4"
       >
-        <LinearGradient colors={['#F0A324', '#FF6B57']} start={{ x: 0, y: 0 }} end={{ x: 1, y: 0 }} style={{ paddingVertical: 15 }}>
-          {saveMutation.isPending ? (
-            <ActivityIndicator color="#FFFFFF" />
-          ) : (
-            <Text style={{ fontFamily: 'Nunito_800ExtraBold' }} className="text-center text-white">
-              Enregistrer
-            </Text>
-          )}
-        </LinearGradient>
+        {saveMutation.isPending ? (
+          <ActivityIndicator className="text-paper" />
+        ) : (
+          <Text style={{ fontFamily: 'BricolageGrotesque_800ExtraBold' }} className="text-center text-base text-paper">
+            Enregistrer
+          </Text>
+        )}
       </PressableScale>
     </>
   );
@@ -309,19 +306,19 @@ export default function FitnessQuestionnaireScreen() {
   return (
     <ScrollView className="flex-1 bg-paper px-6 pt-16" contentContainerStyle={{ paddingBottom: 60 }}>
       <Pressable onPress={() => router.back()} className="mb-5">
-        <Text style={{ fontFamily: 'Nunito_700Bold' }} className="text-sm text-ink-soft">
+        <Text style={{ fontFamily: 'Figtree_700Bold' }} className="text-sm text-ink-soft">
           ← Retour
         </Text>
       </Pressable>
-      <Text style={{ fontFamily: 'Nunito_700Bold' }} className="mb-1 text-sm text-primary">
+      <Text style={{ fontFamily: 'Figtree_700Bold' }} className="mb-1 text-sm text-primary">
         Coach forme
       </Text>
-      <Text style={{ fontFamily: 'Nunito_800ExtraBold' }} className="text-[28px] leading-8 text-ink">
+      <Text style={{ fontFamily: 'BricolageGrotesque_800ExtraBold' }} className="text-[28px] leading-8 text-ink">
         Votre profil
       </Text>
 
       {!userId || profileQuery.isLoading ? (
-        <ActivityIndicator className="mt-6" color="#FF6B57" />
+        <ActivityIndicator className="mt-6 text-primary" />
       ) : (
         <QuestionnaireForm userId={userId} initialProfile={profileQuery.data ?? null} />
       )}

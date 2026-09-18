@@ -1,3 +1,21 @@
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+
+/* Valeurs par défaut (palette de l'après-midi) avant que ThemeProvider ne pose celles du moment. */
+:root {
+  --color-paper: 244 250 248;
+  --color-surface: 255 255 255;
+  --color-ink: 21 48 44;
+  --color-ink-soft: 86 115 110;
+  --color-line: 220 235 231;
+  --color-primary: 31 127 116;
+  --color-primary-soft: 211 238 232;
+  --color-on-primary: 255 255 255;
+  --color-accent: 154 91 20;
+  --color-accent-soft: 252 234 203;
+  --color-calm: 31 127 116;
+  --color-calm-soft: 220 238 234;
+  --color-sky: 180 227 217;
+  --color-sky-soft: 238 248 245;
+}

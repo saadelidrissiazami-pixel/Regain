@@ -52,7 +52,7 @@ export function NeighborhoodHistoryCard() {
 
   return (
     <View className="mb-6 rounded-2xl border border-line bg-surface p-4 shadow-sm">
-      <Text style={{ fontFamily: 'Nunito_800ExtraBold' }} className="mb-2.5 text-sm text-ink">
+      <Text style={{ fontFamily: 'BricolageGrotesque_800ExtraBold' }} className="mb-2.5 text-sm text-ink">
         🏙️ Histoire de votre quartier
       </Text>
 
@@ -62,19 +62,19 @@ export function NeighborhoodHistoryCard() {
             On identifie votre position pour vous raconter un peu de l'histoire du quartier ou de la ville que vous
             allez explorer.
           </Text>
-          <Pressable onPress={handleDiscover} className="self-start rounded-full bg-primary px-4 py-2.5">
-            <Text style={{ fontFamily: 'Nunito_800ExtraBold' }} className="text-sm text-white">
+          <Pressable onPress={handleDiscover} className="self-start rounded-full bg-ink px-4 py-2.5">
+            <Text style={{ fontFamily: 'BricolageGrotesque_800ExtraBold' }} className="text-sm text-paper">
               Découvrir mon quartier
             </Text>
           </Pressable>
         </>
       ) : status === 'loading' ? (
-        <ActivityIndicator color="#FF6B57" />
+        <ActivityIndicator className="text-primary" />
       ) : status === 'error' ? (
         <Text className="text-sm text-ink-soft">{errorMessage}</Text>
       ) : (
         <>
-          <Text style={{ fontFamily: 'Nunito_700Bold' }} className="mb-1.5 text-sm text-ink">
+          <Text style={{ fontFamily: 'Figtree_700Bold' }} className="mb-1.5 text-sm text-ink">
             {placeLabel}
           </Text>
           {extract ? (

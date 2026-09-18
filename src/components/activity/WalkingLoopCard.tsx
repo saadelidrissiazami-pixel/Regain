@@ -56,7 +56,7 @@ export function WalkingLoopCard({ durationMinutes }: { durationMinutes: number }
 
   return (
     <View className="mb-6 rounded-2xl border border-line bg-surface p-4 shadow-sm">
-      <Text style={{ fontFamily: 'Nunito_800ExtraBold' }} className="mb-2.5 text-sm text-ink">
+      <Text style={{ fontFamily: 'BricolageGrotesque_800ExtraBold' }} className="mb-2.5 text-sm text-ink">
         🧭 Itinéraire de marche près de vous
       </Text>
 
@@ -66,15 +66,15 @@ export function WalkingLoopCard({ durationMinutes }: { durationMinutes: number }
             On trace une boucle sur les rues autour de vous, adaptée à la durée de cette activité, avec la carte et
             les indications pas à pas.
           </Text>
-          <Pressable onPress={handleLocate} className="self-start rounded-full bg-primary px-4 py-2.5">
-            <Text style={{ fontFamily: 'Nunito_800ExtraBold' }} className="text-sm text-white">
+          <Pressable onPress={handleLocate} className="self-start rounded-full bg-ink px-4 py-2.5">
+            <Text style={{ fontFamily: 'BricolageGrotesque_800ExtraBold' }} className="text-sm text-paper">
               Générer mon itinéraire
             </Text>
           </Pressable>
         </>
       ) : status === 'loading' ? (
         <View className="flex-row items-center">
-          <ActivityIndicator color="#FF6B57" />
+          <ActivityIndicator className="text-primary" />
           <Text className="ml-2 text-sm text-ink-soft">
             Ajustement du parcours pour tenir en {durationMinutes} min…
           </Text>
@@ -85,7 +85,7 @@ export function WalkingLoopCard({ durationMinutes }: { durationMinutes: number }
         <>
           <RouteMap path={result.route.path} start={result.start} />
 
-          <Text style={{ fontFamily: 'Nunito_800ExtraBold' }} className="text-base text-ink">
+          <Text style={{ fontFamily: 'BricolageGrotesque_800ExtraBold' }} className="text-base text-ink">
             {(result.route.distanceM / 1000).toFixed(1)} km · environ {Math.round(result.route.durationS / 60)} min
           </Text>
           <Text className="mb-3 text-xs text-ink-soft">
@@ -95,7 +95,7 @@ export function WalkingLoopCard({ durationMinutes }: { durationMinutes: number }
 
           {result.route.steps.map((step, i) => (
             <View key={i} className="mb-2 flex-row items-start">
-              <Text style={{ fontFamily: 'Nunito_800ExtraBold' }} className="mr-2 w-6 text-sm text-primary">
+              <Text style={{ fontFamily: 'BricolageGrotesque_800ExtraBold' }} className="mr-2 w-6 text-sm text-primary">
                 {i + 1}.
               </Text>
               <Text className="flex-1 text-sm leading-5 text-ink-soft">
@@ -106,7 +106,7 @@ export function WalkingLoopCard({ durationMinutes }: { durationMinutes: number }
           ))}
 
           <Pressable onPress={handleLocate} className="mt-2 self-start rounded-full border border-line px-4 py-2">
-            <Text style={{ fontFamily: 'Nunito_700Bold' }} className="text-sm text-ink">
+            <Text style={{ fontFamily: 'Figtree_700Bold' }} className="text-sm text-ink">
               🔄 Autre boucle
             </Text>
           </Pressable>
@@ -126,14 +126,14 @@ export function WalkingLoopCard({ durationMinutes }: { durationMinutes: number }
           </Text>
           {result?.legs.map((leg, i) => (
             <View key={i} className="mb-2 flex-row items-start">
-              <Text style={{ fontFamily: 'Nunito_800ExtraBold' }} className="mr-2 text-sm text-primary">
+              <Text style={{ fontFamily: 'BricolageGrotesque_800ExtraBold' }} className="mr-2 text-sm text-primary">
                 {i + 1}.
               </Text>
               <Text className="flex-1 text-sm leading-5 text-ink-soft">{leg.instruction}</Text>
             </View>
           ))}
           <Pressable onPress={handleLocate} className="mt-2 self-start rounded-full border border-line px-4 py-2">
-            <Text style={{ fontFamily: 'Nunito_700Bold' }} className="text-sm text-ink">
+            <Text style={{ fontFamily: 'Figtree_700Bold' }} className="text-sm text-ink">
               Réessayer
             </Text>
           </Pressable>
