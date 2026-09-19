@@ -26,3 +26,16 @@ export const ENERGY_LEVELS = [
   { value: 'moyen', label: 'Moyenne' },
   { value: 'eleve', label: 'Élevée' },
 ] as const;
+
+/** Sommeil habituel : de 5 h à 10 h, par demi-heure. */
+export const SLEEP_OPTIONS = Array.from({ length: 11 }, (_, i) => {
+  const minutes = 300 + i * 30;
+  return { value: minutes, label: formatSleep(minutes) };
+});
+
+/** 450 → « 7 h 30 », 480 → « 8 h ». */
+export function formatSleep(minutes: number): string {
+  const h = Math.floor(minutes / 60);
+  const m = minutes % 60;
+  return m === 0 ? `${h} h` : `${h} h ${String(m).padStart(2, '0')}`;
+}

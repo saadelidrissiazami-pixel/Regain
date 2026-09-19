@@ -56,3 +56,24 @@ export function buildWeekView<T extends DatedItem>(items: T[], today: string): W
     totalCount: items.length,
   };
 }
+
+/** Phrase de coach sous la salutation : ce qui compte maintenant, sans pression. */
+export function coachLine({
+  hasPlan,
+  doneCount,
+  totalCount,
+  pendingToday,
+  hour,
+}: {
+  hasPlan: boolean;
+  doneCount: number;
+  totalCount: number;
+  pendingToday: number;
+  hour: number;
+}): string {
+  if (!hasPlan) return 'Ta semaine reste à construire, on s’en occupe ensemble.';
+  if (totalCount > 0 && doneCount === totalCount) return 'Semaine bouclée. Prends le temps d’en profiter.';
+  if (pendingToday === 0) return hour >= 18 ? 'Plus rien de prévu ce soir. Profite de ta soirée.' : "Plus rien de prévu aujourd'hui.";
+  if (doneCount > 0) return 'On continue, tu fais du super travail.';
+  return "Voici ce qui est prévu aujourd'hui.";
+}

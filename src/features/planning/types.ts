@@ -10,9 +10,9 @@ export type ActivityCategory =
   | 'temps_libre';
 
 export const CATEGORY_LABELS: Record<ActivityCategory, string> = {
-  physique: 'Physique',
-  outdoor: 'Outdoor',
-  indoor: 'Indoor',
+  physique: 'Sport',
+  outdoor: 'Plein air',
+  indoor: 'À la maison',
   social: 'Social',
   relaxation: 'Relaxation',
   meditation: 'Méditation',
@@ -21,14 +21,28 @@ export const CATEGORY_LABELS: Record<ActivityCategory, string> = {
   temps_libre: 'Temps libre',
 };
 
+// Couleurs de repère (point devant la catégorie, barres du suivi) : sobres, tirées de la palette.
 export const CATEGORY_COLORS: Record<ActivityCategory, string> = {
-  physique: '#FF6B57',
-  outdoor: '#2FA88A',
-  indoor: '#D68A3C',
-  social: '#E85D8A',
-  relaxation: '#8B7FD6',
-  meditation: '#4E9BDE',
-  dev_perso: '#5B5FC7',
-  recuperation: '#6FA88F',
-  temps_libre: '#C9A227',
+  physique: '#E9A23B',
+  outdoor: '#3C927F',
+  indoor: '#D5AA35',
+  social: '#D96C6C',
+  relaxation: '#8B78D1',
+  meditation: '#4D9DE0',
+  dev_perso: '#8B78D1',
+  recuperation: '#3C927F',
+  temps_libre: '#D5AA35',
+};
+
+/** Icône (Ionicons) de secours quand une activité n'a pas de photo. */
+export const CATEGORY_ICONS: Record<ActivityCategory, string> = {
+  physique: 'barbell-outline',
+  outdoor: 'trail-sign-outline',
+  indoor: 'home-outline',
+  social: 'people-outline',
+  relaxation: 'cafe-outline',
+  meditation: 'flower-outline',
+  dev_perso: 'book-outline',
+  recuperation: 'bed-outline',
+  temps_libre: 'sunny-outline',
 };

@@ -9,9 +9,10 @@ import {
 } from '../src/features/wellbeing/reflection';
 
 describe('ressenti de fin de séance', () => {
-  it('propose cinq niveaux, du plus difficile au meilleur', () => {
+  it('propose cinq niveaux, de « beaucoup moins bien » à « beaucoup mieux »', () => {
     expect(MOOD_OPTIONS.map((m) => m.value)).toEqual([1, 2, 3, 4, 5]);
-    expect(moodOption(4)?.label).toBe('Apaisé');
+    expect(moodOption(4)?.label).toBe('Un peu mieux');
+    expect(moodOption(1)?.label).toBe('Beaucoup moins bien');
     expect(moodOption(null)).toBeNull();
     expect(moodOption(9)).toBeNull();
   });
