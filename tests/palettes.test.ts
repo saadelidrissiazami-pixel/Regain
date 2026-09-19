@@ -1,45 +1,38 @@
 import { describe, expect, it } from 'vitest';
 
-import { contrastRatio, PALETTES, slotForHour, themeVariables, toRgbTriplet, type DaySlot } from '../src/theme/palettes';
-
-describe('slotForHour', () => {
-  it('suit les créneaux du planning', () => {
-    expect([4, 5, 11, 12, 17, 18, 23, 0].map(slotForHour)).toEqual([
-      'soir',
-      'matin',
-      'matin',
-      'apres_midi',
-      'apres_midi',
-      'soir',
-      'soir',
-      'soir',
-    ]);
-  });
-});
+import { contrastRatio, PALETTES, themeVariables, toRgbTriplet, variableName } from '../src/theme/colors';
 
 describe('variables de thème', () => {
   it('convertit les couleurs au format attendu par NativeWind', () => {
     expect(toRgbTriplet('#1F7F74')).toBe('31 127 116');
-    expect(themeVariables(PALETTES.soir)['--color-paper']).toBe('23 22 43');
+    expect(themeVariables(PALETTES.light)['--color-bg']).toBe('245 250 248');
   });
 
-  it('définit toutes les variables pour chaque moment', () => {
-    const keys = Object.keys(themeVariables(PALETTES.matin)).sort();
-    for (const slot of ['apres_midi', 'soir'] as DaySlot[]) {
-      expect(Object.keys(themeVariables(PALETTES[slot])).sort()).toEqual(keys);
-    }
+  it('nomme les variables comme les classes Tailwind', () => {
+    expect(variableName('primary600')).toBe('--color-primary-600');
+    expect(variableName('ink2')).toBe('--color-ink-2');
+    expect(variableName('onPrimary')).toBe('--color-on-primary');
+    expect(variableName('premiumInk')).toBe('--color-premium-ink');
+  });
+
+  it('définit les mêmes variables en clair et en sombre', () => {
+    expect(Object.keys(themeVariables(PALETTES.dark)).sort()).toEqual(Object.keys(themeVariables(PALETTES.light)).sort());
   });
 });
 
 describe('lisibilité de chaque palette', () => {
-  for (const [slot, p] of Object.entries(PALETTES)) {
-    it(`${slot} : texte, texte secondaire et boutons restent lisibles`, () => {
-      expect(contrastRatio(p.ink, p.paper)).toBeGreaterThanOrEqual(7);
+  for (const [scheme, p] of Object.entries(PALETTES)) {
+    it(`${scheme} : texte, texte secondaire et boutons restent lisibles`, () => {
+      expect(contrastRatio(p.ink, p.bg)).toBeGreaterThanOrEqual(7);
       expect(contrastRatio(p.ink, p.surface)).toBeGreaterThanOrEqual(7);
-      expect(contrastRatio(p.inkSoft, p.paper)).toBeGreaterThanOrEqual(4.5);
+      expect(contrastRatio(p.ink2, p.bg)).toBeGreaterThanOrEqual(4.5);
+      expect(contrastRatio(p.ink2, p.surface)).toBeGreaterThanOrEqual(4.5);
+      expect(contrastRatio(p.ink3, p.surface)).toBeGreaterThanOrEqual(3);
       expect(contrastRatio(p.onPrimary, p.primary)).toBeGreaterThanOrEqual(4.5);
-      expect(contrastRatio(p.paper, p.ink)).toBeGreaterThanOrEqual(7);
-      expect(contrastRatio(p.primary, p.paper)).toBeGreaterThanOrEqual(3);
+      expect(contrastRatio(p.primary600, p.surface)).toBeGreaterThanOrEqual(4.5);
+      expect(contrastRatio(p.danger, p.surface)).toBeGreaterThanOrEqual(4.5);
+      expect(contrastRatio(p.premiumInk, p.premium)).toBeGreaterThanOrEqual(4.5);
+      expect(contrastRatio(p.ink, p.sage100)).toBeGreaterThanOrEqual(7);
     });
   }
 });

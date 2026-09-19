@@ -1,7 +1,7 @@
 import { View } from 'react-native';
 
-import { Appear } from './motion';
-import { Text } from './typography';
+import { Appear } from './ui/motion';
+import { Text } from './ui/Text';
 import type { PlanAdjustment } from '../features/fitness/planDiff';
 
 /** Ce que le dernier bilan a changé : une ligne par ajustement. */
@@ -10,13 +10,17 @@ export function AdjustmentsList({ adjustments }: { adjustments: PlanAdjustment[]
     <>
       {adjustments.map((adjustment, i) => (
         <Appear key={adjustment.label} index={i}>
-          <View className={`flex-row ${i === adjustments.length - 1 ? '' : 'mb-3'}`}>
-            <Text className="mr-3 text-lg">{adjustment.icon}</Text>
-            <View className="flex-1">
-              <Text style={{ fontFamily: 'Figtree_700Bold' }} className="text-sm text-ink">
-                {adjustment.label}
-              </Text>
-              {adjustment.detail ? <Text className="mt-0.5 text-xs text-ink-soft">{adjustment.detail}</Text> : null}
+          <View style={{ flexDirection: 'row', marginBottom: i === adjustments.length - 1 ? 0 : 12 }}>
+            <Text variant="bodyStrong" style={{ marginRight: 12 }}>
+              {adjustment.icon}
+            </Text>
+            <View style={{ flex: 1 }}>
+              <Text variant="label">{adjustment.label}</Text>
+              {adjustment.detail ? (
+                <Text variant="caption" tone="ink2" style={{ marginTop: 2 }}>
+                  {adjustment.detail}
+                </Text>
+              ) : null}
             </View>
           </View>
         </Appear>

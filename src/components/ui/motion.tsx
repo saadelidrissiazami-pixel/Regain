@@ -1,7 +1,7 @@
 import * as Haptics from 'expo-haptics';
 import { useEffect, useRef, useState, type ComponentProps, type ReactNode } from 'react';
 import { Platform, Pressable, type PressableProps, type StyleProp, type ViewStyle } from 'react-native';
-import { useTheme } from '../theme/ThemeProvider';
+import { useTheme } from '../../theme/ThemeProvider';
 import Animated, {
   FadeInDown,
   LinearTransition,
@@ -14,7 +14,8 @@ import Animated, {
   withTiming,
 } from 'react-native-reanimated';
 
-// Toutes les animations Reanimated respectent le réglage « Réduire les animations » du système.
+// Les animations d'entrée Reanimated suivent le réglage « Réduire les animations » du système ;
+// les boucles (Skeleton, Wiggle) le vérifient elles-mêmes.
 
 /** Retour haptique discret (ignoré sur le web). */
 export const haptic = {
@@ -32,7 +33,7 @@ export const haptic = {
   },
 };
 
-const LAYOUT = LinearTransition.springify().damping(20).stiffness(180);
+const LAYOUT = LinearTransition.duration(220);
 
 /** Apparition en glissant vers le haut, décalée selon la position dans la liste. Anime aussi
  *  les changements de taille et de position (cartes qui s'ouvrent, éléments retirés). */
@@ -47,14 +48,12 @@ export function Appear({
   style?: StyleProp<ViewStyle>;
   exiting?: ComponentProps<typeof Animated.View>['exiting'];
 }) {
+  const reduceMotion = useReducedMotion();
   return (
     <Animated.View
       exiting={exiting}
-      entering={FadeInDown.delay(Math.min(index, 8) * 55)
-        .springify()
-        .damping(18)
-        .stiffness(160)}
-      layout={LAYOUT}
+      entering={reduceMotion ? undefined : FadeInDown.delay(Math.min(index, 8) * 45).duration(240)}
+      layout={reduceMotion ? undefined : LAYOUT}
       style={style}
     >
       {children}
@@ -73,7 +72,7 @@ type PressableScaleProps = PressableProps & {
 /** Pressable qui s'enfonce légèrement au toucher, avec un retour haptique. */
 export function PressableScale({
   wrapperStyle,
-  scaleTo = 0.96,
+  scaleTo = 0.98,
   feedback = 'light',
   onPressIn,
   onPressOut,
@@ -90,11 +89,11 @@ export function PressableScale({
         {...rest}
         disabled={disabled}
         onPressIn={(event) => {
-          scale.set(withSpring(scaleTo, { damping: 20, stiffness: 400 }));
+          scale.set(withTiming(scaleTo, { duration: 120 }));
           onPressIn?.(event);
         }}
         onPressOut={(event) => {
-          scale.set(withSpring(1, { damping: 12, stiffness: 260 }));
+          scale.set(withTiming(1, { duration: 180 }));
           onPressOut?.(event);
         }}
         onPress={(event) => {
@@ -136,7 +135,7 @@ export function ProgressBar({
   progress,
   color,
   trackColor,
-  height = 10,
+  height = 8,
   delay = 0,
 }: {
   progress: number;
@@ -146,16 +145,25 @@ export function ProgressBar({
   delay?: number;
 }) {
   const theme = useTheme();
-  const width = useSharedValue(0);
+  const reduceMotion = useReducedMotion();
   const clamped = Math.min(Math.max(progress, 0), 1);
+  const width = useSharedValue(reduceMotion ? clamped * 100 : 0);
   useEffect(() => {
-    const timer = setTimeout(() => width.set(withTiming(clamped * 100, { duration: 750 })), delay);
+    if (reduceMotion) {
+      width.set(clamped * 100);
+      return;
+    }
+    const timer = setTimeout(() => width.set(withTiming(clamped * 100, { duration: 600 })), delay);
     return () => clearTimeout(timer);
-  }, [clamped, delay, width]);
+  }, [clamped, delay, width, reduceMotion]);
   const fillStyle = useAnimatedStyle(() => ({ width: `${width.get()}%` }));
   return (
-    <Animated.View style={{ height, borderRadius: height, backgroundColor: trackColor ?? theme.line, overflow: 'hidden' }}>
-      <Animated.View style={[{ height, borderRadius: height, backgroundColor: color ?? theme.primary }, fillStyle]} />
+    <Animated.View
+      accessibilityRole="progressbar"
+      accessibilityValue={{ min: 0, max: 100, now: Math.round(clamped * 100) }}
+      style={{ height, borderRadius: height, backgroundColor: trackColor ?? theme.sage200, overflow: 'hidden' }}
+    >
+      <Animated.View style={[{ height, borderRadius: height, backgroundColor: color ?? theme.primary600 }, fillStyle]} />
     </Animated.View>
   );
 }
@@ -193,23 +201,27 @@ export function useAnimatedNumber(target: number, duration = 800): number {
 /** Bloc gris qui pulse pendant un chargement, à la place d'un simple indicateur. */
 export function Skeleton({ height, style }: { height: number; style?: StyleProp<ViewStyle> }) {
   const theme = useTheme();
-  const opacity = useSharedValue(0.45);
+  const reduceMotion = useReducedMotion();
+  const opacity = useSharedValue(0.6);
   useEffect(() => {
-    opacity.set(withRepeat(withTiming(1, { duration: 750 }), -1, true));
-  }, [opacity]);
+    if (!reduceMotion) opacity.set(withRepeat(withTiming(1, { duration: 800 }), -1, true));
+  }, [opacity, reduceMotion]);
   const animatedStyle = useAnimatedStyle(() => ({ opacity: opacity.get() }));
   return (
     <Animated.View
-      style={[{ height, borderRadius: 16, backgroundColor: theme.line, marginBottom: 10 }, style, animatedStyle]}
+      accessibilityElementsHidden
+      importantForAccessibility="no-hide-descendants"
+      style={[{ height, borderRadius: 18, backgroundColor: theme.sage100, marginBottom: 12 }, style, animatedStyle]}
     />
   );
 }
 
 /** Léger balancement répété, pour attirer l'œil sur une réussite (🎉, 🔥). */
 export function Wiggle({ children, active = true }: { children: ReactNode; active?: boolean }) {
+  const reduceMotion = useReducedMotion();
   const rotation = useSharedValue(0);
   useEffect(() => {
-    if (!active) {
+    if (!active || reduceMotion) {
       rotation.set(withTiming(0));
       return;
     }
@@ -219,7 +231,7 @@ export function Wiggle({ children, active = true }: { children: ReactNode; activ
         -1
       )
     );
-  }, [active, rotation]);
+  }, [active, rotation, reduceMotion]);
   const animatedStyle = useAnimatedStyle(() => ({ transform: [{ rotate: `${rotation.get()}deg` }] }));
   return <Animated.View style={animatedStyle}>{children}</Animated.View>;
 }

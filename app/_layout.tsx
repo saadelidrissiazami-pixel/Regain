@@ -1,7 +1,12 @@
 import '../src/styles/global.css';
-import { BricolageGrotesque_700Bold, BricolageGrotesque_800ExtraBold } from '@expo-google-fonts/bricolage-grotesque';
-import { Figtree_400Regular, Figtree_500Medium, Figtree_600SemiBold, Figtree_700Bold, useFonts } from '@expo-google-fonts/figtree';
-import { IBMPlexMono_400Regular, IBMPlexMono_500Medium } from '@expo-google-fonts/ibm-plex-mono';
+import {
+  Inter_400Regular,
+  Inter_500Medium,
+  Inter_600SemiBold,
+  Inter_700Bold,
+  Inter_800ExtraBold,
+  useFonts,
+} from '@expo-google-fonts/inter';
 import { QueryClientProvider } from '@tanstack/react-query';
 import { router, Stack } from 'expo-router';
 import * as SplashScreen from 'expo-splash-screen';
@@ -16,20 +21,16 @@ import { useAuthStore } from '../src/store/authStore';
 
 SplashScreen.preventAutoHideAsync().catch(() => {});
 
+// SF Pro (police système) sur iOS : Inter n'est chargée que pour Android et le web.
+const FONTS =
+  Platform.OS === 'ios' ? {} : { Inter_400Regular, Inter_500Medium, Inter_600SemiBold, Inter_700Bold, Inter_800ExtraBold };
+
 export default function RootLayout() {
   const init = useAuthStore((s) => s.init);
   const session = useAuthStore((s) => s.session);
 
-  const [fontsLoaded] = useFonts({
-    BricolageGrotesque_700Bold,
-    BricolageGrotesque_800ExtraBold,
-    Figtree_400Regular,
-    Figtree_500Medium,
-    Figtree_600SemiBold,
-    Figtree_700Bold,
-    IBMPlexMono_400Regular,
-    IBMPlexMono_500Medium,
-  });
+  const [interLoaded] = useFonts(FONTS);
+  const fontsLoaded = Platform.OS === 'ios' || interLoaded;
 
   useEffect(() => {
     init();
