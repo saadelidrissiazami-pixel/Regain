@@ -87,8 +87,8 @@ content/                 Bibliothèque bien-être statique (méditation, respira
   Les classes Tailwind (`bg-surface`, `text-ink-2`…) lisent les mêmes variables ; `useTheme()` les donne en JS.
 - Typographie : SF Pro (police système) sur iOS, Inter sur Android et le web, via `<Text variant="…">`.
 - Réglage Clair / Sombre / Auto dans Profil → Paramètres.
-- Photos d'ambiance : à déposer dans `assets/images/` puis déclarer dans `src/theme/images.ts`.
-  Sans photo, un dégradé sauge prend le relais.
+- Photos d'ambiance : `assets/images/` (JPEG compressés, générés dans un même style), déclarées dans
+  `src/theme/images.ts`. Une image non déclarée est remplacée par un dégradé sauge.
 - La migration `0022_coach_redesign.sql` ajoute le sommeil habituel, le créneau et les jours
   d'entraînement, et le journal des séances de musculation. Tant qu'elle n'est pas appliquée,
   ces informations restent simplement masquées.

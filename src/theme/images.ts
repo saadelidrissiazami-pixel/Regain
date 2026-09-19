@@ -2,8 +2,8 @@ import type { ImageSourcePropType } from 'react-native';
 
 import type { ActivityCategory } from '../features/planning/types';
 
-// Photos d'ambiance (assets/images). Une clé absente ici affiche le dégradé de secours de
-// <Thumbnail> : l'app reste complète même sans image.
+// Photos d'ambiance (assets/images), générées pour Regain dans un même style : lumière douce,
+// sauge et crème. Une clé absente ici affiche le dégradé de secours de <Thumbnail>.
 export type ImageKey =
   | 'wellbeingHero'
   | 'sessionLake'
@@ -19,7 +19,21 @@ export type ImageKey =
   | 'fitCore'
   | 'nutrition';
 
-export const IMAGES: Partial<Record<ImageKey, ImageSourcePropType>> = {};
+export const IMAGES: Partial<Record<ImageKey, ImageSourcePropType>> = {
+  wellbeingHero: require('../../assets/images/wellbeing-hero.jpg'),
+  sessionLake: require('../../assets/images/session-lake.jpg'),
+  meditation: require('../../assets/images/meditation.jpg'),
+  sport: require('../../assets/images/sport.jpg'),
+  nature: require('../../assets/images/nature.jpg'),
+  social: require('../../assets/images/social.jpg'),
+  reading: require('../../assets/images/reading.jpg'),
+  rest: require('../../assets/images/rest.jpg'),
+  fitLegs: require('../../assets/images/fit-legs.jpg'),
+  fitPush: require('../../assets/images/fit-push.jpg'),
+  fitPull: require('../../assets/images/fit-pull.jpg'),
+  fitCore: require('../../assets/images/fit-core.jpg'),
+  nutrition: require('../../assets/images/nutrition.jpg'),
+};
 
 const BY_ACTIVITY_CATEGORY: Record<ActivityCategory, ImageKey> = {
   physique: 'sport',

@@ -6,9 +6,10 @@ import Animated, { FadeIn, FadeOut } from 'react-native-reanimated';
 
 import { TargetsCard } from '../../components/cards/TargetsCard';
 import { EmptyState, ErrorState, LoadingSkeleton } from '../../components/feedback';
-import { Appear, Card, Chevron, haptic, Pop, Screen, ScreenHeader, SectionHeader, SegmentedControl, Text } from '../../components/ui';
+import { Appear, Card, Chevron, haptic, Pop, Screen, ScreenHeader, SectionHeader, SegmentedControl, Text, Thumbnail } from '../../components/ui';
 import type { MealDay, ShoppingItem } from '../../features/fitness/types';
 import { useFitness } from '../../hooks/useFitness';
+import { IMAGES } from '../../theme/images';
 import { useTheme } from '../../theme/ThemeProvider';
 
 function MealDayCard({ day, defaultOpen }: { day: MealDay; defaultOpen: boolean }) {
@@ -145,6 +146,9 @@ export default function NutritionScreen() {
         <EmptyState icon="restaurant-outline" title="Pas encore de menus" body="Génère ton programme depuis l'onglet Forme." />
       ) : (
         <>
+          <View style={{ marginBottom: 24 }}>
+            <Thumbnail source={IMAGES.nutrition} width="100%" height={170} radius={22} icon="restaurant-outline" />
+          </View>
           {fitness.targets ? (
             <View style={{ marginBottom: 24 }}>
               <SectionHeader title="Tes objectifs du jour" />
