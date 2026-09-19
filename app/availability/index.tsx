@@ -1,13 +1,10 @@
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { router } from 'expo-router';
 import { useState } from 'react';
-import { ActivityIndicator, Pressable, ScrollView, View } from 'react-native';
-import { Text, TextInput } from '../../src/components/typography';
+import { ActivityIndicator, ScrollView, View } from 'react-native';
 
-import { Chip } from '../../src/components/Chip';
-import { Segmented } from '../../src/components/Segmented';
-import { Select } from '../../src/components/Select';
-import { Appear, PressableScale } from '../../src/components/motion';
+import { EmptyState, errorMessage, InlineNotice, LoadingSkeleton } from '../../src/components/feedback';
+import { Appear, Button, Card, ChoiceChip, Field, Screen, ScreenHeader, SegmentedControl, Select, Text } from '../../src/components/ui';
 import { createAvailabilitySlots, deleteAvailabilitySlot, fetchAvailabilitySlots } from '../../src/lib/availability';
 import { DAYS_OF_WEEK } from '../../src/lib/days';
 import { scheduleActivityReminders } from '../../src/lib/notifications';
@@ -41,7 +38,7 @@ export default function AvailabilityScreen() {
   const createMutation = useMutation({
     mutationFn: async () => {
       const selection = kind === 'recurring' ? Array.from(selectedDays) : Array.from(selectedDates);
-      if (selection.length === 0) throw new Error('Choisissez au moins un jour.');
+      if (selection.length === 0) throw new Error('Choisis au moins un jour.');
       if (endTime <= startTime) throw new Error("L'heure de fin doit être après l'heure de début.");
 
       const timeSlot = timeSlotFromStartTime(startTime);
@@ -78,6 +75,7 @@ export default function AvailabilityScreen() {
     mutationFn: () => generateAndSaveWeekPlan(userId!, weekStart),
     onSuccess: (data) => {
       queryClient.setQueryData(['weekPlan', userId, weekStart], data);
+      queryClient.invalidateQueries({ queryKey: ['planRange', userId] });
       scheduleActivityReminders(data).catch(() => {});
       router.push('/(tabs)/planning');
     },
@@ -107,26 +105,23 @@ export default function AvailabilityScreen() {
     });
   };
 
+  const slots = slotsQuery.data ?? [];
+  const count = kind === 'recurring' ? selectedDays.size : selectedDates.size;
+
   return (
-    <ScrollView className="flex-1 bg-paper px-6 pt-16" contentContainerStyle={{ paddingBottom: 60 }}>
-      <Pressable onPress={() => router.back()} className="mb-5">
-        <Text style={{ fontFamily: 'Figtree_700Bold' }} className="text-sm text-ink-soft">
-          ← Retour
-        </Text>
-      </Pressable>
+    <Screen keyboard>
+      <ScreenHeader
+        title="Mes disponibilités"
+        subtitle="Dis à Regain quand tu es libre : il y place tes activités."
+        onBack={() => router.back()}
+      />
 
-      <Text style={{ fontFamily: 'Figtree_700Bold' }} className="mb-1 text-sm text-primary">
-        Planning
+      <Text variant="section" style={{ marginBottom: 12 }} accessibilityRole="header">
+        Ajouter un créneau
       </Text>
-      <Text style={{ fontFamily: 'BricolageGrotesque_800ExtraBold' }} className="mb-7 text-[28px] leading-8 text-ink">
-        Mes disponibilités
-      </Text>
-
-      <Text style={{ fontFamily: 'BricolageGrotesque_800ExtraBold' }} className="mb-2.5 text-sm text-ink">
-        Type de créneau
-      </Text>
-      <Segmented
+      <SegmentedControl
         label="Type de créneau"
+        tone="surface"
         value={kind}
         onChange={setKind}
         options={[
@@ -135,163 +130,104 @@ export default function AvailabilityScreen() {
         ]}
       />
 
+      <Text variant="label" style={{ marginTop: 20, marginBottom: 4 }}>
+        {kind === 'recurring' ? 'Jours' : 'Dates'}
+      </Text>
+      <Text variant="caption" tone="ink2" style={{ marginBottom: 10 }}>
+        Tu peux en choisir plusieurs à la fois.
+      </Text>
       {kind === 'recurring' ? (
-        <>
-          <Text style={{ fontFamily: 'BricolageGrotesque_800ExtraBold' }} className="mb-1 text-sm text-ink">
-            Jours
-          </Text>
-          <Text className="mb-2.5 text-xs text-ink-soft">Vous pouvez en choisir plusieurs à la fois.</Text>
-          <View className="mb-4 flex-row flex-wrap">
-            {DAYS_OF_WEEK.map((day) => (
-              <Chip
-                key={day.value}
-                label={day.label}
-                selected={selectedDays.has(day.value)}
-                onPress={() => toggleDay(day.value)}
-              />
-            ))}
-          </View>
-        </>
+        <View style={{ flexDirection: 'row', flexWrap: 'wrap', gap: 8, marginBottom: 20 }}>
+          {DAYS_OF_WEEK.map((day) => (
+            <ChoiceChip key={day.value} label={day.label} selected={selectedDays.has(day.value)} onPress={() => toggleDay(day.value)} />
+          ))}
+        </View>
       ) : (
-        <>
-          <Text style={{ fontFamily: 'BricolageGrotesque_800ExtraBold' }} className="mb-1 text-sm text-ink">
-            Dates
-          </Text>
-          <Text className="mb-2.5 text-xs text-ink-soft">Vous pouvez en choisir plusieurs à la fois.</Text>
-          <ScrollView horizontal showsHorizontalScrollIndicator={false} className="mb-4">
-            <View className="flex-row">
-              {upcomingDates.map((d) => (
-                <Chip
-                  key={d.value}
-                  label={d.label}
-                  selected={selectedDates.has(d.value)}
-                  onPress={() => toggleDate(d.value)}
-                />
-              ))}
-            </View>
-          </ScrollView>
-        </>
+        <ScrollView
+          horizontal
+          showsHorizontalScrollIndicator={false}
+          style={{ marginHorizontal: -20, marginBottom: 20 }}
+          contentContainerStyle={{ paddingHorizontal: 20, gap: 8 }}
+        >
+          {upcomingDates.map((d) => (
+            <ChoiceChip key={d.value} label={d.label} selected={selectedDates.has(d.value)} onPress={() => toggleDate(d.value)} />
+          ))}
+        </ScrollView>
       )}
 
-      <Text style={{ fontFamily: 'BricolageGrotesque_800ExtraBold' }} className="mb-2.5 mt-1 text-sm text-ink">
-        Horaires
-      </Text>
-      <View className="flex-row gap-3">
-        <View className="flex-1">
-          <Select
-            label="De"
-            title="Heure de début"
-            value={startTime}
-            options={TIME_SELECT_OPTIONS}
-            onChange={setStartTime}
-          />
+      <View style={{ flexDirection: 'row', gap: 12 }}>
+        <View style={{ flex: 1 }}>
+          <Select label="De" title="Heure de début" value={startTime} options={TIME_SELECT_OPTIONS} onChange={setStartTime} />
         </View>
-        <View className="flex-1">
+        <View style={{ flex: 1 }}>
           <Select label="À" title="Heure de fin" value={endTime} options={TIME_SELECT_OPTIONS} onChange={setEndTime} />
         </View>
       </View>
 
-      <Text style={{ fontFamily: 'BricolageGrotesque_800ExtraBold' }} className="mb-2.5 text-sm text-ink">
-        Note (optionnel)
-      </Text>
-      <TextInput
-        className="mb-4 rounded-2xl border border-line bg-surface px-4 py-3.5 text-ink"
-        placeholder="Ex. Sport, libre pour sorties…"
+      <Field label="Note (facultatif)" placeholder="Ex. : sport, libre pour sortir…" value={label} onChangeText={setLabel} />
 
-        value={label}
-        onChangeText={setLabel}
+      {formError ? <InlineNotice tone="error" message={formError} /> : null}
+      <Button
+        label={`Ajouter ${count > 1 ? `ces ${count} créneaux` : 'ce créneau'}`}
+        icon="add"
+        loading={createMutation.isPending}
+        onPress={() => createMutation.mutate()}
+        style={{ marginTop: 8 }}
       />
 
-      {formError ? <Text className="mb-3 text-xs text-red-700">{formError}</Text> : null}
-
-      <PressableScale
-        onPress={() => createMutation.mutate()}
-        disabled={createMutation.isPending}
-        feedback="medium"
-        className="mb-8 items-center rounded-full bg-ink px-5 py-4"
-      >
-        {createMutation.isPending ? (
-          <ActivityIndicator className="text-paper" />
-        ) : (
-          <Text style={{ fontFamily: 'BricolageGrotesque_800ExtraBold' }} className="text-center text-base text-paper">
-            Ajouter ce{kind === 'recurring' && selectedDays.size > 1 ? 's' : ''} créneau
-            {kind === 'recurring' && selectedDays.size > 1 ? 'x' : kind === 'specific' && selectedDates.size > 1 ? 'x' : ''}
-          </Text>
-        )}
-      </PressableScale>
-
-      <Text style={{ fontFamily: 'BricolageGrotesque_800ExtraBold' }} className="mb-3 text-sm text-ink-soft">
+      <Text variant="section" style={{ marginTop: 36, marginBottom: 12 }} accessibilityRole="header">
         Créneaux enregistrés
       </Text>
-      {deleteMutation.isError ? (
-        <Text className="mb-2 text-xs text-red-700">
-          Suppression impossible : {(deleteMutation.error as Error).message}
-        </Text>
+      {deleteMutation.isError ? <InlineNotice tone="error" message={`Suppression impossible : ${errorMessage(deleteMutation.error)}`} /> : null}
+      {slotsQuery.isLoading ? <LoadingSkeleton preset="list" /> : null}
+      {slotsQuery.isSuccess && slots.length === 0 ? (
+        <EmptyState icon="time-outline" title="Aucun créneau pour l'instant" body="Ajoute ton premier créneau ci-dessus." />
       ) : null}
-      {slotsQuery.isLoading ? <ActivityIndicator className="text-primary" /> : null}
-      {slotsQuery.data?.length === 0 ? (
-        <Text className="text-sm text-ink-soft">Aucun créneau pour l'instant.</Text>
-      ) : null}
-      {slotsQuery.data?.map((slot, slotIndex) => {
+      {slots.map((slot, slotIndex) => {
         const when = slot.is_recurring
           ? DAYS_OF_WEEK.find((d) => d.value === slot.day_of_week)?.label
           : upcomingDates.find((d) => d.value === slot.specific_date)?.label ?? slot.specific_date;
+        const confirming = pendingDeleteId === slot.id;
         return (
           <Appear key={slot.id} index={slotIndex}>
-            <View className="mb-2.5 flex-row items-center justify-between rounded-2xl border border-line bg-surface p-4 shadow-sm">
-              <View className="flex-1 pr-3">
-                <Text style={{ fontFamily: 'Figtree_700Bold' }} className="text-sm text-ink">
-                  {when} · {formatTimeRange(slot.start_time, slot.end_time)}
-                  {slot.is_recurring ? ' (chaque semaine)' : ''}
-                </Text>
-                {slot.label ? <Text className="mt-0.5 text-xs text-ink-soft">{slot.label}</Text> : null}
-              </View>
-              {deleteMutation.isPending && deleteMutation.variables === slot.id ? (
-                <ActivityIndicator className="text-primary" size="small" />
-              ) : pendingDeleteId === slot.id ? (
-                <View className="flex-row items-center">
-                  <Pressable onPress={() => deleteMutation.mutate(slot.id)} className="mr-3">
-                    <Text style={{ fontFamily: 'Figtree_700Bold' }} className="text-sm text-red-700">
-                      Confirmer
-                    </Text>
-                  </Pressable>
-                  <Pressable onPress={() => setPendingDeleteId(null)}>
-                    <Text className="text-sm text-ink-soft">Annuler</Text>
-                  </Pressable>
-                </View>
-              ) : (
-                <Pressable onPress={() => setPendingDeleteId(slot.id)}>
-                  <Text style={{ fontFamily: 'Figtree_700Bold' }} className="text-sm text-accent">
-                    Supprimer
+            <Card padding={14} style={{ marginBottom: 10 }}>
+              <View style={{ flexDirection: 'row', alignItems: 'center' }}>
+                <View style={{ flex: 1, paddingRight: 8 }}>
+                  <Text variant="label">
+                    {when} · {formatTimeRange(slot.start_time, slot.end_time)}
                   </Text>
-                </Pressable>
-              )}
-            </View>
+                  <Text variant="caption" tone="ink2" style={{ marginTop: 2 }}>
+                    {[slot.is_recurring ? 'Chaque semaine' : 'Une seule fois', slot.label].filter(Boolean).join(' · ')}
+                  </Text>
+                </View>
+                {deleteMutation.isPending && deleteMutation.variables === slot.id ? (
+                  <ActivityIndicator />
+                ) : confirming ? (
+                  <View style={{ flexDirection: 'row' }}>
+                    <Button label="Supprimer" variant="destructive" size="sm" fullWidth={false} onPress={() => deleteMutation.mutate(slot.id)} />
+                    <Button label="Garder" variant="ghost" size="sm" fullWidth={false} onPress={() => setPendingDeleteId(null)} />
+                  </View>
+                ) : (
+                  <Button label="Retirer" variant="ghost" size="sm" fullWidth={false} onPress={() => setPendingDeleteId(slot.id)} />
+                )}
+              </View>
+            </Card>
           </Appear>
         );
       })}
 
-      {(slotsQuery.data?.length ?? 0) > 0 ? (
-        <>
-          <PressableScale
+      {slots.length > 0 ? (
+        <View style={{ marginTop: 16 }}>
+          <Button
+            label="Préparer ma semaine avec ces créneaux"
+            variant="outline"
+            icon="sparkles-outline"
+            loading={generateMutation.isPending}
             onPress={() => generateMutation.mutate()}
-            disabled={generateMutation.isPending}
-            feedback="medium"
-            className="mb-2 mt-6 items-center rounded-full bg-ink px-4 py-3.5"
-          >
-            {generateMutation.isPending ? (
-              <ActivityIndicator className="text-paper" />
-            ) : (
-              <Text style={{ fontFamily: 'BricolageGrotesque_800ExtraBold' }} className="text-paper">
-                ✨ Générer mon planning
-              </Text>
-            )}
-          </PressableScale>
-          {generateMutation.isError ? (
-            <Text className="text-xs text-red-700">{(generateMutation.error as Error).message}</Text>
-          ) : null}
-        </>
+          />
+          {generateMutation.isError ? <InlineNotice tone="error" message={errorMessage(generateMutation.error)} /> : null}
+        </View>
       ) : null}
-    </ScrollView>
+    </Screen>
   );
 }

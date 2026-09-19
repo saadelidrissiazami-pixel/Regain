@@ -1,163 +1,162 @@
 import { useQuery } from '@tanstack/react-query';
-import { Link, router, useLocalSearchParams } from 'expo-router';
-import { ActivityIndicator, Pressable, ScrollView, View } from 'react-native';
-import { Text } from '../../src/components/typography';
+import { router, useLocalSearchParams } from 'expo-router';
+import { View } from 'react-native';
+import type { ComponentProps } from 'react';
+
 import { BookSuggestionCard } from '../../src/components/activity/BookSuggestionCard';
 import { NeighborhoodHistoryCard } from '../../src/components/activity/NeighborhoodHistoryCard';
 import { WalkingLoopCard } from '../../src/components/activity/WalkingLoopCard';
-import { CategoryBadge } from '../../src/components/CategoryBadge';
+import { NextUpCard } from '../../src/components/cards/NextUpCard';
+import { EmptyState, ErrorState, LoadingSkeleton } from '../../src/components/feedback';
+import { Appear, Button, Card, ListRow, Screen, ScreenHeader, SectionHeader, Tag, Text, Thumbnail } from '../../src/components/ui';
 import { computeActivityFit, pickComplementaryActivities } from '../../src/features/planning/recommendation';
-import { fetchActivityById, fetchCatalog, fetchPreferences } from '../../src/lib/planning';
-import { useAuthStore } from '../../src/store/authStore';
+import { CATEGORY_COLORS, CATEGORY_ICONS, CATEGORY_LABELS } from '../../src/features/planning/types';
+import { usePlanning } from '../../src/hooks/usePlanning';
+import { fetchActivityById, fetchCatalog } from '../../src/lib/planning';
+import { imageForActivity } from '../../src/theme/images';
+import { useTheme } from '../../src/theme/ThemeProvider';
+
+type IconName = ComponentProps<typeof Thumbnail>['icon'];
 
 const NEIGHBORHOOD_HISTORY_TITLES = ['Explorer un nouveau quartier'];
 const WALKING_LOOP_TITLES = ['Marche rapide 30 min', 'Balade en nature'];
 const BOOK_TITLES = ["Lecture d'un livre"];
+const COST_LABELS = { gratuit: 'Gratuit', faible: 'Coût faible', modere: 'Coût modéré' } as const;
 
+/** Fiche activité : pourquoi elle t'est proposée, comment la faire, et la cocher une fois faite. */
 export default function ActivityDetailScreen() {
+  const theme = useTheme();
   const { id } = useLocalSearchParams<{ id: string }>();
-  const session = useAuthStore((s) => s.session);
-  const userId = session?.user.id;
+  const planning = usePlanning();
 
-  const activityQuery = useQuery({
-    queryKey: ['activity', id],
-    queryFn: () => fetchActivityById(id!),
-    enabled: !!id,
-  });
-
-  const preferencesQuery = useQuery({
-    queryKey: ['preferences', userId],
-    queryFn: () => fetchPreferences(userId!),
-    enabled: !!userId,
-  });
-
+  const activityQuery = useQuery({ queryKey: ['activity', id], queryFn: () => fetchActivityById(id!), enabled: !!id });
   const catalogQuery = useQuery({ queryKey: ['catalog'], queryFn: fetchCatalog });
 
   const activity = activityQuery.data;
-  const prefs = preferencesQuery.data;
+  const prefs = planning.preferences;
   const fit = activity && prefs ? computeActivityFit(activity, prefs) : null;
-  const complementary =
-    activity && prefs && catalogQuery.data ? pickComplementaryActivities(activity, catalogQuery.data, prefs) : [];
+  const complementary = activity && prefs && catalogQuery.data ? pickComplementaryActivities(activity, catalogQuery.data, prefs) : [];
+
+  // L'occurrence de cette activité dans la semaine en cours (la prochaine non faite, sinon la dernière faite).
+  const planned = planning.items.filter((item) => item.activities_catalog.id === id);
+  const occurrence = planned.find((item) => item.status !== 'realise' && item.date >= planning.today) ?? planned.find((item) => item.status === 'realise');
+  const done = occurrence?.status === 'realise';
 
   return (
-    <ScrollView className="flex-1 bg-paper px-6 pt-16" contentContainerStyle={{ paddingBottom: 60 }}>
-      <Pressable onPress={() => router.back()} className="mb-5">
-        <Text style={{ fontFamily: 'Figtree_700Bold' }} className="text-sm text-ink-soft">
-          ← Retour
-        </Text>
-      </Pressable>
+    <Screen
+      footer={
+        occurrence ? (
+          <Button
+            label={done ? 'Fait ✓ · Annuler' : "C'est fait"}
+            variant={done ? 'outline' : 'primary'}
+            icon={done ? undefined : 'checkmark'}
+            loading={planning.isToggling(occurrence)}
+            onPress={() => planning.toggle(occurrence)}
+          />
+        ) : undefined
+      }
+    >
+      <ScreenHeader title={activity?.title ?? 'Activité'} onBack={() => router.back()} size="headline" />
 
-      {activityQuery.isLoading ? <ActivityIndicator className="text-primary" /> : null}
-
-      {activity ? (
+      {activityQuery.isLoading ? (
+        <LoadingSkeleton preset="hero" />
+      ) : activityQuery.isError ? (
+        <ErrorState onRetry={() => activityQuery.refetch()} />
+      ) : !activity ? (
+        <EmptyState title="Activité introuvable" />
+      ) : (
         <>
-          <CategoryBadge category={activity.category} />
-          <Text style={{ fontFamily: 'BricolageGrotesque_800ExtraBold' }} className="mb-1 mt-3 text-[26px] leading-8 text-ink">
-            {activity.title}
-          </Text>
-          <Text className="mb-6 text-sm text-ink-soft">
-            {activity.duration_minutes} min · {activity.cost_level === 'gratuit' ? 'Gratuit' : activity.cost_level === 'faible' ? 'Coût faible' : 'Coût modéré'}
-          </Text>
+          <Appear>
+            <Thumbnail
+              source={imageForActivity(activity.category)}
+              width="100%"
+              height={180}
+              radius={22}
+              icon={CATEGORY_ICONS[activity.category] as IconName}
+              tint={CATEGORY_COLORS[activity.category]}
+            />
+            <View style={{ marginTop: 14 }}>
+              <Tag label={CATEGORY_LABELS[activity.category]} color={CATEGORY_COLORS[activity.category]} suffix={`${activity.duration_minutes} min · ${COST_LABELS[activity.cost_level]}`} />
+            </View>
+            {activity.instructions ? (
+              <Text variant="body" tone="ink2" style={{ marginTop: 10 }}>
+                {activity.instructions}
+              </Text>
+            ) : null}
+          </Appear>
 
           {fit ? (
-            <View className="mb-6 rounded-2xl border border-line bg-surface p-4 shadow-sm">
-              <Text style={{ fontFamily: 'BricolageGrotesque_800ExtraBold' }} className="mb-2.5 text-sm text-ink">
-                Pour vous, précisément
-              </Text>
-
-              <Text className="text-sm text-ink-soft">
-                {fit.matchedGoalLabels.length > 0 ? (
-                  <>
-                    🎯 Sert vos objectifs :{' '}
-                    <Text style={{ fontFamily: 'Figtree_700Bold' }} className="text-ink">
-                      {fit.matchedGoalLabels.join(', ')}
-                    </Text>
-                  </>
-                ) : (
-                  "🎯 Ne recoupe aucun de vos objectifs actuels — à tester si l'envie est là."
-                )}
-              </Text>
-
-              <Text className="mt-2 text-sm text-ink-soft">
-                {fit.goodEnergySlotLabels.length === 3 ? (
-                  '⚡️ Adaptée à votre énergie, à tout moment de la journée.'
-                ) : fit.goodEnergySlotLabels.length > 0 ? (
-                  <>
-                    ⚡️ Plutôt bien adaptée le{' '}
-                    <Text style={{ fontFamily: 'Figtree_700Bold' }} className="text-ink">
-                      {fit.goodEnergySlotLabels.join(', ').toLowerCase()}
-                    </Text>
-                    , selon votre énergie habituelle.
-                  </>
-                ) : (
-                  '⚡️ Demande plus d’énergie que votre niveau habituel — mieux un jour en forme.'
-                )}
-              </Text>
-
-              <Text className="mt-2 text-sm text-ink-soft">
-                {fit.budgetFits ? '💶 Correspond à votre budget.' : '💶 Un peu au-dessus de votre budget habituel.'}
-              </Text>
-            </View>
+            <Appear index={1}>
+              <Card variant="tinted" style={{ marginTop: 20 }}>
+                <Text variant="label" style={{ marginBottom: 6 }}>
+                  Pourquoi pour toi
+                </Text>
+                <ListRow
+                  icon="flag-outline"
+                  compact
+                  title={fit.matchedGoalLabels.length > 0 ? `Sert tes objectifs : ${fit.matchedGoalLabels.join(', ').toLowerCase()}` : 'À tester si l’envie est là'}
+                />
+                <ListRow
+                  icon="flash-outline"
+                  compact
+                  title={
+                    fit.goodEnergySlotLabels.length === 3
+                      ? 'Adaptée à ton énergie, à tout moment'
+                      : fit.goodEnergySlotLabels.length > 0
+                        ? `Plutôt adaptée le ${fit.goodEnergySlotLabels.join(', ').toLowerCase()}`
+                        : 'Demande un peu plus d’énergie : mieux un jour en forme'
+                  }
+                />
+                <ListRow icon="wallet-outline" compact title={fit.budgetFits ? 'Correspond à ton budget' : 'Un peu au-dessus de ton budget habituel'} />
+              </Card>
+            </Appear>
           ) : null}
 
           {activity.steps.length > 0 ? (
-            <>
-              <Text style={{ fontFamily: 'BricolageGrotesque_800ExtraBold' }} className="mb-3 text-sm text-ink-soft">
-                Étapes
-              </Text>
+            <View style={{ marginTop: 28 }}>
+              <SectionHeader title="Comment faire" />
               {activity.steps.map((step, i) => (
-                <View key={i} className="mb-3 flex-row items-start rounded-2xl border border-line bg-surface p-4 shadow-sm">
-                  <View className="mr-3.5 h-14 w-14 items-center justify-center rounded-2xl bg-primary-soft">
-                    <Text className="text-3xl">{step.icon}</Text>
-                  </View>
-                  <View className="flex-1">
-                    <Text style={{ fontFamily: 'Figtree_700Bold' }} className="text-base text-ink">
-                      {i + 1}. {step.title}
-                    </Text>
-                    <Text className="mt-1 text-sm leading-5 text-ink-soft">{step.description}</Text>
-                  </View>
-                </View>
+                <Appear key={i} index={i + 2}>
+                  <Card padding={14} style={{ marginBottom: 10 }}>
+                    <View style={{ flexDirection: 'row', alignItems: 'flex-start' }}>
+                      <View
+                        style={{ width: 48, height: 48, borderRadius: 14, backgroundColor: theme.sage100, alignItems: 'center', justifyContent: 'center', marginRight: 12 }}
+                      >
+                        <Text variant="section">{step.icon}</Text>
+                      </View>
+                      <View style={{ flex: 1 }}>
+                        <Text variant="label">
+                          {i + 1}. {step.title}
+                        </Text>
+                        <Text variant="bodySm" tone="ink2" style={{ marginTop: 4 }}>
+                          {step.description}
+                        </Text>
+                      </View>
+                    </View>
+                  </Card>
+                </Appear>
               ))}
-            </>
-          ) : (
-            <View className="rounded-2xl border border-line bg-surface p-4 shadow-sm">
-              <Text className="text-sm text-ink-soft">
-                Pas de fiche détaillée pour cette activité — laissez-vous guider par le titre, à votre rythme.
-              </Text>
             </View>
-          )}
+          ) : null}
 
-          {NEIGHBORHOOD_HISTORY_TITLES.includes(activity.title) ? <NeighborhoodHistoryCard /> : null}
-          {WALKING_LOOP_TITLES.includes(activity.title) ? (
-            <WalkingLoopCard durationMinutes={activity.duration_minutes} />
-          ) : null}
-          {BOOK_TITLES.includes(activity.title) && prefs ? (
-            <BookSuggestionCard primaryGoals={prefs.primary_goals} />
-          ) : null}
+          <View style={{ marginTop: 12 }}>
+            {NEIGHBORHOOD_HISTORY_TITLES.includes(activity.title) ? <NeighborhoodHistoryCard /> : null}
+            {WALKING_LOOP_TITLES.includes(activity.title) ? <WalkingLoopCard durationMinutes={activity.duration_minutes} /> : null}
+            {BOOK_TITLES.includes(activity.title) && prefs ? <BookSuggestionCard primaryGoals={prefs.primary_goals} /> : null}
+          </View>
 
           {complementary.length > 0 ? (
-            <>
-              <Text style={{ fontFamily: 'BricolageGrotesque_800ExtraBold' }} className="mb-3 mt-6 text-sm text-ink-soft">
-                Dans la même veine
-              </Text>
+            <View style={{ marginTop: 16 }}>
+              <SectionHeader title="Dans la même veine" />
               {complementary.map((a) => (
-                <Link key={a.id} href={`/activity/${a.id}`} asChild>
-                  <Pressable className="mb-2.5 flex-row items-center rounded-2xl border border-line bg-surface p-4 shadow-sm">
-                    <View className="flex-1 pr-3">
-                      <CategoryBadge category={a.category} />
-                      <Text style={{ fontFamily: 'Figtree_700Bold' }} className="mt-2 text-base text-ink">
-                        {a.title}
-                      </Text>
-                      <Text className="mt-0.5 text-xs text-ink-soft">{a.duration_minutes} min</Text>
-                    </View>
-                    <Text className="text-base text-primary">→</Text>
-                  </Pressable>
-                </Link>
+                <View key={a.id} style={{ marginBottom: 10 }}>
+                  <NextUpCard when="Suggestion" activity={a} onPress={() => router.push(`/activity/${a.id}`)} />
+                </View>
               ))}
-            </>
+            </View>
           ) : null}
         </>
-      ) : null}
-    </ScrollView>
+      )}
+    </Screen>
   );
 }

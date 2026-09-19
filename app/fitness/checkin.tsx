@@ -1,13 +1,12 @@
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { router } from 'expo-router';
 import { useState } from 'react';
-import { ActivityIndicator, Pressable, ScrollView, View } from 'react-native';
+import { View } from 'react-native';
 
 import { AdjustmentsList } from '../../src/components/AdjustmentsList';
-import { Appear, haptic, PressableScale } from '../../src/components/motion';
-import { Segmented } from '../../src/components/Segmented';
-import { Select } from '../../src/components/Select';
-import { Text, TextInput } from '../../src/components/typography';
+import { CoachCard } from '../../src/components/cards/CoachCard';
+import { errorMessage, InlineNotice, LoadingSkeleton } from '../../src/components/feedback';
+import { Appear, Button, Card, Field, haptic, Screen, ScreenHeader, SegmentedControl, Select, Text } from '../../src/components/ui';
 import { summarizeAdjustments, type PlanAdjustment } from '../../src/features/fitness/planDiff';
 import type { FitnessPlan } from '../../src/features/fitness/types';
 import { createCheckin, createFitnessPlan, fetchFitnessProfile, fetchLatestFitnessPlan, updateFitnessWeight } from '../../src/lib/fitness';
@@ -42,7 +41,7 @@ export default function FitnessCheckinScreen() {
     mutationFn: async (): Promise<{ plan: FitnessPlan; adjustments: PlanAdjustment[] }> => {
       if (!userId || !profile) throw new Error('Profil forme introuvable.');
       if (sessionsDone === null || energy === null) {
-        throw new Error('Indiquez vos séances faites et votre niveau d’énergie.');
+        throw new Error('Indique tes séances faites et ton niveau d’énergie.');
       }
       const weight = weightText.trim() ? Number(weightText.trim().replace(',', '.')) : null;
       if (weight !== null && (!Number.isFinite(weight) || weight < 35 || weight > 250)) {
@@ -80,6 +79,7 @@ export default function FitnessCheckinScreen() {
       queryClient.invalidateQueries({ queryKey: ['fitnessProfile', userId] });
       queryClient.invalidateQueries({ queryKey: ['fitnessCheckins', userId] });
       queryClient.invalidateQueries({ queryKey: ['fitnessPlans', userId] });
+      queryClient.invalidateQueries({ queryKey: ['fitnessPlanCount', userId] });
     },
   });
 
@@ -90,130 +90,87 @@ export default function FitnessCheckinScreen() {
   // Après l'envoi : ce que le bilan a changé, avant de revenir au programme.
   if (result) {
     return (
-      <ScrollView className="flex-1 bg-paper px-6 pt-16" contentContainerStyle={{ paddingBottom: 60 }}>
+      <Screen footer={<Button label="Voir mon programme" onPress={() => router.back()} />}>
         <Appear>
-          <Text className="mb-3 text-4xl">✅</Text>
-          <Text style={{ fontFamily: 'BricolageGrotesque_800ExtraBold' }} className="mb-1 text-[28px] leading-8 text-ink">
-            Bilan pris en compte
-          </Text>
-          <Text className="mb-5 text-sm text-ink-soft">
-            Votre programme de la semaine, vos menus et votre liste de courses viennent d'être ajustés.
-          </Text>
+          <ScreenHeader title="Bilan pris en compte" subtitle="Ton programme, tes menus et ta liste de courses viennent d'être adaptés." />
         </Appear>
-
-        <View className="mb-4 rounded-2xl border border-line bg-surface p-4 shadow-sm">
+        <Card>
           <AdjustmentsList adjustments={result.adjustments} />
-        </View>
-
+        </Card>
         {result.plan.coach_notes ? (
           <Appear index={1}>
-            <View className="mb-5 rounded-2xl bg-calm-soft p-4">
-              <Text style={{ fontFamily: 'Figtree_700Bold' }} className="mb-1 text-xs text-calm">
-                Le mot de votre coach
-              </Text>
-              <Text className="text-sm leading-5 text-ink">{result.plan.coach_notes}</Text>
+            <View style={{ marginTop: 16 }}>
+              <CoachCard message={result.plan.coach_notes} />
             </View>
           </Appear>
         ) : null}
-
-        <PressableScale
-          onPress={() => router.back()}
-          feedback="medium"
-          className="items-center rounded-full bg-ink px-5 py-4"
-        >
-          <Text style={{ fontFamily: 'BricolageGrotesque_800ExtraBold' }} className="text-center text-base text-paper">
-            Voir mon programme
-          </Text>
-        </PressableScale>
-      </ScrollView>
+      </Screen>
     );
   }
 
   return (
-    <ScrollView className="flex-1 bg-paper px-6 pt-16" contentContainerStyle={{ paddingBottom: 60 }}>
-      <Pressable onPress={() => router.back()} className="mb-5">
-        <Text style={{ fontFamily: 'Figtree_700Bold' }} className="text-sm text-ink-soft">
-          ← Retour
-        </Text>
-      </Pressable>
-      <Text style={{ fontFamily: 'Figtree_700Bold' }} className="mb-1 text-sm text-primary">
-        Coach forme
-      </Text>
-      <Text style={{ fontFamily: 'BricolageGrotesque_800ExtraBold' }} className="mb-2 text-[28px] leading-8 text-ink">
-        Bilan de la semaine
-      </Text>
-      <Text className="mb-5 text-sm text-ink-soft">
-        Quelques réponses honnêtes, et votre coach ajuste le programme de la semaine qui vient. Rien n&apos;est un
-        échec : une semaine chargée, ça arrive.
-      </Text>
+    <Screen
+      keyboard
+      footer={
+        <View>
+          {submitMutation.isError ? <InlineNotice tone="error" message={errorMessage(submitMutation.error)} /> : null}
+          <Button
+            label={submitMutation.isPending ? 'Ajustement de ton programme…' : 'Envoyer mon bilan'}
+            loading={submitMutation.isPending}
+            disabled={!profile}
+            onPress={() => submitMutation.mutate()}
+            style={{ marginTop: submitMutation.isError ? 10 : 0 }}
+          />
+        </View>
+      }
+    >
+      <ScreenHeader
+        overline="Ton coach forme"
+        title="Bilan de la semaine"
+        subtitle="Quelques réponses honnêtes, et ton coach ajuste la semaine qui vient. Une semaine chargée, ça arrive."
+        onBack={() => router.back()}
+      />
 
-      {profileQuery.isLoading ? <ActivityIndicator className="text-primary" /> : null}
+      {profileQuery.isLoading ? <LoadingSkeleton preset="list" /> : null}
 
-      <Segmented
+      <Text variant="label" style={{ marginBottom: 8 }}>
+        Séances faites
+      </Text>
+      <SegmentedControl
         label="Séances faites"
+        tone="surface"
         value={sessionsDone ?? -1}
         onChange={setSessionsDone}
         options={Array.from({ length: plannedSessions + 1 }, (_, n) => ({ value: n, label: String(n) }))}
       />
-      <Text className="mb-4 text-xs text-ink-soft">Sur {plannedSessions} prévues. Zéro aussi est une réponse.</Text>
+      <Text variant="caption" tone="ink2" style={{ marginTop: 6, marginBottom: 20 }}>
+        Sur {plannedSessions} prévues. Zéro aussi est une réponse.
+      </Text>
 
       <Select
-        label="Votre énergie cette semaine"
-        title="Comment avez-vous tenu ?"
+        label="Ton énergie cette semaine"
+        title="Comment as-tu tenu ?"
         placeholder="Choisir"
         value={energy}
         options={ENERGY_LEVELS}
         onChange={setEnergy}
       />
 
-      <Text style={{ fontFamily: 'BricolageGrotesque_800ExtraBold' }} className="mb-2.5 text-sm text-ink">
-        Poids actuel (optionnel)
-      </Text>
-      <TextInput
-        className="mb-4 rounded-2xl border border-line bg-surface px-4 py-3.5 text-ink"
+      <Field
+        label="Poids actuel (facultatif)"
         placeholder={profile ? `Dernier poids : ${profile.weight_kg} kg` : 'Poids (kg)'}
-
         keyboardType="decimal-pad"
         value={weightText}
         onChangeText={setWeightText}
       />
 
-      <Text style={{ fontFamily: 'BricolageGrotesque_800ExtraBold' }} className="mb-2.5 text-sm text-ink">
-        Un mot pour votre coach (optionnel)
-      </Text>
-      <TextInput
-        className="mb-5 min-h-[90px] rounded-2xl border border-line bg-surface p-4 text-ink"
-        style={{ textAlignVertical: 'top' }}
+      <Field
+        label="Un mot pour ton coach (facultatif)"
         multiline
         placeholder="Ce qui a été facile, difficile, une douleur, une envie…"
-
         value={note}
         onChangeText={setNote}
       />
-
-      {submitMutation.isError ? (
-        <Text className="mb-3 text-xs text-red-700">{(submitMutation.error as Error).message}</Text>
-      ) : null}
-
-      {submitMutation.isPending ? (
-        <View className="flex-row items-center rounded-2xl bg-surface p-4">
-          <ActivityIndicator className="text-primary" />
-          <Text className="ml-3 flex-1 text-sm text-ink-soft">
-            Ajustement de votre programme…
-          </Text>
-        </View>
-      ) : (
-        <PressableScale
-          onPress={() => submitMutation.mutate()}
-          disabled={!profile}
-          feedback="medium"
-          className="items-center rounded-full bg-ink px-5 py-4"
-        >
-          <Text style={{ fontFamily: 'BricolageGrotesque_800ExtraBold' }} className="text-center text-base text-paper">
-            Envoyer mon bilan
-          </Text>
-        </PressableScale>
-      )}
-    </ScrollView>
+    </Screen>
   );
 }

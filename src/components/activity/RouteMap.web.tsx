@@ -2,7 +2,8 @@ import { View } from 'react-native';
 import Svg, { Circle, Polyline } from 'react-native-svg';
 
 import type { Coords } from '../../lib/location';
-import { Text } from '../typography';
+import { useTheme } from '../../theme/ThemeProvider';
+import { Text } from '../ui/Text';
 
 const WIDTH = 320;
 const HEIGHT = 220;
@@ -11,6 +12,7 @@ const PADDING = 18;
 // react-native-maps n'existe pas sur le web : l'aperçu navigateur montre un schéma fidèle du
 // tracé (mêmes coordonnées, proportions conservées) au lieu d'une carte interactive.
 export function RouteMap({ path, start }: { path: Coords[]; start: Coords }) {
+  const theme = useTheme();
   const lats = path.map((p) => p.latitude);
   const lons = path.map((p) => p.longitude);
   const minLat = Math.min(...lats);
@@ -33,12 +35,12 @@ export function RouteMap({ path, start }: { path: Coords[]; start: Coords }) {
   const startPoint = project(start);
 
   return (
-    <View className="mb-3 overflow-hidden rounded-2xl border border-line bg-calm-soft">
+    <View style={{ marginBottom: 12, overflow: 'hidden', borderRadius: 16, borderWidth: 1, borderColor: theme.line, backgroundColor: theme.sage100 }}>
       <Svg width="100%" height={HEIGHT} viewBox={`0 0 ${WIDTH} ${HEIGHT}`}>
-        <Polyline points={points.join(' ')} fill="none" stroke="#FF6B57" strokeWidth={3} strokeLinejoin="round" />
-        <Circle cx={startPoint.x} cy={startPoint.y} r={7} fill="#1E9C86" stroke="#FFFFFF" strokeWidth={2} />
+        <Polyline points={points.join(' ')} fill="none" stroke={theme.primary600} strokeWidth={3} strokeLinejoin="round" />
+        <Circle cx={startPoint.x} cy={startPoint.y} r={7} fill={theme.orange} stroke="#FFFFFF" strokeWidth={2} />
       </Svg>
-      <Text className="px-3 pb-2 text-[11px] text-ink-soft">
+      <Text variant="caption" tone="ink2" style={{ paddingHorizontal: 12, paddingBottom: 8 }}>
         Aperçu du tracé — la carte interactive s&apos;affiche sur l&apos;application mobile.
       </Text>
     </View>

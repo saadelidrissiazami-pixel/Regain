@@ -56,23 +56,42 @@ La configuration des profils de build est déjà prête dans [`eas.json`](eas.js
 ## Structure du projet
 
 ```
-app/                    Écrans Expo Router
-  (tabs)/               Planning, Coach, Bien-être, Suivi, Profil
+app/                    Routes Expo Router (fichiers courts qui renvoient vers src/screens)
+  (tabs)/               Planning, Bien-être, Forme, Suivi, Profil
   (auth)/               Connexion
-  onboarding/           Parcours d'accueil
-  availability/         Gestion des disponibilités
-  wellbeing/[slug]/      Lecteur de séance bien-être
-  paywall/               Écran d'abonnement Premium
+  onboarding/           Accueil en 4 étapes (prénom, objectifs, rythme, budget)
+  planning/             Semaine / mois, ajout d'une activité
+  fitness/              Programme, nutrition, lecteur d'entraînement, bilan, questionnaire
+  wellbeing/            Séance immersive, thèmes, recherche, journal
+  profile/ settings/    Mes objectifs, paramètres
+  availability/         Disponibilités
+  paywall/              Abonnement Premium
 src/
-  components/           Composants UI partagés (Chip, CategoryBadge, ProgressRing...)
-  features/              Logique par domaine (planning, availability, onboarding, wellbeing)
-  lib/                   Supabase, moteur de planning, personnalisation, calendrier, coach, achats
-  styles/                Tailwind / NativeWind
+  theme/                Design system : couleurs (clair / sombre), typo, espacements, rayons, ombres, images
+  components/ui/        Primitives (Screen, ScreenHeader, Card, Button, SegmentedControl, Sheet, Tag…)
+  components/cards/     Cartes métier (NowCard, WorkoutHeroCard, RecommendationHero, StatCard, MoodScale…)
+  components/feedback/  États vides, erreurs, squelettes de chargement, messages
+  screens/              Écrans complets, par domaine
+  hooks/                Données partagées entre écrans (usePlanning, useFitness, useWellbeing…)
+  features/             Logique pure et testée par domaine
+  lib/                  Supabase, calendrier, notifications, achats
 supabase/
   migrations/            Schéma SQL versionné (à exécuter dans l'ordre)
   functions/coach/        Edge Function du coach IA (proxy sécurisé vers Anthropic)
 content/                 Bibliothèque bien-être statique (méditation, respiration, journaling...)
 ```
+
+## Design system
+
+- Couleurs : `src/theme/colors.ts` (palettes claire et sombre, contrastes vérifiés dans `tests/palettes.test.ts`).
+  Les classes Tailwind (`bg-surface`, `text-ink-2`…) lisent les mêmes variables ; `useTheme()` les donne en JS.
+- Typographie : SF Pro (police système) sur iOS, Inter sur Android et le web, via `<Text variant="…">`.
+- Réglage Clair / Sombre / Auto dans Profil → Paramètres.
+- Photos d'ambiance : à déposer dans `assets/images/` puis déclarer dans `src/theme/images.ts`.
+  Sans photo, un dégradé sauge prend le relais.
+- La migration `0022_coach_redesign.sql` ajoute le sommeil habituel, le créneau et les jours
+  d'entraînement, et le journal des séances de musculation. Tant qu'elle n'est pas appliquée,
+  ces informations restent simplement masquées.
 
 ## État d'avancement
 
