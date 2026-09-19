@@ -1,10 +1,12 @@
 import { Platform } from 'react-native';
 
 import type { AvailabilitySlot } from '../features/availability/types';
+import { TRIAL_REMINDER_DAYS_BEFORE, trialReminderDate } from '../features/subscriptions/packages';
 import { activityStartDate } from '../features/planning/schedule';
 import type { PlannedActivityRow } from './planning';
 
 const MORNING_NUDGE_ID = 'morning-nudge';
+const TRIAL_REMINDER_ID = 'trial-reminder';
 const ACTIVITY_PREFIX = 'activity-';
 const REMINDER_LEAD_MINUTES = 15;
 
@@ -101,4 +103,31 @@ export async function scheduleActivityReminders(items: PlannedActivityRow[], ava
       trigger: { type: Notifications.SchedulableTriggerInputTypes.DATE, date: reminderDate },
     });
   }
+}
+
+/**
+ * Prévient deux jours avant la fin de l'essai Premium, pour que personne ne découvre un
+ * débit annuel par surprise. Identifiant fixe : un seul rappel, remplacé s'il existe déjà.
+ */
+export async function scheduleTrialReminder(trialEnd: Date): Promise<boolean> {
+  if (!isSupported) return false;
+  const date = trialReminderDate(trialEnd, new Date());
+  if (!date) return false;
+
+  const Notifications = await getNotifications();
+  configureHandler(Notifications);
+  const { status } = await Notifications.requestPermissionsAsync();
+  if (status !== 'granted') return false;
+
+  await Notifications.cancelScheduledNotificationAsync(TRIAL_REMINDER_ID).catch(() => {});
+  await Notifications.scheduleNotificationAsync({
+    identifier: TRIAL_REMINDER_ID,
+    content: {
+      title: 'Regain Premium',
+      body: `Votre essai gratuit se termine dans ${TRIAL_REMINDER_DAYS_BEFORE} jours. Pour ne pas être débité, annulez depuis Profil → Gérer mon abonnement.`,
+      data: { route: '/(tabs)/profile' },
+    },
+    trigger: { type: Notifications.SchedulableTriggerInputTypes.DATE, date },
+  });
+  return true;
 }

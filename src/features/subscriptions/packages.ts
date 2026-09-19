@@ -110,3 +110,34 @@ export function describePackage(pkg: PackageLike, savingsPercent: number | null)
 export function defaultPackage<T extends PackageLike>(packages: T[]): T | null {
   return sortPackages(packages)[0] ?? null;
 }
+
+const DAYS_PER_UNIT: Record<string, number> = { DAY: 1, WEEK: 7, MONTH: 30, YEAR: 365 };
+
+/** Durée de l'essai gratuit en jours ; null si l'offre de lancement n'est pas gratuite. */
+export function freeTrialDays(intro: IntroPriceLike | null): number | null {
+  if (!intro || intro.price !== 0) return null;
+  const perUnit = DAYS_PER_UNIT[intro.periodUnit];
+  if (!perUnit) return null;
+  return intro.periodNumberOfUnits * Math.max(1, intro.cycles) * perUnit;
+}
+
+/** Le rappel de fin d'essai part deux jours avant le premier paiement. */
+export const TRIAL_REMINDER_DAYS_BEFORE = 2;
+
+export type TrialStep = { when: string; what: string };
+
+/** Déroulé de l'essai montré avant l'achat : rien de caché sur la date du premier paiement. */
+export function trialTimeline(days: number, price: string): TrialStep[] {
+  const reminderDay = Math.max(1, days - TRIAL_REMINDER_DAYS_BEFORE);
+  return [
+    { when: "Aujourd'hui", what: 'Tout Premium est débloqué' },
+    { when: `Jour ${reminderDay}`, what: "On vous prévient que l'essai se termine" },
+    { when: `Jour ${days}`, what: `Premier paiement de ${price}, sauf si vous annulez avant` },
+  ];
+}
+
+/** Date du rappel de fin d'essai ; null s'il est déjà trop tard pour prévenir. */
+export function trialReminderDate(trialEnd: Date, now: Date): Date | null {
+  const reminder = new Date(trialEnd.getTime() - TRIAL_REMINDER_DAYS_BEFORE * 86_400_000);
+  return reminder.getTime() > now.getTime() ? reminder : null;
+}

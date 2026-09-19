@@ -15,6 +15,10 @@ export function usePremium() {
   // le Premium est débloqué en développement pour pouvoir tester les fonctionnalités payantes.
   // Dès qu'une clé est présente dans un build (Test Store compris), c'est le vrai droit qui compte ;
   // un build de production n'y donne jamais accès sans abonnement.
+  // EXPO_PUBLIC_SIMULATE_FREE=1 : voir l'app comme un utilisateur gratuit (cadenas, paywall).
+  if (__DEV__ && process.env.EXPO_PUBLIC_SIMULATE_FREE === '1') {
+    return { isPremium: false, isLoading: false, isPurchasesConfigured, isDevUnlock: false };
+  }
   if (__DEV__ && !isPurchasesConfigured) {
     return { isPremium: true, isLoading: false, isPurchasesConfigured, isDevUnlock: true };
   }

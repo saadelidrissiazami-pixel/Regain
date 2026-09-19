@@ -2,6 +2,7 @@ import { Platform } from 'react-native';
 import type { CustomerInfo, CustomerInfoUpdateListener, PurchasesPackage } from 'react-native-purchases';
 
 import { PREMIUM_ENTITLEMENT_ID, STORE_SUBSCRIPTIONS_URL } from '../config/subscriptions';
+import { scheduleTrialReminder } from './notifications';
 import { isExpoGo, isWeb } from './runtime';
 
 const IOS_KEY = process.env.EXPO_PUBLIC_REVENUECAT_IOS_KEY;
@@ -36,6 +37,19 @@ export function hasPremium(info: CustomerInfo): boolean {
   return info.entitlements.active[PREMIUM_ENTITLEMENT_ID] !== undefined;
 }
 
+/** Fin de l'essai gratuit en cours ; null hors période d'essai. */
+export function trialEndsAt(info: CustomerInfo): Date | null {
+  const premium = info.entitlements.active[PREMIUM_ENTITLEMENT_ID];
+  if (!premium || premium.periodType?.toUpperCase() !== 'TRIAL' || !premium.expirationDate) return null;
+  return new Date(premium.expirationDate);
+}
+
+/** Programme le rappel « votre essai se termine » si l'utilisateur est en période d'essai. */
+function remindIfTrial(info: CustomerInfo) {
+  const end = trialEndsAt(info);
+  if (end) scheduleTrialReminder(end).catch(() => {});
+}
+
 export async function initPurchases(userId: string) {
   if (!isPurchasesConfigured || configuredUserId === userId) return;
   const Purchases = await getPurchases();
@@ -59,7 +73,10 @@ export async function logOutPurchases() {
 export function onPremiumChange(listener: (premium: boolean) => void): () => void {
   if (!isPurchasesConfigured) return () => {};
   let active = true;
-  const registered: CustomerInfoUpdateListener = (info) => listener(hasPremium(info));
+  const registered: CustomerInfoUpdateListener = (info) => {
+    remindIfTrial(info);
+    listener(hasPremium(info));
+  };
   getPurchases()
     .then((Purchases) => {
       if (active) Purchases.addCustomerInfoUpdateListener(registered);
@@ -88,6 +105,7 @@ export async function purchasePackage(pkg: PurchasesPackage): Promise<PurchaseOu
   const Purchases = await getPurchases();
   try {
     const { customerInfo } = await Purchases.purchasePackage(pkg);
+    remindIfTrial(customerInfo);
     return hasPremium(customerInfo) ? 'premium' : 'not-activated';
   } catch (error) {
     const { code, userCancelled } = error as { code?: string; userCancelled?: boolean | null };
@@ -100,6 +118,12 @@ export async function purchasePackage(pkg: PurchasesPackage): Promise<PurchaseOu
 export async function restorePurchases(): Promise<boolean> {
   const Purchases = await getPurchases();
   return hasPremium(await Purchases.restorePurchases());
+}
+
+export async function fetchTrialEndsAt(): Promise<Date | null> {
+  if (!isPurchasesConfigured) return null;
+  const Purchases = await getPurchases();
+  return trialEndsAt(await Purchases.getCustomerInfo());
 }
 
 export async function isPremium(): Promise<boolean> {
