@@ -7,6 +7,7 @@ import type {
   FitnessProfile,
   FitnessProfileInput,
 } from '../features/fitness/types';
+import { isMissingSchema } from './schemaCompat';
 import { supabase } from './supabase';
 
 export async function fetchFitnessProfile(userId: string): Promise<FitnessProfile | null> {
@@ -98,4 +99,77 @@ export async function createFitnessPlan(
     .single();
   if (error) throw error;
   return data as FitnessPlan;
+}
+
+export type TimeSlot = 'matin' | 'apres_midi' | 'soir';
+
+/** Quand l'utilisateur s'entraîne (0 = lundi … 6 = dimanche). */
+export type TrainingSchedule = { training_slot: TimeSlot | null; training_days: number[] | null };
+
+const EMPTY_SCHEDULE: TrainingSchedule = { training_slot: null, training_days: null };
+
+export async function fetchTrainingSchedule(userId: string): Promise<TrainingSchedule> {
+  const { data, error } = await supabase
+    .from('fitness_profiles')
+    .select('training_slot, training_days')
+    .eq('user_id', userId)
+    .maybeSingle();
+  if (error) {
+    if (isMissingSchema(error)) return EMPTY_SCHEDULE;
+    throw error;
+  }
+  return (data as TrainingSchedule | null) ?? EMPTY_SCHEDULE;
+}
+
+export async function saveTrainingSchedule(userId: string, schedule: TrainingSchedule) {
+  const { error } = await supabase.from('fitness_profiles').update(schedule).eq('user_id', userId);
+  if (error && !isMissingSchema(error)) throw error;
+}
+
+export type WorkoutLog = {
+  id: string;
+  plan_id: string | null;
+  session_index: number;
+  focus: string | null;
+  duration_minutes: number | null;
+  completed_at: string;
+};
+
+/** Séances faites dans le lecteur depuis une date (ISO), des plus récentes aux plus anciennes. */
+export async function fetchWorkoutLogs(userId: string, sinceIso: string): Promise<WorkoutLog[]> {
+  const { data, error } = await supabase
+    .from('workout_logs')
+    .select('id, plan_id, session_index, focus, duration_minutes, completed_at')
+    .eq('user_id', userId)
+    .gte('completed_at', sinceIso)
+    .order('completed_at', { ascending: false });
+  if (error) {
+    if (isMissingSchema(error)) return [];
+    throw error;
+  }
+  return data as WorkoutLog[];
+}
+
+export async function logWorkout(
+  userId: string,
+  input: { planId: string; sessionIndex: number; focus: string; durationMinutes: number }
+) {
+  const { error } = await supabase.from('workout_logs').insert({
+    user_id: userId,
+    plan_id: input.planId,
+    session_index: input.sessionIndex,
+    focus: input.focus,
+    duration_minutes: Math.max(1, Math.round(input.durationMinutes)),
+  });
+  if (error && !isMissingSchema(error)) throw error;
+}
+
+/** Nombre de programmes générés : sert de numéro de semaine du programme. */
+export async function countFitnessPlans(userId: string): Promise<number> {
+  const { count, error } = await supabase
+    .from('fitness_plans')
+    .select('id', { count: 'exact', head: true })
+    .eq('user_id', userId);
+  if (error) throw error;
+  return count ?? 0;
 }

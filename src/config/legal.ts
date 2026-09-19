@@ -11,3 +11,6 @@ export const SUBSCRIPTION_DISCLOSURE =
   "L'abonnement est renouvelé automatiquement sauf résiliation au moins 24 h avant la fin de la période en cours. " +
   'Le paiement est débité sur votre compte App Store ou Google Play à la confirmation. ' +
   'Vous pouvez gérer ou résilier votre abonnement à tout moment depuis les réglages de votre compte.';
+
+/** Adresse de contact affichée dans Profil → Aide & support (facultative). */
+export const SUPPORT_EMAIL = process.env.EXPO_PUBLIC_SUPPORT_EMAIL ?? '';

@@ -1,15 +1,16 @@
 import { zodResolver } from '@hookform/resolvers/zod';
+import { Ionicons } from '@expo/vector-icons';
+import { router } from 'expo-router';
 import { useState } from 'react';
 import { Controller, useForm } from 'react-hook-form';
-import { ActivityIndicator, Pressable, View } from 'react-native';
+import { View } from 'react-native';
 import Animated, { ZoomIn } from 'react-native-reanimated';
-import { Appear, haptic, PressableScale, Shake } from '../../src/components/motion';
-import { Text, TextInput } from '../../src/components/typography';
 import { z } from 'zod';
 
-import { router } from 'expo-router';
-
+import { InlineNotice } from '../../src/components/feedback';
+import { Appear, Button, Field, haptic, Screen, Shake, Text } from '../../src/components/ui';
 import { supabase } from '../../src/lib/supabase';
+import { useTheme } from '../../src/theme/ThemeProvider';
 
 const schema = z.object({
   email: z.string().email('Adresse e-mail invalide'),
@@ -19,6 +20,7 @@ const schema = z.object({
 type FormValues = z.infer<typeof schema>;
 
 export default function SignInScreen() {
+  const theme = useTheme();
   const [mode, setMode] = useState<'sign-in' | 'sign-up'>('sign-in');
   const [serverError, setServerError] = useState<string | null>(null);
   const [info, setInfo] = useState<string | null>(null);
@@ -34,10 +36,7 @@ export default function SignInScreen() {
     setServerError(null);
     setInfo(null);
     setSubmitting(true);
-    const { data, error } =
-      mode === 'sign-in'
-        ? await supabase.auth.signInWithPassword(values)
-        : await supabase.auth.signUp(values);
+    const { data, error } = mode === 'sign-in' ? await supabase.auth.signInWithPassword(values) : await supabase.auth.signUp(values);
     setSubmitting(false);
 
     if (error) {
@@ -50,22 +49,32 @@ export default function SignInScreen() {
       router.replace('/');
       return;
     }
-    setInfo('Compte créé. Si la confirmation par e-mail est active, vérifiez votre boîte mail puis connectez-vous.');
+    setInfo('Compte créé. Si la confirmation par e-mail est active, vérifie ta boîte mail puis connecte-toi.');
   };
 
   return (
-    <View className="flex-1 justify-center bg-paper px-7">
-      <Animated.View entering={ZoomIn.springify().damping(11).stiffness(140)}>
-        <View className="mb-8 h-14 w-14 items-center justify-center rounded-2xl bg-primary shadow-sm">
-          <Text className="text-2xl">🌱</Text>
+    <Screen keyboard contentStyle={{ flexGrow: 1, justifyContent: 'center' }}>
+      <Animated.View entering={ZoomIn.duration(260)}>
+        <View
+          style={{
+            width: 60,
+            height: 60,
+            borderRadius: 18,
+            backgroundColor: theme.primary,
+            alignItems: 'center',
+            justifyContent: 'center',
+            marginBottom: 28,
+          }}
+        >
+          <Ionicons name="leaf" size={28} color={theme.onPrimary} />
         </View>
       </Animated.View>
       <Appear index={1} key={mode}>
-        <Text style={{ fontFamily: 'BricolageGrotesque_800ExtraBold' }} className="mb-1 text-[28px] text-ink">
-          {mode === 'sign-in' ? 'Content de vous revoir' : 'Bienvenue sur Regain'}
+        <Text variant="title" accessibilityRole="header">
+          {mode === 'sign-in' ? 'Content de te revoir' : 'Bienvenue sur Regain'}
         </Text>
-        <Text className="mb-7 text-sm text-ink-soft">
-          {mode === 'sign-in' ? 'Connectez-vous pour retrouver votre semaine.' : 'Créez votre compte pour commencer.'}
+        <Text variant="body" tone="ink2" style={{ marginTop: 6, marginBottom: 28 }}>
+          {mode === 'sign-in' ? 'Connecte-toi pour retrouver ta semaine.' : 'Crée ton compte pour commencer.'}
         </Text>
       </Appear>
 
@@ -75,68 +84,60 @@ export default function SignInScreen() {
             control={control}
             name="email"
             render={({ field: { onChange, onBlur, value } }) => (
-              <TextInput
-                className="mb-1 rounded-2xl border border-line bg-surface px-4 py-3.5 text-ink"
-                placeholder="Adresse e-mail"
-
+              <Field
+                label="Adresse e-mail"
+                placeholder="toi@exemple.fr"
                 autoCapitalize="none"
+                autoComplete="email"
+                textContentType="emailAddress"
                 keyboardType="email-address"
                 onBlur={onBlur}
                 onChangeText={onChange}
                 value={value}
+                error={errors.email?.message}
               />
             )}
           />
-          {errors.email ? <Text className="mb-2 text-xs text-red-700">{errors.email.message}</Text> : null}
-
           <Controller
             control={control}
             name="password"
             render={({ field: { onChange, onBlur, value } }) => (
-              <TextInput
-                className="mb-1 mt-2 rounded-2xl border border-line bg-surface px-4 py-3.5 text-ink"
-                placeholder="Mot de passe"
-
+              <Field
+                label="Mot de passe"
+                placeholder="6 caractères minimum"
                 secureTextEntry
+                autoComplete={mode === 'sign-in' ? 'current-password' : 'new-password'}
+                textContentType={mode === 'sign-in' ? 'password' : 'newPassword'}
                 onBlur={onBlur}
                 onChangeText={onChange}
                 value={value}
+                onSubmitEditing={handleSubmit(onSubmit)}
+                error={errors.password?.message}
               />
             )}
           />
-          {errors.password ? <Text className="mb-2 text-xs text-red-700">{errors.password.message}</Text> : null}
         </Shake>
       </Appear>
 
-      {serverError ? <Text className="mt-2 text-xs text-red-700">{serverError}</Text> : null}
-      {info ? <Text className="mt-2 text-xs text-primary">{info}</Text> : null}
+      {serverError ? <InlineNotice tone="error" message={serverError} /> : null}
+      {info ? <InlineNotice tone="success" message={info} /> : null}
 
       <Appear index={3}>
-        <PressableScale onPress={handleSubmit(onSubmit)} disabled={submitting} feedback="medium" className="mt-6 items-center rounded-full bg-ink px-5 py-4">
-          {submitting ? (
-            <ActivityIndicator className="text-paper" />
-          ) : (
-            <Text style={{ fontFamily: 'BricolageGrotesque_800ExtraBold' }} className="text-center text-base text-paper">
-              {mode === 'sign-in' ? 'Se connecter' : "S'inscrire"}
-            </Text>
-          )}
-        </PressableScale>
+        <View style={{ marginTop: 16 }}>
+          <Button label={mode === 'sign-in' ? 'Se connecter' : "S'inscrire"} loading={submitting} onPress={handleSubmit(onSubmit)} />
+          <Button
+            label={mode === 'sign-in' ? 'Pas encore de compte ? Inscris-toi' : 'Déjà un compte ? Connecte-toi'}
+            variant="ghost"
+            onPress={() => {
+              haptic.selection();
+              setServerError(null);
+              setInfo(null);
+              setMode(mode === 'sign-in' ? 'sign-up' : 'sign-in');
+            }}
+            style={{ marginTop: 8 }}
+          />
+        </View>
       </Appear>
-
-      <Pressable
-        onPress={() => {
-          haptic.selection();
-          setMode(mode === 'sign-in' ? 'sign-up' : 'sign-in');
-        }}
-        className="mt-4 items-center"
-      >
-        <Text className="text-sm text-ink-soft">
-          {mode === 'sign-in' ? 'Pas encore de compte ? ' : 'Déjà un compte ? '}
-          <Text style={{ fontFamily: 'Figtree_700Bold' }} className="text-primary">
-            {mode === 'sign-in' ? 'Inscrivez-vous' : 'Connectez-vous'}
-          </Text>
-        </Text>
-      </Pressable>
-    </View>
+    </Screen>
   );
 }

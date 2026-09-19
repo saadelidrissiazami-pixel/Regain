@@ -6,7 +6,7 @@
     "version": "1.0.0",
     "orientation": "portrait",
     "icon": "./assets/icon.png",
-    "userInterfaceStyle": "light",
+    "userInterfaceStyle": "automatic",
     "ios": {
       "supportsTablet": true,
       "bundleIdentifier": "com.regain.app"
@@ -14,7 +14,7 @@
     "android": {
       "package": "com.regain.app",
       "adaptiveIcon": {
-        "backgroundColor": "#FBF6F0",
+        "backgroundColor": "#F5FAF8",
         "foregroundImage": "./assets/android-icon-foreground.png",
         "backgroundImage": "./assets/android-icon-background.png",
         "monochromeImage": "./assets/android-icon-monochrome.png"
@@ -30,7 +30,7 @@
       [
         "expo-splash-screen",
         {
-          "backgroundColor": "#FBF6F0",
+          "backgroundColor": "#F5FAF8",
           "image": "./assets/icon.png",
           "imageWidth": 120
         }
@@ -38,7 +38,7 @@
       [
         "expo-notifications",
         {
-          "color": "#FF6B57"
+          "color": "#17483E"
         }
       ],
       [

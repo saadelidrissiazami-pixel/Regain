@@ -2,53 +2,39 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 import { StatusBar } from 'expo-status-bar';
 import { vars } from 'nativewind';
 import { createContext, useContext, useEffect, useMemo, useState, type ReactNode } from 'react';
-import { AppState, View } from 'react-native';
+import { useColorScheme, View } from 'react-native';
 
-import { PALETTES, slotForHour, themeVariables, type DaySlot, type Palette } from './palettes';
+import { PALETTES, themeVariables, type ColorScheme, type Palette } from './colors';
 
-/** « auto » suit l'heure ; un moment précis fige la palette (utile à qui préfère toujours clair). */
-export type ThemeMode = 'auto' | DaySlot;
+/** « auto » suit le réglage clair / sombre de l'appareil. */
+export type ThemeMode = 'auto' | ColorScheme;
 
 const MODE_KEY = 'regain.theme.mode';
-const REFRESH_MS = 5 * 60_000;
 
 type ThemeValue = Palette & {
-  slot: DaySlot;
+  scheme: ColorScheme;
+  dark: boolean;
   mode: ThemeMode;
   setMode: (mode: ThemeMode) => void;
 };
 
 const ThemeContext = createContext<ThemeValue>({
-  ...PALETTES.apres_midi,
-  slot: 'apres_midi',
+  ...PALETTES.light,
+  scheme: 'light',
+  dark: false,
   mode: 'auto',
   setMode: () => {},
 });
 
-function useCurrentHour(): number {
-  const [hour, setHour] = useState(() => new Date().getHours());
-  useEffect(() => {
-    const refresh = () => setHour(new Date().getHours());
-    const subscription = AppState.addEventListener('change', (state) => {
-      if (state === 'active') refresh();
-    });
-    const timer = setInterval(refresh, REFRESH_MS);
-    return () => {
-      subscription.remove();
-      clearInterval(timer);
-    };
-  }, []);
-  return hour;
-}
-
 export function ThemeProvider({ children }: { children: ReactNode }) {
-  const hour = useCurrentHour();
+  const system = useColorScheme();
   const [mode, setModeState] = useState<ThemeMode>('auto');
 
   useEffect(() => {
     AsyncStorage.getItem(MODE_KEY)
       .then((saved) => {
-        if (saved === 'matin' || saved === 'apres_midi' || saved === 'soir') setModeState(saved);
+        // Les anciennes valeurs (matin / après-midi / soir) retombent sur « auto ».
+        if (saved === 'light' || saved === 'dark') setModeState(saved);
       })
       .catch(() => {});
   }, []);
@@ -58,26 +44,26 @@ export function ThemeProvider({ children }: { children: ReactNode }) {
     (next === 'auto' ? AsyncStorage.removeItem(MODE_KEY) : AsyncStorage.setItem(MODE_KEY, next)).catch(() => {});
   };
 
-  const slot = mode === 'auto' ? slotForHour(hour) : mode;
-  const palette = PALETTES[slot];
+  const scheme: ColorScheme = mode === 'auto' ? (system === 'dark' ? 'dark' : 'light') : mode;
+  const palette = PALETTES[scheme];
 
-  const value = useMemo(() => ({ ...palette, slot, mode, setMode }), [palette, slot, mode]);
+  const value = useMemo(
+    () => ({ ...palette, scheme, dark: scheme === 'dark', mode, setMode }),
+    [palette, scheme, mode]
+  );
   // Les variables sont posées dès le premier rendu (seules leurs valeurs changent ensuite) :
   // NativeWind recrée sinon la vue et perd l'état de l'app.
-  const rootStyle = useMemo(
-    () => [{ flex: 1, backgroundColor: palette.paper }, vars(themeVariables(palette))],
-    [palette]
-  );
+  const rootStyle = useMemo(() => [{ flex: 1, backgroundColor: palette.bg }, vars(themeVariables(palette))], [palette]);
 
   return (
     <ThemeContext.Provider value={value}>
-      <StatusBar style={palette.dark ? 'light' : 'dark'} />
+      <StatusBar style={scheme === 'dark' ? 'light' : 'dark'} />
       <View style={rootStyle}>{children}</View>
     </ThemeContext.Provider>
   );
 }
 
-/** Palette du moment, pour ce que les classes Tailwind ne couvrent pas (icônes, dégradés, interrupteurs). */
+/** Palette active, pour ce que les classes Tailwind ne couvrent pas (icônes, SVG, dégradés). */
 export function useTheme(): ThemeValue {
   return useContext(ThemeContext);
 }

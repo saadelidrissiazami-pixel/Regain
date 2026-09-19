@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest';
 
-import { buildWeekView, formatCountdown, greetingFor, isOver, minutesUntil, todaySubtitle } from '../src/features/planning/weekView';
+import { buildWeekView, coachLine, formatCountdown, greetingFor, isOver, minutesUntil, todaySubtitle } from '../src/features/planning/weekView';
 
 describe('greetingFor', () => {
   it('suit les moments de la journée', () => {
@@ -69,5 +69,21 @@ describe('buildWeekView', () => {
 
   it('gère une semaine vide', () => {
     expect(buildWeekView([], '2026-09-17')).toEqual({ upcomingDays: [], pastPending: [], doneCount: 0, totalCount: 0 });
+  });
+});
+
+describe('phrase du coach', () => {
+  const base = { hasPlan: true, doneCount: 0, totalCount: 8, pendingToday: 1, hour: 15 };
+  it('encourage quand la semaine avance', () => {
+    expect(coachLine({ ...base, doneCount: 3 })).toBe('On continue, tu fais du super travail.');
+  });
+  it('dit ce qui est prévu en début de semaine', () => {
+    expect(coachLine(base)).toBe("Voici ce qui est prévu aujourd'hui.");
+  });
+  it('félicite quand tout est fait', () => {
+    expect(coachLine({ ...base, doneCount: 8 })).toContain('bouclée');
+  });
+  it('invite à construire la semaine sans planning', () => {
+    expect(coachLine({ ...base, hasPlan: false })).toContain('construire');
   });
 });

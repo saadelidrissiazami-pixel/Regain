@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { ActivityIndicator, Linking, Pressable, View } from 'react-native';
+import { ActivityIndicator, Linking, View } from 'react-native';
 
 import {
   LocationPermissionDeniedError,
@@ -11,7 +11,11 @@ import {
   type WalkingLeg,
   type WalkingRoute,
 } from '../../lib/location';
-import { Text } from '../typography';
+import { useTheme } from '../../theme/ThemeProvider';
+import { InlineNotice } from '../feedback/InlineNotice';
+import { Button, TextLink } from '../ui/Button';
+import { Card } from '../ui/Card';
+import { Text } from '../ui/Text';
 import { RouteMap } from './RouteMap';
 
 const FIX_THE_MAP_URL = 'https://www.openstreetmap.org/fixthemap';
@@ -19,6 +23,7 @@ const FIX_THE_MAP_URL = 'https://www.openstreetmap.org/fixthemap';
 type LoopResult = { kind: 'route'; start: Coords; route: WalkingRoute } | { kind: 'compass'; legs: WalkingLeg[] };
 
 export function WalkingLoopCard({ durationMinutes }: { durationMinutes: number }) {
+  const theme = useTheme();
   const [status, setStatus] = useState<'idle' | 'loading' | 'error' | 'done'>('idle');
   const [result, setResult] = useState<LoopResult | null>(null);
   const [startLabel, setStartLabel] = useState<string | null>(null);
@@ -47,98 +52,84 @@ export function WalkingLoopCard({ durationMinutes }: { durationMinutes: number }
     } catch (err) {
       setErrorMessage(
         err instanceof LocationPermissionDeniedError
-          ? "Localisation refusée — vous pouvez l'activer dans les réglages pour obtenir un itinéraire."
-          : "Impossible de générer l'itinéraire pour le moment."
+          ? "Localisation refusée : tu peux l'activer dans les réglages pour obtenir un itinéraire."
+          : "Impossible de générer l'itinéraire pour le moment. Réessaie dans un instant."
       );
       setStatus('error');
     }
   };
 
   return (
-    <View className="mb-6 rounded-2xl border border-line bg-surface p-4 shadow-sm">
-      <Text style={{ fontFamily: 'BricolageGrotesque_800ExtraBold' }} className="mb-2.5 text-sm text-ink">
-        🧭 Itinéraire de marche près de vous
+    <Card style={{ marginBottom: 16 }}>
+      <Text variant="overline" tone="ink2">
+        🧭 Itinéraire de marche près de toi
       </Text>
 
       {status === 'idle' ? (
         <>
-          <Text className="mb-3 text-sm text-ink-soft">
-            On trace une boucle sur les rues autour de vous, adaptée à la durée de cette activité, avec la carte et
-            les indications pas à pas.
+          <Text variant="bodySm" tone="ink2" style={{ marginTop: 8, marginBottom: 12 }}>
+            On trace une boucle sur les rues autour de toi, adaptée à la durée de cette activité, avec la carte et les indications pas à pas.
           </Text>
-          <Pressable onPress={handleLocate} className="self-start rounded-full bg-ink px-4 py-2.5">
-            <Text style={{ fontFamily: 'BricolageGrotesque_800ExtraBold' }} className="text-sm text-paper">
-              Générer mon itinéraire
-            </Text>
-          </Pressable>
+          <Button label="Générer mon itinéraire" variant="secondary" size="md" fullWidth={false} icon="navigate-outline" onPress={handleLocate} />
         </>
       ) : status === 'loading' ? (
-        <View className="flex-row items-center">
-          <ActivityIndicator className="text-primary" />
-          <Text className="ml-2 text-sm text-ink-soft">
+        <View style={{ flexDirection: 'row', alignItems: 'center', gap: 10, paddingVertical: 12 }}>
+          <ActivityIndicator color={theme.primary600} />
+          <Text variant="bodySm" tone="ink2" style={{ flex: 1 }}>
             Ajustement du parcours pour tenir en {durationMinutes} min…
           </Text>
         </View>
       ) : status === 'error' ? (
-        <Text className="text-sm text-ink-soft">{errorMessage}</Text>
-      ) : result?.kind === 'route' ? (
         <>
+          <InlineNotice tone="error" message={errorMessage} />
+          <Button label="Réessayer" variant="ghost" size="sm" fullWidth={false} onPress={handleLocate} style={{ marginTop: 6 }} />
+        </>
+      ) : result?.kind === 'route' ? (
+        <View style={{ marginTop: 12 }}>
           <RouteMap path={result.route.path} start={result.start} />
-
-          <Text style={{ fontFamily: 'BricolageGrotesque_800ExtraBold' }} className="text-base text-ink">
-            {(result.route.distanceM / 1000).toFixed(1)} km · environ {Math.round(result.route.durationS / 60)} min
+          <Text variant="cardTitle" tabular>
+            {(result.route.distanceM / 1000).toFixed(1).replace('.', ',')} km · environ {Math.round(result.route.durationS / 60)} min
           </Text>
-          <Text className="mb-3 text-xs text-ink-soft">
-            Boucle au départ de {startLabel ?? 'votre position'}, retour au même endroit — ajustée pour tenir
-            en {durationMinutes} min maximum.
+          <Text variant="caption" tone="ink2" style={{ marginTop: 2, marginBottom: 12 }}>
+            Boucle au départ de {startLabel ?? 'ta position'}, retour au même endroit, pour tenir en {durationMinutes} min maximum.
           </Text>
-
           {result.route.steps.map((step, i) => (
-            <View key={i} className="mb-2 flex-row items-start">
-              <Text style={{ fontFamily: 'BricolageGrotesque_800ExtraBold' }} className="mr-2 w-6 text-sm text-primary">
+            <View key={i} style={{ flexDirection: 'row', alignItems: 'flex-start', marginBottom: 8 }}>
+              <Text variant="label" tone="accent" tabular style={{ width: 26 }}>
                 {i + 1}.
               </Text>
-              <Text className="flex-1 text-sm leading-5 text-ink-soft">
+              <Text variant="bodySm" tone="ink2" style={{ flex: 1 }}>
                 {step.instruction}
-                {step.distanceM >= 1 ? ` — ${Math.round(step.distanceM)} m` : ''}
+                {step.distanceM >= 1 ? ` · ${Math.round(step.distanceM)} m` : ''}
               </Text>
             </View>
           ))}
-
-          <Pressable onPress={handleLocate} className="mt-2 self-start rounded-full border border-line px-4 py-2">
-            <Text style={{ fontFamily: 'Figtree_700Bold' }} className="text-sm text-ink">
-              🔄 Autre boucle
+          <Button label="Autre boucle" variant="outline" size="sm" fullWidth={false} icon="refresh" onPress={handleLocate} style={{ marginTop: 6 }} />
+          <View style={{ marginTop: 8, flexDirection: 'row', flexWrap: 'wrap', alignItems: 'center' }}>
+            <Text variant="caption" tone="ink3">
+              Itinéraire © contributeurs OpenStreetMap ·{' '}
             </Text>
-          </Pressable>
-
-          <View className="mt-3 flex-row flex-wrap items-center">
-            <Text className="text-[11px] text-ink-soft">Itinéraire © contributeurs OpenStreetMap · </Text>
-            <Pressable onPress={() => Linking.openURL(FIX_THE_MAP_URL)}>
-              <Text className="text-[11px] text-ink-soft underline">Signaler une erreur de carte</Text>
-            </Pressable>
+            <TextLink label="Signaler une erreur de carte" icon={null} tone="ink2" onPress={() => Linking.openURL(FIX_THE_MAP_URL)} />
           </View>
-        </>
+        </View>
       ) : (
-        <>
-          <Text className="mb-3 text-xs text-ink-soft">
-            Itinéraire détaillé indisponible pour le moment — voici une boucle indicative depuis{' '}
-            {startLabel ?? 'votre position'}.
+        <View style={{ marginTop: 10 }}>
+          <Text variant="caption" tone="ink2" style={{ marginBottom: 10 }}>
+            Itinéraire détaillé indisponible pour le moment : voici une boucle indicative depuis {startLabel ?? 'ta position'}.
           </Text>
           {result?.legs.map((leg, i) => (
-            <View key={i} className="mb-2 flex-row items-start">
-              <Text style={{ fontFamily: 'BricolageGrotesque_800ExtraBold' }} className="mr-2 text-sm text-primary">
+            <View key={i} style={{ flexDirection: 'row', alignItems: 'flex-start', marginBottom: 8 }}>
+              <Text variant="label" tone="accent" style={{ width: 26 }}>
                 {i + 1}.
               </Text>
-              <Text className="flex-1 text-sm leading-5 text-ink-soft">{leg.instruction}</Text>
+              <Text variant="bodySm" tone="ink2" style={{ flex: 1 }}>
+                {leg.instruction}
+              </Text>
             </View>
           ))}
-          <Pressable onPress={handleLocate} className="mt-2 self-start rounded-full border border-line px-4 py-2">
-            <Text style={{ fontFamily: 'Figtree_700Bold' }} className="text-sm text-ink">
-              Réessayer
-            </Text>
-          </Pressable>
-        </>
+          <Button label="Réessayer" variant="outline" size="sm" fullWidth={false} onPress={handleLocate} style={{ marginTop: 6 }} />
+        </View>
       )}
-    </View>
+    </Card>
   );
 }

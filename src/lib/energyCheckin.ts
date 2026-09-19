@@ -11,3 +11,22 @@ export async function saveEnergyCheckin(userId: string, energyLevel: EnergyLevel
     .insert({ user_id: userId, energy_level: LEVEL_TO_INT[energyLevel] });
   if (error) throw error;
 }
+
+export type EnergyCheckinRow = { checkin_at: string; energy_level: number };
+
+/** Check-ins d'énergie depuis une date (ISO), du plus récent au plus ancien. */
+export async function fetchEnergyCheckins(userId: string, sinceIso: string): Promise<EnergyCheckinRow[]> {
+  const { data, error } = await supabase
+    .from('energy_checkins')
+    .select('checkin_at, energy_level')
+    .eq('user_id', userId)
+    .gte('checkin_at', sinceIso)
+    .order('checkin_at', { ascending: false });
+  if (error) throw error;
+  return data as EnergyCheckinRow[];
+}
+
+/** 1-5 en base → bas / moyen / élevé. */
+export function levelFromInt(value: number): EnergyLevel {
+  return value <= 2 ? 'bas' : value >= 4 ? 'eleve' : 'moyen';
+}

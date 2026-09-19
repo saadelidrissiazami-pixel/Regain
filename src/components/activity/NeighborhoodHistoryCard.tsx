@@ -1,14 +1,20 @@
 import { useState } from 'react';
-import { ActivityIndicator, Pressable, View } from 'react-native';
-import { Text } from '../typography';
+import { ActivityIndicator, View } from 'react-native';
+
 import {
   LocationPermissionDeniedError,
   fetchWikipediaSummary,
   reverseGeocode,
   requestAndGetLocation,
 } from '../../lib/location';
+import { useTheme } from '../../theme/ThemeProvider';
+import { InlineNotice } from '../feedback/InlineNotice';
+import { Button } from '../ui/Button';
+import { Card } from '../ui/Card';
+import { Text } from '../ui/Text';
 
 export function NeighborhoodHistoryCard() {
+  const theme = useTheme();
   const [status, setStatus] = useState<'idle' | 'loading' | 'error' | 'done'>('idle');
   const [placeLabel, setPlaceLabel] = useState('');
   const [extract, setExtract] = useState<string | null>(null);
@@ -22,7 +28,7 @@ export function NeighborhoodHistoryCard() {
       const candidates = [place.neighbourhood, place.city].filter((v): v is string => !!v);
 
       if (candidates.length === 0) {
-        setErrorMessage("Impossible d'identifier votre quartier à partir de votre position.");
+        setErrorMessage("Impossible d'identifier ton quartier à partir de ta position.");
         setStatus('error');
         return;
       }
@@ -34,60 +40,52 @@ export function NeighborhoodHistoryCard() {
       }
 
       setPlaceLabel(candidates[0]);
-      if (summary) {
-        setExtract(summary.extract);
-      } else {
-        setExtract(null);
-      }
+      setExtract(summary ? summary.extract : null);
       setStatus('done');
     } catch (err) {
       setErrorMessage(
         err instanceof LocationPermissionDeniedError
-          ? "Localisation refusée — activez-la dans les réglages pour découvrir l'histoire de votre quartier."
-          : "Impossible de récupérer ces informations pour le moment."
+          ? "Localisation refusée : active-la dans les réglages pour découvrir l'histoire de ton quartier."
+          : 'Impossible de récupérer ces informations pour le moment. Réessaie dans un instant.'
       );
       setStatus('error');
     }
   };
 
   return (
-    <View className="mb-6 rounded-2xl border border-line bg-surface p-4 shadow-sm">
-      <Text style={{ fontFamily: 'BricolageGrotesque_800ExtraBold' }} className="mb-2.5 text-sm text-ink">
-        🏙️ Histoire de votre quartier
+    <Card style={{ marginBottom: 16 }}>
+      <Text variant="overline" tone="ink2">
+        🏙️ Histoire de ton quartier
       </Text>
-
       {status === 'idle' ? (
         <>
-          <Text className="mb-3 text-sm text-ink-soft">
-            On identifie votre position pour vous raconter un peu de l'histoire du quartier ou de la ville que vous
-            allez explorer.
+          <Text variant="bodySm" tone="ink2" style={{ marginTop: 8, marginBottom: 12 }}>
+            On utilise ta position pour te raconter un peu de l&apos;histoire du quartier ou de la ville que tu vas explorer.
           </Text>
-          <Pressable onPress={handleDiscover} className="self-start rounded-full bg-ink px-4 py-2.5">
-            <Text style={{ fontFamily: 'BricolageGrotesque_800ExtraBold' }} className="text-sm text-paper">
-              Découvrir mon quartier
-            </Text>
-          </Pressable>
+          <Button label="Découvrir mon quartier" variant="secondary" size="md" fullWidth={false} icon="location-outline" onPress={handleDiscover} />
         </>
       ) : status === 'loading' ? (
-        <ActivityIndicator className="text-primary" />
+        <View style={{ paddingVertical: 12 }}>
+          <ActivityIndicator color={theme.primary600} />
+        </View>
       ) : status === 'error' ? (
-        <Text className="text-sm text-ink-soft">{errorMessage}</Text>
+        <>
+          <InlineNotice tone="error" message={errorMessage} />
+          <Button label="Réessayer" variant="ghost" size="sm" fullWidth={false} onPress={handleDiscover} style={{ marginTop: 6 }} />
+        </>
       ) : (
         <>
-          <Text style={{ fontFamily: 'Figtree_700Bold' }} className="mb-1.5 text-sm text-ink">
+          <Text variant="label" style={{ marginTop: 8 }}>
             {placeLabel}
           </Text>
-          {extract ? (
-            <Text className="text-sm leading-5 text-ink-soft">{extract}</Text>
-          ) : (
-            <Text className="text-sm text-ink-soft">
-              Pas d'article disponible pour ce lieu précis — c'est peut-être l'occasion de partir à sa découverte par
-              vous-même.
-            </Text>
-          )}
-          <Text className="mt-2 text-[11px] text-ink-soft">Source : Wikipédia.</Text>
+          <Text variant="bodySm" tone="ink2" style={{ marginTop: 6 }}>
+            {extract ?? "Pas d'article disponible pour ce lieu précis : c'est peut-être l'occasion de partir à sa découverte."}
+          </Text>
+          <Text variant="caption" tone="ink3" style={{ marginTop: 8 }}>
+            Source : Wikipédia.
+          </Text>
         </>
       )}
-    </View>
+    </Card>
   );
 }

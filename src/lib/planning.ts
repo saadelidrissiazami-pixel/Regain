@@ -3,7 +3,7 @@ import { generateWeeklyPlan, type EnergyBySlot } from '../features/planning/rule
 import type { AvailabilitySlot } from '../features/availability/types';
 import { fetchAvailabilitySlots } from './availability';
 import { fetchCategoryAffinity } from './personalization';
-import { getWeekStart } from './week';
+import { fromLocalISODate, getWeekStart } from './week';
 import { supabase } from './supabase';
 
 export async function fetchCatalog(): Promise<CatalogActivity[]> {
@@ -92,6 +92,46 @@ export async function generateAndSaveWeekPlan(userId: string, weekStart = getWee
   if (error) throw error;
 
   return fetchWeekPlan(userId, weekStart);
+}
+
+/** Activités planifiées entre deux dates incluses (vue Mois). */
+export async function fetchPlanRange(userId: string, from: string, to: string): Promise<PlannedActivityRow[]> {
+  const { data, error } = await supabase
+    .from('planned_activities')
+    .select('id, date, time_slot, status, activities_catalog(*)')
+    .eq('user_id', userId)
+    .gte('date', from)
+    .lte('date', to)
+    .order('date', { ascending: true });
+  if (error) throw error;
+  return data as unknown as PlannedActivityRow[];
+}
+
+/** Ajoute une activité choisie par l'utilisateur à un jour et un moment précis. */
+export async function addPlannedActivity(
+  userId: string,
+  input: { activityId: string; date: string; timeSlot: PlannedActivityRow['time_slot'] }
+) {
+  const { error } = await supabase.from('planned_activities').insert({
+    user_id: userId,
+    activity_id: input.activityId,
+    week_start_date: getWeekStart(fromLocalISODate(input.date)),
+    date: input.date,
+    time_slot: input.timeSlot,
+    status: 'propose',
+  });
+  if (error) throw error;
+}
+
+/** Nombre total d'activités réalisées depuis l'inscription. */
+export async function countCompletedActivities(userId: string): Promise<number> {
+  const { count, error } = await supabase
+    .from('planned_activities')
+    .select('id', { count: 'exact', head: true })
+    .eq('user_id', userId)
+    .eq('status', 'realise');
+  if (error) throw error;
+  return count ?? 0;
 }
 
 export async function fetchCompletedActivities(userId: string, limit = 100): Promise<PlannedActivityRow[]> {

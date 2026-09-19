@@ -28,13 +28,13 @@ function decimalInRange(label: string, min: number, max: number) {
 const currentYear = new Date().getFullYear();
 
 export const fitnessQuestionnaireSchema = z.object({
-  goals: z.array(enumOf(FITNESS_GOALS)).min(1, 'Choisissez au moins un objectif'),
+  goals: z.array(enumOf(FITNESS_GOALS)).min(1, 'Choisis au moins un objectif'),
   sex: enumOf(SEX_OPTIONS),
   // Réservé aux adultes : plans de calories et de musculation non adaptés aux mineurs.
   birthYear: z.string().refine((v) => {
     const year = Number(v.trim());
     return Number.isInteger(year) && year >= currentYear - 90 && year <= currentYear - 18;
-  }, 'Le coach forme est réservé aux adultes (18 ans et plus) : indiquez une année de naissance valide'),
+  }, 'Le coach forme est réservé aux adultes (18 ans et plus) : indique une année de naissance valide'),
   heightCm: decimalInRange('Taille (cm)', 120, 230),
   weightKg: decimalInRange('Poids (kg)', 35, 250),
   activityLevel: enumOf(ACTIVITY_LEVELS),

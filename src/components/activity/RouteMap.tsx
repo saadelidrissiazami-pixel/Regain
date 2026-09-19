@@ -3,14 +3,16 @@ import { View } from 'react-native';
 import MapView, { Marker, Polyline } from 'react-native-maps';
 
 import type { Coords } from '../../lib/location';
+import { useTheme } from '../../theme/ThemeProvider';
 
 // Version mobile (iOS : Apple Maps, sans clé). Le web utilise RouteMap.web.tsx, react-native-maps
 // n'ayant pas d'implémentation navigateur.
 export function RouteMap({ path, start }: { path: Coords[]; start: Coords }) {
+  const theme = useTheme();
   const mapRef = useRef<MapView>(null);
 
   return (
-    <View className="mb-3 overflow-hidden rounded-2xl border border-line" style={{ height: 260 }}>
+    <View style={{ height: 260, marginBottom: 12, overflow: 'hidden', borderRadius: 16, borderWidth: 1, borderColor: theme.line }}>
       <MapView
         ref={mapRef}
         style={{ flex: 1 }}
@@ -28,8 +30,8 @@ export function RouteMap({ path, start }: { path: Coords[]; start: Coords }) {
           })
         }
       >
-        <Polyline coordinates={path} strokeColor="#FF6B57" strokeWidth={4} />
-        <Marker coordinate={start} title="Départ et arrivée" pinColor="#1E9C86" />
+        <Polyline coordinates={path} strokeColor={theme.primary600} strokeWidth={4} />
+        <Marker coordinate={start} title="Départ et arrivée" pinColor={theme.orange} />
       </MapView>
     </View>
   );

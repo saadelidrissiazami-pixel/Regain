@@ -1,13 +1,13 @@
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { router } from 'expo-router';
-import { Controller, useForm } from 'react-hook-form';
-import { ActivityIndicator, Pressable, ScrollView, View } from 'react-native';
+import { useState, type ReactNode } from 'react';
+import { Controller, useForm, useWatch } from 'react-hook-form';
+import { View } from 'react-native';
 
-import { Segmented } from '../../src/components/Segmented';
-import { Select, SelectMulti } from '../../src/components/Select';
-import { PressableScale } from '../../src/components/motion';
-import { Text, TextInput } from '../../src/components/typography';
+import { errorMessage, InlineNotice, LoadingSkeleton } from '../../src/components/feedback';
+import { Button, ChoiceChip, Field, haptic, Screen, ScreenHeader, SegmentedControl, Select, SelectMulti, Text } from '../../src/components/ui';
+import { trainingDays } from '../../src/features/fitness/schedule';
 import {
   ACTIVITY_LEVELS,
   DIET_OPTIONS,
@@ -23,305 +23,266 @@ import {
   type FitnessQuestionnaireValues,
 } from '../../src/features/fitness/schema';
 import type { FitnessProfile } from '../../src/features/fitness/types';
-import { fetchFitnessProfile, saveFitnessProfile } from '../../src/lib/fitness';
+import {
+  fetchFitnessProfile,
+  fetchTrainingSchedule,
+  saveFitnessProfile,
+  saveTrainingSchedule,
+  type TimeSlot,
+  type TrainingSchedule,
+} from '../../src/lib/fitness';
 import { useAuthStore } from '../../src/store/authStore';
 
-const DAYS_OPTIONS = [1, 2, 3, 4, 5, 6].map((days) => ({
-  value: days,
-  label: `${days} séance${days > 1 ? 's' : ''} par semaine`,
-}));
+const DAYS_OPTIONS = [1, 2, 3, 4, 5, 6].map((days) => ({ value: days, label: `${days} séance${days > 1 ? 's' : ''} par semaine` }));
 const SESSION_MINUTES_OPTIONS = [30, 45, 60, 75, 90].map((minutes) => ({
   value: minutes,
   label: `${minutes} minutes`,
   hint: minutes <= 30 ? 'Séances courtes et efficaces' : minutes >= 75 ? 'Séances longues, échauffement compris' : undefined,
 }));
+const WEEK_DAYS = ['Lun', 'Mar', 'Mer', 'Jeu', 'Ven', 'Sam', 'Dim'];
+const SLOTS: { value: TimeSlot; label: string }[] = [
+  { value: 'matin', label: 'Matin' },
+  { value: 'apres_midi', label: 'Après-midi' },
+  { value: 'soir', label: 'Soir' },
+];
 
-function SectionTitle({ children }: { children: string }) {
+function Section({ title, hint, children }: { title: string; hint?: string; children: ReactNode }) {
   return (
-    <Text style={{ fontFamily: 'BricolageGrotesque_800ExtraBold' }} className="mb-2.5 mt-5 text-sm text-ink">
+    <View style={{ marginTop: 24 }}>
+      <Text variant="section" accessibilityRole="header" style={{ marginBottom: hint ? 4 : 12 }}>
+        {title}
+      </Text>
+      {hint ? (
+        <Text variant="caption" tone="ink2" style={{ marginBottom: 12 }}>
+          {hint}
+        </Text>
+      ) : null}
       {children}
-    </Text>
+    </View>
   );
 }
 
 function FieldError({ message }: { message?: string }) {
-  return message ? <Text className="-mt-1 mb-2 text-xs text-red-700">{message}</Text> : null;
+  return message ? (
+    <Text variant="caption" tone="danger" style={{ marginTop: -6, marginBottom: 10 }}>
+      {message}
+    </Text>
+  ) : null;
 }
 
-const inputClass = 'mb-2 rounded-2xl border border-line bg-surface px-4 py-3.5 text-ink';
-
-function QuestionnaireForm({ userId, initialProfile }: { userId: string; initialProfile: FitnessProfile | null }) {
+function QuestionnaireForm({
+  userId,
+  initialProfile,
+  initialSchedule,
+}: {
+  userId: string;
+  initialProfile: FitnessProfile | null;
+  initialSchedule: TrainingSchedule;
+}) {
   const queryClient = useQueryClient();
+  const defaults = profileToQuestionnaire(initialProfile);
+  const [slot, setSlot] = useState<TimeSlot>(initialSchedule.training_slot ?? 'soir');
+  const [days, setDays] = useState<number[]>(() => trainingDays(initialSchedule.training_days, defaults.daysPerWeek));
   const {
     control,
     handleSubmit,
     formState: { errors },
   } = useForm<FitnessQuestionnaireValues>({
     resolver: zodResolver(fitnessQuestionnaireSchema),
-    defaultValues: profileToQuestionnaire(initialProfile),
+    defaultValues: defaults,
   });
+  // useWatch plutôt que watch() : watch n'est pas compatible avec la mémoïsation du compilateur React.
+  const daysPerWeek = useWatch({ control, name: 'daysPerWeek' });
 
   const saveMutation = useMutation({
-    mutationFn: (values: FitnessQuestionnaireValues) => saveFitnessProfile(userId, questionnaireToProfile(values)),
+    mutationFn: async (values: FitnessQuestionnaireValues) => {
+      await saveFitnessProfile(userId, questionnaireToProfile(values));
+      await saveTrainingSchedule(userId, { training_slot: slot, training_days: [...days].sort() });
+    },
     onSuccess: async () => {
-      await queryClient.invalidateQueries({ queryKey: ['fitnessProfile', userId] });
+      haptic.success();
+      await Promise.all([
+        queryClient.invalidateQueries({ queryKey: ['fitnessProfile', userId] }),
+        queryClient.invalidateQueries({ queryKey: ['trainingSchedule', userId] }),
+      ]);
       router.back();
     },
   });
 
+  const toggleDay = (day: number) => setDays((current) => (current.includes(day) ? current.filter((d) => d !== day) : [...current, day]));
+
   return (
-    <>
-      <SectionTitle>Vos objectifs</SectionTitle>
-      <Controller
-        control={control}
-        name="goals"
-        render={({ field: { value, onChange } }) => (
-          <SelectMulti
-            label="Objectifs"
-            title="Que cherchez-vous ?"
-            placeholder="Choisir un ou plusieurs objectifs"
-            values={value}
-            options={[...FITNESS_GOALS]}
-            onChange={onChange}
-          />
-        )}
-      />
-      <FieldError message={errors.goals?.message} />
+    <Screen
+      keyboard
+      footer={<Button label="Enregistrer" loading={saveMutation.isPending} onPress={handleSubmit((values) => saveMutation.mutate(values))} />}
+    >
+      <ScreenHeader overline="Ton coach forme" title="Ton profil" subtitle="Pour un programme vraiment fait pour toi." onBack={() => router.back()} />
 
-      <SectionTitle>Vous</SectionTitle>
-      <Text className="mb-2 text-xs text-ink-soft">
-        Sexe, âge, taille et poids servent uniquement au calcul de vos besoins caloriques.
-      </Text>
-      <Controller
-        control={control}
-        name="sex"
-        render={({ field: { value, onChange } }) => (
-          <Segmented label="Sexe" value={value} onChange={onChange} options={[...SEX_OPTIONS]} />
-        )}
-      />
-      <Controller
-        control={control}
-        name="birthYear"
-        render={({ field: { value, onChange } }) => (
-          <TextInput
-            className={inputClass}
-            placeholder="Année de naissance (ex. 1990)"
+      <Section title="Tes objectifs">
+        <Controller
+          control={control}
+          name="goals"
+          render={({ field: { value, onChange } }) => (
+            <SelectMulti label="Objectifs" title="Que cherches-tu ?" placeholder="Choisir un ou plusieurs objectifs" values={value} options={[...FITNESS_GOALS]} onChange={onChange} />
+          )}
+        />
+        <FieldError message={errors.goals?.message} />
+      </Section>
 
-            keyboardType="number-pad"
-            maxLength={4}
-            value={value}
-            onChangeText={onChange}
-          />
-        )}
-      />
-      <FieldError message={errors.birthYear?.message} />
-      <View className="flex-row gap-2">
-        <View className="flex-1">
-          <Controller
-            control={control}
-            name="heightCm"
-            render={({ field: { value, onChange } }) => (
-              <TextInput
-                className={inputClass}
-                placeholder="Taille (cm)"
-
-                keyboardType="number-pad"
-                value={value}
-                onChangeText={onChange}
-              />
-            )}
-          />
+      <Section title="Toi" hint="Sexe, âge, taille et poids servent uniquement au calcul de tes besoins caloriques.">
+        <Controller
+          control={control}
+          name="sex"
+          render={({ field: { value, onChange } }) => (
+            <View style={{ marginBottom: 16 }}>
+              <SegmentedControl label="Sexe" tone="surface" value={value} onChange={onChange} options={[...SEX_OPTIONS]} />
+            </View>
+          )}
+        />
+        <Controller
+          control={control}
+          name="birthYear"
+          render={({ field: { value, onChange } }) => (
+            <Field label="Année de naissance" placeholder="Ex. : 1990" keyboardType="number-pad" maxLength={4} value={value} onChangeText={onChange} error={errors.birthYear?.message} />
+          )}
+        />
+        <View style={{ flexDirection: 'row', gap: 12 }}>
+          <View style={{ flex: 1 }}>
+            <Controller
+              control={control}
+              name="heightCm"
+              render={({ field: { value, onChange } }) => (
+                <Field label="Taille (cm)" placeholder="170" keyboardType="number-pad" value={value} onChangeText={onChange} error={errors.heightCm?.message} />
+              )}
+            />
+          </View>
+          <View style={{ flex: 1 }}>
+            <Controller
+              control={control}
+              name="weightKg"
+              render={({ field: { value, onChange } }) => (
+                <Field label="Poids (kg)" placeholder="65" keyboardType="decimal-pad" value={value} onChangeText={onChange} error={errors.weightKg?.message} />
+              )}
+            />
+          </View>
         </View>
-        <View className="flex-1">
-          <Controller
-            control={control}
-            name="weightKg"
-            render={({ field: { value, onChange } }) => (
-              <TextInput
-                className={inputClass}
-                placeholder="Poids (kg)"
+        <Controller
+          control={control}
+          name="activityLevel"
+          render={({ field: { value, onChange } }) => (
+            <Select label="Activité au quotidien" title="Ton activité au quotidien" value={value} options={[...ACTIVITY_LEVELS]} onChange={onChange} />
+          )}
+        />
+      </Section>
 
-                keyboardType="decimal-pad"
-                value={value}
-                onChangeText={onChange}
-              />
-            )}
-          />
+      <Section title="Ton entraînement">
+        <Text variant="label" style={{ marginBottom: 8 }}>
+          Niveau en musculation
+        </Text>
+        <Controller
+          control={control}
+          name="experience"
+          render={({ field: { value, onChange } }) => (
+            <View style={{ marginBottom: 16 }}>
+              <SegmentedControl label="Niveau" tone="surface" value={value} onChange={onChange} options={[...EXPERIENCE_LEVELS]} />
+            </View>
+          )}
+        />
+        <Controller
+          control={control}
+          name="equipment"
+          render={({ field: { value, onChange } }) => (
+            <Select label="Matériel" title="Avec quoi t'entraînes-tu ?" value={value} options={[...EQUIPMENT_OPTIONS]} onChange={onChange} />
+          )}
+        />
+        <Controller
+          control={control}
+          name="daysPerWeek"
+          render={({ field: { value, onChange } }) => (
+            <Select label="Séances par semaine" title="Combien de séances par semaine ?" value={value} options={DAYS_OPTIONS} onChange={onChange} />
+          )}
+        />
+        <Controller
+          control={control}
+          name="sessionMinutes"
+          render={({ field: { value, onChange } }) => (
+            <Select label="Durée d'une séance" title="Combien de temps par séance ?" value={value} options={SESSION_MINUTES_OPTIONS} onChange={onChange} />
+          )}
+        />
+      </Section>
+
+      <Section title="Quand t'entraînes-tu ?" hint="Pour te proposer la bonne séance, au bon moment.">
+        <SegmentedControl label="Moment de la journée" tone="surface" value={slot} onChange={setSlot} options={SLOTS} />
+        <View style={{ flexDirection: 'row', flexWrap: 'wrap', gap: 8, marginTop: 14 }}>
+          {WEEK_DAYS.map((label, day) => (
+            <ChoiceChip key={label} label={label} selected={days.includes(day)} onPress={() => toggleDay(day)} />
+          ))}
         </View>
-      </View>
-      <FieldError message={errors.heightCm?.message ?? errors.weightKg?.message} />
+        <Text variant="caption" tone={days.length === daysPerWeek ? 'ink2' : 'danger'} style={{ marginTop: 8 }}>
+          {days.length === daysPerWeek
+            ? `${days.length} jour${days.length > 1 ? 's' : ''} choisi${days.length > 1 ? 's' : ''}.`
+            : `Choisis ${daysPerWeek} jour${daysPerWeek > 1 ? 's' : ''} (${days.length} pour l'instant).`}
+        </Text>
+      </Section>
 
-      <SectionTitle>Votre activité au quotidien</SectionTitle>
-      <Controller
-        control={control}
-        name="activityLevel"
-        render={({ field: { value, onChange } }) => (
-          <Select
-            label="Niveau d'activité"
-            title="Votre activité au quotidien"
-            value={value}
-            options={[...ACTIVITY_LEVELS]}
-            onChange={onChange}
-          />
-        )}
-      />
+      <Section title="Ton alimentation">
+        <Controller
+          control={control}
+          name="diet"
+          render={({ field: { value, onChange } }) => (
+            <Select label="Régime alimentaire" title="Ton alimentation" value={value} options={[...DIET_OPTIONS]} onChange={onChange} />
+          )}
+        />
+        <Controller
+          control={control}
+          name="allergies"
+          render={({ field: { value, onChange } }) => (
+            <Field label="Allergies ou intolérances (facultatif)" placeholder="Ex. : arachides, lactose" value={value} onChangeText={onChange} error={errors.allergies?.message} />
+          )}
+        />
+      </Section>
 
-      <SectionTitle>Votre niveau en musculation</SectionTitle>
-      <Controller
-        control={control}
-        name="experience"
-        render={({ field: { value, onChange } }) => (
-          <Segmented label="Niveau" value={value} onChange={onChange} options={[...EXPERIENCE_LEVELS]} />
-        )}
-      />
+      <Section title="Santé">
+        <Controller
+          control={control}
+          name="healthNotes"
+          render={({ field: { value, onChange } }) => (
+            <Field
+              label="Quelque chose à signaler ? (facultatif)"
+              multiline
+              placeholder="Blessure, douleur, traitement, grossesse… pour que ton coach adapte le programme"
+              value={value}
+              onChangeText={onChange}
+              error={errors.healthNotes?.message}
+              hint="Ton coach n'est pas un professionnel de santé : en cas de problème médical, demande l'avis de ton médecin avant de commencer."
+            />
+          )}
+        />
+      </Section>
 
-      <SectionTitle>Votre matériel</SectionTitle>
-      <Controller
-        control={control}
-        name="equipment"
-        render={({ field: { value, onChange } }) => (
-          <Select
-            label="Matériel"
-            title="Avec quoi vous entraînez-vous ?"
-            value={value}
-            options={[...EQUIPMENT_OPTIONS]}
-            onChange={onChange}
-          />
-        )}
-      />
-
-      <SectionTitle>Séances par semaine</SectionTitle>
-      <Controller
-        control={control}
-        name="daysPerWeek"
-        render={({ field: { value, onChange } }) => (
-          <Select
-            label="Séances par semaine"
-            title="Combien de séances par semaine ?"
-            value={value}
-            options={DAYS_OPTIONS}
-            onChange={onChange}
-          />
-        )}
-      />
-
-      <SectionTitle>Durée d&apos;une séance</SectionTitle>
-      <Controller
-        control={control}
-        name="sessionMinutes"
-        render={({ field: { value, onChange } }) => (
-          <Select
-            label="Durée d'une séance"
-            title="Combien de temps par séance ?"
-            value={value}
-            options={SESSION_MINUTES_OPTIONS}
-            onChange={onChange}
-          />
-        )}
-      />
-
-      <SectionTitle>Votre alimentation</SectionTitle>
-      <Controller
-        control={control}
-        name="diet"
-        render={({ field: { value, onChange } }) => (
-          <Select
-            label="Régime alimentaire"
-            title="Votre alimentation"
-            value={value}
-            options={[...DIET_OPTIONS]}
-            onChange={onChange}
-          />
-        )}
-      />
-      <Controller
-        control={control}
-        name="allergies"
-        render={({ field: { value, onChange } }) => (
-          <TextInput
-            className={inputClass}
-            placeholder="Allergies ou intolérances (optionnel)"
-
-            value={value}
-            onChangeText={onChange}
-          />
-        )}
-      />
-      <FieldError message={errors.allergies?.message} />
-
-      <SectionTitle>Santé</SectionTitle>
-      <Controller
-        control={control}
-        name="healthNotes"
-        render={({ field: { value, onChange } }) => (
-          <TextInput
-            className={`${inputClass} min-h-[90px]`}
-            style={{ textAlignVertical: 'top' }}
-            multiline
-            placeholder="Blessure, douleur, traitement, grossesse… (optionnel, pour que votre coach adapte le programme)"
-
-            value={value}
-            onChangeText={onChange}
-          />
-        )}
-      />
-      <FieldError message={errors.healthNotes?.message} />
-      <Text className="mb-5 text-xs text-ink-soft">
-        Votre coach n&apos;est pas un professionnel de santé : en cas de problème médical, demandez l&apos;avis de
-        votre médecin avant de commencer.
-      </Text>
-
-      {saveMutation.isError ? (
-        <Text className="mb-3 text-xs text-red-700">{(saveMutation.error as Error).message}</Text>
-      ) : null}
-
-      <PressableScale
-        onPress={handleSubmit((values) => saveMutation.mutate(values))}
-        disabled={saveMutation.isPending}
-        feedback="medium"
-        className="items-center rounded-full bg-ink px-5 py-4"
-      >
-        {saveMutation.isPending ? (
-          <ActivityIndicator className="text-paper" />
-        ) : (
-          <Text style={{ fontFamily: 'BricolageGrotesque_800ExtraBold' }} className="text-center text-base text-paper">
-            Enregistrer
-          </Text>
-        )}
-      </PressableScale>
-    </>
+      {saveMutation.isError ? <InlineNotice tone="error" message={errorMessage(saveMutation.error)} /> : null}
+    </Screen>
   );
 }
 
 export default function FitnessQuestionnaireScreen() {
-  const session = useAuthStore((s) => s.session);
-  const userId = session?.user.id;
+  const userId = useAuthStore((s) => s.session?.user.id);
+  const profileQuery = useQuery({ queryKey: ['fitnessProfile', userId], queryFn: () => fetchFitnessProfile(userId!), enabled: !!userId });
+  const scheduleQuery = useQuery({ queryKey: ['trainingSchedule', userId], queryFn: () => fetchTrainingSchedule(userId!), enabled: !!userId });
 
-  const profileQuery = useQuery({
-    queryKey: ['fitnessProfile', userId],
-    queryFn: () => fetchFitnessProfile(userId!),
-    enabled: !!userId,
-  });
-
+  if (!userId || profileQuery.isLoading || scheduleQuery.isLoading) {
+    return (
+      <Screen>
+        <ScreenHeader title="Ton profil" onBack={() => router.back()} />
+        <LoadingSkeleton preset="list" />
+      </Screen>
+    );
+  }
   return (
-    <ScrollView className="flex-1 bg-paper px-6 pt-16" contentContainerStyle={{ paddingBottom: 60 }}>
-      <Pressable onPress={() => router.back()} className="mb-5">
-        <Text style={{ fontFamily: 'Figtree_700Bold' }} className="text-sm text-ink-soft">
-          ← Retour
-        </Text>
-      </Pressable>
-      <Text style={{ fontFamily: 'Figtree_700Bold' }} className="mb-1 text-sm text-primary">
-        Coach forme
-      </Text>
-      <Text style={{ fontFamily: 'BricolageGrotesque_800ExtraBold' }} className="text-[28px] leading-8 text-ink">
-        Votre profil
-      </Text>
-
-      {!userId || profileQuery.isLoading ? (
-        <ActivityIndicator className="mt-6 text-primary" />
-      ) : (
-        <QuestionnaireForm userId={userId} initialProfile={profileQuery.data ?? null} />
-      )}
-    </ScrollView>
+    <QuestionnaireForm
+      userId={userId}
+      initialProfile={profileQuery.data ?? null}
+      initialSchedule={scheduleQuery.data ?? { training_slot: null, training_days: null }}
+    />
   );
 }

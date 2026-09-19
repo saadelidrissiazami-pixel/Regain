@@ -1,128 +1,134 @@
-import { zodResolver } from '@hookform/resolvers/zod';
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { router } from 'expo-router';
 import { useState } from 'react';
-import { Controller, useForm, useWatch } from 'react-hook-form';
-import { ActivityIndicator, ScrollView, View } from 'react-native';
-import { Text } from '../../src/components/typography';
+import { View } from 'react-native';
+import Animated, { FadeIn } from 'react-native-reanimated';
 
-import { Segmented } from '../../src/components/Segmented';
-import { SelectMulti } from '../../src/components/Select';
-import { Appear, PressableScale } from '../../src/components/motion';
+import { errorMessage, InlineNotice } from '../../src/components/feedback';
+import { Button, Field, ProgressBar, Screen, ScreenHeader, SegmentedControl, Select, SelectMulti, Text } from '../../src/components/ui';
+import { BUDGET_OPTIONS, ENERGY_LEVELS, ENERGY_SLOTS, GOAL_OPTIONS, SLEEP_OPTIONS } from '../../src/features/onboarding/options';
+import type { OnboardingFormValues } from '../../src/features/onboarding/schema';
+import type { EnergyLevel } from '../../src/features/planning/catalog';
 import { completeOnboarding } from '../../src/lib/profile';
+import { useOnboardingForm } from '../../src/screens/profile/useOnboardingForm';
 import { useAuthStore } from '../../src/store/authStore';
-import { BUDGET_OPTIONS, ENERGY_LEVELS, ENERGY_SLOTS, GOAL_OPTIONS } from '../../src/features/onboarding/options';
-import { onboardingSchema, type OnboardingFormValues } from '../../src/features/onboarding/schema';
 
+const STEPS: { title: string; subtitle: string; fields: (keyof OnboardingFormValues)[] }[] = [
+  { title: 'Bienvenue sur Regain 🌱', subtitle: 'Comment veux-tu qu’on t’appelle ?', fields: ['firstName'] },
+  { title: 'Qu’est-ce qui compte pour toi ?', subtitle: 'Ton coach choisit tes activités en fonction.', fields: ['primaryGoals'] },
+  { title: 'Ton rythme', subtitle: 'Pour placer chaque activité au bon moment.', fields: ['sleepMinutes', 'energyBySlot'] },
+  { title: 'Ton budget', subtitle: 'Pour des idées qui te conviennent vraiment.', fields: ['budgetLevel'] },
+];
+
+/** Accueil en 4 étapes courtes : une question par écran. */
 export default function OnboardingScreen() {
-  const session = useAuthStore((s) => s.session);
+  const userId = useAuthStore((s) => s.session?.user.id);
   const queryClient = useQueryClient();
-  const [serverError, setServerError] = useState<string | null>(null);
-
-  const {
-    control,
-    handleSubmit,
-    setValue,
-    formState: { errors },
-  } = useForm<OnboardingFormValues>({
-    resolver: zodResolver(onboardingSchema),
-    defaultValues: {
-      primaryGoals: [],
-      budgetLevel: 'modere',
-      energyBySlot: { matin: 'moyen', apres_midi: 'moyen', soir: 'moyen' },
-    },
-  });
-
-  // useWatch plutôt que watch() : watch n'est pas compatible avec la mémoïsation du compilateur React.
-  const selectedGoals = useWatch({ control, name: 'primaryGoals' });
+  const form = useOnboardingForm();
+  const [step, setStep] = useState(0);
+  const { values, set, errors } = form;
+  const current = STEPS[step];
+  const isLast = step === STEPS.length - 1;
 
   const mutation = useMutation({
-    mutationFn: (values: OnboardingFormValues) => {
-      if (!session?.user.id) throw new Error('Session introuvable');
-      return completeOnboarding(session.user.id, values);
+    mutationFn: () => {
+      if (!userId) throw new Error('Session introuvable. Reconnecte-toi puis réessaie.');
+      return completeOnboarding(userId, values);
     },
     onSuccess: async () => {
-      await queryClient.invalidateQueries({ queryKey: ['profile', session?.user.id] });
+      await queryClient.invalidateQueries({ queryKey: ['profile', userId] });
       router.replace('/(tabs)/planning');
     },
-    onError: (e: Error) => setServerError(e.message),
   });
 
+  const next = () => {
+    if (!form.validate(current.fields)) return;
+    if (isLast) mutation.mutate();
+    else setStep((s) => s + 1);
+  };
+
   return (
-    <ScrollView className="flex-1 bg-paper px-6 pt-16" contentContainerStyle={{ paddingBottom: 60 }}>
-      <Appear>
-        <Text style={{ fontFamily: 'Figtree_700Bold' }} className="mb-1 text-sm text-primary">
-          Bienvenue sur Regain 🌱
-        </Text>
-        <Text style={{ fontFamily: 'BricolageGrotesque_800ExtraBold' }} className="mb-7 text-[28px] leading-8 text-ink">
-          Parlons de vous
-        </Text>
-      </Appear>
-
-      <Text style={{ fontFamily: 'BricolageGrotesque_800ExtraBold' }} className="mb-2.5 text-sm text-ink">
-        Quels sont vos objectifs ?
-      </Text>
-      <SelectMulti
-        label="Objectifs"
-        title="Quels sont vos objectifs ?"
-        placeholder="Choisir un ou plusieurs objectifs"
-        values={selectedGoals ?? []}
-        options={[...GOAL_OPTIONS]}
-        onChange={(values) => setValue('primaryGoals', values)}
-      />
-      {errors.primaryGoals ? (
-        <Text className="mb-5 text-xs text-red-700">{errors.primaryGoals.message}</Text>
-      ) : (
-        <View className="mb-5" />
-      )}
-
-      <Text style={{ fontFamily: 'BricolageGrotesque_800ExtraBold' }} className="mb-2.5 text-sm text-ink">
-        Quel est votre budget pour vos activités ?
-      </Text>
-      <Controller
-        control={control}
-        name="budgetLevel"
-        render={({ field: { value, onChange } }) => (
-          <View className="mb-4">
-            <Segmented label="Budget" value={value} onChange={onChange} options={[...BUDGET_OPTIONS]} />
-          </View>
-        )}
-      />
-
-      <Text style={{ fontFamily: 'BricolageGrotesque_800ExtraBold' }} className="mb-2.5 text-sm text-ink">
-        Votre énergie habituelle...
-      </Text>
-      {ENERGY_SLOTS.map((slot) => (
-        <View key={slot.key} className="mb-4">
-          <Text style={{ fontFamily: 'Figtree_700Bold' }} className="mb-2 text-xs uppercase tracking-wide text-ink-soft">
-            {slot.label}
-          </Text>
-          <Controller
-            control={control}
-            name={`energyBySlot.${slot.key}` as const}
-            render={({ field: { value, onChange } }) => (
-              <Segmented label={slot.label} value={value} onChange={onChange} options={[...ENERGY_LEVELS]} />
-            )}
-          />
+    <Screen
+      keyboard
+      footer={
+        <View style={{ gap: 4 }}>
+          {mutation.isError ? <InlineNotice tone="error" message={errorMessage(mutation.error)} /> : null}
+          <Button label={isLast ? 'Commencer' : 'Continuer'} iconRight={isLast ? undefined : 'arrow-forward'} loading={mutation.isPending} onPress={next} />
+          {step > 0 ? <Button label="Retour" variant="ghost" onPress={() => setStep((s) => s - 1)} /> : null}
         </View>
-      ))}
+      }
+    >
+      <View style={{ marginBottom: 28 }}>
+        <Text variant="caption" tone="ink2" style={{ marginBottom: 8 }}>
+          Étape {step + 1} sur {STEPS.length}
+        </Text>
+        <ProgressBar progress={(step + 1) / STEPS.length} height={6} />
+      </View>
 
-      {serverError ? <Text className="mb-3 text-xs text-red-700">{serverError}</Text> : null}
+      <Animated.View key={step} entering={FadeIn.duration(220)}>
+        <ScreenHeader title={current.title} subtitle={current.subtitle} />
 
-      <PressableScale
-        onPress={handleSubmit((values) => mutation.mutate(values))}
-        disabled={mutation.isPending}
-        feedback="medium"
-        className="mt-4 items-center rounded-full bg-ink px-5 py-4"
-      >
-        {mutation.isPending ? (
-          <ActivityIndicator className="text-paper" />
-        ) : (
-          <Text style={{ fontFamily: 'BricolageGrotesque_800ExtraBold' }} className="text-center text-base text-paper">
-            Commencer
-          </Text>
-        )}
-      </PressableScale>
-    </ScrollView>
+        {step === 0 ? (
+          <Field
+            label="Ton prénom"
+            value={values.firstName}
+            onChangeText={(text) => set('firstName', text)}
+            placeholder="Ex. : Camille"
+            autoFocus
+            autoCapitalize="words"
+            autoComplete="given-name"
+            textContentType="givenName"
+            returnKeyType="next"
+            onSubmitEditing={next}
+            error={errors.firstName}
+          />
+        ) : null}
+
+        {step === 1 ? (
+          <>
+            <SelectMulti
+              label="Tes objectifs"
+              title="Qu’est-ce qui compte pour toi ?"
+              values={values.primaryGoals}
+              options={[...GOAL_OPTIONS]}
+              onChange={(goals) => set('primaryGoals', goals)}
+              placeholder="Choisir un ou plusieurs objectifs"
+            />
+            {errors.primaryGoals ? (
+              <Text variant="caption" tone="danger">
+                {errors.primaryGoals}
+              </Text>
+            ) : null}
+          </>
+        ) : null}
+
+        {step === 2 ? (
+          <>
+            <Select label="Combien d’heures dors-tu d’habitude ?" value={values.sleepMinutes} options={SLEEP_OPTIONS} onChange={(m) => set('sleepMinutes', m)} />
+            <Text variant="label" style={{ marginTop: 16, marginBottom: 4 }}>
+              Ton énergie habituelle
+            </Text>
+            {ENERGY_SLOTS.map((slot) => (
+              <View key={slot.key} style={{ marginTop: 10 }}>
+                <Text variant="caption" tone="ink2" style={{ marginBottom: 6 }}>
+                  {slot.label}
+                </Text>
+                <SegmentedControl<EnergyLevel>
+                  label={`Énergie : ${slot.label}`}
+                  tone="surface"
+                  value={values.energyBySlot[slot.key]}
+                  onChange={(level) => set('energyBySlot', { ...values.energyBySlot, [slot.key]: level })}
+                  options={[...ENERGY_LEVELS]}
+                />
+              </View>
+            ))}
+          </>
+        ) : null}
+
+        {step === 3 ? (
+          <SegmentedControl label="Budget" tone="surface" value={values.budgetLevel} onChange={(b) => set('budgetLevel', b)} options={[...BUDGET_OPTIONS]} />
+        ) : null}
+      </Animated.View>
+    </Screen>
   );
 }

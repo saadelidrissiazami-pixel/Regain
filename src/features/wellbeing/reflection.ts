@@ -1,12 +1,12 @@
 export type MoodOption = { value: number; emoji: string; label: string };
 
-/** Ressenti de fin de séance : 1 = très difficile … 5 = très bien. */
+/** Ressenti de fin de séance, comparé à avant : 1 = beaucoup moins bien … 5 = beaucoup mieux. */
 export const MOOD_OPTIONS: MoodOption[] = [
-  { value: 1, emoji: '😣', label: 'Très difficile' },
-  { value: 2, emoji: '😕', label: 'Difficile' },
-  { value: 3, emoji: '😐', label: 'Neutre' },
-  { value: 4, emoji: '🙂', label: 'Apaisé' },
-  { value: 5, emoji: '😊', label: 'Très bien' },
+  { value: 1, emoji: '😣', label: 'Beaucoup moins bien' },
+  { value: 2, emoji: '😕', label: 'Un peu moins bien' },
+  { value: 3, emoji: '😐', label: 'Pareil' },
+  { value: 4, emoji: '🙂', label: 'Un peu mieux' },
+  { value: 5, emoji: '😊', label: 'Beaucoup mieux' },
 ];
 
 export function moodOption(value: number | null | undefined): MoodOption | null {
@@ -15,34 +15,34 @@ export function moodOption(value: number | null | undefined): MoodOption | null 
 
 const PROMPTS_BY_CATEGORY: Record<string, string[]> = {
   Respiration: [
-    "Qu'est-ce qui a changé dans votre corps pendant la séance ?",
-    'Où sentez-vous encore de la tension ?',
+    "Qu'est-ce qui a changé dans ton corps pendant la séance ?",
+    'Où sens-tu encore de la tension ?',
   ],
   Méditation: [
     'Quelles pensées sont revenues le plus souvent ?',
-    "Qu'avez-vous réussi à laisser passer ?",
+    "Qu'as-tu réussi à laisser passer ?",
   ],
   Journaling: [
-    "Qu'est-ce qui occupe le plus votre esprit aujourd'hui ?",
+    "Qu'est-ce qui occupe le plus ton esprit aujourd'hui ?",
     'Quelle petite chose a été agréable aujourd’hui ?',
   ],
   'Confiance en soi': [
-    "Qu'est-ce que vous vous êtes dit de dur, et que diriez-vous à un ami dans la même situation ?",
-    'De quoi êtes-vous fier aujourd’hui, même de petit ?',
+    "Qu'est-ce que tu t'es dit de dur, et que dirais-tu à un ami dans la même situation ?",
+    'De quoi es-tu fier aujourd’hui, même de petit ?',
   ],
   Sommeil: [
-    "Qu'est-ce qui vous empêche de lâcher prise ce soir ?",
-    'Que pouvez-vous reporter à demain sans risque ?',
+    "Qu'est-ce qui t'empêche de lâcher prise ce soir ?",
+    'Que peux-tu reporter à demain sans risque ?',
   ],
   'En public': [
-    "Qu'avez-vous remarqué autour de vous, plutôt que sur vous ?",
+    "Qu'as-tu remarqué autour de toi, plutôt que sur toi ?",
     "Qu'est-ce qui a été plus facile que prévu ?",
   ],
 };
 
 const DEFAULT_PROMPTS = [
-  'Comment vous sentez-vous, là, maintenant ?',
-  "Qu'est-ce que vous retenez de cette séance ?",
+  'Comment te sens-tu, là, maintenant ?',
+  "Qu'est-ce que tu retiens de cette séance ?",
 ];
 
 export function promptsForCategory(category: string | undefined): string[] {

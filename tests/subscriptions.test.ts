@@ -4,8 +4,11 @@ import {
   annualSavingsPercent,
   defaultPackage,
   describePackage,
+  freeTrialDays,
   introOfferLabel,
   sortPackages,
+  trialReminderDate,
+  trialTimeline,
   type PackageLike,
 } from '../src/features/subscriptions/packages';
 
@@ -61,5 +64,30 @@ describe('offres du paywall', () => {
       '9,99 € pour 6 mois'
     );
     expect(introOfferLabel(null)).toBeNull();
+  });
+});
+
+describe("essai gratuit", () => {
+  const free = (unit: string, units: number) => ({ price: 0, priceString: '0,00 €', cycles: 1, periodUnit: unit, periodNumberOfUnits: units });
+
+  it("calcule sa durée en jours, et ignore les offres payantes", () => {
+    expect(freeTrialDays(free('WEEK', 1))).toBe(7);
+    expect(freeTrialDays(free('DAY', 14))).toBe(14);
+    expect(freeTrialDays({ ...free('MONTH', 1), price: 1.99 })).toBeNull();
+    expect(freeTrialDays(null)).toBeNull();
+  });
+
+  it("annonce le rappel et la date du premier paiement", () => {
+    expect(trialTimeline(7, '49,99 €')).toEqual([
+      { when: "Aujourd'hui", what: 'Tout Premium est débloqué' },
+      { when: 'Jour 5', what: "On vous prévient que l'essai se termine" },
+      { when: 'Jour 7', what: 'Premier paiement de 49,99 €, sauf si vous annulez avant' },
+    ]);
+  });
+
+  it("programme le rappel deux jours avant la fin, sauf s'il est trop tard", () => {
+    const end = new Date('2026-09-26T10:00:00Z');
+    expect(trialReminderDate(end, new Date('2026-09-19T10:00:00Z'))?.toISOString()).toBe('2026-09-24T10:00:00.000Z');
+    expect(trialReminderDate(end, new Date('2026-09-25T10:00:00Z'))).toBeNull();
   });
 });

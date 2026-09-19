@@ -1,59 +1,58 @@
 import { useQuery } from '@tanstack/react-query';
 import { router } from 'expo-router';
-import { Pressable, ScrollView, View } from 'react-native';
+import { View } from 'react-native';
 
-import { Appear, Skeleton } from '../../src/components/motion';
-import { Text } from '../../src/components/typography';
+import { EmptyState, ErrorState, LoadingSkeleton } from '../../src/components/feedback';
+import { Appear, Card, Screen, ScreenHeader, Text } from '../../src/components/ui';
 import { averageMood, moodOption } from '../../src/features/wellbeing/reflection';
 import { formatDateTimeLabel } from '../../src/lib/formatDate';
 import { fetchWellbeingJournal, type JournalEntry } from '../../src/lib/wellbeing';
 import { useAuthStore } from '../../src/store/authStore';
+import { useTheme } from '../../src/theme/ThemeProvider';
 
 function EntryCard({ entry }: { entry: JournalEntry }) {
+  const theme = useTheme();
   const mood = moodOption(entry.mood);
   return (
-    <View className="mb-3 rounded-2xl border border-line bg-surface p-4 shadow-sm">
-      <View className="flex-row items-start justify-between">
-        <View className="flex-1 pr-3">
-          <Text style={{ fontFamily: 'BricolageGrotesque_800ExtraBold' }} className="text-sm text-ink">
-            {entry.program?.title ?? 'Séance'}
+    <Card style={{ marginBottom: 12 }}>
+      <View style={{ flexDirection: 'row', alignItems: 'flex-start' }}>
+        <View style={{ flex: 1, paddingRight: 12 }}>
+          <Text variant="label">{entry.program?.title ?? 'Séance'}</Text>
+          <Text variant="caption" tone="ink2" style={{ marginTop: 2 }}>
+            {formatDateTimeLabel(entry.completed_at)}
           </Text>
-          <Text className="mt-0.5 text-xs text-ink-soft">{formatDateTimeLabel(entry.completed_at)}</Text>
         </View>
         {mood ? (
-          <View className="items-center">
-            <Text className="text-2xl">{mood.emoji}</Text>
-            <Text className="text-[10px] text-ink-soft">{mood.label}</Text>
+          <View style={{ alignItems: 'center', maxWidth: 96 }}>
+            <Text variant="section">{mood.emoji}</Text>
+            <Text variant="caption" tone="ink2" center style={{ fontSize: 11, lineHeight: 14 }}>
+              {mood.label}
+            </Text>
           </View>
         ) : null}
       </View>
-
       {entry.reflections.map((reflection) => (
-        <View key={reflection.prompt} className="mt-3">
-          <Text style={{ fontFamily: 'Figtree_700Bold' }} className="text-[11px] uppercase tracking-wide text-ink-soft">
+        <View key={reflection.prompt} style={{ marginTop: 12 }}>
+          <Text variant="caption" tone="ink2">
             {reflection.prompt}
           </Text>
-          <Text className="mt-0.5 text-sm leading-5 text-ink">{reflection.answer}</Text>
+          <Text variant="bodySm" style={{ marginTop: 2 }}>
+            {reflection.answer}
+          </Text>
         </View>
       ))}
-
       {entry.note ? (
-        <View className="mt-3 rounded-xl bg-paper p-3">
-          <Text className="text-sm leading-5 text-ink">{entry.note}</Text>
+        <View style={{ marginTop: 12, borderRadius: 12, padding: 12, backgroundColor: theme.sage100 }}>
+          <Text variant="bodySm">{entry.note}</Text>
         </View>
       ) : null}
-    </View>
+    </Card>
   );
 }
 
 export default function WellbeingJournalScreen() {
   const userId = useAuthStore((s) => s.session?.user.id);
-
-  const journalQuery = useQuery({
-    queryKey: ['wellbeingJournal', userId],
-    queryFn: () => fetchWellbeingJournal(userId!),
-    enabled: !!userId,
-  });
+  const journalQuery = useQuery({ queryKey: ['wellbeingJournal', userId], queryFn: () => fetchWellbeingJournal(userId!), enabled: !!userId });
 
   const entries = journalQuery.data ?? [];
   const written = entries.filter((entry) => entry.note || entry.reflections.length > 0).length;
@@ -61,72 +60,45 @@ export default function WellbeingJournalScreen() {
   const averageEmoji = moodOption(average === null ? null : Math.round(average))?.emoji;
 
   return (
-    <ScrollView className="flex-1 bg-paper px-5 pt-16" contentContainerStyle={{ paddingBottom: 40 }}>
-      <Pressable onPress={() => router.back()} className="mb-5">
-        <Text style={{ fontFamily: 'Figtree_700Bold' }} className="text-sm text-ink-soft">
-          ← Retour
-        </Text>
-      </Pressable>
-
-      <Appear>
-        <Text style={{ fontFamily: 'Figtree_700Bold' }} className="mb-1 text-sm text-calm">
-          Bien-être
-        </Text>
-        <Text style={{ fontFamily: 'BricolageGrotesque_800ExtraBold' }} className="mb-6 text-[28px] leading-8 text-ink">
-          Mon journal
-        </Text>
-      </Appear>
-
+    <Screen refreshing={journalQuery.isRefetching} onRefresh={() => journalQuery.refetch()}>
+      <ScreenHeader overline="Bien-être" title="Mon journal" subtitle="Tes ressentis et tes mots, séance après séance." onBack={() => router.back()} />
       {journalQuery.isLoading ? (
-        <View>
-          <Skeleton height={120} />
-          <Skeleton height={120} />
-        </View>
+        <LoadingSkeleton preset="list" />
       ) : journalQuery.isError ? (
-        <View className="rounded-2xl border border-line bg-surface p-4">
-          <Text className="text-sm text-ink">Impossible de charger votre journal pour le moment.</Text>
-          <Pressable onPress={() => journalQuery.refetch()} className="mt-2">
-            <Text style={{ fontFamily: 'Figtree_700Bold' }} className="text-sm text-primary">
-              Réessayer
-            </Text>
-          </Pressable>
-        </View>
+        <ErrorState title="Ton journal n'a pas pu se charger" onRetry={() => journalQuery.refetch()} />
       ) : entries.length === 0 ? (
-        <View className="rounded-2xl border border-line bg-surface p-5">
-          <Text style={{ fontFamily: 'BricolageGrotesque_800ExtraBold' }} className="mb-1 text-base text-ink">
-            Rien à relire pour l'instant
-          </Text>
-          <Text className="text-sm leading-5 text-ink-soft">
-            À la fin de chaque séance de bien-être, vous notez votre ressenti et répondez à deux questions. Tout
-            se retrouve ici.
-          </Text>
-        </View>
+        <EmptyState
+          icon="book-outline"
+          title="Rien à relire pour l'instant"
+          body="À la fin de chaque séance, tu notes ton ressenti et tu réponds à deux questions. Tout se retrouve ici."
+          actionLabel="Choisir une séance"
+          onAction={() => router.navigate('/(tabs)/wellbeing')}
+        />
       ) : (
         <>
-          <Appear index={1}>
-            <View className="mb-5 flex-row items-center rounded-2xl border border-line bg-surface p-4 shadow-sm">
-              <Text className="mr-3 text-3xl">{averageEmoji ?? '🌱'}</Text>
-              <View className="flex-1">
-                <Text style={{ fontFamily: 'BricolageGrotesque_800ExtraBold' }} className="text-sm text-ink">
-                  {entries.length} séance{entries.length > 1 ? 's' : ''} terminée{entries.length > 1 ? 's' : ''}
-                </Text>
-                <Text className="text-xs text-ink-soft">
-                  {average === null
-                    ? 'Aucun ressenti noté pour le moment.'
-                    : `Ressenti moyen : ${average} sur 5`}
-                  {written > 0 ? ` · ${written} avec vos mots` : ''}
-                </Text>
+          <Appear>
+            <Card variant="tinted" style={{ marginBottom: 16 }}>
+              <View style={{ flexDirection: 'row', alignItems: 'center', gap: 12 }}>
+                <Text variant="headline">{averageEmoji ?? '🌱'}</Text>
+                <View style={{ flex: 1 }}>
+                  <Text variant="label">
+                    {entries.length} séance{entries.length > 1 ? 's' : ''} terminée{entries.length > 1 ? 's' : ''}
+                  </Text>
+                  <Text variant="caption" tone="ink2">
+                    {average === null ? 'Aucun ressenti noté pour le moment.' : `Ressenti moyen : ${String(average).replace('.', ',')} sur 5`}
+                    {written > 0 ? ` · ${written} avec tes mots` : ''}
+                  </Text>
+                </View>
               </View>
-            </View>
+            </Card>
           </Appear>
-
           {entries.map((entry, i) => (
-            <Appear key={entry.id} index={i + 2}>
+            <Appear key={entry.id} index={i + 1}>
               <EntryCard entry={entry} />
             </Appear>
           ))}
         </>
       )}
-    </ScrollView>
+    </Screen>
   );
 }

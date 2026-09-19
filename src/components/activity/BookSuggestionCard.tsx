@@ -1,29 +1,32 @@
 import { View } from 'react-native';
-import { Text } from '../typography';
+
 import { pickBookForGoals } from '../../features/activities/books';
+import { useTheme } from '../../theme/ThemeProvider';
+import { Card } from '../ui/Card';
+import { Text } from '../ui/Text';
 
 export function BookSuggestionCard({ primaryGoals }: { primaryGoals: string[] }) {
+  const theme = useTheme();
   const book = pickBookForGoals(primaryGoals);
-
   return (
-    <View className="mb-6 rounded-2xl border border-line bg-surface p-4 shadow-sm">
-      <Text style={{ fontFamily: 'BricolageGrotesque_800ExtraBold' }} className="mb-2.5 text-sm text-ink">
+    <Card style={{ marginBottom: 16 }}>
+      <Text variant="overline" tone="ink2">
         📖 Suggestion de lecture
       </Text>
-      <Text style={{ fontFamily: 'BricolageGrotesque_800ExtraBold' }} className="text-base text-ink">
+      <Text variant="cardTitle" style={{ marginTop: 8 }}>
         {book.title}
       </Text>
-      <Text className="mb-3 text-xs text-ink-soft">
+      <Text variant="caption" tone="ink2" style={{ marginTop: 2 }}>
         {book.author} · {book.year}
       </Text>
-      <View className="rounded-xl bg-primary-soft p-3">
-        <Text style={{ fontFamily: 'Figtree_700Bold' }} className="text-sm italic leading-5 text-ink">
+      <View style={{ marginTop: 12, borderRadius: 14, padding: 14, backgroundColor: theme.sage100 }}>
+        <Text variant="bodySm" style={{ fontStyle: 'italic' }}>
           « {book.keyIdea} »
         </Text>
       </View>
-      <Text className="mt-2 text-[11px] text-ink-soft">
-        Idée clé reformulée à partir de ce texte du domaine public — pas une citation exacte.
+      <Text variant="caption" tone="ink3" style={{ marginTop: 8 }}>
+        Idée clé reformulée à partir de ce texte du domaine public, pas une citation exacte.
       </Text>
-    </View>
+    </Card>
   );
 }
