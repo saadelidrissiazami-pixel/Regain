@@ -10,8 +10,10 @@ import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 import { wellbeingTheme } from '../../components/cards/wellbeingThemes';
 import { EmptyState, LoadingSkeleton } from '../../components/feedback';
-import { Button, haptic, IconButton, ListRow, Pill, Screen, Sheet, Tag, Text } from '../../components/ui';
+import { Button, ChoiceChip, haptic, IconButton, ListRow, Pill, PressableScale, Screen, Sheet, Tag, Text } from '../../components/ui';
+import { AMBIENCES, ambienceLabel, initialAmbience, type AmbienceChoice } from '../../features/wellbeing/ambience';
 import { CONTENT_BY_SLUG } from '../../features/wellbeing/content';
+import { loadAmbiencePreference, saveAmbiencePreference, useAmbiencePlayer } from '../../lib/ambience';
 import { usePremium } from '../../lib/premium';
 import { fetchPrograms, markProgramCompleted, type SessionReview as Review } from '../../lib/wellbeing';
 import { useAuthStore } from '../../store/authStore';
@@ -48,6 +50,27 @@ export default function WellbeingSessionScreen() {
   const programsQuery = useQuery({ queryKey: ['wellbeingPrograms'], queryFn: fetchPrograms });
   const program = programsQuery.data?.find((p) => p.slug === slug);
   const content = slug ? CONTENT_BY_SLUG[slug] : undefined;
+
+  // Musique d'ambiance : choisie selon la catégorie et le dernier choix, jouée pendant la séance.
+  const [ambience, setAmbience] = useState<AmbienceChoice>('off');
+  const category = program?.category;
+  useEffect(() => {
+    if (!category) return;
+    let cancelled = false;
+    loadAmbiencePreference().then((saved) => {
+      if (!cancelled) setAmbience(initialAmbience(category, saved));
+    });
+    return () => {
+      cancelled = true;
+    };
+  }, [category]);
+  useAmbiencePlayer(ambience, { active: stage === 'prep' || stage === 'play', ducked: audioOn });
+
+  const chooseAmbience = (choice: AmbienceChoice) => {
+    setAmbience(choice);
+    saveAmbiencePreference(choice);
+  };
+  const playingLabel = ambienceLabel(ambience);
 
   const completeMutation = useMutation({
     mutationFn: (review: Review) => markProgramCompleted(userId!, program!.id, review),
@@ -206,9 +229,19 @@ export default function WellbeingSessionScreen() {
         contentContainerStyle={{ flexGrow: 1, justifyContent: 'center', paddingHorizontal: 24, paddingTop: 16, paddingBottom: insets.bottom + 24 }}
         showsVerticalScrollIndicator={false}
       >
-        {audioOn ? (
-          <View style={{ alignSelf: 'center', marginBottom: 16 }}>
-            <Pill icon="volume-high-outline" label="Guidage vocal" tone="onImage" />
+        {audioOn || playingLabel ? (
+          <View style={{ alignSelf: 'center', marginBottom: 16, flexDirection: 'row', gap: 8 }}>
+            {audioOn ? <Pill icon="volume-high-outline" label="Guidage vocal" tone="onImage" /> : null}
+            {playingLabel ? (
+              <PressableScale
+                onPress={() => setMenuOpen(true)}
+                feedback="selection"
+                accessibilityRole="button"
+                accessibilityLabel={`Musique : ${playingLabel}. Changer d'ambiance`}
+              >
+                <Pill icon="musical-notes-outline" label={playingLabel} tone="onImage" />
+              </PressableScale>
+            ) : null}
           </View>
         ) : null}
         <View key={runKey}>
@@ -255,6 +288,28 @@ export default function WellbeingSessionScreen() {
               />
             }
           />
+          <ListRow
+            icon="musical-notes-outline"
+            title="Musique d'ambiance"
+            subtitle={
+              playingLabel
+                ? AMBIENCES.find((a) => a.id === ambience)?.description
+                : 'Une musique calme pour t’aider à relâcher'
+            }
+            chevron={false}
+          />
+          <View style={{ flexDirection: 'row', flexWrap: 'wrap', gap: 8, paddingBottom: 14, paddingLeft: 4 }}>
+            <ChoiceChip label="Aucune" selected={ambience === 'off'} multiple={false} onPress={() => chooseAmbience('off')} />
+            {AMBIENCES.map((option) => (
+              <ChoiceChip
+                key={option.id}
+                label={option.label}
+                selected={ambience === option.id}
+                multiple={false}
+                onPress={() => chooseAmbience(option.id)}
+              />
+            ))}
+          </View>
           <ListRow
             icon="refresh-outline"
             title="Recommencer la séance"

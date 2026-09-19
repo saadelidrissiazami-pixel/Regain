@@ -54,7 +54,8 @@
         }
       ],
       "expo-sharing",
-      "./plugins/withIosSceneDelegate"
+      "./plugins/withIosSceneDelegate",
+      "expo-audio"
     ]
   }
 }
