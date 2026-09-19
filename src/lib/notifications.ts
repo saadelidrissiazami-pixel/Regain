@@ -124,7 +124,7 @@ export async function scheduleTrialReminder(trialEnd: Date): Promise<boolean> {
     identifier: TRIAL_REMINDER_ID,
     content: {
       title: 'Regain Premium',
-      body: `Votre essai gratuit se termine dans ${TRIAL_REMINDER_DAYS_BEFORE} jours. Pour ne pas être débité, annulez depuis Profil → Gérer mon abonnement.`,
+      body: `Votre essai gratuit se termine dans ${TRIAL_REMINDER_DAYS_BEFORE} jours. Pour ne pas être débité, annulez depuis Profil → Paramètres → Gérer mon abonnement.`,
       data: { route: '/(tabs)/profile' },
     },
     trigger: { type: Notifications.SchedulableTriggerInputTypes.DATE, date },
