@@ -150,10 +150,11 @@ Points qui font échouer une revue, déjà traités dans l'app :
 Reste à fournir par toi : **un compte de démonstration** (e-mail et mot de passe d'un compte
 Regain rempli d'exemples) dans les notes de revue, sinon l'app est renvoyée.
 
-Pour le remplir : crée le compte depuis l'app, puis lance
+Choisis une adresse dédiée et un mot de passe, puis lance la commande en **remplaçant les deux
+valeurs d'exemple** (le compte est créé s'il n'existe pas encore) :
 
 ```bash
-DEMO_EMAIL=demo@exemple.fr DEMO_PASSWORD='…' node scripts/seed-demo.mjs
+DEMO_EMAIL=regain.demo@exemple.fr DEMO_PASSWORD='mot-de-passe' node scripts/seed-demo.mjs
 ```
 
 Le script se connecte comme ce compte et lui crée des disponibilités, un planning dont deux

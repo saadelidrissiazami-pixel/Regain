@@ -4,9 +4,10 @@
  *
  *   DEMO_EMAIL=demo@exemple.fr DEMO_PASSWORD='…' node scripts/seed-demo.mjs
  *
- * Le compte doit déjà exister (créez-le depuis l'app). Le script se connecte comme lui et
- * n'écrit que ses propres données : le mot de passe ne sort pas de votre terminal.
- * Relançable : il remplace ce qu'il a créé la fois précédente.
+ * Remplacez les deux valeurs par les vôtres : ce sont les identifiants que vous donnerez à
+ * l'équipe de revue Apple. Le compte est créé s'il n'existe pas encore.
+ * Le script se connecte comme lui et n'écrit que ses propres données : le mot de passe ne sort
+ * pas de votre terminal. Relançable : il remplace ce qu'il a créé la fois précédente.
  */
 import { readFileSync } from 'node:fs';
 
@@ -27,8 +28,21 @@ const ANON = env('EXPO_PUBLIC_SUPABASE_ANON_KEY');
 const EMAIL = process.env.DEMO_EMAIL;
 const PASSWORD = process.env.DEMO_PASSWORD;
 
-if (!URL_BASE || !ANON) throw new Error('EXPO_PUBLIC_SUPABASE_URL et EXPO_PUBLIC_SUPABASE_ANON_KEY sont introuvables (.env).');
-if (!EMAIL || !PASSWORD) throw new Error('Renseignez DEMO_EMAIL et DEMO_PASSWORD avant de lancer le script.');
+// Script lancé à la main : une phrase lisible vaut mieux qu'une trace Node.
+function fail(message) {
+  console.error(`\n✖ ${message}\n`);
+  process.exit(1);
+}
+
+const usage = "DEMO_EMAIL=regain.demo@exemple.fr DEMO_PASSWORD='mot-de-passe' node scripts/seed-demo.mjs";
+
+if (!URL_BASE || !ANON) fail('EXPO_PUBLIC_SUPABASE_URL et EXPO_PUBLIC_SUPABASE_ANON_KEY sont introuvables (.env).');
+// Le « … » de la documentation recopié tel quel est l'erreur la plus probable : la dire en clair.
+if (!EMAIL || !PASSWORD) fail(`Renseignez DEMO_EMAIL et DEMO_PASSWORD :\n  ${usage}`);
+if (!/^[^@\s]+@[^@\s.]+\.[^@\s]+$/.test(EMAIL)) {
+  fail(`« ${EMAIL} » n'est pas une adresse e-mail. Remplacez les valeurs d'exemple par les vôtres :\n  ${usage}`);
+}
+if (PASSWORD.length < 8) fail('DEMO_PASSWORD doit faire au moins 8 caractères (exigence de Supabase).');
 
 const iso = (date) => date.toISOString().slice(0, 10);
 const day = (offset) => {
@@ -61,20 +75,43 @@ async function api(path, { method = 'GET', body, prefer } = {}) {
   return text ? JSON.parse(text) : null;
 }
 
-async function signIn() {
-  const response = await fetch(`${URL_BASE}/auth/v1/token?grant_type=password`, {
+async function auth(path, label) {
+  const response = await fetch(`${URL_BASE}${path}`, {
     method: 'POST',
     headers: { apikey: ANON, 'Content-Type': 'application/json' },
     body: JSON.stringify({ email: EMAIL, password: PASSWORD }),
   });
   const data = await response.json();
-  if (!response.ok) throw new Error(`Connexion refusée : ${data.error_description ?? data.msg ?? response.status}`);
-  token = data.access_token;
-  return data.user.id;
+  if (!response.ok) return { error: data.error_description ?? data.msg ?? `${label} → ${response.status}` };
+  return data;
 }
 
-const userId = await signIn();
-console.log(`Connecté comme ${EMAIL}`);
+async function signInOrCreate() {
+  const session = await auth('/auth/v1/token?grant_type=password', 'connexion');
+  if (!session.error) return { userId: session.user.id, created: false, accessToken: session.access_token };
+
+  // Compte inexistant : on le crée. Toute autre erreur (mot de passe faux) doit rester visible.
+  if (!/invalid login credentials/i.test(session.error)) fail(`Connexion refusée : ${session.error}`);
+
+  const signUp = await auth('/auth/v1/signup', 'inscription');
+  // Supabase répond « Invalid login credentials » aussi bien pour un compte absent que pour un
+  // mot de passe faux ; c'est l'inscription qui tranche.
+  if (/already registered/i.test(signUp.error ?? '')) {
+    fail(`Le compte ${EMAIL} existe, mais ce mot de passe ne correspond pas.`);
+  }
+  if (signUp.error) fail(`Création du compte refusée : ${signUp.error}`);
+  if (!signUp.access_token) {
+    fail(
+      `Compte créé, mais Supabase attend une confirmation par e-mail.\n` +
+        `  Ouvrez le lien envoyé à ${EMAIL}, puis relancez cette commande.`,
+    );
+  }
+  return { userId: signUp.user.id, created: true, accessToken: signUp.access_token };
+}
+
+const { userId, created, accessToken } = await signInOrCreate();
+token = accessToken;
+console.log(created ? `Compte ${EMAIL} créé` : `Connecté comme ${EMAIL}`);
 
 // 1. Profil et préférences : l'accueil est considéré comme terminé.
 await api('/rest/v1/profiles', {
