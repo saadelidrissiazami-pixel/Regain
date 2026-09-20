@@ -21,14 +21,18 @@ les produits, ce que vous seul pouvez faire. Les identifiants ci-dessous doivent
 
 RevenueCat fournit un **Test Store** : de faux achats, mais un vrai parcours complet.
 
-1. Créez un compte sur [revenuecat.com](https://www.revenuecat.com) et un projet « Regain ».
-2. *Product catalog → Entitlements* : créez `premium`.
-3. *Product catalog → Products* (Test Store) : créez `regain_premium_monthly` et
-   `regain_premium_annual` avec un prix, et rattachez-les à l'entitlement `premium`.
-4. *Product catalog → Offerings* : créez `default`, ajoutez les packages *Monthly* et *Annual*,
-   et marquez l'offre *Current*.
-5. *Apps & providers → Test configuration* : copiez la clé Test Store dans `.env` :
+1. ~~Créez un compte sur [revenuecat.com](https://www.revenuecat.com) et un projet « Regain ».~~ **Fait**
+2. ~~*Product catalog → Entitlements* : `premium`.~~ **Fait**
+3. ~~*Product catalog → Products* (Test Store) : `regain_premium_monthly` (9,99) et
+   `regain_premium_annual` (49,99, essai 1 semaine), rattachés à `premium`.~~ **Fait**
+4. ~~*Product catalog → Offerings* : `default`, packages `$rc_monthly` et `$rc_annual`.~~ **Fait**
+5. *Apps* : copiez la clé Test Store dans `.env` :
    `EXPO_PUBLIC_REVENUECAT_TEST_STORE_KEY=...`
+
+> Le projet créé par RevenueCat contient un catalogue de démonstration (`regain_pro`,
+> `monthly`/`yearly`/`lifetime`) qu'il ne faut pas confondre avec le nôtre. Seul l'entitlement
+> `premium` débloque l'app ; les prix du Test Store sont en dollars, ceux de l'App Store seront
+> en euros.
 6. Lancez un build de développement :
    - simulateur iOS (Xcode requis, sans compte Apple payant) : `npx expo run:ios` ;
    - ou émulateur / téléphone Android : `npx expo run:android` ;
