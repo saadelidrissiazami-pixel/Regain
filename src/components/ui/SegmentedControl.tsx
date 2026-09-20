@@ -37,7 +37,8 @@ export function SegmentedControl<T extends string | number>({
   }, [index, segmentWidth, offset, reduceMotion]);
 
   const indicatorStyle = useAnimatedStyle(() => ({ transform: [{ translateX: offset.get() }] }));
-  const selectedBg = tone === 'primary' ? theme.primary : theme.surface;
+  // En sombre, une pastille « surface » se confondrait avec le fond de la carte : on la teinte.
+  const selectedBg = tone === 'primary' ? theme.primary : theme.dark ? theme.sage300 : theme.surface;
   const selectedFg = tone === 'primary' ? theme.onPrimary : theme.ink;
 
   return (
