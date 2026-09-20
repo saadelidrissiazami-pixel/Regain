@@ -6,11 +6,29 @@ Textes prêts à coller dans App Store Connect. Les limites de caractères d'App
 
 | Champ | Valeur | Limite |
 |---|---|---|
-| Nom | `Regain` | 30 |
+| Nom | `Regain — Routine & Bien-être` | 30 |
 | Sous-titre | `Routine, bien-être et forme` | 30 |
 | Catégorie principale | Santé et forme | — |
 | Catégorie secondaire | Style de vie | — |
 | Classification | 4+ | — |
+| Identifiant de lot | `com.saadelidrissiazami.regain` | — |
+| Identifiant Apple de l'app | `6814269226` | — |
+
+> « Regain » seul était déjà déposé par une autre app : le titre de la fiche doit être unique sur
+> tout l'App Store. Sous l'icône, l'app reste **Regain** (`name` dans [app.json](../app.json)),
+> et c'est aussi le nom affiché dans les réglages d'abonnement Apple.
+
+## Abonnements créés
+
+| Produit | Identifiant | Prix | Offre | Identifiant Apple |
+|---|---|---|---|---|
+| Annuel | `regain_premium_annual` | 49,99 € | 1 semaine offerte, sans date de fin | `6814269327` |
+| Mensuel | `regain_premium_monthly` | 9,99 € | aucune | `6814271015` |
+
+Groupe **Regain Premium** (`22400015`), affiché « Regain » dans les réglages Apple. Les prix des
+174 autres pays ont été calculés par Apple à partir du prix français. Les deux produits sont en
+« Finaliser avant soumission » : ils partiront avec la première version de l'app, et chacun
+attend une capture de l'écran d'abonnement pour la revue.
 
 ## Texte promotionnel (modifiable sans nouvelle version, 170 caractères)
 
