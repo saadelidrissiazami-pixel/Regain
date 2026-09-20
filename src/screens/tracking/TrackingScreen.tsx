@@ -311,13 +311,23 @@ export default function TrackingScreen() {
     </>
   );
 
-  const nutritionTab = !fitness.isPremium || !fitness.targets ? (
+  const nutritionTab = !fitness.isPremium ? (
+    // Le seul endroit où un compte gratuit croise la nutrition : on y nomme ce qu'il rate,
+    // la liste de courses, plutôt que des « repères » abstraits.
+    <EmptyState
+      icon="cart-outline"
+      title="Tes menus et ta liste de courses"
+      body="Avec Premium : des journées de repas calées sur tes besoins, et la liste de courses qui va avec, déjà triée par rayon. Fini le « qu'est-ce qu'on mange ce soir ? »."
+      actionLabel="Découvrir Premium"
+      onAction={() => router.push('/paywall?source=locked')}
+    />
+  ) : !fitness.targets ? (
     <EmptyState
       icon="nutrition-outline"
       title="Tes repères nutrition"
       body="Calories et macros calculées pour toi, avec le coach forme."
-      actionLabel={fitness.isPremium ? 'Remplir mon profil forme' : 'Découvrir Premium'}
-      onAction={() => router.push(fitness.isPremium ? '/fitness/questionnaire' : '/paywall')}
+      actionLabel="Remplir mon profil forme"
+      onAction={() => router.push('/fitness/questionnaire')}
     />
   ) : (
     <>

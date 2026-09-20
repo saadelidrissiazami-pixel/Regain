@@ -142,6 +142,16 @@ export default function NutritionScreen() {
         <LoadingSkeleton preset="list" />
       ) : fitness.isError ? (
         <ErrorState onRetry={() => fitness.refetch()} />
+      ) : !fitness.isPremium ? (
+        // Sans ce cas, un compte gratuit arrivant ici lirait « génère ton programme » :
+        // une consigne qu'il ne peut pas suivre.
+        <EmptyState
+          icon="cart-outline"
+          title="Tes menus et ta liste de courses"
+          body="Avec Premium : des journées de repas calées sur tes besoins, et la liste de courses qui va avec, déjà triée par rayon. Tu coches en faisant tes courses, et tu sais quoi cuisiner le soir."
+          actionLabel="Découvrir Premium"
+          onAction={() => router.push('/paywall?source=locked')}
+        />
       ) : !plan ? (
         <EmptyState icon="restaurant-outline" title="Pas encore de menus" body="Génère ton programme depuis l'onglet Forme." />
       ) : (
