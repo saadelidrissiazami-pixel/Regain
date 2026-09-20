@@ -50,20 +50,36 @@
       [
         "expo-calendar",
         {
-          "calendarPermission": "Regain synchronise votre planning avec votre calendrier."
+          "calendarPermission": "Regain synchronise votre planning avec votre calendrier.",
+          "remindersPermission": false
         }
       ],
       [
         "expo-location",
         {
-          "locationWhenInUsePermission": "Regain utilise votre position pour proposer un itinéraire de marche et l'histoire de votre quartier."
+          "locationWhenInUsePermission": "Regain utilise votre position pour proposer un itinéraire de marche et l'histoire de votre quartier.",
+          "locationAlwaysPermission": false,
+          "locationAlwaysAndWhenInUsePermission": false,
+          "motionUsagePermission": false
         }
       ],
       "expo-sharing",
       "./plugins/withIosSceneDelegate",
-      "expo-audio"
+      [
+        "expo-audio",
+        {
+          "microphonePermission": false,
+          "recordAudioAndroid": false
+        }
+      ]
     ],
     "description": "Regain aide à reconstruire une routine : un planning réaliste, des séances de bien-être guidées et un coach forme.",
-    "primaryColor": "#17483E"
+    "primaryColor": "#17483E",
+    "extra": {
+      "eas": {
+        "projectId": "1709f3ff-d7e0-4903-8701-fd76d1142bc8"
+      }
+    },
+    "owner": "saadappregain"
   }
 }
