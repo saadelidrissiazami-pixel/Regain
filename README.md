@@ -59,9 +59,9 @@ npm run preflight -- production
 
 ## Déploiement bêta (Phase 8)
 
-1. Créez un compte sur [expo.dev](https://expo.dev) si vous n'en avez pas, puis dans le projet : `npx eas login`.
-2. `npx eas init` pour relier ce projet à votre compte Expo (ajoute un `projectId` à `app.json`).
-3. `npx eas build --profile preview --platform ios` (nécessite un compte Apple Developer, 99$/an) ou `--platform android` (compte Google Play Console, 25$ une fois).
+1. Créez un compte sur [expo.dev](https://expo.dev) si vous n'en avez pas, puis dans le projet : `npx eas-cli@latest login`.
+2. `npx eas-cli@latest init` pour relier ce projet à votre compte Expo (ajoute un `projectId` à `app.json`).
+3. `npx eas-cli@latest build --profile preview --platform ios` (nécessite un compte Apple Developer, 99$/an) ou `--platform android` (compte Google Play Console, 25$ une fois).
 4. Distribuez le build via TestFlight (iOS) ou le canal de test interne (Android).
 
 La configuration des profils de build est déjà prête dans [`eas.json`](eas.json). EAS Build ne lit pas `.env` : déclarez vos variables `EXPO_PUBLIC_*` sur expo.dev (voir [docs/abonnements.md](docs/abonnements.md#étape-4--variables-denvironnement-des-builds-eas)).

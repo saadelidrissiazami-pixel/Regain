@@ -113,11 +113,15 @@ npm run preflight -- production
 
 ## 9. Compiler et envoyer
 
+Le paquet s'appelle `eas-cli` (et non `eas`) : `npx eas login` échoue avec « could not determine
+executable to run ». Pour éviter de le retélécharger à chaque commande : `npm install -g eas-cli`,
+puis remplace `npx eas-cli@latest` par `eas`.
+
 ```bash
-npx eas login
-npx eas init          # relie le projet à ton compte Expo, ajoute un identifiant dans app.json
-npx eas build --platform ios --profile production
-npx eas submit --platform ios --latest
+npx eas-cli@latest login
+npx eas-cli@latest init          # relie le projet à ton compte Expo, ajoute un identifiant dans app.json
+npx eas-cli@latest build --platform ios --profile production
+npx eas-cli@latest submit --platform ios --latest
 ```
 
 EAS crée et garde les certificats et le profil de distribution : tu n'as rien à générer dans
@@ -162,5 +166,5 @@ et un profil forme. Ton mot de passe ne sort pas de ton terminal. Termine dans l
 - Surveille RevenueCat : essais lancés, conversions, résiliations.
 - Active le **délai de grâce** dans RevenueCat : il rattrape les échecs de paiement, qui
   représentent près d'un tiers des annulations sur Android.
-- Pour une mise à jour : `npx eas build --platform ios --profile production` puis
-  `npx eas submit`. Le numéro de version monte tout seul.
+- Pour une mise à jour : `npx eas-cli@latest build --platform ios --profile production` puis
+  `npx eas-cli@latest submit`. Le numéro de version monte tout seul.

@@ -32,7 +32,7 @@ RevenueCat fournit un **Test Store** : de faux achats, mais un vrai parcours com
 6. Lancez un build de développement :
    - simulateur iOS (Xcode requis, sans compte Apple payant) : `npx expo run:ios` ;
    - ou émulateur / téléphone Android : `npx expo run:android` ;
-   - ou via EAS : `npx eas build --profile development --platform ios|android`.
+   - ou via EAS : `npx eas-cli@latest build --profile development --platform ios|android`.
 
 Sur le paywall, un bandeau « Mode test » s'affiche et l'achat ouvre une fenêtre de simulation
 (succès, échec, annulation). La clé Test Store n'est lue qu'en développement : **ne la mettez
