@@ -7,6 +7,21 @@
  * Les oublis visés ici coûtent cher : un build sans clé RevenueCat vend du vide, un build sans
  * liens légaux est refusé par Apple, et une clé « Test Store » en production est un rejet net.
  */
+import { readFileSync } from 'node:fs';
+
+// En local, les variables sont dans .env ; sur les serveurs EAS, dans l'environnement.
+function loadDotEnv() {
+  try {
+    for (const line of readFileSync(new URL('../.env', import.meta.url), 'utf8').split('\n')) {
+      const match = line.match(/^([A-Z0-9_]+)=(.*)$/);
+      if (match && !process.env[match[1]]) process.env[match[1]] = match[2].trim();
+    }
+  } catch {
+    // pas de .env : on s'en tient à l'environnement
+  }
+}
+loadDotEnv();
+
 const profile = process.argv[2] ?? process.env.EAS_BUILD_PROFILE ?? 'development';
 const isProduction = profile === 'production';
 

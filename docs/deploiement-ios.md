@@ -75,9 +75,12 @@ conditions sur l'écran d'abonnement. Les deux textes sont rédigés et t'attend
 - [docs/legal/politique-de-confidentialite.md](legal/politique-de-confidentialite.md)
 - [docs/legal/conditions-utilisation.md](legal/conditions-utilisation.md)
 
-Le plus simple pour les publier : *Settings → Pages* sur le dépôt GitHub, source « main /docs ».
-Tu obtiens deux adresses publiques à mettre dans les variables ci-dessous et dans App Store
-Connect.
+**C'est fait** : le site est publié par GitHub Pages depuis `main` / `docs`.
+
+- Conditions d'utilisation : <https://saadelidrissiazami-pixel.github.io/Regain/legal/conditions-utilisation>
+- Politique de confidentialité : <https://saadelidrissiazami-pixel.github.io/Regain/legal/politique-de-confidentialite>
+
+Ces deux adresses vont dans les variables ci-dessous, et la seconde dans App Store Connect.
 
 ## 7. Les variables d'environnement **(toi)**
 
@@ -89,8 +92,8 @@ variables*, pour l'environnement **production** :
 | `EXPO_PUBLIC_SUPABASE_URL` | l'adresse de ton projet Supabase |
 | `EXPO_PUBLIC_SUPABASE_ANON_KEY` | la clé publique Supabase |
 | `EXPO_PUBLIC_REVENUECAT_IOS_KEY` | la clé `appl_…` |
-| `EXPO_PUBLIC_TERMS_URL` | l'adresse de tes conditions |
-| `EXPO_PUBLIC_PRIVACY_URL` | l'adresse de ta politique de confidentialité |
+| `EXPO_PUBLIC_TERMS_URL` | `https://saadelidrissiazami-pixel.github.io/Regain/legal/conditions-utilisation` |
+| `EXPO_PUBLIC_PRIVACY_URL` | `https://saadelidrissiazami-pixel.github.io/Regain/legal/politique-de-confidentialite` |
 
 Ne mets **jamais** `EXPO_PUBLIC_REVENUECAT_TEST_STORE_KEY` ni `EXPO_PUBLIC_SIMULATE_FREE` en
 production. Un contrôle automatique refuse la compilation dans ce cas :

@@ -65,9 +65,9 @@ routine,habitudes,bien-être,méditation,respiration,sommeil,musculation,plannin
 
 | Champ | Valeur |
 |---|---|
-| URL d'assistance | l'adresse de ta page de contact ou un lien `mailto:` |
+| URL d'assistance | `https://saadelidrissiazami-pixel.github.io/Regain/` |
 | URL marketing | facultative |
-| Politique de confidentialité | l'adresse publiée (voir `docs/legal/`) |
+| Politique de confidentialité | `https://saadelidrissiazami-pixel.github.io/Regain/legal/politique-de-confidentialite` |
 
 ## Captures d'écran
 
