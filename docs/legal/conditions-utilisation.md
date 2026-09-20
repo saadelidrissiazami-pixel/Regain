@@ -1,10 +1,11 @@
+---
+title: Conditions d'utilisation
+---
+
 # Conditions d'utilisation de Regain
 
-*Dernière mise à jour : [date de publication]. Éditeur : [ton nom ou ta société], contact :
-[ton adresse e-mail].*
-
-> Ce texte décrit le fonctionnement réel de l'app et de l'abonnement. Ce n'est pas un conseil
-> juridique : fais-le relire avant publication.
+*Dernière mise à jour : 20 septembre 2026. Éditeur : EL IDRISSI AZAMI SAAD, contact :
+saadelidrissiazami@gmail.com.*
 
 ## 1. Ce qu'est Regain
 

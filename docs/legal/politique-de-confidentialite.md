@@ -1,10 +1,11 @@
+---
+title: Politique de confidentialité
+---
+
 # Politique de confidentialité de Regain
 
-*Dernière mise à jour : [date de publication]. Responsable du traitement : [ton nom ou ta société],
-contact : [ton adresse e-mail].*
-
-> Ce texte décrit fidèlement ce que fait l'app aujourd'hui. Ce n'est pas un conseil juridique :
-> fais-le relire si tu as un doute, notamment sur les données de santé.
+*Dernière mise à jour : 20 septembre 2026. Responsable du traitement : EL IDRISSI AZAMI SAAD,
+contact : saadelidrissiazami@gmail.com.*
 
 ## Ce que Regain enregistre
 
@@ -66,7 +67,7 @@ Depuis l'app, onglet **Profil** :
 - **Exporter mes données** : un fichier contenant tout ce que nous avons sur toi ;
 - **Supprimer mon compte** : effacement immédiat et définitif.
 
-Tu peux aussi écrire à [ton adresse e-mail] pour accéder à tes données, les corriger, t'opposer à
+Tu peux aussi écrire à saadelidrissiazami@gmail.com pour accéder à tes données, les corriger, t'opposer à
 un traitement, ou porter réclamation auprès de la CNIL ([cnil.fr](https://www.cnil.fr)).
 
 ## Enfants

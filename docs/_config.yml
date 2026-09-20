@@ -1,0 +1,8 @@
+title: Regain
+description: Planification et bien-être — mentions légales
+theme: jekyll-theme-minimal
+# Documents de travail : ils restent dans le dépôt mais ne sont pas publiés sur le site.
+exclude:
+  - abonnements.md
+  - app-store.md
+  - deploiement-ios.md
