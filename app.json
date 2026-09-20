@@ -20,7 +20,7 @@
     "android": {
       "package": "com.regain.app",
       "adaptiveIcon": {
-        "backgroundColor": "#F5FAF8",
+        "backgroundColor": "#17483E",
         "foregroundImage": "./assets/android-icon-foreground.png",
         "backgroundImage": "./assets/android-icon-background.png",
         "monochromeImage": "./assets/android-icon-monochrome.png"
@@ -37,8 +37,8 @@
         "expo-splash-screen",
         {
           "backgroundColor": "#F5FAF8",
-          "image": "./assets/icon.png",
-          "imageWidth": 120
+          "image": "./assets/splash-icon.png",
+          "imageWidth": 140
         }
       ],
       [
