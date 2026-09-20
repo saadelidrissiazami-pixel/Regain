@@ -8,23 +8,26 @@ Compte à prévoir : **99 $ par an** pour le compte Apple Developer. Le compte E
 
 ---
 
-## 1. Compte Apple Developer **(toi)**
+## 1. Compte Apple Developer **(toi)** — fait le 20 septembre 2026
 
 1. [developer.apple.com/programs](https://developer.apple.com/programs/) → *Enroll*.
 2. En tant que personne physique, aucun numéro D-U-N-S n'est demandé ; en société, il faut ce
    numéro et cela prend quelques jours.
 3. Active la double authentification sur ton identifiant Apple : elle est obligatoire.
 
-## 2. Créer l'app dans App Store Connect **(toi)**
+Le **contrat applications gratuites** est actif dès la validation du compte. Le contrat payant,
+lui, se signe à la main (étape 3).
 
-[appstoreconnect.apple.com](https://appstoreconnect.apple.com) → *Mes apps* → **+** :
+## 2. Statut de commerçant (DSA) **(toi)**
 
-| Champ | Valeur |
-|---|---|
-| Nom | Regain |
-| Langue principale | Français (France) |
-| Identifiant de lot | `com.regain.app` |
-| SKU | `regain-ios` |
+*Business → Contrats → « Compléter les exigences de conformité ».*
+
+Depuis le règlement européen sur les services numériques, Apple doit publier les coordonnées de
+tout vendeur qui distribue dans l'UE. **Sans ce statut, aucune app ni mise à jour ne peut être
+soumise pour l'Union européenne**, et les apps déjà en ligne en sont retirées. Tu déclares
+adresse, téléphone et e-mail, qui seront visibles sur la fiche App Store.
+
+Tant que tu y es : *Modifier l'entité juridique*, exigé avant de pouvoir signer le contrat payant.
 
 ## 3. Ton encaissement **(toi)**
 
@@ -41,9 +44,22 @@ l'app : tes coordonnées bancaires restent chez Apple.
    dollars par an. C'est une simple case à cocher, et beaucoup l'oublient.
 5. Les versements arrivent environ 45 jours après la fin du mois concerné.
 
-## 4. Les deux abonnements **(toi)**
+## 4. L'app et les deux abonnements **(toi)**
 
-Dans *Monétisation → Abonnements*, crée le groupe **Regain Premium**, puis :
+D'abord l'app elle-même : [appstoreconnect.apple.com](https://appstoreconnect.apple.com) → *Apps*
+→ **+**.
+
+| Champ | Valeur |
+|---|---|
+| Nom | Regain |
+| Langue principale | Français (France) |
+| Identifiant de lot | `com.regain.app` |
+| SKU | `regain-ios` |
+
+L'identifiant de lot n'apparaît dans la liste qu'une fois enregistré : laisse `eas build` le créer
+(étape 9), ou déclare-le dans *Certificates, Identifiers & Profiles → Identifiers*.
+
+Ensuite, dans *Monétisation → Abonnements*, crée le groupe **Regain Premium**, puis :
 
 | Produit | Identifiant | Prix | Offre |
 |---|---|---|---|
@@ -60,12 +76,16 @@ Pour chaque produit : nom affiché, description, et une capture de l'écran d'ab
 
 Détail complet dans [docs/abonnements.md](abonnements.md). En résumé :
 
-1. Projet « Regain » sur [revenuecat.com](https://www.revenuecat.com).
+1. ~~Projet « Regain », droit d'accès `premium`, les deux produits, offre `default`.~~ **Fait**,
+   et le parcours complet (essai, achat, déblocage) a été vérifié sur le Test Store.
 2. *Apps & providers → App Store* : ajoute `com.regain.app`, puis dépose la clé d'achat intégré
    (fichier `.p8` généré dans App Store Connect → *Utilisateurs et accès → Intégrations*).
-3. Crée le droit d'accès `premium`, rattache les deux produits, et mets l'offre `default` en
-   *Current*.
+3. Rattache les produits **App Store** au droit `premium` et à l'offre `default`, à côté de ceux
+   du Test Store.
 4. Copie la clé publique iOS (`appl_…`) : c'est `EXPO_PUBLIC_REVENUECAT_IOS_KEY`.
+
+La clé `.p8` ne se télécharge qu'**une seule fois** : garde-la dans ton gestionnaire de mots de
+passe. Perdue, il faut en générer une autre.
 
 ## 6. Les pages légales **(toi)**
 
@@ -82,18 +102,24 @@ conditions sur l'écran d'abonnement. Les deux textes sont rédigés et t'attend
 
 Ces deux adresses vont dans les variables ci-dessous, et la seconde dans App Store Connect.
 
-## 7. Les variables d'environnement **(toi)**
+## 7. Les variables d'environnement
 
-EAS ne lit pas ton fichier `.env`. Sur [expo.dev](https://expo.dev) → projet → *Environment
-variables*, pour l'environnement **production** :
+EAS ne lit pas ton fichier `.env` : les variables vivent sur le serveur, par environnement.
 
-| Variable | Valeur |
-|---|---|
-| `EXPO_PUBLIC_SUPABASE_URL` | l'adresse de ton projet Supabase |
-| `EXPO_PUBLIC_SUPABASE_ANON_KEY` | la clé publique Supabase |
-| `EXPO_PUBLIC_REVENUECAT_IOS_KEY` | la clé `appl_…` |
-| `EXPO_PUBLIC_TERMS_URL` | `https://saadelidrissiazami-pixel.github.io/Regain/legal/conditions-utilisation` |
-| `EXPO_PUBLIC_PRIVACY_URL` | `https://saadelidrissiazami-pixel.github.io/Regain/legal/politique-de-confidentialite` |
+| Variable | Valeur | État |
+|---|---|---|
+| `EXPO_PUBLIC_SUPABASE_URL` | l'adresse de ton projet Supabase | ✅ `production` + `preview` |
+| `EXPO_PUBLIC_SUPABASE_ANON_KEY` | la clé publique Supabase | ✅ `production` + `preview` |
+| `EXPO_PUBLIC_TERMS_URL` | l'adresse des conditions | ✅ `production` + `preview` |
+| `EXPO_PUBLIC_PRIVACY_URL` | l'adresse de la confidentialité | ✅ `production` + `preview` |
+| `EXPO_PUBLIC_REVENUECAT_IOS_KEY` | la clé `appl_…` | ❌ dépend de l'étape 5 |
+
+Les quatre premières sont publiques par construction : le préfixe `EXPO_PUBLIC_` les inscrit dans
+le bundle livré, donc elles sont de toute façon lisibles dans l'app. À poser ainsi :
+
+```bash
+npx eas-cli@latest env:set --name NOM --value "valeur" --environment production --visibility plaintext
+```
 
 Ne mets **jamais** `EXPO_PUBLIC_REVENUECAT_TEST_STORE_KEY` ni `EXPO_PUBLIC_SIMULATE_FREE` en
 production. Un contrôle automatique refuse la compilation dans ce cas :
