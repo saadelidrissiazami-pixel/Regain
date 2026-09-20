@@ -10,7 +10,7 @@ export const PRODUCT_IDS = {
   annual: 'regain_premium_annual',
 } as const;
 
-export const ANDROID_PACKAGE = 'com.regain.app';
+export const ANDROID_PACKAGE = 'com.saadelidrissiazami.regain';
 
 /** Pages de gestion des abonnements des stores, si RevenueCat ne fournit pas de lien direct. */
 export const STORE_SUBSCRIPTIONS_URL = {

@@ -12,7 +12,7 @@ les produits, ce que vous seul pouvez faire. Les identifiants ci-dessous doivent
 | Offre RevenueCat | `default` (marquée *Current*) |
 | Abonnement mensuel | `regain_premium_monthly` |
 | Abonnement annuel | `regain_premium_annual` |
-| Bundle iOS / package Android | `com.regain.app` |
+| Bundle iOS / package Android | `com.saadelidrissiazami.regain` |
 
 > Les achats intégrés ne fonctionnent **ni dans Expo Go ni sur le web** : il faut un build de
 > développement. Dans Expo Go, l'écran Premium l'explique et Premium reste débloqué pour tester.
@@ -46,9 +46,9 @@ jamais dans l'environnement de production** (Apple rejette les apps configurées
 
 1. App Store Connect → *Accords, taxes et banque* : signez l'accord **Apps payantes** et
    renseignez banque et fiscalité (sans cela, aucun produit ne se charge).
-2. Créez l'app `com.regain.app`, puis *Abonnements* → groupe « Regain Premium » avec les deux
-   produits ci-dessus (prix, durée, et éventuellement un essai gratuit : le paywall l'affiche
-   automatiquement).
+2. Créez l'app `com.saadelidrissiazami.regain`, puis *Abonnements* → groupe « Regain Premium »
+   avec les deux produits ci-dessus (prix, durée, et éventuellement un essai gratuit : le
+   paywall l'affiche automatiquement).
 3. *Utilisateurs et accès → Intégrations → Achats intégrés* : générez une clé (.p8) et
    importez-la dans RevenueCat (*Apps & providers → App Store*).
 4. Rattachez les produits App Store à l'entitlement `premium` et à l'offre `default`.
@@ -56,8 +56,8 @@ jamais dans l'environnement de production** (Apple rejette les apps configurées
 
 ## Étape 3 — Vrais abonnements Android (Google Play Console, 25 $ une fois)
 
-1. Créez l'app `com.regain.app` et publiez un premier build sur un canal de test interne
-   (Google n'affiche les abonnements qu'après un premier envoi).
+1. Créez l'app `com.saadelidrissiazami.regain` et publiez un premier build sur un canal de
+   test interne (Google n'affiche les abonnements qu'après un premier envoi).
 2. *Monétiser → Abonnements* : créez les deux produits avec un forfait de base chacun.
 3. Créez un compte de service Google Cloud avec accès à la Play Console et importez son JSON
    dans RevenueCat (*Apps & providers → Play Store*).

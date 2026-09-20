@@ -9,7 +9,7 @@
     "userInterfaceStyle": "automatic",
     "ios": {
       "supportsTablet": false,
-      "bundleIdentifier": "com.regain.app",
+      "bundleIdentifier": "com.saadelidrissiazami.regain",
       "config": {
         "usesNonExemptEncryption": false
       },
@@ -18,7 +18,7 @@
       }
     },
     "android": {
-      "package": "com.regain.app",
+      "package": "com.saadelidrissiazami.regain",
       "adaptiveIcon": {
         "backgroundColor": "#17483E",
         "foregroundImage": "./assets/android-icon-foreground.png",

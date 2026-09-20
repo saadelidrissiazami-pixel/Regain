@@ -53,7 +53,7 @@ D'abord l'app elle-même : [appstoreconnect.apple.com](https://appstoreconnect.a
 |---|---|
 | Nom | Regain |
 | Langue principale | Français (France) |
-| Identifiant de lot | `com.regain.app` |
+| Identifiant de lot | `com.saadelidrissiazami.regain` |
 | SKU | `regain-ios` |
 
 L'identifiant de lot n'apparaît dans la liste qu'une fois enregistré : laisse `eas build` le créer
@@ -78,8 +78,9 @@ Détail complet dans [docs/abonnements.md](abonnements.md). En résumé :
 
 1. ~~Projet « Regain », droit d'accès `premium`, les deux produits, offre `default`.~~ **Fait**,
    et le parcours complet (essai, achat, déblocage) a été vérifié sur le Test Store.
-2. *Apps & providers → App Store* : ajoute `com.regain.app`, puis dépose la clé d'achat intégré
-   (fichier `.p8` généré dans App Store Connect → *Utilisateurs et accès → Intégrations*).
+2. *Apps & providers → App Store* : ajoute `com.saadelidrissiazami.regain`, puis dépose la clé
+   d'achat intégré (fichier `.p8` généré dans App Store Connect → *Utilisateurs et accès →
+   Intégrations*).
 3. Rattache les produits **App Store** au droit `premium` et à l'offre `default`, à côté de ceux
    du Test Store.
 4. Copie la clé publique iOS (`appl_…`) : c'est `EXPO_PUBLIC_REVENUECAT_IOS_KEY`.
