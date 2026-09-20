@@ -18,7 +18,9 @@ export const purchasesUnavailableReason: string | null = isWeb
   : isExpoGo
     ? "Les achats intégrés ne fonctionnent pas dans Expo Go : testez-les dans un build de développement (voir docs/abonnements.md)."
     : !API_KEY
-      ? 'Les abonnements ne sont pas encore configurés : clé RevenueCat manquante (voir docs/abonnements.md).'
+      ? __DEV__
+        ? 'Les abonnements ne sont pas encore configurés : clé RevenueCat manquante (voir docs/abonnements.md).'
+        : 'Les abonnements ne sont pas disponibles pour le moment. Réessaie dans quelques instants.'
       : null;
 
 export const isPurchasesConfigured = purchasesUnavailableReason === null;
