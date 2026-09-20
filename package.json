@@ -59,7 +59,9 @@
     "typecheck": "tsc --noEmit",
     "test": "vitest run",
     "test:watch": "vitest",
-    "lint": "eslint . --max-warnings=0"
+    "lint": "eslint . --max-warnings=0",
+    "preflight": "node scripts/preflight.mjs",
+    "eas-build-pre-install": "node scripts/preflight.mjs"
   },
   "private": true
 }

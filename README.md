@@ -44,6 +44,19 @@ Le chat ([app/(tabs)/coach.tsx](app/(tabs)/coach.tsx)) appelle une Edge Function
 4. `supabase secrets set ANTHROPIC_API_KEY=sk-ant-votre-clé`.
 5. `supabase functions deploy coach`.
 
+## Publier sur l'App Store
+
+Marche à suivre complète (compte Apple, encaissement, abonnements, variables, compilation,
+TestFlight, revue) : **[docs/deploiement-ios.md](docs/deploiement-ios.md)**.
+Textes de la fiche App Store : [docs/app-store.md](docs/app-store.md).
+Pages légales à publier : [docs/legal/](docs/legal).
+
+Avant toute compilation, un contrôle refuse une build de production incomplète :
+
+```bash
+npm run preflight -- production
+```
+
 ## Déploiement bêta (Phase 8)
 
 1. Créez un compte sur [expo.dev](https://expo.dev) si vous n'en avez pas, puis dans le projet : `npx eas login`.

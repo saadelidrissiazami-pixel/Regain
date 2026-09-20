@@ -8,8 +8,14 @@
     "icon": "./assets/icon.png",
     "userInterfaceStyle": "automatic",
     "ios": {
-      "supportsTablet": true,
-      "bundleIdentifier": "com.regain.app"
+      "supportsTablet": false,
+      "bundleIdentifier": "com.regain.app",
+      "config": {
+        "usesNonExemptEncryption": false
+      },
+      "infoPlist": {
+        "ITSAppUsesNonExemptEncryption": false
+      }
     },
     "android": {
       "package": "com.regain.app",
@@ -56,6 +62,8 @@
       "expo-sharing",
       "./plugins/withIosSceneDelegate",
       "expo-audio"
-    ]
+    ],
+    "description": "Regain aide à reconstruire une routine : un planning réaliste, des séances de bien-être guidées et un coach forme.",
+    "primaryColor": "#17483E"
   }
 }
