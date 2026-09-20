@@ -143,6 +143,17 @@ Points qui font échouer une revue, déjà traités dans l'app :
 Reste à fournir par toi : **un compte de démonstration** (e-mail et mot de passe d'un compte
 Regain rempli d'exemples) dans les notes de revue, sinon l'app est renvoyée.
 
+Pour le remplir : crée le compte depuis l'app, puis lance
+
+```bash
+DEMO_EMAIL=demo@exemple.fr DEMO_PASSWORD='…' node scripts/seed-demo.mjs
+```
+
+Le script se connecte comme ce compte et lui crée des disponibilités, un planning dont deux
+activités cochées, des check-ins d'énergie, quatre séances de bien-être avec ressenti et réponses,
+et un profil forme. Ton mot de passe ne sort pas de ton terminal. Termine dans l'app par
+*Forme → Générer mon programme*.
+
 ## 12. Après la publication
 
 - Surveille RevenueCat : essais lancés, conversions, résiliations.
