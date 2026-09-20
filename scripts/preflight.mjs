@@ -10,11 +10,17 @@
 import { readFileSync } from 'node:fs';
 
 // En local, les variables sont dans .env ; sur les serveurs EAS, dans l'environnement.
+// On retient lesquelles viennent du fichier : `.env` n'est pas envoyé aux serveurs de build,
+// donc une clé qui n'existe que là ne partira jamais en production et ne doit rien bloquer.
+const fromDotEnv = new Set();
 function loadDotEnv() {
   try {
     for (const line of readFileSync(new URL('../.env', import.meta.url), 'utf8').split('\n')) {
       const match = line.match(/^([A-Z0-9_]+)=(.*)$/);
-      if (match && !process.env[match[1]]) process.env[match[1]] = match[2].trim();
+      if (match && !process.env[match[1]]) {
+        process.env[match[1]] = match[2].trim();
+        fromDotEnv.add(match[1]);
+      }
     }
   } catch {
     // pas de .env : on s'en tient à l'environnement
@@ -47,7 +53,10 @@ const filled = (name) => (process.env[name] ?? '').trim().length > 0;
 for (const [name, why] of required) if (!filled(name)) problems.push(`${name} manque — ${why}`);
 if (isProduction) {
   for (const [name, why] of productionOnly) if (!filled(name)) problems.push(`${name} manque — ${why}`);
-  for (const [name, why] of forbiddenInProduction) if (filled(name)) problems.push(`${name} ne doit pas être défini — ${why}`);
+  // Seules comptent ici les variables réellement présentes dans l'environnement de compilation.
+  for (const [name, why] of forbiddenInProduction) {
+    if (filled(name) && !fromDotEnv.has(name)) problems.push(`${name} ne doit pas être défini — ${why}`);
+  }
 }
 
 if (problems.length > 0) {
