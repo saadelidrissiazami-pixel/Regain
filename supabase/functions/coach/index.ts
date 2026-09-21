@@ -42,6 +42,13 @@ function jsonResponse(body: unknown, status: number) {
 Deno.serve(async (req) => {
   if (req.method === 'OPTIONS') return new Response('ok', { headers: corsHeaders });
 
+  // Sans clé, l'appel à Anthropic échouerait et l'app annoncerait une panne passagère, alors
+  // que rien ne s'arrangera tout seul. On distingue les deux cas.
+  if (!Deno.env.get('ANTHROPIC_API_KEY')) {
+    console.error('ANTHROPIC_API_KEY absent : supabase secrets set ANTHROPIC_API_KEY=...');
+    return jsonResponse({ error: "Le coach n'est pas encore activé sur ce compte." }, 503);
+  }
+
   const authHeader = req.headers.get('Authorization');
   if (!authHeader) return jsonResponse({ error: 'Non authentifié' }, 401);
 
