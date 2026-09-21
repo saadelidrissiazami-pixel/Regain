@@ -33,6 +33,12 @@ RevenueCat fournit un **Test Store** : de faux achats, mais un vrai parcours com
 > `monthly`/`yearly`/`lifetime`) qu'il ne faut pas confondre avec le nôtre. Seul l'entitlement
 > `premium` débloque l'app ; les prix du Test Store sont en dollars, ceux de l'App Store seront
 > en euros.
+>
+> **Le produit de test garde un essai d'une semaine**, alors que l'App Store est réglé sur
+> 3 jours : prix et essai d'un produit Test Store ne sont plus modifiables après création, et le
+> recréer casserait ses liens avec l'offre et l'entitlement. Sans conséquence sur le code, qui
+> lit la durée depuis la boutique — mais en développement l'écran annonce 7 jours, pas 3.
+> À vérifier en bac à sable TestFlight, seul endroit où la vraie durée s'affiche.
 6. Lancez un build de développement :
    - simulateur iOS (Xcode requis, sans compte Apple payant) : `npx expo run:ios` ;
    - ou émulateur / téléphone Android : `npx expo run:android` ;
