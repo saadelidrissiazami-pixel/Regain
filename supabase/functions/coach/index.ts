@@ -136,6 +136,11 @@ Deno.serve(async (req) => {
   if (!anthropicRes.ok) {
     // Les détails du fournisseur restent dans les logs de la fonction, pas chez le client.
     console.error('Anthropic error', anthropicRes.status, (await anthropicRes.text()).slice(0, 500));
+    // Une clé révoquée ou un crédit épuisé ne se répare pas en réessayant : inviter à réessayer
+    // ferait tourner l'utilisateur en rond pendant que le vrai correctif attend côté console.
+    if (anthropicRes.status === 401 || anthropicRes.status === 403) {
+      return jsonResponse({ error: "Le coach n'est pas activé correctement sur ce compte." }, 503);
+    }
     return jsonResponse({ error: 'Le coach est momentanément indisponible. Réessayez dans un instant.' }, 502);
   }
 
