@@ -85,9 +85,25 @@ describe("essai gratuit", () => {
     ]);
   });
 
+  it("prévient la veille sur un essai court, où deux jours d'avance tomberaient presque le jour de l'achat", () => {
+    expect(trialTimeline(3, '49,99 €')).toEqual([
+      { when: "Aujourd'hui", what: 'Tout Premium est débloqué' },
+      { when: 'Jour 2', what: "On vous prévient que l'essai se termine" },
+      { when: 'Jour 3', what: 'Premier paiement de 49,99 €, sauf si vous annulez avant' },
+    ]);
+  });
+
   it("programme le rappel deux jours avant la fin, sauf s'il est trop tard", () => {
     const end = new Date('2026-09-26T10:00:00Z');
     expect(trialReminderDate(end, new Date('2026-09-19T10:00:00Z'))?.toISOString()).toBe('2026-09-24T10:00:00.000Z');
     expect(trialReminderDate(end, new Date('2026-09-25T10:00:00Z'))).toBeNull();
+  });
+
+  it('sur un essai de trois jours, programme le rappel la veille', () => {
+    const end = new Date('2026-09-24T10:00:00Z');
+    const now = new Date('2026-09-21T10:00:00Z');
+    expect(trialReminderDate(end, now, 3)?.toISOString()).toBe('2026-09-23T10:00:00.000Z');
+    // Sans la durée, elle se déduit du temps restant : même résultat pendant l'essai.
+    expect(trialReminderDate(end, now)?.toISOString()).toBe('2026-09-23T10:00:00.000Z');
   });
 });

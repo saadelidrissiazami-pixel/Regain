@@ -1,7 +1,7 @@
 import { Platform } from 'react-native';
 
 import type { AvailabilitySlot } from '../features/availability/types';
-import { TRIAL_REMINDER_DAYS_BEFORE, trialReminderDate } from '../features/subscriptions/packages';
+import { trialReminderDate } from '../features/subscriptions/packages';
 import { activityStartDate } from '../features/planning/schedule';
 import type { PlannedActivityRow } from './planning';
 
@@ -106,8 +106,9 @@ export async function scheduleActivityReminders(items: PlannedActivityRow[], ava
 }
 
 /**
- * Prévient deux jours avant la fin de l'essai Premium, pour que personne ne découvre un
- * débit annuel par surprise. Identifiant fixe : un seul rappel, remplacé s'il existe déjà.
+ * Prévient avant la fin de l'essai Premium, pour que personne ne découvre un débit annuel par
+ * surprise. L'avance dépend de la longueur de l'essai (voir `trialReminderDaysBefore`).
+ * Identifiant fixe : un seul rappel, remplacé s'il existe déjà.
  */
 export async function scheduleTrialReminder(trialEnd: Date): Promise<boolean> {
   if (!isSupported) return false;
@@ -119,12 +120,17 @@ export async function scheduleTrialReminder(trialEnd: Date): Promise<boolean> {
   const { status } = await Notifications.requestPermissionsAsync();
   if (status !== 'granted') return false;
 
+  // L'avance dépend de la longueur de l'essai : on la relit sur la date retenue plutôt que
+  // d'annoncer un délai fixe, sous peine d'écrire « dans 2 jours » un rappel envoyé la veille.
+  const daysLeft = Math.round((trialEnd.getTime() - date.getTime()) / 86_400_000);
+  const when = daysLeft <= 1 ? 'demain' : `dans ${daysLeft} jours`;
+
   await Notifications.cancelScheduledNotificationAsync(TRIAL_REMINDER_ID).catch(() => {});
   await Notifications.scheduleNotificationAsync({
     identifier: TRIAL_REMINDER_ID,
     content: {
       title: 'Regain Premium',
-      body: `Votre essai gratuit se termine dans ${TRIAL_REMINDER_DAYS_BEFORE} jours. Pour ne pas être débité, annulez depuis Profil → Paramètres → Gérer mon abonnement.`,
+      body: `Votre essai gratuit se termine ${when}. Pour ne pas être débité, annulez depuis Profil → Paramètres → Gérer mon abonnement.`,
       data: { route: '/(tabs)/profile' },
     },
     trigger: { type: Notifications.SchedulableTriggerInputTypes.DATE, date },

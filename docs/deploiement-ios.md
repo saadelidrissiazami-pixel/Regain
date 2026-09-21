@@ -63,7 +63,7 @@ Ensuite, dans *Monétisation → Abonnements*, crée le groupe **Regain Premium*
 
 | Produit | Identifiant | Prix | Offre |
 |---|---|---|---|
-| Annuel | `regain_premium_annual` | 49,99 € | essai gratuit de 7 jours |
+| Annuel | `regain_premium_annual` | 49,99 € | essai gratuit de 3 jours |
 | Mensuel | `regain_premium_monthly` | 9,99 € | aucune |
 
 Ces identifiants doivent être **exactement** ceux-là : le code s'appuie dessus
@@ -160,7 +160,7 @@ Xcode. La première compilation demande ton identifiant Apple.
    une adresse e-mail que tu n'utilises pas déjà chez Apple.
 2. Sur l'iPhone : *Réglages → App Store → Compte Sandbox*, connecte ce compte.
 3. Installe la version TestFlight et souscris : l'achat est simulé, rien n'est débité, et un essai
-   de 7 jours dure 3 minutes en sandbox.
+   de 3 jours dure environ une minute en sandbox.
 4. Vérifie l'essai, la restauration d'achat, et le lien « Gérer mon abonnement ».
 
 ## 11. Fiche App Store et revue

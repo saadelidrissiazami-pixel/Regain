@@ -26,7 +26,7 @@ Tu crées un compte avec ton adresse e-mail. Tu es responsable de ton mot de pas
 
 ## 4. L'abonnement
 
-- **49,99 € par an**, avec **7 jours d'essai gratuit**, ou **9,99 € par mois**, sans essai.
+- **49,99 € par an**, avec **3 jours d'essai gratuit**, ou **9,99 € par mois**, sans essai.
 - L'achat est encaissé par Apple, sur ton compte App Store, à la confirmation.
 - L'abonnement **se renouvelle automatiquement**, sauf résiliation au moins 24 heures avant la fin
   de la période en cours.
@@ -34,7 +34,7 @@ Tu crées un compte avec ton adresse e-mail. Tu es responsable de ton mot de pas
   **Profil → Gérer mon abonnement** dans l'app. La résiliation prend effet à la fin de la période
   déjà payée.
 - Si tu résilies pendant l'essai gratuit, rien n'est débité. L'app te prévient par une
-  notification deux jours avant la fin de l'essai.
+  notification la veille de la fin de l'essai.
 - Un essai gratuit non utilisé est perdu au moment de l'abonnement.
 - Les remboursements sont traités par Apple, pas par nous : [reportaproblem.apple.com](https://reportaproblem.apple.com).
 

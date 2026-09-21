@@ -22,7 +22,7 @@ Textes prêts à coller dans App Store Connect. Les limites de caractères d'App
 
 | Produit | Identifiant | Prix | Offre | Identifiant Apple |
 |---|---|---|---|---|
-| Annuel | `regain_premium_annual` | 49,99 € | 1 semaine offerte, sans date de fin | `6814269327` |
+| Annuel | `regain_premium_annual` | 49,99 € | 3 jours offerts, sans date de fin | `6814269327` |
 | Mensuel | `regain_premium_monthly` | 9,99 € | aucune | `6814271015` |
 
 Groupe **Regain Premium** (`22400015`), affiché « Regain » dans les réglages Apple. Les prix des
@@ -66,7 +66,7 @@ Le planning, le suivi, le journal et dix-huit séances de bien-être restent gra
 de durée.
 
 REGAIN PREMIUM
-49,99 €/an avec 7 jours d'essai gratuit, ou 9,99 €/mois. L'abonnement se renouvelle
+49,99 €/an avec 3 jours d'essai gratuit, ou 9,99 €/mois. L'abonnement se renouvelle
 automatiquement sauf résiliation au moins 24 h avant la fin de la période. Résiliable à tout
 moment depuis les réglages de votre compte App Store.
 
@@ -111,7 +111,7 @@ Ce compte contient déjà des disponibilités, un planning, des séances termin�
 forme, pour que tout soit visible immédiatement.
 
 Abonnement : l'onglet « Forme » et les séances marquées d'un cadenas ouvrent l'écran d'abonnement
-(essai gratuit de 7 jours, puis 49,99 €/an, ou 9,99 €/mois). Le bouton « Restaurer mes achats »
+(essai gratuit de 3 jours, puis 49,99 €/an, ou 9,99 €/mois). Le bouton « Restaurer mes achats »
 est sur ce même écran, et « Gérer mon abonnement » dans l'onglet Profil.
 
 Suppression du compte : onglet Profil → « Supprimer mon compte ». L'effacement est immédiat.

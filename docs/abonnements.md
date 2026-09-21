@@ -24,7 +24,7 @@ RevenueCat fournit un **Test Store** : de faux achats, mais un vrai parcours com
 1. ~~Créez un compte sur [revenuecat.com](https://www.revenuecat.com) et un projet « Regain ».~~ **Fait**
 2. ~~*Product catalog → Entitlements* : `premium`.~~ **Fait**
 3. ~~*Product catalog → Products* (Test Store) : `regain_premium_monthly` (9,99) et
-   `regain_premium_annual` (49,99, essai 1 semaine), rattachés à `premium`.~~ **Fait**
+   `regain_premium_annual` (49,99, essai 3 jours), rattachés à `premium`.~~ **Fait**
 4. ~~*Product catalog → Offerings* : `default`, packages `$rc_monthly` et `$rc_annual`.~~ **Fait**
 5. *Apps* : copiez la clé Test Store dans `.env` :
    `EXPO_PUBLIC_REVENUECAT_TEST_STORE_KEY=...`

@@ -121,14 +121,23 @@ export function freeTrialDays(intro: IntroPriceLike | null): number | null {
   return intro.periodNumberOfUnits * Math.max(1, intro.cycles) * perUnit;
 }
 
-/** Le rappel de fin d'essai part deux jours avant le premier paiement. */
-export const TRIAL_REMINDER_DAYS_BEFORE = 2;
+/**
+ * Combien de jours avant le premier paiement on prévient.
+ *
+ * Deux jours laissent le temps d'annuler sans y penser la veille au soir. Mais sur un essai
+ * court, deux jours d'avance tomberaient presque le jour de l'achat : le rappel passerait pour
+ * une relance commerciale, et laisserait ensuite un silence jusqu'au débit. On prévient donc
+ * la veille dès que l'essai descend sous cinq jours.
+ */
+export function trialReminderDaysBefore(trialDays: number): number {
+  return trialDays >= 5 ? 2 : 1;
+}
 
 export type TrialStep = { when: string; what: string };
 
 /** Déroulé de l'essai montré avant l'achat : rien de caché sur la date du premier paiement. */
 export function trialTimeline(days: number, price: string): TrialStep[] {
-  const reminderDay = Math.max(1, days - TRIAL_REMINDER_DAYS_BEFORE);
+  const reminderDay = Math.max(1, days - trialReminderDaysBefore(days));
   return [
     { when: "Aujourd'hui", what: 'Tout Premium est débloqué' },
     { when: `Jour ${reminderDay}`, what: "On vous prévient que l'essai se termine" },
@@ -136,8 +145,14 @@ export function trialTimeline(days: number, price: string): TrialStep[] {
   ];
 }
 
-/** Date du rappel de fin d'essai ; null s'il est déjà trop tard pour prévenir. */
-export function trialReminderDate(trialEnd: Date, now: Date): Date | null {
-  const reminder = new Date(trialEnd.getTime() - TRIAL_REMINDER_DAYS_BEFORE * 86_400_000);
+/**
+ * Date du rappel de fin d'essai ; null s'il est déjà trop tard pour prévenir.
+ *
+ * `trialDays` sert à choisir l'avance : sans lui, on la déduit de la date de fin, ce qui reste
+ * juste tant que l'appel a lieu pendant l'essai.
+ */
+export function trialReminderDate(trialEnd: Date, now: Date, trialDays?: number): Date | null {
+  const days = trialDays ?? Math.ceil((trialEnd.getTime() - now.getTime()) / 86_400_000);
+  const reminder = new Date(trialEnd.getTime() - trialReminderDaysBefore(days) * 86_400_000);
   return reminder.getTime() > now.getTime() ? reminder : null;
 }
