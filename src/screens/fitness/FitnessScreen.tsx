@@ -1,5 +1,5 @@
 import { useMutation, useQueryClient } from '@tanstack/react-query';
-import { router } from 'expo-router';
+import { router, useLocalSearchParams } from 'expo-router';
 import { useState } from 'react';
 import { View } from 'react-native';
 
@@ -20,6 +20,8 @@ export default function FitnessScreen() {
   const fitness = useFitness();
   const queryClient = useQueryClient();
   const { profile, plan, next, userId } = fitness;
+  // Posé par le questionnaire quand l'enregistrement a entraîné un recalcul du plan.
+  const { recalcule } = useLocalSearchParams<{ recalcule?: string }>();
   const [showAllAdjustments, setShowAllAdjustments] = useState(false);
 
   const generateMutation = useMutation({
@@ -203,6 +205,12 @@ export default function FitnessScreen() {
   return (
     <Screen inTabs refreshing={fitness.isRefetching} onRefresh={fitness.isPremium ? () => fitness.refetch() : undefined}>
       {header}
+      {recalcule === '1' ? (
+        <InlineNotice
+          tone="success"
+          message="Ton programme, tes menus et ta liste de courses ont été recalculés à partir de ton nouveau profil."
+        />
+      ) : null}
       {body}
       <Text variant="caption" tone="ink3" style={{ marginTop: 28 }}>
         Regain ne remplace pas l&apos;avis d&apos;un médecin ou d&apos;un diététicien. En cas de problème de santé, de blessure ou

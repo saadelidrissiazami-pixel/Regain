@@ -5,6 +5,7 @@ import { INGREDIENTS } from '../src/features/fitness/ingredients';
 import { ageFromBirthYear, computeNutritionTargets } from '../src/features/fitness/nutrition';
 import type { Diet } from '../src/features/fitness/options';
 import {
+  affectsPlan,
   buildMealPlan,
   buildWorkoutProgram,
   detectJointIssues,
@@ -253,5 +254,35 @@ describe('apport en protéines', () => {
     const highProtein = averageProtein({ ...targets, proteinG: Math.round((targets.calories * 0.3) / 4) });
     const lowProtein = averageProtein({ ...targets, proteinG: Math.round((targets.calories * 0.15) / 4) });
     expect(highProtein).toBeGreaterThan(lowProtein);
+  });
+});
+
+describe('affectsPlan', () => {
+  it('signale les changements qui rendent le plan affiché faux', () => {
+    expect(affectsPlan(BASE, { ...BASE, allergies: 'arachides' })).toBe(true);
+    expect(affectsPlan(BASE, { ...BASE, diet: 'vegetarien' })).toBe(true);
+    expect(affectsPlan(BASE, { ...BASE, equipment: 'salle' })).toBe(true);
+    expect(affectsPlan(BASE, { ...BASE, health_notes: 'genou douloureux' })).toBe(true);
+    expect(affectsPlan(BASE, { ...BASE, days_per_week: 5 })).toBe(true);
+    expect(affectsPlan(BASE, { ...BASE, weight_kg: 84 })).toBe(true);
+    expect(affectsPlan(BASE, { ...BASE, goals: ['prise_masse'] })).toBe(true);
+  });
+
+  it('ignore ce qui ne change pas le plan produit', () => {
+    expect(affectsPlan(BASE, { ...BASE })).toBe(false);
+    // L'ordre des objectifs n'a aucun effet sur la génération.
+    const twoGoals: FitnessProfileInput = { ...BASE, goals: ['perte_poids', 'endurance'] };
+    expect(affectsPlan(twoGoals, { ...twoGoals, goals: ['endurance', 'perte_poids'] })).toBe(false);
+    // Champs libres : un espace ou un champ vidé plutôt que laissé nul ne doit rien régénérer.
+    expect(affectsPlan({ ...BASE, allergies: 'arachides' }, { ...BASE, allergies: ' arachides ' })).toBe(false);
+    expect(affectsPlan({ ...BASE, health_notes: null }, { ...BASE, health_notes: '  ' })).toBe(false);
+  });
+
+  it("à graine égale, le plan est identique : corriger son profil ne rebat pas les cartes", () => {
+    const targets = targetsFor(BASE);
+    const first = generateFitnessPlan(BASE, targets, { seed: 3 });
+    const second = generateFitnessPlan(BASE, targets, { seed: 3 });
+    expect(second).toEqual(first);
+    expect(generateFitnessPlan(BASE, targets, { seed: 4 })).not.toEqual(first);
   });
 });

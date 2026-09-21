@@ -15,6 +15,33 @@ import type {
 // Générateur par règles, sans IA : gratuit, instantané, et aucune donnée de santé ne quitte la
 // base de l'utilisateur. Déterministe pour un même `seed`, pour être testable.
 
+// --- Le plan suit-il encore le profil ? -----------------------------------------------------
+
+function sameValue(previous: unknown, next: unknown): boolean {
+  if (Array.isArray(previous) && Array.isArray(next)) {
+    // Les objectifs sont une liste : leur ordre ne change rien au programme produit.
+    return previous.length === next.length && [...previous].sort().join('|') === [...next].sort().join('|');
+  }
+  const isText = (v: unknown) => v === null || typeof v === 'string';
+  // Allergies et notes de santé sont saisies à la main : un espace en plus n'est pas un changement.
+  if (isText(previous) && isText(next)) return ((previous as string) ?? '').trim() === ((next as string) ?? '').trim();
+  return previous === next;
+}
+
+/**
+ * Le profil a-t-il changé d'une façon qui rende le plan affiché faux ?
+ *
+ * On compare **tous** les champs plutôt qu'une liste choisie : chacun d'eux nourrit la
+ * génération (calories, choix des exercices, exclusions alimentaires), et une liste manuelle
+ * finirait par oublier un champ ajouté plus tard — un oubli qui laisserait afficher des repas
+ * contenant un allergène déclaré. Le créneau et les jours d'entraînement ne sont volontairement
+ * pas dans `FitnessProfileInput` : ils ne servent qu'à l'affichage et ne doivent rien régénérer.
+ */
+export function affectsPlan(previous: FitnessProfileInput, next: FitnessProfileInput): boolean {
+  const keys = new Set([...Object.keys(previous), ...Object.keys(next)]) as Set<keyof FitnessProfileInput>;
+  return [...keys].some((key) => !sameValue(previous[key], next[key]));
+}
+
 // --- Lecture des textes libres (allergies, santé) -------------------------------------------
 
 function normalize(text: string): string {

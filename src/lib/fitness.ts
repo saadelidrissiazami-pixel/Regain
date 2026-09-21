@@ -77,11 +77,17 @@ export function targetsForProfile(profile: FitnessProfileInput): NutritionTarget
 /**
  * Génère un programme par règles (sans IA, gratuit) et l'enregistre. Le nombre de programmes
  * déjà créés sert de graine : chaque nouvelle semaine varie les exercices et les recettes.
+ *
+ * `keepVariation` reprend la graine du plan courant. À utiliser quand on régénère parce que le
+ * profil a changé : l'utilisateur retrouve **sa** semaine, corrigée de ce qu'il vient de
+ * déclarer, au lieu d'un programme et de menus entièrement différents pour avoir corrigé sa
+ * taille. Le bilan hebdomadaire, lui, veut bien une nouvelle semaine : il ne passe rien.
  */
 export async function createFitnessPlan(
   userId: string,
   profile: FitnessProfileInput,
-  checkin?: Pick<FitnessCheckinInput, 'sessions_done' | 'energy'>
+  checkin?: Pick<FitnessCheckinInput, 'sessions_done' | 'energy'>,
+  options?: { keepVariation?: boolean }
 ): Promise<FitnessPlan> {
   const { count, error: countError } = await supabase
     .from('fitness_plans')
@@ -89,8 +95,11 @@ export async function createFitnessPlan(
     .eq('user_id', userId);
   if (countError) throw countError;
 
+  const plansSoFar = count ?? 0;
+  const seed = options?.keepVariation ? Math.max(0, plansSoFar - 1) : plansSoFar;
+
   const targets = targetsForProfile(profile);
-  const generated = generateFitnessPlan(profile, targets, { seed: count ?? 0, checkin });
+  const generated = generateFitnessPlan(profile, targets, { seed, checkin });
 
   const { data, error } = await supabase
     .from('fitness_plans')

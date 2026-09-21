@@ -57,7 +57,10 @@ export default function FitnessCheckinScreen() {
       if (weight !== null) await updateFitnessWeight(userId, weight);
 
       // Nouveau programme : cibles recalculées avec le poids du jour, volume ajusté selon le bilan.
-      const previous = queryClient.getQueryData<FitnessPlan | null>(['fitnessPlan', userId]) ?? (await fetchLatestFitnessPlan(userId));
+      // La clé est celle qu'alimente useFitness (les deux plans les plus récents) : une clé au
+      // singulier, lue ici auparavant, n'était jamais remplie et forçait un aller-retour réseau.
+      const cached = queryClient.getQueryData<FitnessPlan[]>(['fitnessPlans', userId]);
+      const previous = cached?.[0] ?? (await fetchLatestFitnessPlan(userId));
       const updatedProfile = weight !== null ? { ...profile, weight_kg: weight } : profile;
       const plan = await createFitnessPlan(userId, updatedProfile, { sessions_done: sessionsDone, energy });
 
@@ -73,9 +76,8 @@ export default function FitnessCheckinScreen() {
         }),
       };
     },
-    onSuccess: ({ plan }) => {
+    onSuccess: () => {
       haptic.success();
-      queryClient.setQueryData(['fitnessPlan', userId], plan);
       queryClient.invalidateQueries({ queryKey: ['fitnessProfile', userId] });
       queryClient.invalidateQueries({ queryKey: ['fitnessCheckins', userId] });
       queryClient.invalidateQueries({ queryKey: ['fitnessPlans', userId] });

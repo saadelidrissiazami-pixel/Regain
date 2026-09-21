@@ -7,6 +7,7 @@ import { View } from 'react-native';
 
 import { errorMessage, InlineNotice, LoadingSkeleton } from '../../src/components/feedback';
 import { Button, ChoiceChip, Field, haptic, Screen, ScreenHeader, SegmentedControl, Select, SelectMulti, Text } from '../../src/components/ui';
+import { affectsPlan } from '../../src/features/fitness/planGenerator';
 import { trainingDays } from '../../src/features/fitness/schedule';
 import {
   ACTIVITY_LEVELS,
@@ -24,6 +25,8 @@ import {
 } from '../../src/features/fitness/schema';
 import type { FitnessProfile } from '../../src/features/fitness/types';
 import {
+  countFitnessPlans,
+  createFitnessPlan,
   fetchFitnessProfile,
   fetchTrainingSchedule,
   saveFitnessProfile,
@@ -96,16 +99,30 @@ function QuestionnaireForm({
 
   const saveMutation = useMutation({
     mutationFn: async (values: FitnessQuestionnaireValues) => {
-      await saveFitnessProfile(userId, questionnaireToProfile(values));
+      const profile = questionnaireToProfile(values);
+      await saveFitnessProfile(userId, profile);
       await saveTrainingSchedule(userId, { training_slot: slot, training_days: [...days].sort() });
+
+      // Un plan déjà enregistré décrit l'ancien profil. Sans ce recalcul, quelqu'un qui vient de
+      // déclarer une allergie continuerait de voir des repas qui la contiennent, et une liste de
+      // courses qui les achète. On garde la variation en cours : c'est sa semaine, corrigée.
+      if (!initialProfile || !affectsPlan(initialProfile, profile)) return false;
+      if ((await countFitnessPlans(userId)) === 0) return false;
+      await createFitnessPlan(userId, profile, undefined, { keepVariation: true });
+      return true;
     },
-    onSuccess: async () => {
+    onSuccess: async (planRefreshed) => {
       haptic.success();
       await Promise.all([
         queryClient.invalidateQueries({ queryKey: ['fitnessProfile', userId] }),
         queryClient.invalidateQueries({ queryKey: ['trainingSchedule', userId] }),
+        queryClient.invalidateQueries({ queryKey: ['fitnessPlans', userId] }),
+        queryClient.invalidateQueries({ queryKey: ['fitnessPlanCount', userId] }),
       ]);
-      router.back();
+      // La liste de courses se lit au supermarché : on prévient plutôt que de la changer en
+      // silence sous les yeux de quelqu'un qui l'a déjà notée.
+      if (planRefreshed) router.replace({ pathname: '/(tabs)/fitness', params: { recalcule: '1' } });
+      else router.back();
     },
   });
 
