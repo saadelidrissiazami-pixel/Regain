@@ -145,7 +145,26 @@ Deno.serve(async (req) => {
   }
 
   const anthropicBody = await anthropicRes.json();
-  const reply = anthropicBody.content?.[0]?.text ?? "Désolé, je n'ai pas de réponse à proposer là.";
+
+  // La réponse est une liste de blocs dont le texte n'est pas forcément le premier : selon le
+  // modèle, un bloc de réflexion peut le précéder. Lire `content[0].text` renvoyait alors une
+  // réponse vide avec un HTTP 200, le pire des deux mondes.
+  const reply = (anthropicBody.content ?? [])
+    .filter((block: { type?: string }) => block?.type === 'text')
+    .map((block: { text?: string }) => block.text ?? '')
+    .join('\n')
+    .trim();
+
+  if (!reply) {
+    console.error(
+      'Réponse sans bloc texte',
+      JSON.stringify({
+        stop_reason: anthropicBody.stop_reason,
+        types: (anthropicBody.content ?? []).map((b: { type?: string }) => b?.type),
+      })
+    );
+    return jsonResponse({ error: 'Le coach est momentanément indisponible. Réessayez dans un instant.' }, 502);
+  }
 
   await supabase.from('coach_messages').insert([
     { user_id: user.id, role: 'user', content: message },
