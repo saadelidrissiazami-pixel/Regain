@@ -137,6 +137,25 @@ npm run preflight -- production
    désactivé pour les tests.
 3. Déploie la fonction de suppression de compte : `npx supabase functions deploy delete-account`.
    Sans elle, le bouton « Supprimer mon compte » échoue, et Apple vérifie ce point depuis 2022.
+   **Fait** le 20 septembre 2026, depuis l'éditeur du tableau de bord.
+
+## 8 bis. Activer le coach IA **(toi)**
+
+Le coach conversationnel est réservé aux abonnés et plafonné côté serveur (30 messages par heure,
+**20 par jour**) : sans ce plafond, un seul compte peut faire tourner la facture.
+
+1. Crée une clé sur [console.anthropic.com](https://console.anthropic.com), puis :
+   `npx supabase secrets set ANTHROPIC_API_KEY=sk-ant-...`
+2. `npx supabase functions deploy coach`
+3. Vérifie dans l'app : sans abonnement, l'entrée renvoie au paywall ; avec, une question obtient
+   une réponse.
+
+Sans clé ni déploiement, l'app reste entière : l'écran affiche le message d'indisponibilité et
+tout le reste — planning, séances, programme, menus, courses — continue de fonctionner, puisque
+rien de tout cela n'utilise l'IA.
+
+**La politique de confidentialité a été mise à jour en conséquence** (Anthropic ajouté aux
+sous-traitants) : republie les pages avant de soumettre, sinon la page en ligne est fausse.
 
 ## 9. Compiler et envoyer
 

@@ -10,9 +10,18 @@ const corsHeaders = {
 };
 
 // Garde-fous : sans eux, n'importe quel compte authentifié peut faire tourner la facture
-// Anthropic du projet (messages géants, en boucle).
+// Anthropic du projet (messages géants, en boucle). L'heure amortit les rafales ; le jour
+// protège la marge de l'abonnement, qu'un seul compte très bavard suffirait à manger.
 const MAX_MESSAGE_LENGTH = 2000;
 const MAX_MESSAGES_PER_HOUR = 30;
+const MAX_MESSAGES_PER_DAY = 20;
+
+// Le sujet ne sert qu'à orienter la conversation : il n'ajoute aucune donnée de santé à ce que
+// la personne écrit elle-même.
+const SUBJECTS: Record<string, string> = {
+  forme: "La personne t'écrit depuis l'espace Forme : entraînement, nutrition, récupération.",
+  'bien-etre': "La personne t'écrit depuis l'espace Bien-être : stress, sommeil, régularité.",
+};
 
 const SYSTEM_PROMPT = `Tu es le coach personnel de Regain, une application qui aide des personnes en reconstruction de routine (post-burnout, changement de vie) à mieux utiliser leur temps libre, en alternative au temps passif (réseaux sociaux, streaming).
 
@@ -48,8 +57,9 @@ Deno.serve(async (req) => {
   if (!user) return jsonResponse({ error: 'Non authentifié' }, 401);
 
   let message: unknown;
+  let subject: unknown;
   try {
-    ({ message } = await req.json());
+    ({ message, subject } = await req.json());
   } catch {
     return jsonResponse({ error: 'Requête invalide' }, 400);
   }
@@ -61,16 +71,25 @@ Deno.serve(async (req) => {
     return jsonResponse({ error: `Message trop long (${MAX_MESSAGE_LENGTH} caractères maximum).` }, 400);
   }
 
-  const oneHourAgo = new Date(Date.now() - 60 * 60 * 1000).toISOString();
-  const { count: recentCount } = await supabase
-    .from('coach_messages')
-    .select('id', { count: 'exact', head: true })
-    .eq('user_id', user.id)
-    .eq('role', 'user')
-    .gte('created_at', oneHourAgo);
+  const sentSince = async (isoDate: string) => {
+    const { count } = await supabase
+      .from('coach_messages')
+      .select('id', { count: 'exact', head: true })
+      .eq('user_id', user.id)
+      .eq('role', 'user')
+      .gte('created_at', isoDate);
+    return count ?? 0;
+  };
 
-  if ((recentCount ?? 0) >= MAX_MESSAGES_PER_HOUR) {
+  const now = Date.now();
+  if ((await sentSince(new Date(now - 60 * 60 * 1000).toISOString())) >= MAX_MESSAGES_PER_HOUR) {
     return jsonResponse({ error: 'Trop de messages sur la dernière heure. Réessayez un peu plus tard.' }, 429);
+  }
+  if ((await sentSince(new Date(now - 24 * 60 * 60 * 1000).toISOString())) >= MAX_MESSAGES_PER_DAY) {
+    return jsonResponse(
+      { error: `Tu as atteint tes ${MAX_MESSAGES_PER_DAY} messages du jour. On reprend demain.` },
+      429
+    );
   }
 
   const [{ data: prefs }, { data: history }] = await Promise.all([
@@ -99,7 +118,7 @@ Deno.serve(async (req) => {
     body: JSON.stringify({
       model: 'claude-sonnet-5',
       max_tokens: 400,
-      system: `${SYSTEM_PROMPT}\n\n${context}`,
+      system: [SYSTEM_PROMPT, SUBJECTS[String(subject)], context].filter(Boolean).join('\n\n'),
       messages: [
         ...conversation.map((m) => ({ role: m.role, content: m.content })),
         { role: 'user', content: message },

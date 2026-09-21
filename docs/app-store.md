@@ -126,7 +126,7 @@ itinéraire. Elle n'est pas enregistrée.
 |---|---|---|---|---|
 | Adresse e-mail | oui | oui | non | Fonctionnement de l'app |
 | Santé et forme (poids, taille, objectifs, allergies, remarques de santé) | oui | oui | non | Fonctionnement de l'app |
-| Contenus créés (notes, ressentis, réponses) | oui | oui | non | Fonctionnement de l'app |
+| Contenus créés (notes, ressentis, réponses, messages au coach) | oui | oui | non | Fonctionnement de l'app |
 | Identifiant utilisateur | oui | oui | non | Fonctionnement de l'app |
 | Achats | oui | oui | non | Fonctionnement de l'app |
 | Position précise | oui | non | non | Fonctionnement de l'app |
@@ -134,6 +134,10 @@ itinéraire. Elle n'est pas enregistrée.
 
 Réponses aux autres questions : aucune publicité, aucune analyse tierce, aucun suivi entre apps
 (donc pas de demande de suivi App Tracking Transparency).
+
+Les messages écrits au coach Premium sont envoyés à **Anthropic** pour produire la réponse : à
+déclarer comme sous-traitant, et mentionné dans la politique de confidentialité. Le reste de
+l'app — planning, séances, programme, menus, courses — est calculé sur l'appareil, sans IA.
 
 ## Conformité à l'export
 

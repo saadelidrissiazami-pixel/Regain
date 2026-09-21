@@ -195,6 +195,13 @@ export default function FitnessScreen() {
                   : 'Ton coach ajuste ensuite ton programme'
               }
               onPress={() => router.push('/fitness/checkin')}
+              divider
+            />
+            <ListRow
+              icon="chatbubbles-outline"
+              title="Poser une question à mon coach"
+              subtitle="Séances, repas, récupération"
+              onPress={() => router.push('/coach?sujet=forme')}
             />
           </View>
         </Appear>

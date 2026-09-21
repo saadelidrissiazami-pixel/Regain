@@ -18,9 +18,12 @@ export async function fetchCoachHistory(userId: string): Promise<CoachMessage[]>
   return data;
 }
 
-export async function sendCoachMessage(message: string): Promise<string> {
+/** Espace d'où part la conversation : oriente le coach, sans transmettre de donnée de santé. */
+export type CoachSubject = 'forme' | 'bien-etre';
+
+export async function sendCoachMessage(message: string, subject?: CoachSubject): Promise<string> {
   const { data, error } = await supabase.functions.invoke<{ reply?: string }>('coach', {
-    body: { message },
+    body: { message, subject },
   });
 
   // invoke() renvoie une error pour tout statut non-2xx : une panne serveur, un quota atteint

@@ -110,6 +110,13 @@ export default function WellbeingScreen() {
                     : 'Tes ressentis et tes réponses, séance après séance.'
                 }
                 onPress={() => router.push('/wellbeing/journal')}
+                divider
+              />
+              <ListRow
+                icon="chatbubbles-outline"
+                title="Parler à mon coach"
+                subtitle="Stress, sommeil, régularité"
+                onPress={() => router.push('/coach?sujet=bien-etre')}
               />
             </View>
           </Appear>

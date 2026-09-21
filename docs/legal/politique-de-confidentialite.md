@@ -44,6 +44,20 @@ moment et envoyée, sans ton identité, à :
 Ta position n'est pas enregistrée sur nos serveurs. L'autorisation est demandée au moment de
 l'usage et peut être retirée dans les réglages de l'iPhone.
 
+## Ton coach (Premium)
+
+Si tu écris à ton coach, **ton message est envoyé à Anthropic** pour produire la réponse, avec
+tes dix derniers messages et tes objectifs déclarés. Rien d'autre n'est transmis : ni ton poids,
+ni tes allergies, ni tes remarques de santé — sauf, bien sûr, si tu les écris toi-même dans le
+message.
+
+Tes échanges sont enregistrés dans ton compte pour que tu les retrouves, et effacés avec lui.
+Anthropic ne les utilise pas pour entraîner ses modèles.
+
+Le coach n'est pas un professionnel de santé et ne pose aucun diagnostic. Le reste de l'app —
+planning, séances, programme, menus, liste de courses — est calculé sans aucune IA, sur ton
+téléphone.
+
 ## Hébergement et sous-traitants
 
 | Service | Rôle | Où |
@@ -51,6 +65,7 @@ l'usage et peut être retirée dans les réglages de l'iPhone.
 | Supabase | base de données et comptes | Union européenne (Francfort) |
 | Apple (App Store) | paiement des abonnements | selon Apple |
 | RevenueCat | suivi de l'état de ton abonnement | États-Unis, clauses contractuelles types |
+| Anthropic | réponses de ton coach, si tu l'utilises | États-Unis, clauses contractuelles types |
 
 Apple ne nous transmet jamais ton numéro de carte. RevenueCat ne reçoit que l'identifiant de ton
 compte Regain et l'état de l'abonnement.
