@@ -8,7 +8,6 @@ import { ActivityIndicator, KeyboardAvoidingView, Platform, ScrollView, View } f
 import { EmptyState, InlineNotice } from '../src/components/feedback';
 import { Card, haptic, IconButton, ScreenHeader, Text, TextInput } from '../src/components/ui';
 import { fetchCoachHistory, sendCoachMessage, type CoachMessage, type CoachSubject } from '../src/lib/coach';
-import { purchasesUnavailableReason } from '../src/lib/purchases';
 import { usePremium } from '../src/lib/premium';
 import { useAuthStore } from '../src/store/authStore';
 import { useTheme } from '../src/theme/ThemeProvider';
@@ -132,9 +131,7 @@ export default function CoachScreen() {
 
         {/* Quota atteint, panne ou fonction non déployée arrivent ici avec leur vrai message. */}
         {sendMutation.isError ? <InlineNotice tone="error" message={(sendMutation.error as Error).message} /> : null}
-        {purchasesUnavailableReason === null && historyQuery.isError ? (
-          <InlineNotice tone="error" message="L'historique n'a pas pu être chargé." />
-        ) : null}
+        {historyQuery.isError ? <InlineNotice tone="error" message="L'historique n'a pas pu être chargé." /> : null}
       </ScrollView>
 
       <View

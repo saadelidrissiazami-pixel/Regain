@@ -1,6 +1,6 @@
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { router, useLocalSearchParams } from 'expo-router';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { View } from 'react-native';
 
 import { AdjustmentsList } from '../../components/AdjustmentsList';
@@ -21,7 +21,16 @@ export default function FitnessScreen() {
   const queryClient = useQueryClient();
   const { profile, plan, next, userId } = fitness;
   // Posé par le questionnaire quand l'enregistrement a entraîné un recalcul du plan.
+  // L'onglet reste monté quand on en change : sans effacer le paramètre, le bandeau
+  // réapparaîtrait à chaque retour sur Forme, longtemps après le recalcul.
   const { recalcule } = useLocalSearchParams<{ recalcule?: string }>();
+  useEffect(() => {
+    if (recalcule !== '1') return;
+    // Effacer le paramètre masque le bandeau et l'empêche de revenir : un seul geste pour les
+    // deux, et rien à synchroniser dans un état local.
+    const timer = setTimeout(() => router.setParams({ recalcule: undefined }), 12_000);
+    return () => clearTimeout(timer);
+  }, [recalcule]);
   const [showAllAdjustments, setShowAllAdjustments] = useState(false);
 
   const generateMutation = useMutation({

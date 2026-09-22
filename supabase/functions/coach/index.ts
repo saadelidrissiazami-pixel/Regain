@@ -93,8 +93,11 @@ Deno.serve(async (req) => {
     return jsonResponse({ error: 'Trop de messages sur la dernière heure. Réessayez un peu plus tard.' }, 429);
   }
   if ((await sentSince(new Date(now - 24 * 60 * 60 * 1000).toISOString())) >= MAX_MESSAGES_PER_DAY) {
+    // Fenêtre glissante plutôt que jour calendaire : le serveur ne connaît pas le fuseau de
+    // l'utilisateur, et « minuit » lui donnerait 40 messages d'affilée à cheval sur deux jours.
+    // Le message dit donc 24 heures, et non « demain ».
     return jsonResponse(
-      { error: `Tu as atteint tes ${MAX_MESSAGES_PER_DAY} messages du jour. On reprend demain.` },
+      { error: `Tu as atteint tes ${MAX_MESSAGES_PER_DAY} messages sur les dernières 24 heures.` },
       429
     );
   }
