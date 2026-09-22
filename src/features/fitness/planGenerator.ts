@@ -38,8 +38,11 @@ function sameValue(previous: unknown, next: unknown): boolean {
  * pas dans `FitnessProfileInput` : ils ne servent qu'à l'affichage et ne doivent rien régénérer.
  */
 export function affectsPlan(previous: FitnessProfileInput, next: FitnessProfileInput): boolean {
-  const keys = new Set([...Object.keys(previous), ...Object.keys(next)]) as Set<keyof FitnessProfileInput>;
-  return [...keys].some((key) => !sameValue(previous[key], next[key]));
+  // On parcourt les clés de `next`, jamais l'union des deux : `previous` vient de la base, où
+  // `select('*')` ramène aussi user_id, created_at, training_slot… absents du profil reconstruit
+  // depuis le formulaire. Comparer l'union les voyait disparaître à chaque fois, et la fonction
+  // répondait toujours vrai — donc un recalcul à chaque enregistrement, même sans modification.
+  return (Object.keys(next) as (keyof FitnessProfileInput)[]).some((key) => !sameValue(previous[key], next[key]));
 }
 
 // --- Lecture des textes libres (allergies, santé) -------------------------------------------

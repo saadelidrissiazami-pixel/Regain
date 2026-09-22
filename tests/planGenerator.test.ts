@@ -268,6 +268,21 @@ describe('affectsPlan', () => {
     expect(affectsPlan(BASE, { ...BASE, goals: ['prise_masse'] })).toBe(true);
   });
 
+  it("ignore les colonnes que la base ajoute autour du profil", () => {
+    // fetchFitnessProfile fait select('*') : le profil lu contient des colonnes que le
+    // formulaire ne reconstruit pas. Les compter comme disparues rendait tout enregistrement
+    // « modifiant », et régénérait un programme que personne n'avait demandé à changer.
+    const fromDatabase = {
+      ...BASE,
+      user_id: 'abc',
+      created_at: '2026-09-20T10:00:00Z',
+      training_slot: 'soir',
+      training_days: [0, 2, 4],
+    } as unknown as FitnessProfileInput;
+    expect(affectsPlan(fromDatabase, { ...BASE })).toBe(false);
+    expect(affectsPlan(fromDatabase, { ...BASE, diet: 'vegan' })).toBe(true);
+  });
+
   it('ignore ce qui ne change pas le plan produit', () => {
     expect(affectsPlan(BASE, { ...BASE })).toBe(false);
     // L'ordre des objectifs n'a aucun effet sur la génération.

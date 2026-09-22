@@ -40,3 +40,6 @@ yarn-error.*
 # generated native folders
 /ios
 /android
+
+# Caches locaux de la CLI Supabase : propres à la machine, jamais à versionner.
+supabase/.temp/
