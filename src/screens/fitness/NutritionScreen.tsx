@@ -1,5 +1,7 @@
 import { Ionicons } from '@expo/vector-icons';
 import { router } from 'expo-router';
+
+import { goBack } from '../../lib/navigation';
 import { useState } from 'react';
 import { Pressable, View } from 'react-native';
 import Animated, { FadeIn, FadeOut } from 'react-native-reanimated';
@@ -137,7 +139,7 @@ export default function NutritionScreen() {
 
   return (
     <Screen>
-      <ScreenHeader title="Nutrition" subtitle="Tes repas et tes courses de la semaine" onBack={() => router.back()} />
+      <ScreenHeader title="Nutrition" subtitle="Tes repas et tes courses de la semaine" onBack={() => goBack('/(tabs)/fitness')} />
       {fitness.isLoading ? (
         <LoadingSkeleton preset="list" />
       ) : fitness.isError ? (

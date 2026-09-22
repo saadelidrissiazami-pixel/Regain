@@ -1,5 +1,7 @@
 import { useQuery, useQueryClient } from '@tanstack/react-query';
 import { router, useLocalSearchParams } from 'expo-router';
+
+import { goBack } from '../../src/lib/navigation';
 import { Ionicons } from '@expo/vector-icons';
 import { useMemo, useState, type ComponentProps } from 'react';
 import { Linking, View } from 'react-native';
@@ -149,7 +151,7 @@ export default function PaywallScreen() {
   const trialDays = selected ? freeTrialDays(selected.product.introPrice) : null;
 
   // Depuis l'accueil, il n'y a pas d'écran précédent : on continue vers le planning.
-  const leave = () => (source === 'onboarding' ? router.replace('/(tabs)/planning') : router.back());
+  const leave = () => (source === 'onboarding' ? router.replace('/(tabs)/planning') : goBack('/(tabs)/planning'));
 
   const unlockPremium = () => {
     queryClient.setQueryData(['premium', userId], true);

@@ -1,5 +1,7 @@
 import { useQuery } from '@tanstack/react-query';
 import { router, useLocalSearchParams } from 'expo-router';
+
+import { goBack } from '../../src/lib/navigation';
 import { View } from 'react-native';
 import type { ComponentProps } from 'react';
 
@@ -56,7 +58,7 @@ export default function ActivityDetailScreen() {
         ) : undefined
       }
     >
-      <ScreenHeader title={activity?.title ?? 'Activité'} onBack={() => router.back()} size="headline" />
+      <ScreenHeader title={activity?.title ?? 'Activité'} onBack={() => goBack('/(tabs)/planning')} size="headline" />
 
       {activityQuery.isLoading ? (
         <LoadingSkeleton preset="hero" />

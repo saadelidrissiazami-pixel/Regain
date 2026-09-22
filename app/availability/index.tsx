@@ -1,5 +1,7 @@
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { router } from 'expo-router';
+
+import { goBack } from '../../src/lib/navigation';
 import { useState } from 'react';
 import { ActivityIndicator, ScrollView, View } from 'react-native';
 
@@ -113,7 +115,7 @@ export default function AvailabilityScreen() {
       <ScreenHeader
         title="Mes disponibilités"
         subtitle="Dis à Regain quand tu es libre : il y place tes activités."
-        onBack={() => router.back()}
+        onBack={() => goBack('/(tabs)/planning')}
       />
 
       <Text variant="section" style={{ marginBottom: 12 }} accessibilityRole="header">

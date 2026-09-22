@@ -1,5 +1,7 @@
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { router } from 'expo-router';
+
+import { goBack } from '../../lib/navigation';
 import { useState, type ReactNode } from 'react';
 import { ActivityIndicator, Linking, Switch, View } from 'react-native';
 
@@ -103,7 +105,7 @@ export default function SettingsScreen() {
 
   return (
     <Screen>
-      <ScreenHeader title="Paramètres" subtitle={email} onBack={() => router.back()} />
+      <ScreenHeader title="Paramètres" subtitle={email} onBack={() => goBack('/(tabs)/profile')} />
 
       <Section title="Apparence">
         <SegmentedControl<ThemeMode>

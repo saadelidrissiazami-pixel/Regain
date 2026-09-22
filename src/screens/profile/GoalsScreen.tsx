@@ -1,5 +1,5 @@
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
-import { router } from 'expo-router';
+import { goBack } from '../../lib/navigation';
 import { useEffect, useRef } from 'react';
 import { View } from 'react-native';
 
@@ -54,7 +54,7 @@ export default function GoalsScreen() {
       queryClient.invalidateQueries({ queryKey: ['preferences', userId] });
       queryClient.invalidateQueries({ queryKey: ['sleepMinutes', userId] });
       queryClient.invalidateQueries({ queryKey: ['onboardingAnswers', userId] });
-      router.back();
+      goBack('/(tabs)/profile');
     },
   });
 
@@ -69,7 +69,7 @@ export default function GoalsScreen() {
         ) : undefined
       }
     >
-      <ScreenHeader title="Mes objectifs" subtitle="Ton coach s'en sert pour choisir tes activités." onBack={() => router.back()} />
+      <ScreenHeader title="Mes objectifs" subtitle="Ton coach s'en sert pour choisir tes activités." onBack={() => goBack('/(tabs)/profile')} />
       {dataQuery.isLoading ? (
         <LoadingSkeleton preset="list" />
       ) : dataQuery.isError ? (

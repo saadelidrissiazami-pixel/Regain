@@ -1,5 +1,7 @@
 import { useQuery } from '@tanstack/react-query';
 import { router } from 'expo-router';
+
+import { goBack } from '../../lib/navigation';
 import { useMemo, useState } from 'react';
 import { View } from 'react-native';
 
@@ -96,7 +98,7 @@ export default function PlanningWeekScreen() {
         <Button label="Ajouter une activité" icon="add" onPress={() => router.push({ pathname: '/planning/add', params: { date: selected } })} />
       }
     >
-      <ScreenHeader title="Planning" subtitle="Ta semaine en un coup d'œil" onBack={() => router.back()} />
+      <ScreenHeader title="Planning" subtitle="Ta semaine en un coup d'œil" onBack={() => goBack('/(tabs)/planning')} />
 
       <SegmentedControl
         label="Affichage"

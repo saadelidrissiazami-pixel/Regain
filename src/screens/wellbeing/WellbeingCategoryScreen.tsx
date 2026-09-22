@@ -1,5 +1,7 @@
 import { router, useLocalSearchParams } from 'expo-router';
 
+import { goBack } from '../../lib/navigation';
+
 import { ProgramRow } from '../../components/cards/ProgramRow';
 import { EmptyState, ErrorState, LoadingSkeleton } from '../../components/feedback';
 import { Appear, Screen, ScreenHeader } from '../../components/ui';
@@ -22,7 +24,7 @@ export default function WellbeingCategoryScreen() {
 
   return (
     <Screen>
-      <ScreenHeader title={name ?? 'Séances'} subtitle={SUBTITLES[name ?? ''] ?? `${programs.length} séances`} onBack={() => router.back()} />
+      <ScreenHeader title={name ?? 'Séances'} subtitle={SUBTITLES[name ?? ''] ?? `${programs.length} séances`} onBack={() => goBack('/(tabs)/wellbeing')} />
       {wellbeing.programsQuery.isLoading ? (
         <LoadingSkeleton preset="list" />
       ) : wellbeing.programsQuery.isError ? (

@@ -1,5 +1,5 @@
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
-import { router } from 'expo-router';
+import { goBack } from '../../src/lib/navigation';
 import { useState } from 'react';
 import { View } from 'react-native';
 
@@ -92,7 +92,7 @@ export default function FitnessCheckinScreen() {
   // Après l'envoi : ce que le bilan a changé, avant de revenir au programme.
   if (result) {
     return (
-      <Screen footer={<Button label="Voir mon programme" onPress={() => router.back()} />}>
+      <Screen footer={<Button label="Voir mon programme" onPress={() => goBack('/(tabs)/fitness')} />}>
         <Appear>
           <ScreenHeader title="Bilan pris en compte" subtitle="Ton programme, tes menus et ta liste de courses viennent d'être adaptés." />
         </Appear>
@@ -130,7 +130,7 @@ export default function FitnessCheckinScreen() {
         overline="Ton coach forme"
         title="Bilan de la semaine"
         subtitle="Quelques réponses honnêtes, et ton coach ajuste la semaine qui vient. Une semaine chargée, ça arrive."
-        onBack={() => router.back()}
+        onBack={() => goBack('/(tabs)/fitness')}
       />
 
       {profileQuery.isLoading ? <LoadingSkeleton preset="list" /> : null}

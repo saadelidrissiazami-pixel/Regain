@@ -3,6 +3,8 @@ import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { LinearGradient } from 'expo-linear-gradient';
 import * as Speech from 'expo-speech';
 import { router, useLocalSearchParams } from 'expo-router';
+
+import { goBack } from '../../lib/navigation';
 import { useCallback, useEffect, useState } from 'react';
 import { Image, ScrollView, Switch, View } from 'react-native';
 import Animated, { ZoomIn } from 'react-native-reanimated';
@@ -114,7 +116,7 @@ export default function WellbeingSessionScreen() {
           title="Séance introuvable"
           body="Elle n'est peut-être plus disponible. Retrouve toutes les séances dans Bien-être."
           actionLabel="Retour"
-          onAction={() => router.back()}
+          onAction={() => goBack('/(tabs)/wellbeing')}
         />
       </Screen>
     );
@@ -130,7 +132,7 @@ export default function WellbeingSessionScreen() {
           actionLabel="Découvrir Premium"
           onAction={() => router.replace('/paywall?source=locked')}
           secondaryLabel="Retour"
-          onSecondary={() => router.back()}
+          onSecondary={() => goBack('/(tabs)/wellbeing')}
         />
       </Screen>
     );
@@ -153,7 +155,7 @@ export default function WellbeingSessionScreen() {
               })
               .catch(() => {});
           }
-          router.back();
+          goBack('/(tabs)/wellbeing');
         }}
       />
     );
@@ -164,7 +166,7 @@ export default function WellbeingSessionScreen() {
       <Screen
         footer={
           <View style={{ gap: 8 }}>
-            <Button label="Retour à Bien-être" onPress={() => router.back()} />
+            <Button label="Retour à Bien-être" onPress={() => goBack('/(tabs)/wellbeing')} />
             <Button label="Relire mon journal" variant="ghost" onPress={() => router.replace('/wellbeing/journal')} />
           </View>
         }
@@ -210,7 +212,7 @@ export default function WellbeingSessionScreen() {
           label="Fermer la séance"
           onPress={() => {
             stopSpeech();
-            router.back();
+            goBack('/(tabs)/wellbeing');
           }}
         />
         <View style={{ flex: 1, alignItems: 'center' }}>

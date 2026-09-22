@@ -1,5 +1,7 @@
 import { useQuery } from '@tanstack/react-query';
 import { router } from 'expo-router';
+
+import { goBack } from '../../src/lib/navigation';
 import { View } from 'react-native';
 
 import { EmptyState, ErrorState, LoadingSkeleton } from '../../src/components/feedback';
@@ -61,7 +63,7 @@ export default function WellbeingJournalScreen() {
 
   return (
     <Screen refreshing={journalQuery.isRefetching} onRefresh={() => journalQuery.refetch()}>
-      <ScreenHeader overline="Bien-être" title="Mon journal" subtitle="Tes ressentis et tes mots, séance après séance." onBack={() => router.back()} />
+      <ScreenHeader overline="Bien-être" title="Mon journal" subtitle="Tes ressentis et tes mots, séance après séance." onBack={() => goBack('/(tabs)/wellbeing')} />
       {journalQuery.isLoading ? (
         <LoadingSkeleton preset="list" />
       ) : journalQuery.isError ? (

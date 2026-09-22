@@ -1,6 +1,8 @@
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { router } from 'expo-router';
+
+import { goBack } from '../../src/lib/navigation';
 import { useState, type ReactNode } from 'react';
 import { Controller, useForm, useWatch } from 'react-hook-form';
 import { View } from 'react-native';
@@ -122,7 +124,7 @@ function QuestionnaireForm({
       // La liste de courses se lit au supermarché : on prévient plutôt que de la changer en
       // silence sous les yeux de quelqu'un qui l'a déjà notée.
       if (planRefreshed) router.replace({ pathname: '/(tabs)/fitness', params: { recalcule: '1' } });
-      else router.back();
+      else goBack('/(tabs)/fitness');
     },
   });
 
@@ -133,7 +135,7 @@ function QuestionnaireForm({
       keyboard
       footer={<Button label="Enregistrer" loading={saveMutation.isPending} onPress={handleSubmit((values) => saveMutation.mutate(values))} />}
     >
-      <ScreenHeader overline="Ton coach forme" title="Ton profil" subtitle="Pour un programme vraiment fait pour toi." onBack={() => router.back()} />
+      <ScreenHeader overline="Ton coach forme" title="Ton profil" subtitle="Pour un programme vraiment fait pour toi." onBack={() => goBack('/(tabs)/fitness')} />
 
       <Section title="Tes objectifs">
         <Controller
@@ -290,7 +292,7 @@ export default function FitnessQuestionnaireScreen() {
   if (!userId || profileQuery.isLoading || scheduleQuery.isLoading) {
     return (
       <Screen>
-        <ScreenHeader title="Ton profil" onBack={() => router.back()} />
+        <ScreenHeader title="Ton profil" onBack={() => goBack('/(tabs)/fitness')} />
         <LoadingSkeleton preset="list" />
       </Screen>
     );

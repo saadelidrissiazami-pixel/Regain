@@ -1,6 +1,8 @@
 import { Ionicons } from '@expo/vector-icons';
 import { useMutation, useQueryClient } from '@tanstack/react-query';
-import { router, useLocalSearchParams } from 'expo-router';
+import { useLocalSearchParams } from 'expo-router';
+
+import { goBack } from '../../lib/navigation';
 import { useEffect, useReducer, useRef, useState } from 'react';
 import { View } from 'react-native';
 import Animated, { FadeIn, ZoomIn } from 'react-native-reanimated';
@@ -99,7 +101,7 @@ function Player({ session, sessionIndex, planId }: { session: WorkoutSession; se
   }, [state.stage]);
 
   const inProgress = state.stage === 'exercise' || state.stage === 'rest' || state.stage === 'cooldown';
-  const close = () => (inProgress ? setConfirmExit(true) : router.back());
+  const close = () => (inProgress ? setConfirmExit(true) : goBack('/(tabs)/fitness'));
 
   const position = state.stage === 'exercise' ? state : state.stage === 'rest' ? state.next : null;
   const progress = position ? (position.exercise + (state.stage === 'exercise' ? state.set / exercises[position.exercise].sets : 0)) / exercises.length : state.stage === 'cooldown' ? 1 : 0;
@@ -266,7 +268,7 @@ function Player({ session, sessionIndex, planId }: { session: WorkoutSession; se
         </Text>
       </View>
     );
-    footer = <Button label="Retour à Forme" onPress={() => router.back()} />;
+    footer = <Button label="Retour à Forme" onPress={() => goBack('/(tabs)/fitness')} />;
   }
 
   return (
@@ -287,7 +289,7 @@ function Player({ session, sessionIndex, planId }: { session: WorkoutSession; se
               variant="ghost"
               onPress={() => {
                 setConfirmExit(false);
-                router.back();
+                goBack('/(tabs)/fitness');
               }}
             />
           </View>
@@ -316,7 +318,7 @@ export default function WorkoutPlayerScreen() {
   if (!fitness.plan || !session) {
     return (
       <Screen>
-        <EmptyState icon="barbell-outline" title="Séance introuvable" body="Elle a peut-être changé avec ton dernier bilan." actionLabel="Retour" onAction={() => router.back()} />
+        <EmptyState icon="barbell-outline" title="Séance introuvable" body="Elle a peut-être changé avec ton dernier bilan." actionLabel="Retour" onAction={() => goBack('/(tabs)/fitness')} />
       </Screen>
     );
   }

@@ -1,5 +1,7 @@
 import { Ionicons } from '@expo/vector-icons';
 import { router } from 'expo-router';
+
+import { goBack } from '../../lib/navigation';
 import { useState } from 'react';
 import { ScrollView, View } from 'react-native';
 
@@ -24,7 +26,7 @@ export default function WellbeingSearchScreen() {
 
   return (
     <Screen keyboard>
-      <ScreenHeader title="Toutes les séances" onBack={() => router.back()} />
+      <ScreenHeader title="Toutes les séances" onBack={() => goBack('/(tabs)/wellbeing')} />
       <View
         style={{
           flexDirection: 'row',

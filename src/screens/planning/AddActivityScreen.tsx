@@ -1,6 +1,8 @@
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { Ionicons } from '@expo/vector-icons';
-import { router, useLocalSearchParams } from 'expo-router';
+import { useLocalSearchParams } from 'expo-router';
+
+import { goBack } from '../../lib/navigation';
 import { useState } from 'react';
 import { ScrollView, View } from 'react-native';
 
@@ -59,7 +61,7 @@ export default function AddActivityScreen() {
       queryClient.invalidateQueries({ queryKey: ['weekPlan', userId] });
       queryClient.invalidateQueries({ queryKey: ['planRange', userId] });
       queryClient.invalidateQueries({ queryKey: ['trackingStats', userId] });
-      router.back();
+      goBack('/(tabs)/planning');
     },
   });
 
@@ -80,7 +82,7 @@ export default function AddActivityScreen() {
         </View>
       }
     >
-      <ScreenHeader title="Ajouter une activité" subtitle="Choisis le moment, puis ce que tu as envie de faire." onBack={() => router.back()} backLabel="Fermer" />
+      <ScreenHeader title="Ajouter une activité" subtitle="Choisis le moment, puis ce que tu as envie de faire." onBack={() => goBack('/(tabs)/planning')} backLabel="Fermer" />
 
       <Select label="Jour" value={date} options={dates} onChange={setDate} />
       <View style={{ marginBottom: 24 }}>

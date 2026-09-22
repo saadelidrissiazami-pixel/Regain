@@ -1,5 +1,7 @@
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { router, useLocalSearchParams } from 'expo-router';
+
+import { goBack } from '../src/lib/navigation';
 import { useRef, useState } from 'react';
 import { ActivityIndicator, KeyboardAvoidingView, Platform, ScrollView, View } from 'react-native';
 
@@ -82,7 +84,7 @@ export default function CoachScreen() {
   if (!premiumLoading && !isPremium) {
     return (
       <View style={{ flex: 1, backgroundColor: theme.bg, paddingHorizontal: 20, paddingTop: 60 }}>
-        <ScreenHeader title="Ton coach" subtitle="Poser une question, à tout moment" onBack={() => router.back()} />
+        <ScreenHeader title="Ton coach" subtitle="Poser une question, à tout moment" onBack={() => goBack(subject === 'forme' ? '/(tabs)/fitness' : '/(tabs)/wellbeing')} />
         <EmptyState
           icon="chatbubbles-outline"
           title="Ton coach fait partie de Premium"
@@ -101,7 +103,7 @@ export default function CoachScreen() {
       keyboardVerticalOffset={0}
     >
       <View style={{ paddingHorizontal: 20, paddingTop: 60 }}>
-        <ScreenHeader title="Ton coach" subtitle="Poser une question, à tout moment" onBack={() => router.back()} />
+        <ScreenHeader title="Ton coach" subtitle="Poser une question, à tout moment" onBack={() => goBack(subject === 'forme' ? '/(tabs)/fitness' : '/(tabs)/wellbeing')} />
       </View>
 
       <ScrollView

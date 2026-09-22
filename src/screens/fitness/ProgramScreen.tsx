@@ -1,5 +1,7 @@
 import { Ionicons } from '@expo/vector-icons';
 import { router } from 'expo-router';
+
+import { goBack } from '../../lib/navigation';
 import { useState } from 'react';
 import { View } from 'react-native';
 
@@ -53,7 +55,7 @@ export default function ProgramScreen() {
       <ScreenHeader
         title="Mon programme"
         subtitle={subtitle}
-        onBack={() => router.back()}
+        onBack={() => goBack('/(tabs)/fitness')}
         right={<IconButton icon="settings-outline" label="Mon profil forme" onPress={() => router.push('/fitness/questionnaire')} />}
       />
 
@@ -67,7 +69,7 @@ export default function ProgramScreen() {
           title="Pas encore de programme"
           body="Génère ton programme depuis l'onglet Forme."
           actionLabel="Retour à Forme"
-          onAction={() => router.back()}
+          onAction={() => goBack('/(tabs)/fitness')}
         />
       ) : (
         <>
