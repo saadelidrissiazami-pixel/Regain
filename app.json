@@ -51,7 +51,7 @@
         "expo-calendar",
         {
           "calendarPermission": "Regain synchronise votre planning avec votre calendrier.",
-          "remindersPermission": false
+          "remindersPermission": "Regain ne crée pas de rappels : cette autorisation ne vous sera jamais demandée."
         }
       ],
       [
@@ -60,7 +60,7 @@
           "locationWhenInUsePermission": "Regain utilise votre position pour proposer un itinéraire de marche et l'histoire de votre quartier.",
           "locationAlwaysPermission": false,
           "locationAlwaysAndWhenInUsePermission": false,
-          "motionUsagePermission": false
+          "motionUsagePermission": "Regain ne suit pas votre activité physique : cette autorisation ne vous sera jamais demandée."
         }
       ],
       "expo-sharing",
@@ -68,7 +68,7 @@
       [
         "expo-audio",
         {
-          "microphonePermission": false,
+          "microphonePermission": "Regain joue du son mais n'enregistre jamais : cette autorisation ne vous sera jamais demandée.",
           "recordAudioAndroid": false
         }
       ]
