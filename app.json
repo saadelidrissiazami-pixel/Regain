@@ -80,6 +80,12 @@
         "projectId": "1709f3ff-d7e0-4903-8701-fd76d1142bc8"
       }
     },
-    "owner": "saadappregain"
+    "owner": "saadappregain",
+    "runtimeVersion": {
+      "policy": "appVersion"
+    },
+    "updates": {
+      "url": "https://u.expo.dev/1709f3ff-d7e0-4903-8701-fd76d1142bc8"
+    }
   }
 }
