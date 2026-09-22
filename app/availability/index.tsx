@@ -7,7 +7,7 @@ import { ActivityIndicator, ScrollView, View } from 'react-native';
 
 import { EmptyState, errorMessage, InlineNotice, LoadingSkeleton } from '../../src/components/feedback';
 import { Appear, Button, Card, ChoiceChip, Field, Screen, ScreenHeader, SegmentedControl, Select, Text } from '../../src/components/ui';
-import { createAvailabilitySlots, deleteAvailabilitySlot, fetchAvailabilitySlots } from '../../src/lib/availability';
+import { createAvailabilitySlots, deleteAllAvailabilitySlots, deleteAvailabilitySlot, fetchAvailabilitySlots } from '../../src/lib/availability';
 import { DAYS_OF_WEEK } from '../../src/lib/days';
 import { scheduleActivityReminders } from '../../src/lib/notifications';
 import { generateAndSaveWeekPlan } from '../../src/lib/planning';
@@ -68,6 +68,19 @@ export default function AvailabilityScreen() {
   const deleteMutation = useMutation({
     mutationFn: (slotId: string) => deleteAvailabilitySlot(slotId),
     onSuccess: () => {
+      setPendingDeleteId(null);
+      queryClient.invalidateQueries({ queryKey: ['availability', userId] });
+    },
+  });
+
+  // Tout effacer d'un coup se confirme, comme la suppression d'un seul créneau : c'est la même
+  // action, en plus définitif.
+  const [confirmingClearAll, setConfirmingClearAll] = useState(false);
+
+  const clearAllMutation = useMutation({
+    mutationFn: () => deleteAllAvailabilitySlots(userId!),
+    onSuccess: () => {
+      setConfirmingClearAll(false);
       setPendingDeleteId(null);
       queryClient.invalidateQueries({ queryKey: ['availability', userId] });
     },
@@ -177,9 +190,38 @@ export default function AvailabilityScreen() {
         style={{ marginTop: 8 }}
       />
 
-      <Text variant="section" style={{ marginTop: 36, marginBottom: 12 }} accessibilityRole="header">
-        Créneaux enregistrés
-      </Text>
+      <View style={{ flexDirection: 'row', alignItems: 'center', marginTop: 36, marginBottom: 12 }}>
+        <Text variant="section" style={{ flex: 1 }} accessibilityRole="header">
+          Créneaux enregistrés
+        </Text>
+        {slots.length > 0 && !confirmingClearAll ? (
+          <Button label="Tout retirer" variant="ghost" size="sm" fullWidth={false} onPress={() => setConfirmingClearAll(true)} />
+        ) : null}
+      </View>
+
+      {confirmingClearAll ? (
+        <Card padding={14} style={{ marginBottom: 12 }}>
+          <Text variant="label">Retirer les {slots.length} créneaux ?</Text>
+          <Text variant="caption" tone="ink2" style={{ marginTop: 2, marginBottom: 12 }}>
+            Tes activités déjà planifiées restent en place. Sans créneau, Regain ne pourra plus préparer ta semaine.
+          </Text>
+          <View style={{ flexDirection: 'row' }}>
+            <Button
+              label="Tout retirer"
+              variant="destructive"
+              size="sm"
+              fullWidth={false}
+              loading={clearAllMutation.isPending}
+              onPress={() => clearAllMutation.mutate()}
+            />
+            <Button label="Annuler" variant="ghost" size="sm" fullWidth={false} onPress={() => setConfirmingClearAll(false)} />
+          </View>
+        </Card>
+      ) : null}
+
+      {clearAllMutation.isError ? (
+        <InlineNotice tone="error" message={`Suppression impossible : ${errorMessage(clearAllMutation.error)}`} />
+      ) : null}
       {deleteMutation.isError ? <InlineNotice tone="error" message={`Suppression impossible : ${errorMessage(deleteMutation.error)}`} /> : null}
       {slotsQuery.isLoading ? <LoadingSkeleton preset="list" /> : null}
       {slotsQuery.isSuccess && slots.length === 0 ? (
