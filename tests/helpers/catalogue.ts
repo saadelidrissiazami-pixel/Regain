@@ -72,3 +72,108 @@ export function parseFreeSlugsFromMigration(dir = MIGRATIONS_DIR): string[] {
   if (!array) throw new Error("0023_explicit_premium_catalog.sql ne contient pas de liste array[…]");
   return (array[1].match(/'([^']+)'/g) ?? []).map((value) => value.replace(/'/g, ''));
 }
+
+export type SeededActivity = {
+  title: string;
+  category: string;
+  duration_minutes: number;
+  energy_required: string;
+  indoor_outdoor: string;
+  cost_level: string;
+  tags: string[];
+  first_action: string;
+  stop_rule: string;
+};
+
+/**
+ * Découpe les tuples d'un `insert … values (…), (…)` en respectant les apostrophes doublées.
+ * Une expression régulière suffisait pour les séances ; les activités contiennent des guillemets,
+ * des apostrophes échappées et des `array[…]`, et une regex y laisserait des valeurs tronquées
+ * sans prévenir.
+ */
+function splitTuples(sql: string): string[][] {
+  const tuples: string[][] = [];
+  let depth = 0;
+  // Les crochets comptent autant que les parenthèses : sans ça, la virgule de
+  // `array['plus_mouvement','plus_energie']` passe pour un séparateur de colonnes et décale
+  // silencieusement tout le reste de la ligne.
+  let brackets = 0;
+  let inString = false;
+  let current = '';
+  let values: string[] = [];
+
+  for (let i = 0; i < sql.length; i += 1) {
+    const char = sql[i];
+    if (inString) {
+      if (char === "'") {
+        if (sql[i + 1] === "'") {
+          current += "'";
+          i += 1;
+        } else {
+          inString = false;
+        }
+      } else {
+        current += char;
+      }
+      continue;
+    }
+    // Commentaire SQL entre deux tuples. Sans ce saut, l'apostrophe de « -- Prendre l'air »
+    // ouvre une chaîne et avale la moitié du catalogue sans rien signaler.
+    if (char === '-' && sql[i + 1] === '-' && depth === 0) {
+      const newline = sql.indexOf('\n', i);
+      if (newline === -1) break;
+      i = newline;
+      continue;
+    }
+    if (char === "'") {
+      inString = true;
+    } else if (char === '(') {
+      depth += 1;
+      if (depth === 1) {
+        values = [];
+        current = '';
+        continue;
+      }
+      current += char;
+    } else if (char === ')') {
+      depth -= 1;
+      if (depth === 0) {
+        values.push(current.trim());
+        tuples.push(values);
+        current = '';
+        continue;
+      }
+      current += char;
+    } else if (char === '[') {
+      brackets += 1;
+      current += char;
+    } else if (char === ']') {
+      brackets -= 1;
+      current += char;
+    } else if (char === ',' && depth === 1 && brackets === 0) {
+      values.push(current.trim());
+      current = '';
+    } else if (depth >= 1) {
+      current += char;
+    }
+  }
+  return tuples;
+}
+
+/** Les activités proposées, telles que 0024_activities_first_action.sql les insère. */
+export function parseSeededActivities(dir = MIGRATIONS_DIR): SeededActivity[] {
+  const sql = readFileSync(join(dir, '0024_activities_first_action.sql'), 'utf8');
+  const body = sql.slice(sql.indexOf('values', sql.indexOf('insert into public.activities_catalog')));
+  const end = body.indexOf('on conflict');
+  return splitTuples(end > 0 ? body.slice(0, end) : body).map((values) => ({
+    title: values[0],
+    category: values[1],
+    duration_minutes: Number(values[2]),
+    energy_required: values[3],
+    indoor_outdoor: values[4],
+    cost_level: values[5],
+    tags: (values[6].match(/[a-z_]+/g) ?? []).filter((tag) => tag !== 'array'),
+    first_action: values[7],
+    stop_rule: values[8],
+  }));
+}

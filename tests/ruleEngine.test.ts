@@ -30,6 +30,8 @@ function activity(overrides: Partial<CatalogActivity> & { id: string }): Catalog
     indoor_outdoor: 'indifferent',
     cost_level: 'gratuit',
     instructions: null,
+    first_action: null,
+    stop_rule: null,
     tags: [],
     steps: [],
     ...overrides,

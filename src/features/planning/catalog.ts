@@ -21,6 +21,10 @@ export type CatalogActivity = {
   instructions: string | null;
   tags: string[];
   steps: ActivityStep[];
+  /** Ce qu'on fait dans les deux premières minutes, et qui suffit déjà à avoir commencé. */
+  first_action: string | null;
+  /** Ce qui dit que c'est fini, pour qu'une activité ne s'étire pas sans fin. */
+  stop_rule: string | null;
 };
 
 const ENERGY_ORDER: Record<EnergyLevel, number> = { bas: 0, moyen: 1, eleve: 2 };

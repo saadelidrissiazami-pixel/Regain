@@ -7,7 +7,9 @@ import { fromLocalISODate, getWeekStart } from './week';
 import { supabase } from './supabase';
 
 export async function fetchCatalog(): Promise<CatalogActivity[]> {
-  const { data, error } = await supabase.from('activities_catalog').select('*');
+  // Seules les activités encore proposées : les anciennes restent en base parce que des
+  // plannings les référencent, mais on ne les place plus dans de nouvelles semaines.
+  const { data, error } = await supabase.from('activities_catalog').select('*').eq('active', true);
   if (error) throw error;
   return data;
 }

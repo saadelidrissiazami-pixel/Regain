@@ -87,6 +87,30 @@ export default function ActivityDetailScreen() {
             ) : null}
           </Appear>
 
+          {/* La première action vient avant tout le reste : c'est le seul endroit où quelqu'un
+              qui n'a envie de rien peut s'accrocher. La règle d'arrêt est juste en dessous, pour
+              que l'activité ait une fin annoncée et ne se transforme pas en engagement flou. */}
+          {activity.first_action ? (
+            <Appear index={1}>
+              <Card variant="tinted" style={{ marginTop: 20 }}>
+                <Text variant="label" style={{ marginBottom: 6 }}>
+                  Pour commencer
+                </Text>
+                <Text variant="body">{activity.first_action}</Text>
+                {activity.stop_rule ? (
+                  <View style={{ marginTop: 14 }}>
+                    <Text variant="overline" tone="ink3">
+                      Quand s&apos;arrêter
+                    </Text>
+                    <Text variant="caption" tone="ink2" style={{ marginTop: 2 }}>
+                      {activity.stop_rule}
+                    </Text>
+                  </View>
+                ) : null}
+              </Card>
+            </Appear>
+          ) : null}
+
           {fit ? (
             <Appear index={1}>
               <Card variant="tinted" style={{ marginTop: 20 }}>
