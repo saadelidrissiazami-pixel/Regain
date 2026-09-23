@@ -10,7 +10,6 @@ import { parseFreeSlugsFromMigration, parseSeededCatalogue } from './helpers/cat
 
 describe('offre gratuite de la bibliothèque bien-être', () => {
   const catalogue = parseSeededCatalogue();
-  const slugs = new Set(catalogue.map((program) => program.slug));
   // La bibliothèque au sens strict : ni les SOS, ni les jours de parcours, qui ont leurs
   // propres règles d'accès.
   const bibliothequeLibre = FREE_PROGRAM_SLUGS.filter(
