@@ -12,9 +12,10 @@ import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 import { wellbeingTheme } from '../../components/cards/wellbeingThemes';
 import { EmptyState, LoadingSkeleton } from '../../components/feedback';
-import { Button, ChoiceChip, haptic, IconButton, ListRow, Pill, PressableScale, Screen, Sheet, Tag, Text } from '../../components/ui';
+import { Button, Card, ChoiceChip, haptic, IconButton, ListRow, Pill, PressableScale, Screen, Sheet, Tag, Text } from '../../components/ui';
 import { AMBIENCES, ambienceLabel, initialAmbience, type AmbienceChoice } from '../../features/wellbeing/ambience';
 import { CONTENT_BY_SLUG } from '../../features/wellbeing/content';
+import { SOS_URGENCE } from '../../features/wellbeing/sos';
 import { loadAmbiencePreference, saveAmbiencePreference, useAmbiencePlayer } from '../../lib/ambience';
 import { usePremium } from '../../lib/premium';
 import { fetchPrograms, markProgramCompleted, type SessionReview as Review } from '../../lib/wellbeing';
@@ -276,6 +277,13 @@ export default function WellbeingSessionScreen() {
               </PressableScale>
             ) : null}
           </View>
+        ) : null}
+        {/* Aussi ici, et pas seulement sur la liste : un lien direct vers la séance contournerait
+            la mention. L'application n'a pas à décider que ce qui se passe est de l'angoisse. */}
+        {stage === 'prep' && slug === 'sos-angoisse' ? (
+          <Card variant="tinted" style={{ marginBottom: 18 }}>
+            <Text variant="bodySm">{SOS_URGENCE}</Text>
+          </Card>
         ) : null}
         <View key={runKey}>
           {stage === 'prep' ? (

@@ -47,6 +47,7 @@ import {
   boutonPause,
   kitDurgence,
 } from '../../../content/in-public';
+import { sosAngoisse, sosPriseDeParole, sosRuminations, sosStressTravail } from '../../../content/sos';
 import type { ProgramContent } from './types';
 
 export const CONTENT_BY_SLUG: Record<string, ProgramContent> = {
@@ -92,4 +93,9 @@ export const CONTENT_BY_SLUG: Record<string, ProgramContent> = {
   'public-mode-observateur': modeObservateur,
   'public-bouton-pause': boutonPause,
   'public-kit-urgence': kitDurgence,
+
+  'sos-angoisse': sosAngoisse,
+  'sos-prise-de-parole': sosPriseDeParole,
+  'sos-stress-travail': sosStressTravail,
+  'sos-ruminations': sosRuminations,
 };

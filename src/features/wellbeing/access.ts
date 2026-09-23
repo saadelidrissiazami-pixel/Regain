@@ -6,11 +6,13 @@
 // plus long suffisait à reverrouiller une séance qu'un abonné utilisait déjà, sans que personne
 // ne s'en aperçoive. Une liste explicite ne change que lorsqu'on la change.
 //
-// La migration 0023_explicit_premium_catalog.sql applique exactement ces slugs en base, et
-// tests/catalogue.test.ts vérifie que les deux ne divergent jamais.
+// La migration 0023_explicit_premium_catalog.sql applique la liste de la bibliothèque, et
+// 0025_wellbeing_sos.sql force les SOS en gratuit. tests/access.test.ts tient les deux ensemble.
 
-/** Séances accessibles sans abonnement, telles qu'elles l'étaient au 23 septembre 2026. */
-export const FREE_PROGRAM_SLUGS: readonly string[] = [
+import { SOS_SLUGS } from './sos';
+
+/** Séances libres de la bibliothèque, telles qu'elles l'étaient au 23 septembre 2026. */
+const BIBLIOTHEQUE_LIBRE: readonly string[] = [
   // Respiration
   'respiration-express',
   'respiration-4-7-8',
@@ -36,6 +38,13 @@ export const FREE_PROGRAM_SLUGS: readonly string[] = [
   'public-kit-urgence',
   'detachement-regard-autres',
 ];
+
+/**
+ * Les séances accessibles sans abonnement.
+ * Les SOS s'y ajoutent en bloc : elles ne sont pas un échantillon gratuit qu'on pourrait
+ * réduire un jour, elles sont gratuites par nature.
+ */
+export const FREE_PROGRAM_SLUGS: readonly string[] = [...BIBLIOTHEQUE_LIBRE, ...SOS_SLUGS];
 
 const FREE = new Set(FREE_PROGRAM_SLUGS);
 

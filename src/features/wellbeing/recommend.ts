@@ -1,3 +1,4 @@
+import { SOS_CATEGORY } from './sos';
 import type { EnergyLevel } from '../planning/catalog';
 import type { WellbeingProgram } from './types';
 
@@ -26,6 +27,9 @@ export function recommendWellbeing({ programs, completedIds, hour, energy, isPre
 
   const scored: Scored[] = programs
     .filter((program) => isPremium || !program.premium_only)
+    // On ne suggère pas une séance d'urgence à quelqu'un qui n'a rien demandé : la proposer
+    // spontanément, c'est suggérer que ça ne va pas.
+    .filter((program) => program.category !== SOS_CATEGORY)
     .map((program) => {
       const reasons: { weight: number; text: string }[] = [];
       const add = (weight: number, text: string) => reasons.push({ weight, text });

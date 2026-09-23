@@ -11,6 +11,7 @@ import { Appear, IconButton, ListRow, Screen, ScreenHeader, SectionHeader, Text 
 import { quoteOfTheDay } from '../../features/planning/quotes';
 import { moodOption } from '../../features/wellbeing/reflection';
 import { recommendWellbeing } from '../../features/wellbeing/recommend';
+import { SOS_CATEGORY } from '../../features/wellbeing/sos';
 import type { WellbeingProgram } from '../../features/wellbeing/types';
 import { useEnergyToday } from '../../hooks/useEnergyToday';
 import { useWellbeing } from '../../hooks/useWellbeing';
@@ -35,8 +36,11 @@ export default function WellbeingScreen() {
     isPremium: wellbeing.isPremium,
   });
 
+  // Les SOS ne sont pas un thème : elles ne se parcourent pas, elles se déclenchent. Elles ont
+  // leur propre accès, en haut de l'écran.
+  const sos = programs.filter((program) => program.category === SOS_CATEGORY);
   const byCategory = new Map<string, WellbeingProgram[]>();
-  for (const program of programs) {
+  for (const program of programs.filter((program) => program.category !== SOS_CATEGORY)) {
     byCategory.set(program.category, [...(byCategory.get(program.category) ?? []), program]);
   }
   const categories = [...byCategory.keys()].sort((a, b) => {
@@ -64,6 +68,21 @@ export default function WellbeingScreen() {
         <ErrorState title="La bibliothèque n'a pas pu se charger" onRetry={() => programsQuery.refetch()} retrying={programsQuery.isFetching} />
       ) : (
         <>
+          {/* Avant tout le reste : quand ça ne va pas là, maintenant, on ne doit pas avoir à
+              parcourir une bibliothèque. Discret quand tout va bien, trouvable quand il faut. */}
+          {sos.length > 0 ? (
+            <Appear index={0}>
+              <View style={{ marginBottom: 18 }}>
+                <ListRow
+                  icon="pulse-outline"
+                  title="Ça ne va pas là, maintenant"
+                  subtitle={`${sos.length} séances de 2 minutes, tout de suite`}
+                  onPress={() => router.push('/wellbeing/sos')}
+                />
+              </View>
+            </Appear>
+          ) : null}
+
           {recommendations.length > 0 ? (
             <Appear index={1}>
               <RecommendationHero
