@@ -10,6 +10,8 @@ const program = (slug: string, category: string, duration = 10, premium = false)
   category,
   session_count: 1,
   premium_only: premium,
+  course_slug: null,
+  course_day: null,
   duration_minutes: duration,
 });
 

@@ -11,6 +11,7 @@ import { Appear, IconButton, ListRow, Screen, ScreenHeader, SectionHeader, Text 
 import { quoteOfTheDay } from '../../features/planning/quotes';
 import { moodOption } from '../../features/wellbeing/reflection';
 import { recommendWellbeing } from '../../features/wellbeing/recommend';
+import { COURSE_CATEGORY, COURSES, courseProgress, courseStatusLabel } from '../../features/wellbeing/courses';
 import { SOS_CATEGORY } from '../../features/wellbeing/sos';
 import type { WellbeingProgram } from '../../features/wellbeing/types';
 import { useEnergyToday } from '../../hooks/useEnergyToday';
@@ -40,7 +41,9 @@ export default function WellbeingScreen() {
   // leur propre accès, en haut de l'écran.
   const sos = programs.filter((program) => program.category === SOS_CATEGORY);
   const byCategory = new Map<string, WellbeingProgram[]>();
-  for (const program of programs.filter((program) => program.category !== SOS_CATEGORY)) {
+  for (const program of programs.filter(
+    (program) => program.category !== SOS_CATEGORY && program.category !== COURSE_CATEGORY
+  )) {
     byCategory.set(program.category, [...(byCategory.get(program.category) ?? []), program]);
   }
   const categories = [...byCategory.keys()].sort((a, b) => {
@@ -82,6 +85,27 @@ export default function WellbeingScreen() {
               </View>
             </Appear>
           ) : null}
+
+          {/* Les parcours, avant la grille des thèmes : ils apprennent quelque chose, là où un
+              thème ne fait que ranger. Leur avancement se lit d'un coup d'œil. */}
+          <Appear index={2}>
+            <View style={{ marginTop: 28 }}>
+              <SectionHeader title="Parcours" />
+              {COURSES.map((course, index) => {
+                const progress = courseProgress(course, programs, wellbeing.completed);
+                return (
+                  <ListRow
+                    key={course.slug}
+                    icon={progress.complete ? 'checkmark-done-outline' : 'footsteps-outline'}
+                    title={course.title}
+                    subtitle={courseStatusLabel(progress, course)}
+                    onPress={() => router.push(`/wellbeing/parcours/${course.slug}`)}
+                    divider={index < COURSES.length - 1}
+                  />
+                );
+              })}
+            </View>
+          </Appear>
 
           {recommendations.length > 0 ? (
             <Appear index={1}>

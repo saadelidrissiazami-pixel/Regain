@@ -11,6 +11,16 @@
 
 import { SOS_SLUGS } from './sos';
 
+/** Les trois premiers jours de chaque parcours, comme les trois séances libres d'un thème. */
+const PARCOURS_LIBRES = [
+  'parcours-meditation-j1',
+  'parcours-meditation-j2',
+  'parcours-meditation-j3',
+  'parcours-sommeil-j1',
+  'parcours-sommeil-j2',
+  'parcours-sommeil-j3',
+];
+
 /** Séances libres de la bibliothèque, telles qu'elles l'étaient au 23 septembre 2026. */
 const BIBLIOTHEQUE_LIBRE: readonly string[] = [
   // Respiration
@@ -44,7 +54,7 @@ const BIBLIOTHEQUE_LIBRE: readonly string[] = [
  * Les SOS s'y ajoutent en bloc : elles ne sont pas un échantillon gratuit qu'on pourrait
  * réduire un jour, elles sont gratuites par nature.
  */
-export const FREE_PROGRAM_SLUGS: readonly string[] = [...BIBLIOTHEQUE_LIBRE, ...SOS_SLUGS];
+export const FREE_PROGRAM_SLUGS: readonly string[] = [...BIBLIOTHEQUE_LIBRE, ...SOS_SLUGS, ...PARCOURS_LIBRES];
 
 const FREE = new Set(FREE_PROGRAM_SLUGS);
 

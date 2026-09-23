@@ -6,6 +6,10 @@ export type WellbeingProgram = {
   session_count: number;
   premium_only: boolean;
   duration_minutes: number;
+  /** Parcours auquel cette séance appartient, s il y en a un. */
+  course_slug: string | null;
+  /** Rang du jour dans ce parcours, à partir de 1. */
+  course_day: number | null;
 };
 
 export type BreathingPhase = { label: string; seconds: number };

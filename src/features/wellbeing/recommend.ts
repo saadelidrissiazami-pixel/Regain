@@ -1,3 +1,4 @@
+import { COURSE_CATEGORY } from './courses';
 import { SOS_CATEGORY } from './sos';
 import type { EnergyLevel } from '../planning/catalog';
 import type { WellbeingProgram } from './types';
@@ -30,6 +31,9 @@ export function recommendWellbeing({ programs, completedIds, hour, energy, isPre
     // On ne suggère pas une séance d'urgence à quelqu'un qui n'a rien demandé : la proposer
     // spontanément, c'est suggérer que ça ne va pas.
     .filter((program) => program.category !== SOS_CATEGORY)
+    // Un jour de parcours proposé hors de son parcours n'a pas de sens : le jour 7 suppose les
+    // six précédents.
+    .filter((program) => program.category !== COURSE_CATEGORY)
     .map((program) => {
       const reasons: { weight: number; text: string }[] = [];
       const add = (weight: number, text: string) => reasons.push({ weight, text });

@@ -2,19 +2,24 @@ import { describe, expect, it } from 'vitest';
 
 import { FREE_PROGRAM_SLUGS, isFreeProgram } from '../src/features/wellbeing/access';
 import { recommendWellbeing } from '../src/features/wellbeing/recommend';
+import { COURSE_CATEGORY } from '../src/features/wellbeing/courses';
 import { SOS_CATEGORY, SOS_SLUGS } from '../src/features/wellbeing/sos';
 import { parseFreeSlugsFromMigration, parseSeededCatalogue } from './helpers/catalogue';
 
 describe('offre gratuite de la bibliothèque bien-être', () => {
   const catalogue = parseSeededCatalogue();
   const slugs = new Set(catalogue.map((program) => program.slug));
+  // La bibliothèque au sens strict : ni les SOS, ni les jours de parcours, qui ont leurs
+  // propres règles d'accès.
+  const bibliothequeLibre = FREE_PROGRAM_SLUGS.filter(
+    (slug) => !SOS_SLUGS.includes(slug as never) && !slug.startsWith('parcours-')
+  );
 
   it('dit la même chose que la migration', () => {
     // Les deux listes sont écrites à la main, dans deux langages : c'est ce test qui les tient
     // ensemble. Modifier l'une sans l'autre donnerait une application et une base en désaccord
     // sur qui a le droit d'ouvrir quoi.
-    const bibliotheque = FREE_PROGRAM_SLUGS.filter((slug) => !SOS_SLUGS.includes(slug as never));
-    expect([...bibliotheque].sort()).toEqual(parseFreeSlugsFromMigration().sort());
+    expect([...bibliothequeLibre].sort()).toEqual(parseFreeSlugsFromMigration().sort());
   });
 
   it('laisse les SOS gratuites, sans exception', () => {
@@ -31,9 +36,17 @@ describe('offre gratuite de la bibliothèque bien-être', () => {
     expect(new Set(FREE_PROGRAM_SLUGS).size).toBe(FREE_PROGRAM_SLUGS.length);
   });
 
-  it('laisse 18 séances de bibliothèque sur 37 en accès libre, plus les 4 SOS', () => {
-    expect(catalogue).toHaveLength(41);
-    expect(FREE_PROGRAM_SLUGS).toHaveLength(22);
+  it('compte 18 séances libres de bibliothèque, 4 SOS et 6 jours de parcours', () => {
+    expect(catalogue).toHaveLength(61);
+    expect(bibliothequeLibre).toHaveLength(18);
+    expect(FREE_PROGRAM_SLUGS).toHaveLength(28);
+  });
+
+  it('ouvre les trois premiers jours de chaque parcours', () => {
+    for (const parcours of ['parcours-meditation', 'parcours-sommeil']) {
+      expect([1, 2, 3].every((day) => isFreeProgram(`${parcours}-j${day}`))).toBe(true);
+      expect([4, 10].some((day) => isFreeProgram(`${parcours}-j${day}`))).toBe(false);
+    }
   });
 
   it('reprend exactement la répartition que la durée produisait', () => {
@@ -41,7 +54,9 @@ describe('offre gratuite de la bibliothèque bien-être', () => {
     // personne. Ceci est la règle historique de 0021_premium_catalog.sql, conservée ici comme
     // témoin : on ne la rejoue plus en production.
     const parCategorie = new Map<string, typeof catalogue>();
-    for (const program of catalogue.filter((p) => p.category !== 'SOS')) {
+    for (const program of catalogue.filter(
+      (p) => p.category !== SOS_CATEGORY && p.category !== COURSE_CATEGORY
+    )) {
       parCategorie.set(program.category, [...(parCategorie.get(program.category) ?? []), program]);
     }
     const attendu = new Set<string>();
@@ -51,8 +66,7 @@ describe('offre gratuite de la bibliothèque bien-être', () => {
         .slice(0, 3)
         .forEach((program) => attendu.add(program.slug));
     }
-    const bibliotheque = FREE_PROGRAM_SLUGS.filter((slug) => !SOS_SLUGS.includes(slug as never));
-    expect([...bibliotheque].sort()).toEqual([...attendu].sort());
+    expect([...bibliothequeLibre].sort()).toEqual([...attendu].sort());
   });
 
   it('garde gratuite la séance mise en avant', () => {
@@ -84,6 +98,8 @@ describe('les séances SOS restent à part', () => {
       session_count: 1,
       premium_only: !isFreeProgram(p.slug),
       duration_minutes: p.duration_minutes,
+      course_slug: null,
+      course_day: null,
     }));
     for (const hour of [3, 8, 14, 22]) {
       for (const energy of ['bas', 'moyen', 'eleve'] as const) {

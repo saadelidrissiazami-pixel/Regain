@@ -47,6 +47,14 @@ import {
   boutonPause,
   kitDurgence,
 } from '../../../content/in-public';
+import {
+  meditationJour1, meditationJour2, meditationJour3, meditationJour4, meditationJour5,
+  meditationJour6, meditationJour7, meditationJour8, meditationJour9, meditationJour10,
+} from '../../../content/courses/meditation';
+import {
+  sommeilJour1, sommeilJour2, sommeilJour3, sommeilJour4, sommeilJour5,
+  sommeilJour6, sommeilJour7, sommeilJour8, sommeilJour9, sommeilJour10,
+} from '../../../content/courses/sommeil';
 import { sosAngoisse, sosPriseDeParole, sosRuminations, sosStressTravail } from '../../../content/sos';
 import type { ProgramContent } from './types';
 
@@ -98,4 +106,26 @@ export const CONTENT_BY_SLUG: Record<string, ProgramContent> = {
   'sos-prise-de-parole': sosPriseDeParole,
   'sos-stress-travail': sosStressTravail,
   'sos-ruminations': sosRuminations,
+
+  'parcours-meditation-j1': meditationJour1,
+  'parcours-meditation-j2': meditationJour2,
+  'parcours-meditation-j3': meditationJour3,
+  'parcours-meditation-j4': meditationJour4,
+  'parcours-meditation-j5': meditationJour5,
+  'parcours-meditation-j6': meditationJour6,
+  'parcours-meditation-j7': meditationJour7,
+  'parcours-meditation-j8': meditationJour8,
+  'parcours-meditation-j9': meditationJour9,
+  'parcours-meditation-j10': meditationJour10,
+
+  'parcours-sommeil-j1': sommeilJour1,
+  'parcours-sommeil-j2': sommeilJour2,
+  'parcours-sommeil-j3': sommeilJour3,
+  'parcours-sommeil-j4': sommeilJour4,
+  'parcours-sommeil-j5': sommeilJour5,
+  'parcours-sommeil-j6': sommeilJour6,
+  'parcours-sommeil-j7': sommeilJour7,
+  'parcours-sommeil-j8': sommeilJour8,
+  'parcours-sommeil-j9': sommeilJour9,
+  'parcours-sommeil-j10': sommeilJour10,
 };
