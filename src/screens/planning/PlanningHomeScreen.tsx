@@ -10,6 +10,7 @@ import { WeekProgressCard } from '../../components/cards/WeekProgressCard';
 import { EmptyState, ErrorState, errorMessage, InlineNotice, LoadingSkeleton } from '../../components/feedback';
 import { Appear, Avatar, Button, Card, ListRow, PressableScale, Screen, ScreenHeader, SectionHeader, Sheet, Text } from '../../components/ui';
 import { formatCountdown, greetingFor, isOver, minutesUntil, coachLine } from '../../features/planning/weekView';
+import { useCommitments } from '../../hooks/useCommitments';
 import { useEnergyToday } from '../../hooks/useEnergyToday';
 import { usePlanning } from '../../hooks/usePlanning';
 import { calendarUnavailableReason } from '../../lib/deviceCalendar';
@@ -23,6 +24,7 @@ import { activityReason } from './reason';
 /** Accueil : « Que dois-je faire maintenant ? » */
 export default function PlanningHomeScreen() {
   const planning = usePlanning();
+  const commitments = useCommitments();
   const energy = useEnergyToday();
   const email = useAuthStore((s) => s.session?.user.email ?? '');
   const { today, view, planQuery, availabilityQuery, generateMutation, calendarSyncMutation, startOf } = planning;
@@ -43,6 +45,8 @@ export default function PlanningHomeScreen() {
   const toCheck = upcoming.filter(over).length + view.pastPending.length;
   const next = active[0];
   const after = active[1];
+  // Trois au maximum : l'écran d'accueil propose, il ne récite pas l'agenda de la semaine.
+  const aVenir = commitments.filter((engagement) => engagement.status === 'a_faire').slice(0, 3);
   const pendingToday = active.filter((item) => item.date === today).length;
 
   const name = firstNameOf(planning.profile);
@@ -182,8 +186,35 @@ export default function PlanningHomeScreen() {
         </Appear>
       ) : null}
 
+      {/* Séances et courses : ce que la personne s'est engagée à faire, par opposition aux
+          activités proposées plus haut, qu'elle peut ignorer sans rien devoir. On ne montre que
+          ce qui reste à venir — un jour passé sans validation ne devient pas un reproche. */}
+      {aVenir.length > 0 ? (
+        <Appear index={5}>
+          <View style={{ marginTop: 28 }}>
+            <SectionHeader title="Tes engagements" actionLabel="Ma forme" onAction={() => router.push('/(tabs)/fitness')} />
+            {aVenir.map((engagement, index) => (
+              <ListRow
+                key={engagement.id}
+                icon={engagement.kind === 'courses' ? 'cart-outline' : 'barbell-outline'}
+                title={engagement.title}
+                subtitle={[
+                  relativeDayLabel(engagement.date, today, formatDayLabel),
+                  engagement.startTime,
+                  `${engagement.durationMinutes} min`,
+                ]
+                  .filter(Boolean)
+                  .join(' · ')}
+                onPress={() => router.push(engagement.href)}
+                divider={index < aVenir.length - 1}
+              />
+            ))}
+          </View>
+        </Appear>
+      ) : null}
+
       {/* Actions secondaires : accessibles, mais sans concurrencer l'action du moment. */}
-      <Appear index={5}>
+      <Appear index={6}>
         <View style={{ marginTop: 32 }}>
           <Text variant="overline" tone="ink2" style={{ marginBottom: 4 }}>
             Organiser ma semaine
