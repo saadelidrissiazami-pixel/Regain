@@ -4,7 +4,7 @@
 // correspond. Pause, reprise et ±15 s deviennent alors gratuits — il n'y a qu'un seul état, le
 // temps écoulé — et la durée annoncée cesse d'être une promesse pour devenir un calcul.
 
-import type { NarratedBlock } from './types';
+import type { NarratedBlock, ProgramContent } from './types';
 
 // Diction posée : environ 130 mots par minute, soit un peu plus de deux mots par seconde.
 // Volontairement prudent : mieux vaut un silence légèrement plus long qu'une phrase coupée.
@@ -52,6 +52,23 @@ export function blockAt(blocks: NarratedBlock[], elapsed: number): NarrationPosi
       return { index, phase: 'silence', remaining: start + voice + silence - from };
     }
     start += voice + silence;
+  }
+  return null;
+}
+
+/**
+ * Durée réelle d'une séance, quand elle est calculable.
+ *
+ * Renvoie `null` pour les formats qui avancent au rythme de la personne — `guided` et
+ * `grounding` — où la durée annoncée reste une estimation et ne peut pas être vérifiée.
+ */
+export function contentDuration(content: ProgramContent): number | null {
+  if (content.type === 'narrated') return narratedDuration(content.blocks);
+  if (content.type === 'breathing') {
+    const cycle = content.phases.reduce((total, phase) => total + phase.seconds, 0);
+    return (
+      narratedDuration(content.intro ?? []) + content.cycles * cycle + narratedDuration(content.outro ?? [])
+    );
   }
   return null;
 }

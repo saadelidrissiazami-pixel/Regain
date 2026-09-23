@@ -22,7 +22,7 @@ import { useAuthStore } from '../../store/authStore';
 import { withAlpha } from '../../theme/colors';
 import { IMAGES } from '../../theme/images';
 import { useTheme } from '../../theme/ThemeProvider';
-import { BreathingPlayer, GroundingPlayer, GuidedPlayer, NarratedPlayer, PrepCountdown } from './session/players';
+import { BreathingPlayer, GroundingPlayer, NarratedPlayer, PrepCountdown } from './session/players';
 import { SessionReview } from './session/SessionReview';
 
 function stopSpeech() {
@@ -291,10 +291,8 @@ export default function WellbeingSessionScreen() {
             />
           ) : content.type === 'narrated' ? (
             <NarratedPlayer blocks={content.blocks} audioOn={audioOn} onDone={content.endsQuietly ? handleQuietDone : handleDone} />
-          ) : content.type === 'grounding' ? (
-            <GroundingPlayer steps={content.steps} durationMinutes={program.duration_minutes} audioOn={audioOn} onDone={handleDone} />
           ) : (
-            <GuidedPlayer paragraphs={content.paragraphs} durationMinutes={program.duration_minutes} audioOn={audioOn} onDone={handleDone} />
+            <GroundingPlayer steps={content.steps} durationMinutes={program.duration_minutes} audioOn={audioOn} onDone={handleDone} />
           )}
         </View>
         <Text variant="caption" tone="ink2" center style={{ marginTop: 28, fontStyle: 'italic' }}>

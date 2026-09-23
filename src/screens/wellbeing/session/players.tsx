@@ -35,70 +35,6 @@ function Dots({ count, index }: { count: number; index: number }) {
   );
 }
 
-/** Texte guidé, un paragraphe à la fois ; la voix suit et s'arrête pendant la pause. */
-function ParagraphStepper({
-  paragraphs,
-  audioOn,
-  paused,
-  lastLabel,
-  onFinish,
-}: {
-  paragraphs: string[];
-  audioOn: boolean;
-  paused: boolean;
-  lastLabel: string;
-  onFinish: () => void;
-}) {
-  const [index, setIndex] = useState(0);
-  const isLast = index === paragraphs.length - 1;
-
-  useEffect(() => {
-    if (audioOn && !paused) speak(paragraphs[index]);
-    return () => {
-      if (audioOn) stopSpeech();
-    };
-  }, [index, audioOn, paused, paragraphs]);
-
-  return (
-    <View>
-      <Animated.View key={index} entering={FadeIn.duration(260)} style={{ minHeight: 96, justifyContent: 'center' }}>
-        <Text variant="bodyStrong" center style={{ fontSize: 18, lineHeight: 27 }} accessibilityLiveRegion="polite">
-          {paragraphs[index]}
-        </Text>
-      </Animated.View>
-      <Dots count={paragraphs.length} index={index} />
-      <Button
-        label={isLast ? lastLabel : 'Suivant'}
-        variant={isLast ? 'primary' : 'secondary'}
-        iconRight={isLast ? undefined : 'arrow-forward'}
-        onPress={() => (isLast ? onFinish() : setIndex((i) => i + 1))}
-      />
-    </View>
-  );
-}
-
-/** Séance guidée : minuteur de la durée annoncée + paragraphes à son rythme. */
-export function GuidedPlayer({
-  paragraphs,
-  durationMinutes,
-  audioOn,
-  onDone,
-}: {
-  paragraphs: string[];
-  durationMinutes: number;
-  audioOn: boolean;
-  onDone: () => void;
-}) {
-  const clock = useSessionClock(Math.max(60, durationMinutes * 60));
-  return (
-    <View style={{ gap: 22 }}>
-      <SessionRing progress={clock.elapsed / clock.total} elapsed={clock.elapsed} total={clock.total} />
-      <SessionControls running={clock.running} onToggle={clock.toggle} onSeek={clock.seek} />
-      <ParagraphStepper paragraphs={paragraphs} audioOn={audioOn} paused={!clock.running} lastLabel="Terminer" onFinish={onDone} />
-    </View>
-  );
-}
-
 /** Pendant un silence : un point qui respire, pour dire que la séance continue. */
 function SilenceBreath() {
   const theme = useTheme();
@@ -126,6 +62,88 @@ function SilenceBreath() {
  * tombent donc juste sans code supplémentaire, et le minuteur cesse d'être décoratif : quand
  * l'horloge arrive au bout, la séance est réellement finie.
  */
+function NarratedSequence({
+  blocks,
+  elapsed,
+  audioOn,
+  running,
+}: {
+  blocks: NarratedBlock[];
+  elapsed: number;
+  audioOn: boolean;
+  running: boolean;
+}) {
+  const position = blockAt(blocks, elapsed);
+
+  // La voix dit le bloc une fois, à son entrée — jamais pendant le silence, qui est le cœur de
+  // l'exercice. Une pause la coupe, et la reprise redit le bloc en cours depuis le début.
+  const spokenRef = useRef(-1);
+  const blockIndex = position?.index ?? -1;
+  const phase = position?.phase;
+  useEffect(() => {
+    if (!audioOn || !running) {
+      stopSpeech();
+      spokenRef.current = -1;
+      return;
+    }
+    if (phase !== 'voice' || blockIndex < 0 || spokenRef.current === blockIndex) return;
+    spokenRef.current = blockIndex;
+    speak(blocks[blockIndex].text);
+  }, [audioOn, running, phase, blockIndex, blocks]);
+
+  useEffect(() => stopSpeech, []);
+
+  if (!position) return null;
+
+  return (
+    <>
+      {/* Le texte reste affiché pendant le silence : un écran qui se vide ressemble à une panne. */}
+      <Animated.View key={position.index} entering={FadeIn.duration(400)} style={{ minHeight: 96, justifyContent: 'center' }}>
+        <Text variant="bodyStrong" center style={{ fontSize: 18, lineHeight: 27 }} accessibilityLiveRegion="polite">
+          {blocks[position.index].text}
+        </Text>
+      </Animated.View>
+      {position.phase === 'silence' ? <SilenceBreath /> : <View style={{ height: 22 }} />}
+      <Dots count={blocks.length} index={position.index} />
+    </>
+  );
+}
+
+/** Déclenche `onDone` une seule fois, même si le parent recrée la fonction à chaque rendu. */
+function useFinishOnce(finished: boolean, onDone: () => void) {
+  const doneRef = useRef(false);
+  useEffect(() => {
+    if (!finished || doneRef.current) return;
+    doneRef.current = true;
+    stopSpeech();
+    onDone();
+  }, [finished, onDone]);
+}
+
+/** Intro ou conclusion d'une respiration : elle se déroule seule, et se saute d'un geste. */
+export function NarratedIntro({
+  blocks,
+  audioOn,
+  skipLabel,
+  onFinish,
+}: {
+  blocks: NarratedBlock[];
+  audioOn: boolean;
+  skipLabel: string;
+  onFinish: () => void;
+}) {
+  const total = useMemo(() => narratedDuration(blocks), [blocks]);
+  const clock = useSessionClock(total);
+  useFinishOnce(clock.elapsed >= total, onFinish);
+
+  return (
+    <View style={{ gap: 18 }}>
+      <NarratedSequence blocks={blocks} elapsed={clock.elapsed} audioOn={audioOn} running={clock.running} />
+      <Button label={skipLabel} variant="ghost" onPress={onFinish} />
+    </View>
+  );
+}
+
 export function NarratedPlayer({
   blocks,
   audioOn,
@@ -137,51 +155,13 @@ export function NarratedPlayer({
 }) {
   const total = useMemo(() => narratedDuration(blocks), [blocks]);
   const clock = useSessionClock(total);
-  const position = blockAt(blocks, clock.elapsed);
-  const finished = position === null;
-
-  // `onDone` est recréé à chaque rendu du parent : sans ce garde, la fin se déclencherait en
-  // boucle au lieu d'une seule fois.
-  const doneRef = useRef(false);
-  useEffect(() => {
-    if (!finished || doneRef.current) return;
-    doneRef.current = true;
-    stopSpeech();
-    onDone();
-  }, [finished, onDone]);
-
-  // La voix dit le bloc une fois, à son entrée — jamais pendant le silence, qui est le cœur de
-  // l'exercice. Une pause la coupe, et la reprise redit le bloc en cours depuis le début.
-  const spokenRef = useRef(-1);
-  const blockIndex = position?.index ?? -1;
-  const phase = position?.phase;
-  useEffect(() => {
-    if (!audioOn || !clock.running) {
-      stopSpeech();
-      spokenRef.current = -1;
-      return;
-    }
-    if (phase !== 'voice' || blockIndex < 0 || spokenRef.current === blockIndex) return;
-    spokenRef.current = blockIndex;
-    speak(blocks[blockIndex].text);
-  }, [audioOn, clock.running, phase, blockIndex, blocks]);
-
-  useEffect(() => stopSpeech, []);
-
-  if (!position) return null;
+  useFinishOnce(clock.elapsed >= total, onDone);
 
   return (
     <View style={{ gap: 22 }}>
       <SessionRing progress={total === 0 ? 0 : clock.elapsed / total} elapsed={clock.elapsed} total={total} />
       <SessionControls running={clock.running} onToggle={clock.toggle} onSeek={clock.seek} />
-      {/* Le texte reste affiché pendant le silence : un écran qui se vide ressemble à une panne. */}
-      <Animated.View key={position.index} entering={FadeIn.duration(400)} style={{ minHeight: 96, justifyContent: 'center' }}>
-        <Text variant="bodyStrong" center style={{ fontSize: 18, lineHeight: 27 }} accessibilityLiveRegion="polite">
-          {blocks[position.index].text}
-        </Text>
-      </Animated.View>
-      {position.phase === 'silence' ? <SilenceBreath /> : <View style={{ height: 22 }} />}
-      <Dots count={blocks.length} index={position.index} />
+      <NarratedSequence blocks={blocks} elapsed={clock.elapsed} audioOn={audioOn} running={clock.running} />
     </View>
   );
 }
@@ -204,8 +184,8 @@ export function BreathingPlayer({
 }: {
   cycles: number;
   phases: BreathingPhase[];
-  intro?: string[];
-  outro?: string[];
+  intro?: NarratedBlock[];
+  outro?: NarratedBlock[];
   audioOn: boolean;
   onDone: () => void;
 }) {
@@ -251,12 +231,11 @@ export function BreathingPlayer({
 
   if (stage === 'intro' || stage === 'outro') {
     return (
-      <ParagraphStepper
+      <NarratedIntro
         key={stage}
-        paragraphs={stage === 'intro' ? intro! : outro!}
+        blocks={stage === 'intro' ? intro! : outro!}
         audioOn={audioOn}
-        paused={false}
-        lastLabel={stage === 'intro' ? 'Commencer' : 'Terminer'}
+        skipLabel={stage === 'intro' ? 'Commencer maintenant' : 'Terminer'}
         onFinish={() => (stage === 'intro' ? dispatch('start') : onDone())}
       />
     );

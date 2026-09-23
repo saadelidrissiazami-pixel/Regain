@@ -29,9 +29,7 @@ export type NarratedBlock = {
 };
 
 export type ProgramContent =
-  | { type: 'breathing'; cycles: number; phases: BreathingPhase[]; intro?: string[]; outro?: string[] }
-  /** Ancien format : un paragraphe à la fois, au rythme de la personne. */
-  | { type: 'guided'; paragraphs: string[] }
+  | { type: 'breathing'; cycles: number; phases: BreathingPhase[]; intro?: NarratedBlock[]; outro?: NarratedBlock[] }
   /**
    * Séance qui se déroule seule, sans rien demander.
    * `endsQuietly` s'arrête après la dernière seconde, sans proposer de bilan : c'est ce qu'il
