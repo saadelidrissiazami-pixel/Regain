@@ -11,13 +11,19 @@ import { QueryClientProvider } from '@tanstack/react-query';
 import { router, Stack } from 'expo-router';
 import * as SplashScreen from 'expo-splash-screen';
 import { useEffect } from 'react';
-import { Platform } from 'react-native';
+import { LogBox, Platform } from 'react-native';
 import { SafeAreaProvider } from 'react-native-safe-area-context';
 
 import { queryClient } from '../src/lib/queryClient';
 import { initPurchases, onPremiumChange } from '../src/lib/purchases';
 import { ThemeProvider } from '../src/theme/ThemeProvider';
 import { useAuthStore } from '../src/store/authStore';
+
+// RevenueCat avertit à chaque démarrage quand on utilise une clé de bac à sable. C'est exact et
+// voulu en développement, où l'on teste les abonnements sans passer par l'App Store — mais
+// l'avertissement recouvre le bas de l'écran à chaque lancement, y compris pendant les captures.
+// La production n'est pas concernée : elle utilise une vraie clé, et LogBox n'y existe pas.
+LogBox.ignoreLogs(['[RevenueCat] ⚠️ Using a Test Store API key.']);
 
 SplashScreen.preventAutoHideAsync().catch(() => {});
 

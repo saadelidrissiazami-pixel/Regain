@@ -86,8 +86,18 @@ export default function WellbeingScreen() {
             </Appear>
           ) : null}
 
-          {/* Les parcours, avant la grille des thèmes : ils apprennent quelque chose, là où un
-              thème ne fait que ranger. Leur avancement se lit d'un coup d'œil. */}
+          {recommendations.length > 0 ? (
+            <Appear index={1}>
+              <RecommendationHero
+                items={recommendations}
+                width={heroWidth}
+                onStart={(item) => router.push(`/wellbeing/${item.program.slug}`)}
+              />
+            </Appear>
+          ) : null}
+
+          {/* Après la recommandation, avant la grille : un parcours apprend quelque chose, là
+              où un thème ne fait que ranger. L'avancement se lit d'un coup d'œil. */}
           <Appear index={2}>
             <View style={{ marginTop: 28 }}>
               <SectionHeader title="Parcours" />
@@ -106,16 +116,6 @@ export default function WellbeingScreen() {
               })}
             </View>
           </Appear>
-
-          {recommendations.length > 0 ? (
-            <Appear index={1}>
-              <RecommendationHero
-                items={recommendations}
-                width={heroWidth}
-                onStart={(item) => router.push(`/wellbeing/${item.program.slug}`)}
-              />
-            </Appear>
-          ) : null}
 
           <Appear index={2}>
             <View style={{ marginTop: 28 }}>
