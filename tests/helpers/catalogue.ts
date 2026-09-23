@@ -53,6 +53,19 @@ export function parseSeededCatalogue(dir = MIGRATIONS_DIR): SeededProgram[] {
       }
     }
 
+    // Une migration peut aussi retirer des séances : 0027 met les SOS et les parcours de côté
+    // le temps que la 1.1 sorte. Sans en tenir compte, les tests raisonneraient sur une base
+    // qui n'existe pas.
+    const deletes = sql.matchAll(
+      /delete\s+from\s+public\.wellbeing_programs\s+where\s+category\s+in\s*\(([^)]*)\)/gi
+    );
+    for (const removal of deletes) {
+      const categories = (removal[1].match(/'([^']+)'/g) ?? []).map((value) => value.replace(/'/g, ''));
+      for (const [slug, row] of [...rows]) {
+        if (categories.includes(row.category)) rows.delete(slug);
+      }
+    }
+
     const updates = sql.matchAll(
       /update\s+public\.wellbeing_programs\s+set\s+duration_minutes\s*=\s*(\d+)\s+where\s+slug\s*=\s*'([^']+)'/gi
     );

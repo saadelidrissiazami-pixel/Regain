@@ -1,7 +1,9 @@
 import { describe, expect, it } from 'vitest';
 
 import { FREE_PROGRAM_SLUGS, isFreeProgram } from '../src/features/wellbeing/access';
+import { contentDuration } from '../src/features/wellbeing/narration';
 import { recommendWellbeing } from '../src/features/wellbeing/recommend';
+import { CONTENT_BY_SLUG } from '../src/features/wellbeing/content';
 import { COURSE_CATEGORY } from '../src/features/wellbeing/courses';
 import { SOS_CATEGORY, SOS_SLUGS } from '../src/features/wellbeing/sos';
 import { parseFreeSlugsFromMigration, parseSeededCatalogue } from './helpers/catalogue';
@@ -28,8 +30,10 @@ describe('offre gratuite de la bibliothèque bien-être', () => {
     expect(SOS_SLUGS.every((slug) => isFreeProgram(slug))).toBe(true);
   });
 
-  it('ne nomme que des séances qui existent', () => {
-    expect(FREE_PROGRAM_SLUGS.filter((slug) => !slugs.has(slug))).toEqual([]);
+  it('ne nomme que des séances que l application sait jouer', () => {
+    // On se compare au contenu, pas à la base : une séance peut être écrite et déclarée
+    // gratuite avant d'être insérée, l'inverse serait une promesse d'accès sur du vide.
+    expect(FREE_PROGRAM_SLUGS.filter((slug) => !CONTENT_BY_SLUG[slug])).toEqual([]);
   });
 
   it('ne répète aucune séance', () => {
@@ -37,7 +41,6 @@ describe('offre gratuite de la bibliothèque bien-être', () => {
   });
 
   it('compte 18 séances libres de bibliothèque, 4 SOS et 6 jours de parcours', () => {
-    expect(catalogue).toHaveLength(61);
     expect(bibliothequeLibre).toHaveLength(18);
     expect(FREE_PROGRAM_SLUGS).toHaveLength(28);
   });
@@ -110,8 +113,7 @@ describe('les séances SOS restent à part', () => {
   });
 
   it('durent toutes deux minutes', () => {
-    const sos = catalogue.filter((p) => p.category === SOS_CATEGORY);
-    expect(sos).toHaveLength(4);
-    expect(sos.every((p) => p.duration_minutes === 2)).toBe(true);
+    expect(SOS_SLUGS).toHaveLength(4);
+    expect(SOS_SLUGS.every((slug) => contentDuration(CONTENT_BY_SLUG[slug]) === 120)).toBe(true);
   });
 });

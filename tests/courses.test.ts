@@ -8,7 +8,8 @@ import {
   courseStatusLabel,
 } from '../src/features/wellbeing/courses';
 import type { WellbeingProgram } from '../src/features/wellbeing/types';
-import { parseSeededCatalogue } from './helpers/catalogue';
+import { CONTENT_BY_SLUG } from '../src/features/wellbeing/content';
+import { contentDuration } from '../src/features/wellbeing/narration';
 
 const day = (course: string, n: number): WellbeingProgram => ({
   id: `${course}-${n}`,
@@ -81,13 +82,13 @@ describe('ce que le parcours annonce', () => {
   });
 });
 
-describe('les parcours et le catalogue', () => {
-  const catalogue = parseSeededCatalogue();
+describe('les parcours et leur contenu', () => {
+  const prefixe = (course: string) => (course === 'mieux-dormir' ? 'parcours-sommeil-j' : 'parcours-meditation-j');
 
-  it('ont bien leurs dix jours en base', () => {
+  it('ont les dix jours annoncés, tous écrits', () => {
     for (const course of COURSES) {
-      const jours = catalogue.filter((p) => p.slug.startsWith(`parcours-${course.slug === 'mieux-dormir' ? 'sommeil' : 'meditation'}-j`));
-      expect(jours).toHaveLength(course.dayCount);
+      const ecrits = Array.from({ length: course.dayCount }, (_, i) => CONTENT_BY_SLUG[`${prefixe(course.slug)}${i + 1}`]);
+      expect(ecrits.filter(Boolean)).toHaveLength(course.dayCount);
     }
   });
 
@@ -97,8 +98,13 @@ describe('les parcours et le catalogue', () => {
   });
 
   it('montent en durée sans jamais dépasser sept minutes', () => {
-    const jours = catalogue.filter((p) => p.category === COURSE_CATEGORY);
-    expect(jours).toHaveLength(20);
-    expect(jours.every((p) => p.duration_minutes >= 2 && p.duration_minutes <= 7)).toBe(true);
+    for (const course of COURSES) {
+      const durees = Array.from({ length: course.dayCount }, (_, i) =>
+        contentDuration(CONTENT_BY_SLUG[`${prefixe(course.slug)}${i + 1}`])
+      );
+      expect(durees.every((d) => d !== null && d >= 120 && d <= 420)).toBe(true);
+      // La progression est douce : jamais plus de deux minutes d'écart d'un jour au suivant.
+      for (let i = 1; i < durees.length; i += 1) expect(durees[i]! - durees[i - 1]!).toBeLessThanOrEqual(120);
+    }
   });
 });
