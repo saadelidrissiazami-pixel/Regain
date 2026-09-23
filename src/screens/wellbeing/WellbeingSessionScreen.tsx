@@ -22,7 +22,7 @@ import { useAuthStore } from '../../store/authStore';
 import { withAlpha } from '../../theme/colors';
 import { IMAGES } from '../../theme/images';
 import { useTheme } from '../../theme/ThemeProvider';
-import { BreathingPlayer, GroundingPlayer, GuidedPlayer, PrepCountdown } from './session/players';
+import { BreathingPlayer, GroundingPlayer, GuidedPlayer, NarratedPlayer, PrepCountdown } from './session/players';
 import { SessionReview } from './session/SessionReview';
 
 function stopSpeech() {
@@ -43,7 +43,10 @@ export default function WellbeingSessionScreen() {
   const { isPremium, isLoading: premiumLoading } = usePremium();
   const [stage, setStage] = useState<'prep' | 'play' | 'review' | 'done'>('prep');
   const [noteDraft, setNoteDraft] = useState('');
-  const [audioOn, setAudioOn] = useState(false);
+  // Une séance narrée se déroule seule : sans voix, elle obligerait quand même à lire l'écran,
+  // donc à garder les yeux ouverts. La voix y est active d'emblée, et coupable en un geste
+  // depuis les options. Les autres séances, qu'on fait à son rythme, restent silencieuses.
+  const [audioOn, setAudioOn] = useState(() => (slug ? CONTENT_BY_SLUG[slug]?.type === 'narrated' : false));
   const [menuOpen, setMenuOpen] = useState(false);
   const [runKey, setRunKey] = useState(0);
   // Stable : PrepCountdown dépend de onDone dans son effet de décompte.
@@ -74,10 +77,14 @@ export default function WellbeingSessionScreen() {
   };
   const playingLabel = ambienceLabel(ambience);
 
+  // Une séance qu'on écoute au lit doit se terminer sans rien réclamer : pas de vibration de
+  // fin, pas de bilan à remplir. On enregistre, et on se tait.
+  const [quietEnding, setQuietEnding] = useState(false);
+
   const completeMutation = useMutation({
-    mutationFn: (review: Review) => markProgramCompleted(userId!, program!.id, review),
-    onSuccess: () => {
-      haptic.success();
+    mutationFn: ({ review }: { review: Review; quiet?: boolean }) => markProgramCompleted(userId!, program!.id, review),
+    onSuccess: (_result, variables) => {
+      if (!variables.quiet) haptic.success();
       queryClient.invalidateQueries({ queryKey: ['completedPrograms', userId] });
       queryClient.invalidateQueries({ queryKey: ['wellbeingJournal', userId] });
       setStage('done');
@@ -92,12 +99,22 @@ export default function WellbeingSessionScreen() {
     setStage('review');
   };
 
+  const handleQuietDone = () => {
+    stopSpeech();
+    setQuietEnding(true);
+    if (!program || !userId) {
+      setStage('done');
+      return;
+    }
+    completeMutation.mutate({ review: {}, quiet: true });
+  };
+
   const submitReview = (review: Review) => {
     if (!program || !userId) {
       setStage('done');
       return;
     }
-    completeMutation.mutate(review);
+    completeMutation.mutate({ review });
   };
 
   if (programsQuery.isLoading || (program?.premium_only && premiumLoading)) {
@@ -158,6 +175,20 @@ export default function WellbeingSessionScreen() {
           goBack('/(tabs)/wellbeing');
         }}
       />
+    );
+  }
+
+  if (stage === 'done' && quietEnding) {
+    // Fin discrète : rien ne clignote, rien ne félicite, et la seule action possible est de
+    // partir. Si la personne s'est endormie, l'écran ne lui demandera rien au réveil.
+    return (
+      <Screen footer={<Button label="Fermer" variant="ghost" onPress={() => goBack('/(tabs)/wellbeing')} />}>
+        <View style={{ alignItems: 'center', paddingTop: 120 }}>
+          <Text variant="body" tone="ink2" center>
+            C&apos;est terminé. Tu n&apos;as plus rien à faire.
+          </Text>
+        </View>
+      </Screen>
     );
   }
 
@@ -258,6 +289,8 @@ export default function WellbeingSessionScreen() {
               audioOn={audioOn}
               onDone={handleDone}
             />
+          ) : content.type === 'narrated' ? (
+            <NarratedPlayer blocks={content.blocks} audioOn={audioOn} onDone={content.endsQuietly ? handleQuietDone : handleDone} />
           ) : content.type === 'grounding' ? (
             <GroundingPlayer steps={content.steps} durationMinutes={program.duration_minutes} audioOn={audioOn} onDone={handleDone} />
           ) : (

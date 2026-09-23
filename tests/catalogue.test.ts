@@ -1,6 +1,7 @@
 import { describe, expect, it } from 'vitest';
 
 import { CONTENT_BY_SLUG } from '../src/features/wellbeing/content';
+import { narratedDuration } from '../src/features/wellbeing/narration';
 import { parseSeededCatalogue } from './helpers/catalogue';
 
 // Ajouter une séance demande trois gestes qui doivent s'accorder : écrire son contenu, l'inscrire
@@ -29,4 +30,17 @@ describe('catalogue bien-être', () => {
     expect({ sansContenu, sansLigneEnBase }).toEqual({ sansContenu: [], sansLigneEnBase: [] });
   });
 
+  it('annonce la vraie durée des séances narrées', () => {
+    // La pastille « 5′ » de la liste vient de la base ; la durée réelle vient des blocs. Tant que
+    // les deux étaient indépendantes, la première était une promesse. Vingt secondes de marge,
+    // pas davantage : au-delà, c'est une autre séance qu'on annonce.
+    const ecarts = seeded.flatMap((program) => {
+      const content = CONTENT_BY_SLUG[program.slug];
+      if (content?.type !== 'narrated') return [];
+      const annoncee = program.duration_minutes * 60;
+      const reelle = narratedDuration(content.blocks);
+      return Math.abs(annoncee - reelle) > 20 ? [{ slug: program.slug, annoncee, reelle }] : [];
+    });
+    expect(ecarts).toEqual([]);
+  });
 });

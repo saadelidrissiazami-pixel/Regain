@@ -16,7 +16,26 @@ export type GroundingStep =
   | { kind: 'confirm'; text: string; buttonLabel: string }
   | { kind: 'breath-counter'; text: string; count: number };
 
+/**
+ * Un bloc de séance narrée : du texte, puis un vrai silence pour le vivre.
+ * La durée de la séance se déduit de ses blocs, au lieu d'être annoncée à côté.
+ */
+export type NarratedBlock = {
+  text: string;
+  /** Durée de diction visée. Estimée depuis le texte si absente. */
+  speakSeconds?: number;
+  /** Silence qui suit le texte, en secondes. Zéro est permis, mais rare. */
+  silenceSeconds: number;
+};
+
 export type ProgramContent =
   | { type: 'breathing'; cycles: number; phases: BreathingPhase[]; intro?: string[]; outro?: string[] }
+  /** Ancien format : un paragraphe à la fois, au rythme de la personne. */
   | { type: 'guided'; paragraphs: string[] }
+  /**
+   * Séance qui se déroule seule, sans rien demander.
+   * `endsQuietly` s'arrête après la dernière seconde, sans proposer de bilan : c'est ce qu'il
+   * faut pour une séance qu'on écoute au lit, où l'on ne veut plus rien avoir à faire.
+   */
+  | { type: 'narrated'; blocks: NarratedBlock[]; endsQuietly?: boolean }
   | { type: 'grounding'; steps: GroundingStep[] };
