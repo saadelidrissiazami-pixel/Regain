@@ -104,7 +104,7 @@ ressentis, coach forme (programme), écran d'abonnement.
 
 ```
 Compte de démonstration :
-  e-mail : regain.demo@gmail.com
+  e-mail : saadelidrissiazami+demo@gmail.com
   mot de passe : [celui choisi au moment du remplissage — jamais écrit ici]
 
 Ce compte contient déjà des disponibilités, un planning, des séances terminées et un programme

@@ -19,6 +19,22 @@ const schema = z.object({
 
 type FormValues = z.infer<typeof schema>;
 
+// Supabase renvoie ses erreurs en anglais. On traduit celles que l'on rencontre vraiment, et on
+// laisse passer le message d'origine pour les autres : un texte anglais reste plus utile qu'un
+// « une erreur est survenue » qui cache la cause.
+function authErrorMessage(error: { message: string }): string {
+  const message = error.message.toLowerCase();
+  if (message.includes('invalid login credentials')) return 'E-mail ou mot de passe incorrect.';
+  if (message.includes('email not confirmed')) {
+    return "Ce compte n'est pas encore confirmé. Ouvre le lien envoyé par e-mail, puis reviens te connecter.";
+  }
+  if (message.includes('user already registered')) return 'Un compte existe déjà avec cette adresse. Connecte-toi.';
+  if (message.includes('email rate limit exceeded')) {
+    return 'Trop de tentatives sur cette adresse. Réessaie dans quelques minutes.';
+  }
+  return error.message;
+}
+
 export default function SignInScreen() {
   const theme = useTheme();
   const [mode, setMode] = useState<'sign-in' | 'sign-up'>('sign-in');
@@ -40,7 +56,7 @@ export default function SignInScreen() {
     setSubmitting(false);
 
     if (error) {
-      setServerError(error.message);
+      setServerError(authErrorMessage(error));
       return;
     }
     haptic.success();
@@ -49,7 +65,10 @@ export default function SignInScreen() {
       router.replace('/');
       return;
     }
-    setInfo('Compte créé. Si la confirmation par e-mail est active, vérifie ta boîte mail puis connecte-toi.');
+    // Pas de session à l'inscription : le projet exige la confirmation par e-mail. Autant nommer
+    // l'adresse, parce que la faute de frappe est l'explication la plus fréquente d'un mail
+    // « jamais reçu ».
+    setInfo(`Compte créé. Ouvre le lien de confirmation envoyé à ${values.email}, puis connecte-toi.`);
   };
 
   return (

@@ -196,17 +196,28 @@ Points qui font échouer une revue, déjà traités dans l'app :
 Reste à fournir par toi : **un compte de démonstration** (e-mail et mot de passe d'un compte
 Regain rempli d'exemples) dans les notes de revue, sinon l'app est renvoyée.
 
-Choisis une adresse dédiée et un mot de passe, puis lance la commande en **remplaçant les deux
-valeurs d'exemple** (le compte est créé s'il n'existe pas encore) :
+L'adresse retenue est un **alias** de la boîte personnelle : `+demo` en fait un compte distinct
+pour Supabase, alors que Gmail livre les e-mails dans la même boîte. Les données personnelles
+restent donc intactes, et l'équipe de revue ne voit pas le compte de tous les jours.
+
+Choisis un mot de passe, puis lance la commande en **remplaçant `mot-de-passe`** par celui-ci :
 
 ```bash
-DEMO_EMAIL=regain.demo@exemple.fr DEMO_PASSWORD='mot-de-passe' node scripts/seed-demo.mjs
+DEMO_EMAIL=saadelidrissiazami+demo@gmail.com DEMO_PASSWORD='mot-de-passe' node scripts/seed-demo.mjs
 ```
+
+Au premier appel, le compte n'existe pas : Supabase le crée et envoie un lien de confirmation.
+Ouvre-le dans la boîte, puis **relance la même commande** — elle se connectera cette fois, et
+remplira le compte.
 
 Le script se connecte comme ce compte et lui crée des disponibilités, un planning dont deux
 activités cochées, des check-ins d'énergie, quatre séances de bien-être avec ressenti et réponses,
 et un profil forme. Ton mot de passe ne sort pas de ton terminal. Termine dans l'app par
 *Forme → Générer mon programme*.
+
+**Le script efface d'abord les créneaux, les check-ins d'énergie et les séances terminées du
+compte** avant de réécrire les siens — c'est la raison de l'alias : lancé sur le compte personnel,
+il ferait disparaître ces données-là.
 
 ## 12. Après la publication
 

@@ -2,12 +2,16 @@
 /**
  * Remplit un compte de démonstration avec des données d'exemple, pour la revue Apple.
  *
- *   DEMO_EMAIL=demo@exemple.fr DEMO_PASSWORD='…' node scripts/seed-demo.mjs
+ *   DEMO_EMAIL=saadelidrissiazami+demo@gmail.com DEMO_PASSWORD='…' node scripts/seed-demo.mjs
  *
- * Remplacez les deux valeurs par les vôtres : ce sont les identifiants que vous donnerez à
- * l'équipe de revue Apple. Le compte est créé s'il n'existe pas encore.
+ * Remplacez le mot de passe par le vôtre : avec l'adresse, ce sont les identifiants que vous
+ * donnerez à l'équipe de revue Apple. Le compte est créé s'il n'existe pas encore.
  * Le script se connecte comme lui et n'écrit que ses propres données : le mot de passe ne sort
- * pas de votre terminal. Relançable : il remplace ce qu'il a créé la fois précédente.
+ * pas de votre terminal.
+ *
+ * Relançable, mais destructeur : il supprime TOUS les créneaux, check-ins d'énergie et séances
+ * de bien-être terminées du compte avant d'écrire les siens — pas seulement ceux de l'exécution
+ * précédente. À ne lancer que sur un compte dont les données peuvent disparaître.
  */
 import { readFileSync } from 'node:fs';
 
@@ -34,7 +38,7 @@ function fail(message) {
   process.exit(1);
 }
 
-const usage = "DEMO_EMAIL=regain.demo@exemple.fr DEMO_PASSWORD='mot-de-passe' node scripts/seed-demo.mjs";
+const usage = "DEMO_EMAIL=saadelidrissiazami+demo@gmail.com DEMO_PASSWORD='mot-de-passe' node scripts/seed-demo.mjs";
 
 if (!URL_BASE || !ANON) fail('EXPO_PUBLIC_SUPABASE_URL et EXPO_PUBLIC_SUPABASE_ANON_KEY sont introuvables (.env).');
 // Le « … » de la documentation recopié tel quel est l'erreur la plus probable : la dire en clair.
@@ -43,6 +47,14 @@ if (!/^[^@\s]+@[^@\s.]+\.[^@\s]+$/.test(EMAIL)) {
   fail(`« ${EMAIL} » n'est pas une adresse e-mail. Remplacez les valeurs d'exemple par les vôtres :\n  ${usage}`);
 }
 if (PASSWORD.length < 8) fail('DEMO_PASSWORD doit faire au moins 8 caractères (exigence de Supabase).');
+// Un exemple recopié tel quel fait plus de 8 caractères : la validation de longueur le laisse
+// passer, et Supabase crée un compte avec ce mot de passe-là. Vu deux fois, donc dit ici.
+const PLACEHOLDERS = ['mot-de-passe', 'le-vrai-mot-de-passe', 'choisis-en-un', 'ton-mot-de-passe'];
+if (PLACEHOLDERS.includes(PASSWORD.toLowerCase())) {
+  // Sans cette exception, le message renverrait vers `usage`, qui contient justement la valeur
+  // qu'on vient de refuser.
+  fail(`« ${PASSWORD} » est la valeur d'exemple de la documentation.\n  Relancez en mettant votre propre mot de passe entre guillemets simples.`);
+}
 
 const iso = (date) => date.toISOString().slice(0, 10);
 const day = (offset) => {

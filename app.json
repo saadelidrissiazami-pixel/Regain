@@ -71,7 +71,9 @@
           "microphonePermission": "Regain joue du son mais n'enregistre jamais : cette autorisation ne vous sera jamais demandée.",
           "recordAudioAndroid": false
         }
-      ]
+      ],
+      "expo-font",
+      "expo-asset"
     ],
     "description": "Regain aide à reconstruire une routine : un planning réaliste, des séances de bien-être guidées et un coach forme.",
     "primaryColor": "#17483E",
