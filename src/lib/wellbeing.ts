@@ -1,11 +1,16 @@
 import { supabase } from './supabase';
+import { CONTENT_BY_SLUG } from '../features/wellbeing/content';
 import type { Reflection } from '../features/wellbeing/reflection';
 import type { WellbeingProgram } from '../features/wellbeing/types';
 
 export async function fetchPrograms(): Promise<WellbeingProgram[]> {
   const { data, error } = await supabase.from('wellbeing_programs').select('*').order('category');
   if (error) throw error;
-  return data;
+  // Le catalogue est en base, le texte des séances est dans l'application : une version installée
+  // ne sait jouer que les slugs qu'elle embarque. Sans ce filtre, ajouter des séances en base les
+  // ferait apparaître chez tout le monde, y compris dans les versions plus anciennes, où les
+  // ouvrir ne donnerait qu'un « Séance introuvable ». On ne montre que ce qu'on sait jouer.
+  return data.filter((program) => CONTENT_BY_SLUG[program.slug]);
 }
 
 export async function fetchCompletedProgramIds(userId: string): Promise<Set<string>> {

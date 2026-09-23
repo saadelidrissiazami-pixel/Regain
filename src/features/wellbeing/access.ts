@@ -1,25 +1,45 @@
-// Offre freemium : dans chaque catégorie, les séances les plus courtes restent gratuites pour
-// que chacun puisse installer une vraie habitude ; les plus longues sont réservées à Premium.
-// Même règle que la migration 0021_premium_catalog.sql : les deux doivent rester alignées.
+// Offre freemium de la bibliothèque bien-être.
+//
+// Cette liste est nommée séance par séance, et c'est délibéré. Elle a d'abord été calculée :
+// « les trois plus courtes de chaque catégorie restent gratuites », règle rejouée à l'identique
+// en SQL et en TypeScript. Mais l'accès dépendait alors de la durée — réécrire un script un peu
+// plus long suffisait à reverrouiller une séance qu'un abonné utilisait déjà, sans que personne
+// ne s'en aperçoive. Une liste explicite ne change que lorsqu'on la change.
+//
+// La migration 0023_explicit_premium_catalog.sql applique exactement ces slugs en base, et
+// tests/catalogue.test.ts vérifie que les deux ne divergent jamais.
 
-export const FREE_SESSIONS_PER_CATEGORY = 3;
+/** Séances accessibles sans abonnement, telles qu'elles l'étaient au 23 septembre 2026. */
+export const FREE_PROGRAM_SLUGS: readonly string[] = [
+  // Respiration
+  'respiration-express',
+  'respiration-4-7-8',
+  'respiration-soupir-physiologique',
+  // Méditation
+  'meditation-pause-1min',
+  'meditation-matin',
+  'meditation-5-sens',
+  // Journaling
+  'journaling-gratitude-express',
+  'journaling-clarifier',
+  'journaling-vider-tete',
+  // Confiance en soi
+  'confiance-trois-qualites',
+  'confiance-posture-presence',
+  'confiance-reussite',
+  // Sommeil
+  'sommeil-ralentir',
+  'sommeil-relacher',
+  'sommeil-scan-corporel',
+  // En public
+  'public-ancrage-rapide',
+  'public-kit-urgence',
+  'detachement-regard-autres',
+];
 
-type ProgramLike = { slug: string; category: string; duration_minutes: number };
+const FREE = new Set(FREE_PROGRAM_SLUGS);
 
-/** Séances gratuites : les N premières de chaque catégorie, par durée puis par nom. */
-export function freeProgramSlugs(programs: ProgramLike[], perCategory = FREE_SESSIONS_PER_CATEGORY): Set<string> {
-  const byCategory = new Map<string, ProgramLike[]>();
-  for (const program of programs) {
-    const list = byCategory.get(program.category) ?? [];
-    list.push(program);
-    byCategory.set(program.category, list);
-  }
-  const free = new Set<string>();
-  for (const list of byCategory.values()) {
-    [...list]
-      .sort((a, b) => a.duration_minutes - b.duration_minutes || a.slug.localeCompare(b.slug))
-      .slice(0, perCategory)
-      .forEach((program) => free.add(program.slug));
-  }
-  return free;
+/** Une séance est gratuite si elle figure dans la liste. Tout le reste demande Premium. */
+export function isFreeProgram(slug: string): boolean {
+  return FREE.has(slug);
 }
