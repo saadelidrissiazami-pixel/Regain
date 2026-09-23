@@ -16,6 +16,11 @@ alter table public.activities_catalog add column if not exists first_action text
 alter table public.activities_catalog add column if not exists stop_rule text;
 alter table public.activities_catalog add column if not exists active boolean not null default true;
 
+-- 0005 crée cet index, mais toutes les bases ne l'ont pas : le projet a d'abord été monté
+-- autrement que par la CLI. Sans lui, le `on conflict (title)` plus bas n'a aucune contrainte
+-- sur laquelle s'appuyer et la migration échoue en bloc.
+create unique index if not exists activities_catalog_title_key on public.activities_catalog (title);
+
 -- Rejouable : tout ce qui n'est pas dans la liste ci-dessous cesse d'être proposé.
 update public.activities_catalog set active = false;
 
