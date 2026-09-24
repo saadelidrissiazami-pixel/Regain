@@ -1,13 +1,13 @@
-// Regain — Coach forme IA (Premium) : programme de musculation, menus, liste de courses,
-// ajustement hebdomadaire et chat.
+// Regain — the AI fitness coach (Premium): strength programme, meals, shopping list, weekly
+// adjustment and chat.
 //
-// Déploiement :
+// Deployment:
 //   supabase secrets set ANTHROPIC_API_KEY=sk-ant-...
 //   supabase functions deploy fitness-coach
 //
-// Les cibles caloriques sont calculées par l'app (formule Mifflin-St Jeor, testée) et
-// re-bornées ici par sécurité : l'IA compose séances et menus DANS ces limites, elle ne les
-// fixe jamais elle-même.
+// The calorie targets are worked out by the app (the Mifflin-St Jeor equation, under test) and
+// clamped again here for safety: the model composes sessions and meals INSIDE those limits, it
+// never sets them itself.
 
 import Anthropic from 'npm:@anthropic-ai/sdk@0.125.0';
 import { betaZodOutputFormat } from 'npm:@anthropic-ai/sdk@0.125.0/helpers/beta/zod';
@@ -15,16 +15,16 @@ import { createClient, type SupabaseClient } from 'jsr:@supabase/supabase-js@2';
 import { z } from 'npm:zod@4.5.4';
 
 const MODEL = 'claude-opus-5';
-// Si les classifieurs de sécurité refusent une requête, l'API la rejoue automatiquement sur
-// le modèle de repli recommandé (choisi selon la catégorie du refus).
+// If the safety classifiers refuse a request, the API replays it automatically on the
+// recommended fallback model (chosen from the category of the refusal).
 const FALLBACK_BETA = 'server-side-fallback-2026-07-01';
 
-// Garde-fous de coût : sans eux, un compte peut faire tourner la facture Anthropic en boucle.
+// Cost guard rails: without them, one account can run the Anthropic bill up in a loop.
 const MAX_PLANS_PER_DAY = 5;
 const MAX_CHAT_PER_HOUR = 30;
 const MAX_CHAT_MESSAGE_LENGTH = 2000;
 
-// Même plancher que l'app : jamais sous ce seuil, quelle que soit la cible reçue.
+// The same floor as the app: never below this, whatever target arrives.
 const CALORIE_FLOOR = { femme: 1200, homme: 1500 } as const;
 const CALORIE_CEILING = 4500;
 
@@ -40,8 +40,8 @@ function jsonResponse(body: unknown, status: number) {
   });
 }
 
-// --- Schémas -------------------------------------------------------------------------------
-// Doivent rester alignés avec src/features/fitness/types.ts côté app.
+// --- Schemas -------------------------------------------------------------------------------
+// These have to stay aligned with src/features/fitness/types.ts on the app side.
 
 const TargetsSchema = z.object({
   bmr: z.number(),
@@ -120,64 +120,64 @@ type Profile = {
   health_notes: string | null;
 };
 
-// --- Prompts (stables, donc mis en cache) --------------------------------------------------
+// --- Prompts (stable, and so cached) -------------------------------------------------------
 
-const SAFETY_RULES = `Règles de sécurité, non négociables :
-- Tu n'es pas médecin ni diététicien et tu ne poses aucun diagnostic. Si la personne signale une pathologie, une blessure, une grossesse, un trouble alimentaire ou un traitement, adapte de façon prudente et recommande clairement d'en parler à un professionnel de santé avant de commencer.
-- Aucune mesure extrême : pas de jeûne prolongé, pas de régime très restrictif, pas de complément présenté comme indispensable, pas de promesse de résultat chiffrée.
-- Les allergies, intolérances et le régime alimentaire indiqués sont des contraintes absolues.
-- Public : des adultes qui reconstruisent leur routine, parfois après un burn-out. Ton bienveillant, jamais culpabilisant, progression douce plutôt que performance.`;
+const SAFETY_RULES = `Safety rules, non-negotiable:
+- You are not a doctor or a dietitian and you do not diagnose anything. If the person reports a condition, an injury, a pregnancy, an eating disorder or medication, adapt cautiously and clearly recommend they talk to a health professional before starting.
+- No extreme measures: no prolonged fasting, no very restrictive diet, no supplement presented as essential, no promise of a numbered result.
+- The allergies, intolerances and diet given are absolute constraints.
+- The audience: adults rebuilding a routine, sometimes after burnout. Warm in tone, never guilt-inducing, gentle progression rather than performance.`;
 
-const PLAN_SYSTEM_PROMPT = `Tu es le coach forme de Regain, une application française de bien-être. Tu conçois un programme personnalisé à partir du profil de la personne et de cibles nutritionnelles déjà calculées par l'application.
-
-${SAFETY_RULES}
-
-Programme d'entraînement :
-- Exactement le nombre de séances hebdomadaires indiqué, chacune d'une durée inférieure ou égale au temps disponible (échauffement et retour au calme compris).
-- Uniquement des exercices réalisables avec le matériel indiqué, adaptés au niveau d'expérience ; 4 à 7 exercices par séance.
-- Pour chaque exercice : séries, répétitions (ex. « 8-10 » ou « 30 s »), repos en secondes, et un conseil de technique court et concret.
-- Répartis les groupes musculaires sur la semaine et prévois une progression raisonnable.
-
-Alimentation :
-- Propose 3 journées types (« Journée A », « Journée B », « Journée C ») à alterner sur la semaine, de 3 à 4 repas chacune.
-- Le total calorique de chaque journée doit être à ±5 % de la cible, avec un apport en protéines proche de la cible. Ne descends jamais sous la cible calorique fournie.
-- Repas simples, de saison, faciles à préparer, avec des ingrédients courants en France.
-
-Liste de courses :
-- Couvre une semaine complète avec la rotation des 3 journées types.
-- Quantités en unités métriques (g, kg, L, pièces), regroupées par catégorie : « Fruits et légumes », « Protéines », « Féculents et céréales », « Produits laitiers et alternatives », « Épicerie », « Autres ».
-
-Écris tout en français. Sois concis : chaque description et chaque conseil tient en une phrase. Dans coach_notes, résume en 3 phrases maximum la logique du programme et un encouragement.`;
-
-const CHAT_SYSTEM_PROMPT = `Tu es le coach forme de Regain, une application française de bien-être. Tu réponds aux questions de la personne sur son entraînement, son alimentation et sa motivation, en t'appuyant sur son profil et son programme actuel fournis ci-dessous.
+const PLAN_SYSTEM_PROMPT = `You are the fitness coach in Regain, a wellbeing app. You design a personal programme from the person's profile and from nutrition targets the app has already worked out.
 
 ${SAFETY_RULES}
 
-- Réponses courtes et concrètes : 3 à 5 phrases, sauf si on te demande plus de détails.
-- Tu peux proposer une variante d'exercice ou une idée de repas cohérente avec les cibles caloriques, mais tu ne modifies pas le programme toi-même : pour un vrai réajustement, invite la personne à faire son bilan de la semaine dans l'application.
-- Écris en français.`;
+Training programme:
+- Exactly the number of weekly sessions given, each no longer than the time available (warm-up and cool-down included).
+- Only exercises that are possible with the equipment given, suited to the level of experience; 4 to 7 exercises per session.
+- For each exercise: sets, reps (e.g. "8-10" or "30 s"), rest in seconds, and one short, concrete technique cue.
+- Spread the muscle groups across the week and allow for sensible progression.
 
-// --- Contexte utilisateur (volatil, après le cache) -----------------------------------------
+Food:
+- Offer 3 sample days ("Day A", "Day B", "Day C") to rotate through the week, 3 to 4 meals each.
+- Each day's calorie total must be within ±5% of the target, with protein close to the target. Never go below the calorie target provided.
+- Simple, seasonal meals, easy to prepare, from ingredients that are easy to find.
+
+Shopping list:
+- Cover a full week with the 3 sample days in rotation.
+- Amounts in metric units (g, kg, L, pieces), grouped by category: "Fruit and vegetables", "Protein", "Grains and starches", "Dairy and alternatives", "Store cupboard", "Other".
+
+Write everything in English. Be concise: each description and each cue fits in one sentence. In coach_notes, sum up the logic of the programme in at most 3 sentences, plus one word of encouragement.`;
+
+const CHAT_SYSTEM_PROMPT = `You are the fitness coach in Regain, a wellbeing app. You answer the person's questions about their training, their food and their motivation, drawing on the profile and current programme given below.
+
+${SAFETY_RULES}
+
+- Short, concrete answers: 3 to 5 sentences, unless more detail is asked for.
+- You may suggest an exercise variation or a meal idea consistent with the calorie targets, but you do not change the programme yourself: for a real readjustment, invite the person to do their weekly check-in in the app.
+- Write in English.`;
+
+// --- User context (volatile, so it comes after the cache) -----------------------------------
 
 function describeProfile(p: Profile): string {
   const age = new Date().getFullYear() - p.birth_year;
   return [
     `Objectifs : ${p.goals.join(', ')}`,
     `Sexe : ${p.sex} · ${age} ans · ${p.height_cm} cm · ${p.weight_kg} kg`,
-    `Activité quotidienne : ${p.activity_level}`,
-    `Expérience en musculation : ${p.experience}`,
-    `Matériel disponible : ${p.equipment}`,
-    `Disponibilité : ${p.days_per_week} séances par semaine, ${p.session_minutes} min maximum chacune`,
-    `Régime alimentaire : ${p.diet}`,
-    `Allergies / intolérances : ${p.allergies ?? 'aucune signalée'}`,
-    `Santé / blessures signalées : ${p.health_notes ?? 'rien de signalé'}`,
+    `Everyday activity: ${p.activity_level}`,
+    `Strength-training experience: ${p.experience}`,
+    `Equipment available: ${p.equipment}`,
+    `Availability: ${p.days_per_week} sessions a week, ${p.session_minutes} min each at most`,
+    `Diet: ${p.diet}`,
+    `Allergies / intolerances: ${p.allergies ?? 'none reported'}`,
+    `Health / injuries reported: ${p.health_notes ?? 'nothing reported'}`,
   ].join('\n');
 }
 
 function describeTargets(t: Targets): string {
   const strategy =
-    t.strategy === 'deficit' ? 'léger déficit' : t.strategy === 'surplus' ? 'léger surplus' : 'équilibre';
-  return `Cibles quotidiennes (calculées par l'application, à respecter) : ${t.calories} kcal (${strategy}), ${t.proteinG} g de protéines, ${t.fatG} g de lipides, ${t.carbsG} g de glucides.`;
+    t.strategy === 'deficit' ? 'slight deficit' : t.strategy === 'surplus' ? 'slight surplus' : 'maintenance';
+  return `Daily targets (worked out by the app, to be respected): ${t.calories} kcal (${strategy}), ${t.proteinG} g protein, ${t.fatG} g fat, ${t.carbsG} g carbohydrate.`;
 }
 
 function sanitizeTargets(targets: Targets, sex: Profile['sex']): Targets {
@@ -215,7 +215,7 @@ async function generatePlan(
     .eq('user_id', userId)
     .gte('created_at', since);
   if ((count ?? 0) >= MAX_PLANS_PER_DAY) {
-    return jsonResponse({ error: 'Limite de programmes atteinte pour aujourd’hui. Réessayez demain.' }, 429);
+    return jsonResponse({ error: 'You have reached today’s limit on new programmes. Try again tomorrow.' }, 429);
   }
 
   const sections = [describeProfile(profile), describeTargets(targets)];
@@ -237,12 +237,12 @@ async function generatePlan(
         .limit(4),
     ]);
     sections.push(
-      `Programme de la semaine écoulée :\n${JSON.stringify(previous?.program ?? [])}`,
-      `Bilans récents (du plus récent au plus ancien, énergie de 1 à 5) :\n${JSON.stringify(checkins ?? [])}`,
-      "Ajuste le programme pour la semaine qui vient à partir de ces bilans : allège si les séances n'ont pas été faites ou si l'énergie est basse, progresse doucement si tout s'est bien passé. Les cibles caloriques ont déjà été recalculées par l'application avec le poids le plus récent. Explique l'ajustement dans coach_notes."
+      `Last week's programme:\n${JSON.stringify(previous?.program ?? [])}`,
+      `Recent check-ins (most recent first, energy from 1 to 5):\n${JSON.stringify(checkins ?? [])}`,
+      "Adjust the programme for the coming week from these check-ins: ease off if the sessions were not done or if energy is low, progress gently if it all went well. The calorie targets have already been recalculated by the app from the most recent weight. Explain the adjustment in coach_notes."
     );
   } else {
-    sections.push('Conçois le premier programme de cette personne.');
+    sections.push('Design this person’s first programme.');
   }
 
   const response = await anthropic.beta.messages.parse({
@@ -256,11 +256,11 @@ async function generatePlan(
   });
 
   if (response.stop_reason === 'refusal') {
-    return jsonResponse({ error: 'Le coach ne peut pas générer ce programme. Essayez de reformuler vos notes.' }, 422);
+    return jsonResponse({ error: 'The coach cannot build this programme. Try rewording your notes.' }, 422);
   }
   if (response.stop_reason === 'max_tokens' || !response.parsed_output) {
     console.error('fitness-coach: programme incomplet', response.stop_reason);
-    return jsonResponse({ error: 'Le programme généré était incomplet. Réessayez.' }, 502);
+    return jsonResponse({ error: 'The programme that came back was incomplete. Try again.' }, 502);
   }
 
   const plan = response.parsed_output;
@@ -285,7 +285,7 @@ async function chat(anthropic: Anthropic, supabase: SupabaseClient, userId: stri
   const trimmed = message.trim();
   if (!trimmed) return jsonResponse({ error: 'Message manquant' }, 400);
   if (trimmed.length > MAX_CHAT_MESSAGE_LENGTH) {
-    return jsonResponse({ error: `Message trop long (${MAX_CHAT_MESSAGE_LENGTH} caractères maximum).` }, 400);
+    return jsonResponse({ error: `That message is too long (${MAX_CHAT_MESSAGE_LENGTH} characters maximum).` }, 400);
   }
 
   const oneHourAgo = new Date(Date.now() - 60 * 60 * 1000).toISOString();
@@ -296,7 +296,7 @@ async function chat(anthropic: Anthropic, supabase: SupabaseClient, userId: stri
     .eq('role', 'user')
     .gte('created_at', oneHourAgo);
   if ((count ?? 0) >= MAX_CHAT_PER_HOUR) {
-    return jsonResponse({ error: 'Trop de messages sur la dernière heure. Réessayez un peu plus tard.' }, 429);
+    return jsonResponse({ error: 'Too many messages in the last hour. Try again a little later.' }, 429);
   }
 
   const [{ data: plan }, { data: history }] = await Promise.all([
@@ -317,8 +317,8 @@ async function chat(anthropic: Anthropic, supabase: SupabaseClient, userId: stri
 
   const context = [
     `Profil :\n${describeProfile(profile)}`,
-    plan ? describeTargets(plan.targets as Targets) : 'Aucune cible calculée pour le moment.',
-    plan ? `Programme actuel :\n${JSON.stringify(plan.program)}` : "Pas encore de programme : invite la personne à le générer dans l'application.",
+    plan ? describeTargets(plan.targets as Targets) : 'No targets worked out yet.',
+    plan ? `Current programme:\n${JSON.stringify(plan.program)}` : 'No programme yet: invite the person to build one in the app.',
   ].join('\n\n');
 
   // L'historique doit commencer par un message utilisateur.
@@ -344,8 +344,8 @@ async function chat(anthropic: Anthropic, supabase: SupabaseClient, userId: stri
 
   const reply =
     response.stop_reason === 'refusal'
-      ? "Je ne peux pas t'aider sur ce point. Pour toute question de santé, parles-en à un professionnel."
-      : extractText(response.content) || "Désolé, je n'ai pas de réponse à proposer là.";
+      ? 'I cannot help you with that one. For anything to do with your health, talk to a professional.'
+      : extractText(response.content) || 'Sorry, I have no answer to offer there.';
 
   await supabase.from('coach_messages').insert([
     { user_id: userId, role: 'user', content: trimmed },
@@ -355,42 +355,42 @@ async function chat(anthropic: Anthropic, supabase: SupabaseClient, userId: stri
   return jsonResponse({ reply }, 200);
 }
 
-// --- Point d'entrée -------------------------------------------------------------------------
+// --- Entry point ---------------------------------------------------------------------------
 
 Deno.serve(async (req) => {
   if (req.method === 'OPTIONS') return new Response('ok', { headers: corsHeaders });
 
   const authHeader = req.headers.get('Authorization');
-  if (!authHeader) return jsonResponse({ error: 'Non authentifié' }, 401);
+  if (!authHeader) return jsonResponse({ error: 'Not authenticated' }, 401);
 
   const apiKey = Deno.env.get('ANTHROPIC_API_KEY');
   if (!apiKey) {
     console.error('fitness-coach: ANTHROPIC_API_KEY manquante');
-    return jsonResponse({ error: "Le coach IA n'est pas encore configuré côté serveur." }, 503);
+    return jsonResponse({ error: 'The AI coach is not configured on the server yet.' }, 503);
   }
 
-  // Client authentifié : toutes les lectures/écritures passent par les policies RLS de l'utilisateur.
+  // An authenticated client: every read and write goes through the user's own RLS policies.
   const supabase = createClient(Deno.env.get('SUPABASE_URL')!, Deno.env.get('SUPABASE_ANON_KEY')!, {
     global: { headers: { Authorization: authHeader } },
   });
   const {
     data: { user },
   } = await supabase.auth.getUser();
-  if (!user) return jsonResponse({ error: 'Non authentifié' }, 401);
+  if (!user) return jsonResponse({ error: 'Not authenticated' }, 401);
 
   let body: z.infer<typeof RequestSchema>;
   try {
     const parsed = RequestSchema.safeParse(await req.json());
-    if (!parsed.success) return jsonResponse({ error: 'Requête invalide' }, 400);
+    if (!parsed.success) return jsonResponse({ error: 'Invalid request' }, 400);
     body = parsed.data;
   } catch {
-    return jsonResponse({ error: 'Requête invalide' }, 400);
+    return jsonResponse({ error: 'Invalid request' }, 400);
   }
 
   const profile = await loadProfile(supabase, user.id);
-  if (!profile) return jsonResponse({ error: "Complétez d'abord le questionnaire forme." }, 400);
+  if (!profile) return jsonResponse({ error: 'Fill in the fitness questionnaire first.' }, 400);
   if (new Date().getFullYear() - profile.birth_year < 18) {
-    return jsonResponse({ error: 'Le coach forme est réservé aux adultes.' }, 403);
+    return jsonResponse({ error: 'The fitness coach is for adults only.' }, 403);
   }
 
   const anthropic = new Anthropic({ apiKey });
@@ -407,17 +407,17 @@ Deno.serve(async (req) => {
     );
   } catch (err) {
     if (err instanceof Anthropic.RateLimitError) {
-      return jsonResponse({ error: 'Le coach est très sollicité. Réessayez dans une minute.' }, 429);
+      return jsonResponse({ error: 'The coach is very busy. Try again in a minute.' }, 429);
     }
     if (err instanceof Anthropic.AuthenticationError) {
-      console.error('fitness-coach: clé Anthropic invalide');
-      return jsonResponse({ error: 'Le coach IA est mal configuré côté serveur.' }, 503);
+      console.error('fitness-coach: invalid Anthropic key');
+      return jsonResponse({ error: 'The AI coach is misconfigured on the server.' }, 503);
     }
     if (err instanceof Anthropic.APIError) {
       console.error('fitness-coach: erreur API', err.status, err.message);
-      return jsonResponse({ error: 'Le coach est momentanément indisponible. Réessayez dans un instant.' }, 502);
+      return jsonResponse({ error: 'The coach is unavailable for the moment. Try again shortly.' }, 502);
     }
-    console.error('fitness-coach: échec', err);
-    return jsonResponse({ error: 'Le coach est momentanément indisponible. Réessayez dans un instant.' }, 500);
+    console.error('fitness-coach: failed', err);
+    return jsonResponse({ error: 'The coach is unavailable for the moment. Try again shortly.' }, 500);
   }
 });
