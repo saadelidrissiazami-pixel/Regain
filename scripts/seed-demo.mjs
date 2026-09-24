@@ -1,17 +1,17 @@
 #!/usr/bin/env node
 /**
- * Remplit un compte de démonstration avec des données d'exemple, pour la revue Apple.
+ * Fills a demo account with example data, for Apple's review.
  *
  *   DEMO_EMAIL=saadelidrissiazami+demo@gmail.com DEMO_PASSWORD='…' node scripts/seed-demo.mjs
  *
- * Remplacez le mot de passe par le vôtre : avec l'adresse, ce sont les identifiants que vous
- * donnerez à l'équipe de revue Apple. Le compte est créé s'il n'existe pas encore.
- * Le script se connecte comme lui et n'écrit que ses propres données : le mot de passe ne sort
- * pas de votre terminal.
+ * Replace the password with your own: together with the address, those are the credentials you
+ * will give the Apple review team. The account is created if it does not exist yet.
+ * The script signs in as that account and writes only its own data: the password never leaves
+ * your terminal.
  *
- * Relançable, mais destructeur : il supprime TOUS les créneaux, check-ins d'énergie et séances
- * de bien-être terminées du compte avant d'écrire les siens — pas seulement ceux de l'exécution
- * précédente. À ne lancer que sur un compte dont les données peuvent disparaître.
+ * Repeatable, but destructive: it deletes EVERY availability slot, energy check-in and finished
+ * wellbeing session on the account before writing its own — not only the ones from the previous
+ * run. Only run it on an account whose data can afford to disappear.
  */
 import { readFileSync } from 'node:fs';
 
@@ -32,28 +32,28 @@ const ANON = env('EXPO_PUBLIC_SUPABASE_ANON_KEY');
 const EMAIL = process.env.DEMO_EMAIL;
 const PASSWORD = process.env.DEMO_PASSWORD;
 
-// Script lancé à la main : une phrase lisible vaut mieux qu'une trace Node.
+// A script run by hand: one readable sentence beats a Node stack trace.
 function fail(message) {
   console.error(`\n✖ ${message}\n`);
   process.exit(1);
 }
 
-const usage = "DEMO_EMAIL=saadelidrissiazami+demo@gmail.com DEMO_PASSWORD='mot-de-passe' node scripts/seed-demo.mjs";
+const usage = "DEMO_EMAIL=saadelidrissiazami+demo@gmail.com DEMO_PASSWORD='your-password' node scripts/seed-demo.mjs";
 
-if (!URL_BASE || !ANON) fail('EXPO_PUBLIC_SUPABASE_URL et EXPO_PUBLIC_SUPABASE_ANON_KEY sont introuvables (.env).');
-// Le « … » de la documentation recopié tel quel est l'erreur la plus probable : la dire en clair.
-if (!EMAIL || !PASSWORD) fail(`Renseignez DEMO_EMAIL et DEMO_PASSWORD :\n  ${usage}`);
+if (!URL_BASE || !ANON) fail('EXPO_PUBLIC_SUPABASE_URL and EXPO_PUBLIC_SUPABASE_ANON_KEY cannot be found (.env).');
+// The “…” from the documentation, pasted as-is, is the likeliest mistake: say so plainly.
+if (!EMAIL || !PASSWORD) fail(`Set DEMO_EMAIL and DEMO_PASSWORD:\n  ${usage}`);
 if (!/^[^@\s]+@[^@\s.]+\.[^@\s]+$/.test(EMAIL)) {
-  fail(`« ${EMAIL} » n'est pas une adresse e-mail. Remplacez les valeurs d'exemple par les vôtres :\n  ${usage}`);
+  fail(`“${EMAIL}” is not an email address. Replace the example values with your own:\n  ${usage}`);
 }
-if (PASSWORD.length < 8) fail('DEMO_PASSWORD doit faire au moins 8 caractères (exigence de Supabase).');
-// Un exemple recopié tel quel fait plus de 8 caractères : la validation de longueur le laisse
-// passer, et Supabase crée un compte avec ce mot de passe-là. Vu deux fois, donc dit ici.
-const PLACEHOLDERS = ['mot-de-passe', 'le-vrai-mot-de-passe', 'choisis-en-un', 'ton-mot-de-passe'];
+if (PASSWORD.length < 8) fail('DEMO_PASSWORD has to be at least 8 characters (Supabase requires it).');
+// An example pasted as-is is longer than 8 characters: the length check lets it through, and
+// Supabase creates an account with that very password. Seen twice, so it is said here.
+const PLACEHOLDERS = ['your-password', 'mot-de-passe', 'le-vrai-mot-de-passe', 'choisis-en-un', 'ton-mot-de-passe'];
 if (PLACEHOLDERS.includes(PASSWORD.toLowerCase())) {
-  // Sans cette exception, le message renverrait vers `usage`, qui contient justement la valeur
-  // qu'on vient de refuser.
-  fail(`« ${PASSWORD} » est la valeur d'exemple de la documentation.\n  Relancez en mettant votre propre mot de passe entre guillemets simples.`);
+  // Without this exception, the message would point at `usage`, which contains the very value
+  // that has just been refused.
+  fail(`“${PASSWORD}” is the example value from the documentation.\n  Run it again with your own password in single quotes.`);
 }
 
 const iso = (date) => date.toISOString().slice(0, 10);
@@ -99,23 +99,23 @@ async function auth(path, label) {
 }
 
 async function signInOrCreate() {
-  const session = await auth('/auth/v1/token?grant_type=password', 'connexion');
+  const session = await auth('/auth/v1/token?grant_type=password', 'sign in');
   if (!session.error) return { userId: session.user.id, created: false, accessToken: session.access_token };
 
-  // Compte inexistant : on le crée. Toute autre erreur (mot de passe faux) doit rester visible.
-  if (!/invalid login credentials/i.test(session.error)) fail(`Connexion refusée : ${session.error}`);
+  // No such account: create it. Any other error (a wrong password) has to stay visible.
+  if (!/invalid login credentials/i.test(session.error)) fail(`Sign-in refused: ${session.error}`);
 
-  const signUp = await auth('/auth/v1/signup', 'inscription');
-  // Supabase répond « Invalid login credentials » aussi bien pour un compte absent que pour un
-  // mot de passe faux ; c'est l'inscription qui tranche.
+  const signUp = await auth('/auth/v1/signup', 'sign up');
+  // Supabase answers “Invalid login credentials” both for a missing account and for a
+  // wrong password; signing up is what settles it.
   if (/already registered/i.test(signUp.error ?? '')) {
-    fail(`Le compte ${EMAIL} existe, mais ce mot de passe ne correspond pas.`);
+    fail(`The account ${EMAIL} exists, but that password does not match it.`);
   }
-  if (signUp.error) fail(`Création du compte refusée : ${signUp.error}`);
+  if (signUp.error) fail(`Account creation refused: ${signUp.error}`);
   if (!signUp.access_token) {
     fail(
-      `Compte créé, mais Supabase attend une confirmation par e-mail.\n` +
-        `  Ouvrez le lien envoyé à ${EMAIL}, puis relancez cette commande.`,
+      `Account created, but Supabase is waiting for an email confirmation.\n` +
+        `  Open the link sent to ${EMAIL}, then run this command again.`,
     );
   }
   return { userId: signUp.user.id, created: true, accessToken: signUp.access_token };
@@ -123,9 +123,9 @@ async function signInOrCreate() {
 
 const { userId, created, accessToken } = await signInOrCreate();
 token = accessToken;
-console.log(created ? `Compte ${EMAIL} créé` : `Connecté comme ${EMAIL}`);
+console.log(created ? `Account ${EMAIL} created` : `Signed in as ${EMAIL}`);
 
-// 1. Profil et préférences : l'accueil est considéré comme terminé.
+// 1. Profile and preferences: onboarding counts as done.
 await api('/rest/v1/profiles', {
   method: 'POST',
   prefer: 'resolution=merge-duplicates',
@@ -144,14 +144,14 @@ await api('/rest/v1/user_preferences', {
   ],
 });
 
-// 2. Disponibilités : trois soirs en semaine et le samedi matin.
+// 2. Availability: three weekday evenings and Saturday morning.
 await api(`/rest/v1/availability_slots?user_id=eq.${userId}`, { method: 'DELETE' });
 await api('/rest/v1/availability_slots', {
   method: 'POST',
   body: [0, 2, 4]
     .map((dayOfWeek) => ({
       user_id: userId,
-      label: 'Après le travail',
+      label: 'After work',
       is_recurring: true,
       day_of_week: dayOfWeek,
       time_slot: 'soir',
@@ -161,7 +161,7 @@ await api('/rest/v1/availability_slots', {
     .concat([
       {
         user_id: userId,
-        label: 'Matinée libre',
+        label: 'Free morning',
         is_recurring: true,
         day_of_week: 5,
         time_slot: 'matin',
@@ -171,7 +171,7 @@ await api('/rest/v1/availability_slots', {
     ]),
 });
 
-// 3. Planning de la semaine, via la même fonction que l'app.
+// 3. The week's plan, through the same function the app uses.
 const catalog = await api('/rest/v1/activities_catalog?select=id,title,duration_minutes&order=duration_minutes&limit=8');
 const weekStart = mondayOfThisWeek();
 const items = [0, 2, 4, 5].map((offset, index) => {
@@ -181,14 +181,14 @@ const items = [0, 2, 4, 5].map((offset, index) => {
 });
 await api('/rest/v1/rpc/replace_week_plan', { method: 'POST', body: { p_week_start: iso(weekStart), p_items: items } });
 
-// 4. Deux activités déjà faites, pour que le suivi ne soit pas vide.
+// 4. Two activities already done, so the tracking is not empty.
 const planned = await api(`/rest/v1/planned_activities?select=id&user_id=eq.${userId}&week_start_date=eq.${iso(weekStart)}&order=date&limit=2`);
 for (const activity of planned) {
   await api(`/rest/v1/planned_activities?id=eq.${activity.id}`, { method: 'PATCH', body: { status: 'realise' } });
   await api('/rest/v1/activity_logs', { method: 'POST', body: [{ user_id: userId, planned_activity_id: activity.id }] });
 }
 
-// 5. Check-ins d'énergie des derniers jours.
+// 5. Energy check-ins for the last few days.
 await api(`/rest/v1/energy_checkins?user_id=eq.${userId}`, { method: 'DELETE' });
 await api('/rest/v1/energy_checkins', {
   method: 'POST',
@@ -199,14 +199,14 @@ await api('/rest/v1/energy_checkins', {
   })),
 });
 
-// 6. Séances de bien-être terminées, avec ressenti et réponses écrites.
+// 6. Finished wellbeing sessions, with ratings and written answers.
 const programs = await api('/rest/v1/wellbeing_programs?select=id,slug,category&premium_only=is.false&limit=4');
 await api(`/rest/v1/wellbeing_sessions_completed?user_id=eq.${userId}`, { method: 'DELETE' });
 const journalEntries = [
-  { mood: 4, note: 'Respiration courte avant une réunion, ça a aidé.', prompt: "Qu'est-ce qui a changé dans ton corps ?", answer: 'Les épaules sont redescendues.' },
-  { mood: 5, note: null, prompt: 'Quelle petite chose a été agréable aujourd’hui ?', answer: 'Un café au soleil, sans téléphone.' },
-  { mood: 3, note: 'Journée dense, difficile de me poser.', prompt: 'Quelles pensées sont revenues le plus souvent ?', answer: 'La liste de choses à faire.' },
-  { mood: 4, note: null, prompt: "Qu'est-ce qui t'empêche de lâcher prise ce soir ?", answer: 'Rien de précis, juste l’habitude de scroller.' },
+  { mood: 4, note: 'A short breathing session before a meeting, and it helped.', prompt: 'What changed in your body during the session?', answer: 'My shoulders came back down.' },
+  { mood: 5, note: null, prompt: 'What small thing was good today?', answer: 'A coffee in the sun, with no phone.' },
+  { mood: 3, note: 'A dense day, hard to settle.', prompt: 'Which thoughts came back the most?', answer: 'The list of things to do.' },
+  { mood: 4, note: null, prompt: 'What is stopping you letting go tonight?', answer: 'Nothing in particular, just the habit of scrolling.' },
 ];
 await api('/rest/v1/wellbeing_sessions_completed', {
   method: 'POST',
@@ -221,7 +221,7 @@ await api('/rest/v1/wellbeing_sessions_completed', {
   })),
 });
 
-// 7. Profil forme, pour que l'onglet Forme soit complet.
+// 7. The fitness profile, so the Fitness tab is complete.
 await api('/rest/v1/fitness_profiles', {
   method: 'POST',
   prefer: 'resolution=merge-duplicates',
@@ -246,11 +246,11 @@ await api('/rest/v1/fitness_profiles', {
 });
 
 console.log(`
-Compte de démonstration prêt :
-  · accueil terminé, 4 disponibilités récurrentes
-  · planning de la semaine, dont 2 activités déjà cochées
-  · 5 check-ins d'énergie, 4 séances de bien-être avec ressenti et réponses
-  · profil forme rempli
+Demo account ready:
+  · onboarding done, 4 recurring availability slots
+  · the week's plan, with 2 activities already ticked off
+  · 5 energy check-ins, 4 wellbeing sessions with ratings and answers
+  · the fitness profile filled in
 
-Dernière étape, dans l'app avec ce compte : onglet Forme → « Générer mon programme »
-(le programme, les menus et la liste de courses sont calculés dans l'app).`);
+One last step, in the app with this account: the Fitness tab → “Build my programme”
+(the programme, the meals and the shopping list are computed in the app).`);

@@ -1,17 +1,17 @@
 #!/usr/bin/env node
 /**
- * Contrôle avant compilation : refuse une build de production à laquelle il manque une clé.
- * Lancé automatiquement par EAS (script npm `eas-build-pre-install`) et à la main :
+ * A pre-build check: it refuses a production build that is missing a key.
+ * Run automatically by EAS (the `eas-build-pre-install` npm script) and by hand:
  *     node scripts/preflight.mjs production
  *
- * Les oublis visés ici coûtent cher : un build sans clé RevenueCat vend du vide, un build sans
- * liens légaux est refusé par Apple, et une clé « Test Store » en production est un rejet net.
+ * The omissions this catches are expensive: a build with no RevenueCat key sells nothing, a build
+ * with no legal links is refused by Apple, and a “Test Store” key in production is a flat reject.
  */
 import { readFileSync } from 'node:fs';
 
 // En local, les variables sont dans .env ; sur les serveurs EAS, dans l'environnement.
-// On retient lesquelles viennent du fichier : `.env` n'est pas envoyé aux serveurs de build,
-// donc une clé qui n'existe que là ne partira jamais en production et ne doit rien bloquer.
+// We remember which ones come from the file: `.env` is not sent to the build servers, so a key
+// that only exists there will never reach production and must not block anything.
 const fromDotEnv = new Set();
 function loadDotEnv() {
   try {
@@ -23,7 +23,7 @@ function loadDotEnv() {
       }
     }
   } catch {
-    // pas de .env : on s'en tient à l'environnement
+    // no .env: stick to the environment
   }
 }
 loadDotEnv();
@@ -32,19 +32,19 @@ const profile = process.argv[2] ?? process.env.EAS_BUILD_PROFILE ?? 'development
 const isProduction = profile === 'production';
 
 const required = [
-  ['EXPO_PUBLIC_SUPABASE_URL', "l'app ne démarre pas sans Supabase"],
-  ['EXPO_PUBLIC_SUPABASE_ANON_KEY', "l'app ne démarre pas sans Supabase"],
+  ['EXPO_PUBLIC_SUPABASE_URL', 'the app does not start without Supabase'],
+  ['EXPO_PUBLIC_SUPABASE_ANON_KEY', 'the app does not start without Supabase'],
 ];
 
 const productionOnly = [
-  ['EXPO_PUBLIC_REVENUECAT_IOS_KEY', 'sans elle, personne ne peut s’abonner : Apple rejette un contenu verrouillé sans achat possible'],
-  ['EXPO_PUBLIC_TERMS_URL', 'lien obligatoire sur un écran d’abonnement (règle App Store 3.1.2)'],
-  ['EXPO_PUBLIC_PRIVACY_URL', 'lien obligatoire sur un écran d’abonnement, et dans App Store Connect'],
+  ['EXPO_PUBLIC_REVENUECAT_IOS_KEY', 'without it nobody can subscribe, and Apple rejects locked content with no way to buy'],
+  ['EXPO_PUBLIC_TERMS_URL', 'a mandatory link on a subscription screen (App Store rule 3.1.2)'],
+  ['EXPO_PUBLIC_PRIVACY_URL', 'a mandatory link on a subscription screen, and in App Store Connect'],
 ];
 
 const forbiddenInProduction = [
-  ['EXPO_PUBLIC_REVENUECAT_TEST_STORE_KEY', 'clé de test RevenueCat : les achats seraient simulés en production'],
-  ['EXPO_PUBLIC_SIMULATE_FREE', 'force la version gratuite : les abonnés ne verraient pas Premium'],
+  ['EXPO_PUBLIC_REVENUECAT_TEST_STORE_KEY', 'a RevenueCat test key: purchases would be simulated in production'],
+  ['EXPO_PUBLIC_SIMULATE_FREE', 'forces the free version: subscribers would not see Premium'],
 ];
 
 const problems = [];
@@ -53,18 +53,18 @@ const filled = (name) => (process.env[name] ?? '').trim().length > 0;
 for (const [name, why] of required) if (!filled(name)) problems.push(`${name} manque — ${why}`);
 if (isProduction) {
   for (const [name, why] of productionOnly) if (!filled(name)) problems.push(`${name} manque — ${why}`);
-  // Seules comptent ici les variables réellement présentes dans l'environnement de compilation.
+  // Only the variables actually present in the build environment count here.
   for (const [name, why] of forbiddenInProduction) {
-    if (filled(name) && !fromDotEnv.has(name)) problems.push(`${name} ne doit pas être défini — ${why}`);
+    if (filled(name) && !fromDotEnv.has(name)) problems.push(`${name} must not be set — ${why}`);
   }
 }
 
 if (problems.length > 0) {
-  console.error(`\n✖ Contrôle avant compilation (profil « ${profile} ») :`);
+  console.error(`\n✖ Pre-build check (the “${profile}” profile):`);
   for (const problem of problems) console.error(`  · ${problem}`);
   console.error('\nRenseignez ces variables sur expo.dev → projet → Environment variables, puis relancez.');
-  console.error('Détail : docs/deploiement-ios.md\n');
+  console.error('Details: docs/deploiement-ios.md\n');
   process.exit(1);
 }
 
-console.log(`✓ Contrôle avant compilation (profil « ${profile} ») : rien ne manque.`);
+console.log(`✓ Pre-build check (the “${profile}” profile): nothing missing.`);

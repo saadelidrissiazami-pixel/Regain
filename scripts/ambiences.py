@@ -1,14 +1,14 @@
 """Ambiances calmes originales pour Regain, en boucles sans couture.
 
-Tout est synthétisé ici (aucun échantillon externe) : les fichiers appartiennent au projet.
+Everything is synthesised here (no external samples): the files belong to the project.
 
-Régénérer (macOS, sans dépendance) :
+To regenerate (macOS, no dependencies):
     python3 scripts/ambiences.py /tmp/regain-audio
     for n in nappe pluie vagues bol; do
       afconvert -f m4af -d aac -b 64000 -q 127 /tmp/regain-audio/$n.wav assets/audio/$n.m4a
     done
-Chaque composante périodique fait un nombre entier de cycles sur la durée de la boucle ; les
-parties bruitées sont fondues de la fin vers le début pour que la boucle ne s'entende pas.
+Every periodic component completes a whole number of cycles over the loop's length; the noisy
+parts are cross-faded from the end into the start so the loop cannot be heard.
 """
 import math
 import random
@@ -24,7 +24,7 @@ TAU = 2 * math.pi
 
 
 def snap(freq: float) -> float:
-    """Arrondit une fréquence pour qu'elle fasse un nombre entier de cycles sur la boucle."""
+    """Rounds a frequency so it completes a whole number of cycles over the loop."""
     return round(freq * LOOP) / LOOP
 
 
@@ -44,7 +44,7 @@ def write_wav(path: str, samples, target_rms: float, peak_cap: float = 0.9):
 
 
 def loop_crossfade(samples, fade_seconds: float):
-    """samples couvre LOOP + fade : la fin est fondue dans le début (puissance constante)."""
+    """samples covers LOOP plus the fade: the end is mixed into the start (constant power)."""
     fade = int(fade_seconds * RATE)
     out = array("f", samples[:N])
     for i in range(fade):
@@ -60,7 +60,7 @@ def one_pole_lowpass(samples, cutoff: float, passes: int = 1):
     out = array("f", samples)
     for _ in range(passes):
         y = 0.0
-        # deux tours pour que l'état du filtre soit stable au raccord de la boucle
+        # two passes so the filter's state is settled at the loop's join
         for _warm in range(2):
             for i in range(len(out)):
                 y = (1 - a) * out[i] + a * y
@@ -81,7 +81,7 @@ def nappe():
     out = array("f", [0.0]) * N
     for freq, amp, lfo_cycles in voices:
         f1 = snap(freq)
-        f2 = snap(freq + 0.21)  # léger désaccord : battement très lent, chaleureux
+        f2 = snap(freq + 0.21)  # a slight detune: a very slow, warm beating
         f3 = snap(freq * 2)
         phase_lfo = random.random() * TAU
         inc1, inc2, inc3 = f1 * table_size / RATE, f2 * table_size / RATE, f3 * table_size / RATE
@@ -115,7 +115,7 @@ def pink(n: int, rng: random.Random):
 
 
 def pluie():
-    """Pluie légère : rideau de bruit rose adouci, et gouttes éparses."""
+    """Light rain: a softened curtain of pink noise, with scattered drops."""
     rng = random.Random(7)
     fade = 4.0
     total = N + int(fade * RATE)
@@ -137,7 +137,7 @@ def pluie():
 
 
 def vagues():
-    """Vagues : bruit brun porté par une houle lente (10 vagues par boucle)."""
+    """Waves: brown noise carried on a slow swell (10 waves per loop)."""
     rng = random.Random(11)
     fade = 6.0
     total = N + int(fade * RATE)
@@ -157,7 +157,7 @@ def vagues():
 
 
 def bol():
-    """Bol chantant : une frappe toutes les 16 s, sur un bourdon très doux."""
+    """Singing bowl: one strike every 16 s, over a very soft drone."""
     rng = random.Random(3)
     base = 196.0  # sol grave
     partials = [(1.0, 1.0, 11.0), (2.76, 0.45, 7.0), (5.40, 0.22, 4.0), (8.93, 0.10, 2.0)]
@@ -167,7 +167,7 @@ def bol():
         for i in range(N):
             out[i] += amp * (0.6 + 0.4 * math.sin(TAU * 3 * i / N)) * math.sin(TAU * freq * i / RATE)
     strikes = [0, 16, 32, 48, 64, 80]
-    ring = 22  # secondes de résonance calculées par frappe
+    ring = 22  # seconds of resonance computed per strike
     for s in strikes:
         start = s * RATE
         velocity = rng.uniform(0.8, 1.0)
@@ -175,7 +175,7 @@ def bol():
             f = snap(base * ratio)
             beat = snap(base * ratio + 0.5)
             for k in range(ring * RATE):
-                idx = (start + k) % N  # la résonance qui dépasse la boucle revient au début
+                idx = (start + k) % N  # resonance past the loop's end wraps back to the start
                 t = k / RATE
                 attack = min(1.0, k / (RATE * 0.006))
                 env = attack * math.exp(-t / decay)
