@@ -1,5 +1,6 @@
 import { describe, expect, it } from 'vitest';
 
+import { localiseActivity, LOCALISED_ACTIVITY_TITLES } from '../src/features/activities/catalogue';
 import { CATEGORY_LABELS } from '../src/features/planning/types';
 import { parseSeededActivities } from './helpers/catalogue';
 
@@ -96,5 +97,27 @@ describe('the activity catalogue', () => {
     // activities have to be complete once a message is sent, with no reply expected.
     const sansRendezVous = activities.filter((a) => a.category === 'social' && a.duration_minutes <= 5);
     expect(sansRendezVous.length).toBeGreaterThanOrEqual(2);
+  });
+});
+
+describe('the wording overlay', () => {
+  const activities = parseSeededActivities();
+
+  it('leaves nothing in the active catalogue without English wording', () => {
+    const missing = activities.filter((a) => !LOCALISED_ACTIVITY_TITLES.includes(a.title)).map((a) => a.title);
+    expect(missing).toEqual([]);
+  });
+
+  it('words the old rows too, since people still have them in their history', () => {
+    // 0024 deactivated the earlier catalogue but could not delete it: planned_activities
+    // references those rows. Somebody who used 1.0 would otherwise read French in their own
+    // history inside an English app.
+    expect(localiseActivity({ title: 'Marche rapide 30 min' }).title).toBe('A brisk 30-minute walk');
+    expect(localiseActivity({ title: 'Méditation guidée 10 min' }).title).toBe('A 10-minute guided meditation');
+  });
+
+  it('leaves a row it has never heard of exactly as the database gave it', () => {
+    const unknown = { title: 'Something added later', first_action: 'x', stop_rule: 'y' };
+    expect(localiseActivity(unknown)).toEqual(unknown);
   });
 });

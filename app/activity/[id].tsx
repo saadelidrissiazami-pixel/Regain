@@ -21,12 +21,11 @@ import { useTheme } from '../../src/theme/ThemeProvider';
 type IconName = ComponentProps<typeof Thumbnail>['icon'];
 
 // These three extras belong to catalogue rows from an earlier version, which are no longer
-// offered but are still referenced by older plans. Those rows have no English wording, so they
-// come back from the database exactly as they are stored — which is why the titles matched here
-// are the stored ones.
-const NEIGHBORHOOD_HISTORY_TITLES = ['Explorer un nouveau quartier'];
-const WALKING_LOOP_TITLES = ['Marche rapide 30 min', 'Balade en nature'];
-const BOOK_TITLES = ["Lecture d'un livre"];
+// offered but are still referenced by older plans. The titles matched here are the ones the
+// person reads, after localiseActivity has done its work — not the ones stored in the database.
+const NEIGHBORHOOD_HISTORY_TITLES = ['Explore a new neighbourhood'];
+const WALKING_LOOP_TITLES = ['A brisk 30-minute walk', 'A walk in nature'];
+const BOOK_TITLES = ['Read a book'];
 const COST_LABELS = { gratuit: 'Free', faible: 'Low cost', modere: 'Moderate cost' } as const;
 
 /** One activity: why it was suggested, how to do it, and how to tick it off. */

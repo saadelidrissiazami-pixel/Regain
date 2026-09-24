@@ -261,8 +261,45 @@ const WORDING_BY_STORED_TITLE: Record<string, Wording> = {
   },
 };
 
+// Rows from an earlier catalogue. They are no longer offered — 0024 set `active = false` on all
+// of them — but they are still referenced by plans and by history that people already have, and
+// the fitness profile of anyone who used 1.0 or 1.1. Without wording here, their own history
+// would keep reading French inside an English app.
+//
+// They have no `firstAction` or `stopRule`: those columns were added by 0024, after these rows
+// stopped being offered, so they never had either.
+const LEGACY_TITLES: Record<string, string> = {
+  'Activité créative libre (dessin, musique...)': 'Something creative, your choice (drawing, music…)',
+  'Appel à un proche': 'Call someone close',
+  'Bain chaud ou douche relaxante': 'A hot bath or an unhurried shower',
+  'Balade en nature': 'A walk in nature',
+  'Café avec un ami': 'Coffee with a friend',
+  'Coucher à heure fixe': 'Go to bed at the same time',
+  'Cours de sport en salle': 'A class at the gym',
+  'Cuisiner un nouveau plat': 'Cook something new',
+  'Définir 3 priorités de la semaine': 'Set 3 priorities for the week',
+  'Explorer un nouveau quartier': 'Explore a new neighbourhood',
+  'Journaling du soir': 'Evening journaling',
+  "Lecture d'un livre": 'Read a book',
+  'Marche rapide 30 min': 'A brisk 30-minute walk',
+  'Musique calme et rien faire': 'Quiet music and nothing else',
+  'Méditation guidée 10 min': 'A 10-minute guided meditation',
+  'Pique-nique avec un proche': 'A picnic with someone close',
+  "Rangement et désencombrement d'une pièce": 'Tidy and clear one room',
+  'Rejoindre un groupe ou une association locale': 'Join a local group or club',
+  'Respiration 4-7-8': '4-7-8 breathing',
+  'Scan corporel avant le coucher': 'A body scan before bed',
+  'Sieste ou repos': 'A nap, or just rest',
+  'Soirée sans écran': 'A screen-free evening',
+  'Séance de gainage à la maison': 'A core session at home',
+  'Temps libre sans objectif': 'Free time with no goal',
+  'Vélo dans le quartier': 'A cycle around the neighbourhood',
+  'Écouter un podcast inspirant': 'Listen to a podcast worth hearing',
+  'Étirements doux': 'Gentle stretching',
+};
+
 /** The stored titles this build knows how to word in English. */
-export const LOCALISED_ACTIVITY_TITLES = Object.keys(WORDING_BY_STORED_TITLE);
+export const LOCALISED_ACTIVITY_TITLES = [...Object.keys(WORDING_BY_STORED_TITLE), ...Object.keys(LEGACY_TITLES)];
 
 type WithWording = {
   title: string;
@@ -276,11 +313,16 @@ type WithWording = {
  */
 export function localiseActivity<T extends WithWording>(activity: T): T {
   const wording = WORDING_BY_STORED_TITLE[activity.title];
-  if (!wording) return activity;
-  return {
-    ...activity,
-    title: wording.title,
-    first_action: wording.firstAction,
-    stop_rule: wording.stopRule,
-  };
+  if (wording) {
+    return {
+      ...activity,
+      title: wording.title,
+      first_action: wording.firstAction,
+      stop_rule: wording.stopRule,
+    };
+  }
+  // A row from the earlier catalogue: only its title needs wording, since it never had a first
+  // action or a stop rule to begin with.
+  const legacy = LEGACY_TITLES[activity.title];
+  return legacy ? { ...activity, title: legacy } : activity;
 }
