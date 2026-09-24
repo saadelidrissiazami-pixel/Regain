@@ -3,8 +3,11 @@ import { router } from 'expo-router';
 import { useState } from 'react';
 import { View } from 'react-native';
 
-import { isLowEnergy, LOW_ENERGY_SLUG, QUOTES } from '../../features/planning/quotes';
+import { lineForEnergy } from '../../features/planning/quotes';
+import { themeLabel } from '../../features/wellbeing/catalogue';
+import { useEnergySuggestion } from '../../hooks/useEnergySuggestion';
 import { useEnergyToday } from '../../hooks/useEnergyToday';
+import { useToday } from '../../lib/useCurrentDate';
 import { useTheme } from '../../theme/ThemeProvider';
 import { errorMessage, InlineNotice } from '../feedback/InlineNotice';
 import { Button } from '../ui/Button';
@@ -14,23 +17,24 @@ import { Text } from '../ui/Text';
 import { energyChoice, EnergySelector } from './EnergySelector';
 
 /**
- * “How is your energy today?” opens the check-in. Once answered, the card recalls the level
- * and, when it is low, offers a short breathing session.
+ * “How is your energy today?” opens the check-in. Answering it has to lead somewhere: the answer
+ * comes back as a line written for that level, and as one session already chosen and ready to
+ * start. Being told your answer was recorded is not help.
  */
 export function EnergyPromptCard() {
   const theme = useTheme();
+  const today = useToday();
   const energy = useEnergyToday();
   const [open, setOpen] = useState(false);
   const level = energy.level;
   const choice = level ? energyChoice(level) : null;
-  const low = level ? isLowEnergy(level) : false;
+  const suggestion = useEnergySuggestion(level);
+  const line = level ? lineForEnergy(level, today) : null;
 
   const title = choice ? `${choice.label} energy today` : 'How is your energy today?';
-  const subtitle = !level
-    ? 'It helps us shape your day.'
-    : low
-      ? 'A short breathing session can help you get going.'
-      : QUOTES[level === 'eleve' ? 'eleve' : 'moyen'][new Date().getDate() % 3];
+  // Only the suggestions read this answer — the week's plan is built from the rhythm given at
+  // sign-up — so this does not claim the plan changes.
+  const subtitle = line ?? 'It changes what we suggest next.';
 
   return (
     <>
@@ -68,19 +72,33 @@ export function EnergyPromptCard() {
       <Sheet
         visible={open}
         title="How are you feeling right now?"
-        subtitle="Your plan and your suggestions adapt to your answer."
+        subtitle="Your suggestions adapt to your answer."
         onClose={() => setOpen(false)}
         scroll={false}
         footer={
-          low ? (
-            <Button
-              label="Guided breathing"
-              icon="leaf-outline"
-              onPress={() => {
-                setOpen(false);
-                router.push(`/wellbeing/${LOW_ENERGY_SLUG}`);
-              }}
-            />
+          suggestion ? (
+            // Doing nothing has to be as easy to reach as starting. On a day somebody has just
+            // called low, a single “Start” makes the session the only way out of the sheet, and a
+            // guided minute can be the one demand too many.
+            <View style={{ flexDirection: 'row', gap: 10 }}>
+              <Button
+                label="Not now"
+                variant="outline"
+                fullWidth={false}
+                style={{ flex: 1 }}
+                onPress={() => setOpen(false)}
+              />
+              <Button
+                label="Start"
+                icon="play"
+                fullWidth={false}
+                style={{ flex: 1 }}
+                onPress={() => {
+                  setOpen(false);
+                  router.push(suggestion.href);
+                }}
+              />
+            </View>
           ) : (
             <Button label="Close" variant="secondary" onPress={() => setOpen(false)} />
           )
@@ -89,8 +107,23 @@ export function EnergyPromptCard() {
         <View style={{ paddingHorizontal: 20, paddingTop: 8 }}>
           <EnergySelector value={level} onChange={energy.save} savingLevel={energy.savingLevel} disabled={energy.saving} />
           {energy.error ? <InlineNotice tone="error" message={errorMessage(energy.error)} /> : null}
-          {level && !energy.saving ? (
-            <InlineNotice tone="success" message={low ? 'Noted. We will take it gently today.' : 'Noted, thank you.'} />
+
+          {line && !energy.saving ? (
+            <Text variant="body" style={{ marginTop: 18 }}>
+              {line}
+            </Text>
+          ) : null}
+
+          {suggestion && !energy.saving ? (
+            <Card variant="tinted" padding={14} style={{ marginTop: 14 }}>
+              <Text variant="label">{suggestion.program.title}</Text>
+              <Text variant="caption" tone="ink2" style={{ marginTop: 2 }}>
+                {themeLabel(suggestion.program.category)} · {suggestion.program.duration_minutes} min
+              </Text>
+              <Text variant="caption" tone="ink2" style={{ marginTop: 8 }}>
+                {suggestion.reason}
+              </Text>
+            </Card>
           ) : null}
         </View>
       </Sheet>

@@ -1,6 +1,18 @@
 import type { EnergyLevel } from './catalog';
 
-export const QUOTES: Record<'moyen' | 'eleve', string[]> = {
+/**
+ * What to say back once somebody has told you how their energy is.
+ *
+ * A low day gets the most care here. The line must not argue with the answer or ask for a better
+ * mood in return — somebody who has just said they have nothing left is the last person to hand a
+ * pep talk. It acknowledges, and makes the next step small.
+ */
+export const ENERGY_LINES: Record<EnergyLevel, string[]> = {
+  bas: [
+    'A low day is still a day. Nothing here asks you to be at your best.',
+    'Saying so is already something. What comes next can be small.',
+    'You have nothing to catch up on today. Small is enough.',
+  ],
   moyen: [
     'No need to give everything today. One step is enough.',
     'Steady energy is already a solid base to build on.',
@@ -9,16 +21,14 @@ export const QUOTES: Record<'moyen' | 'eleve', string[]> = {
   eleve: [
     'This kind of energy is worth spending on what matters to you.',
     'You are carried along today — put it into something you genuinely want to do.',
-    'Good energy today. What does it make you want to do?',
+    'A good day to start the thing you keep putting off.',
   ],
 };
 
-export function randomQuote(level: 'moyen' | 'eleve'): string {
-  const list = QUOTES[level];
-  return list[Math.floor(Math.random() * list.length)];
+/** The line for today. Steady all day, so the card does not change under the person reading it. */
+export function lineForEnergy(level: EnergyLevel, today: string): string {
+  return quoteOfTheDay(today, ENERGY_LINES[level]);
 }
-
-export const LOW_ENERGY_SLUG = 'respiration-4-7-8';
 
 export function isLowEnergy(level: EnergyLevel): boolean {
   return level === 'bas';
