@@ -50,17 +50,17 @@
       [
         "expo-calendar",
         {
-          "calendarPermission": "Regain synchronise votre planning avec votre calendrier.",
-          "remindersPermission": "Regain ne crée pas de rappels : cette autorisation ne vous sera jamais demandée."
+          "calendarPermission": "Regain syncs your plan with your calendar.",
+          "remindersPermission": "Regain does not create reminders \u2014 you will never be asked for this permission."
         }
       ],
       [
         "expo-location",
         {
-          "locationWhenInUsePermission": "Regain utilise votre position pour proposer un itinéraire de marche et l'histoire de votre quartier.",
+          "locationWhenInUsePermission": "Regain uses your location to suggest a walking route and the history of your neighbourhood.",
           "locationAlwaysPermission": false,
           "locationAlwaysAndWhenInUsePermission": false,
-          "motionUsagePermission": "Regain ne suit pas votre activité physique : cette autorisation ne vous sera jamais demandée."
+          "motionUsagePermission": "Regain does not track your physical activity \u2014 you will never be asked for this permission."
         }
       ],
       "expo-sharing",
@@ -68,14 +68,14 @@
       [
         "expo-audio",
         {
-          "microphonePermission": "Regain joue du son mais n'enregistre jamais : cette autorisation ne vous sera jamais demandée.",
+          "microphonePermission": "Regain plays sound but never records \u2014 you will never be asked for this permission.",
           "recordAudioAndroid": false
         }
       ],
       "expo-font",
       "expo-asset"
     ],
-    "description": "Regain aide à reconstruire une routine : un planning réaliste, des séances de bien-être guidées et un coach forme.",
+    "description": "Regain helps you rebuild a routine: a realistic weekly plan, guided wellbeing sessions and a fitness coach.",
     "primaryColor": "#17483E",
     "extra": {
       "eas": {

@@ -10,18 +10,18 @@ export type ActivityCategory =
   | 'temps_libre';
 
 export const CATEGORY_LABELS: Record<ActivityCategory, string> = {
-  physique: 'Sport',
-  outdoor: 'Plein air',
-  indoor: 'À la maison',
+  physique: 'Exercise',
+  outdoor: 'Outdoors',
+  indoor: 'At home',
   social: 'Social',
   relaxation: 'Relaxation',
-  meditation: 'Méditation',
-  dev_perso: 'Dév. personnel',
-  recuperation: 'Récupération',
-  temps_libre: 'Temps libre',
+  meditation: 'Meditation',
+  dev_perso: 'Personal growth',
+  recuperation: 'Recovery',
+  temps_libre: 'Free time',
 };
 
-// Couleurs de repère (point devant la catégorie, barres du suivi) : sobres, tirées de la palette.
+// Accent colours (the dot before a category, the bars in tracking): muted, taken from the palette.
 export const CATEGORY_COLORS: Record<ActivityCategory, string> = {
   physique: '#E9A23B',
   outdoor: '#3C927F',
@@ -34,7 +34,7 @@ export const CATEGORY_COLORS: Record<ActivityCategory, string> = {
   temps_libre: '#D5AA35',
 };
 
-/** Icône (Ionicons) de secours quand une activité n'a pas de photo. */
+/** Fallback icon (Ionicons) for an activity with no photo. */
 export const CATEGORY_ICONS: Record<ActivityCategory, string> = {
   physique: 'barbell-outline',
   outdoor: 'trail-sign-outline',

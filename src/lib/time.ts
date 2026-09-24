@@ -27,12 +27,12 @@ export function formatTimeRange(start: string, end: string): string {
 }
 
 const TIME_GROUP_LABELS: Record<TimeSlot, string> = {
-  matin: 'Matin',
-  apres_midi: 'Après-midi',
-  soir: 'Soir',
+  matin: 'Morning',
+  apres_midi: 'Afternoon',
+  soir: 'Evening',
 };
 
-/** Options d'horaires pour une liste déroulante, groupées par moment de la journée. */
+/** Time options for a dropdown, grouped by part of the day. */
 export const TIME_SELECT_OPTIONS: { value: string; label: string; group: string }[] = TIME_OPTIONS.map((time) => ({
   value: time,
   label: time,

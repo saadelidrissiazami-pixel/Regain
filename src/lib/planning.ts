@@ -1,3 +1,4 @@
+import { localiseActivity } from '../features/activities/catalogue';
 import type { BudgetLevel, CatalogActivity } from '../features/planning/catalog';
 import { generateWeeklyPlan, type EnergyBySlot } from '../features/planning/ruleEngine';
 import type { AvailabilitySlot } from '../features/availability/types';
@@ -7,17 +8,17 @@ import { fromLocalISODate, getWeekStart } from './week';
 import { supabase } from './supabase';
 
 export async function fetchCatalog(): Promise<CatalogActivity[]> {
-  // Seules les activités encore proposées : les anciennes restent en base parce que des
-  // plannings les référencent, mais on ne les place plus dans de nouvelles semaines.
+  // Only the activities still being offered: the old ones stay in the database because existing
+  // plans reference them, but they are no longer placed into new weeks.
   const { data, error } = await supabase.from('activities_catalog').select('*').eq('active', true);
   if (error) throw error;
-  return data;
+  return data.map(localiseActivity);
 }
 
 export async function fetchActivityById(id: string): Promise<CatalogActivity> {
   const { data, error } = await supabase.from('activities_catalog').select('*').eq('id', id).single();
   if (error) throw error;
-  return data;
+  return localiseActivity(data);
 }
 
 export type UserPreferences = {
@@ -36,6 +37,11 @@ export async function fetchPreferences(userId: string): Promise<UserPreferences>
   return data as UserPreferences;
 }
 
+/** The joined catalogue row carries the stored wording: swap it for this build's language. */
+function localiseRow(row: PlannedActivityRow): PlannedActivityRow {
+  return { ...row, activities_catalog: localiseActivity(row.activities_catalog) };
+}
+
 export type PlannedActivityRow = {
   id: string;
   date: string;
@@ -52,7 +58,7 @@ export async function fetchWeekPlan(userId: string, weekStart: string): Promise<
     .eq('week_start_date', weekStart)
     .order('date', { ascending: true });
   if (error) throw error;
-  return data as unknown as PlannedActivityRow[];
+  return (data as unknown as PlannedActivityRow[]).map(localiseRow);
 }
 
 export async function generateAndSaveWeekPlan(userId: string, weekStart = getWeekStart()) {
@@ -64,8 +70,8 @@ export async function generateAndSaveWeekPlan(userId: string, weekStart = getWee
     fetchWeekPlan(userId, weekStart),
   ]);
 
-  // Ce qui a déjà été fait n'est jamais effacé ni remplacé par une régénération :
-  // ces activités gardent leur créneau, qui devient indisponible pour la génération.
+  // Anything already done is never erased or replaced by a regeneration: those activities keep
+  // their slot, and that slot becomes unavailable to the generator.
   const keptItems = existing
     .filter((item) => item.status === 'realise')
     .map((item) => ({ date: item.date, timeSlot: item.time_slot, activity: item.activities_catalog }));
@@ -81,8 +87,8 @@ export async function generateAndSaveWeekPlan(userId: string, weekStart = getWee
     keptItems,
   });
 
-  // Suppression des anciennes propositions + insertion des nouvelles dans une seule
-  // transaction Postgres, pour ne jamais laisser l'utilisateur sans planning.
+  // Deleting the old suggestions and inserting the new ones happens in a single Postgres
+  // transaction, so the user is never left without a plan.
   const { error } = await supabase.rpc('replace_week_plan', {
     p_week_start: weekStart,
     p_items: items.map((item) => ({
@@ -96,7 +102,7 @@ export async function generateAndSaveWeekPlan(userId: string, weekStart = getWee
   return fetchWeekPlan(userId, weekStart);
 }
 
-/** Activités planifiées entre deux dates incluses (vue Mois). */
+/** Activities planned between two dates, inclusive (Month view). */
 export async function fetchPlanRange(userId: string, from: string, to: string): Promise<PlannedActivityRow[]> {
   const { data, error } = await supabase
     .from('planned_activities')
@@ -106,10 +112,10 @@ export async function fetchPlanRange(userId: string, from: string, to: string): 
     .lte('date', to)
     .order('date', { ascending: true });
   if (error) throw error;
-  return data as unknown as PlannedActivityRow[];
+  return (data as unknown as PlannedActivityRow[]).map(localiseRow);
 }
 
-/** Ajoute une activité choisie par l'utilisateur à un jour et un moment précis. */
+/** Adds an activity the user picked to a specific day and part of the day. */
 export async function addPlannedActivity(
   userId: string,
   input: { activityId: string; date: string; timeSlot: PlannedActivityRow['time_slot'] }
@@ -125,7 +131,7 @@ export async function addPlannedActivity(
   if (error) throw error;
 }
 
-/** Nombre total d'activités réalisées depuis l'inscription. */
+/** Total number of activities completed since sign-up. */
 export async function countCompletedActivities(userId: string): Promise<number> {
   const { count, error } = await supabase
     .from('planned_activities')
@@ -145,7 +151,7 @@ export async function fetchCompletedActivities(userId: string, limit = 100): Pro
     .order('date', { ascending: false })
     .limit(limit);
   if (error) throw error;
-  return data as unknown as PlannedActivityRow[];
+  return (data as unknown as PlannedActivityRow[]).map(localiseRow);
 }
 
 export async function markActivityDone(userId: string, plannedActivityId: string) {
