@@ -1,12 +1,13 @@
 import { View } from 'react-native';
 
+import { t } from '../../lib/i18n';
 import { Skeleton } from '../ui/motion';
 
 /** Loading skeletons: the shape of the screen arrives before its data. */
 export function LoadingSkeleton({ preset = 'cards' }: { preset?: 'cards' | 'list' | 'hero' | 'grid' }) {
   if (preset === 'hero') {
     return (
-      <View accessibilityLabel="Loading" accessible>
+      <View accessibilityLabel={t('Loading')} accessible>
         <Skeleton height={240} style={{ borderRadius: 24 }} />
         <Skeleton height={20} style={{ width: 140, marginTop: 12 }} />
         <Skeleton height={96} />
@@ -15,7 +16,7 @@ export function LoadingSkeleton({ preset = 'cards' }: { preset?: 'cards' | 'list
   }
   if (preset === 'grid') {
     return (
-      <View accessibilityLabel="Loading" accessible style={{ flexDirection: 'row', flexWrap: 'wrap', gap: 10 }}>
+      <View accessibilityLabel={t('Loading')} accessible style={{ flexDirection: 'row', flexWrap: 'wrap', gap: 10 }}>
         {[0, 1, 2, 3, 4, 5].map((i) => (
           <Skeleton key={i} height={104} style={{ width: '31%', marginBottom: 0 }} />
         ))}
@@ -24,7 +25,7 @@ export function LoadingSkeleton({ preset = 'cards' }: { preset?: 'cards' | 'list
   }
   if (preset === 'list') {
     return (
-      <View accessibilityLabel="Loading" accessible>
+      <View accessibilityLabel={t('Loading')} accessible>
         {[0, 1, 2, 3].map((i) => (
           <Skeleton key={i} height={72} />
         ))}
@@ -32,7 +33,7 @@ export function LoadingSkeleton({ preset = 'cards' }: { preset?: 'cards' | 'list
     );
   }
   return (
-    <View accessibilityLabel="Loading" accessible>
+    <View accessibilityLabel={t('Loading')} accessible>
       <Skeleton height={64} />
       <Skeleton height={220} style={{ borderRadius: 24 }} />
       <Skeleton height={20} style={{ width: 120 }} />

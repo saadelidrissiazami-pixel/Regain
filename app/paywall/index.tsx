@@ -27,6 +27,7 @@ import {
   restorePurchases,
 } from '../../src/lib/purchases';
 import { fetchPrograms } from '../../src/lib/wellbeing';
+import { t } from '../../src/lib/i18n';
 import { useAuthStore } from '../../src/store/authStore';
 
 type IconName = ComponentProps<typeof Ionicons>['name'];
@@ -34,23 +35,23 @@ type IconName = ComponentProps<typeof Ionicons>['name'];
 type Source = 'onboarding' | 'locked' | 'milestone' | 'default';
 
 // The heading depends on where you arrived from, so it can speak to what you just did.
-const HEADINGS: Record<Source, { title: string; lede: string }> = {
-  onboarding: {
-    title: 'Your routine is ready',
-    lede: 'The plan, the tracking and the journal stay free. Premium adds a fitness coach and the whole wellbeing library.',
-  },
-  locked: {
-    title: 'This one is part of Premium',
-    lede: 'Unlock the fitness coach and every wellbeing session.',
-  },
-  milestone: {
-    title: 'You have found a rhythm',
-    lede: 'Three sessions done. There is more where that came from, in the full library.',
-  },
-  default: {
-    title: 'Regain Premium',
-    lede: 'Go further, with a coach that adapts to your week.',
-  },
+const HEADINGS: Record<Source, () => { title: string; lede: string }> = {
+  onboarding: () => ({
+    title: t('Your routine is ready'),
+    lede: t('The plan, the tracking and the journal stay free. Premium adds a fitness coach and the whole wellbeing library.'),
+  }),
+  locked: () => ({
+    title: t('This one is part of Premium'),
+    lede: t('Unlock the fitness coach and every wellbeing session.'),
+  }),
+  milestone: () => ({
+    title: t('You have found a rhythm'),
+    lede: t('Three sessions done. There is more where that came from, in the full library.'),
+  }),
+  default: () => ({
+    title: t('Regain Premium'),
+    lede: t('Go further, with a coach that adapts to your week.'),
+  }),
 };
 
 function PackageOption({
@@ -101,7 +102,7 @@ function PackageOption({
         ) : null}
         {display.intro ? (
           <Text variant="caption" tone="accent" style={{ marginTop: 2 }}>
-            {display.intro}, then {display.price} {display.period}
+            {t('{intro}, then {price} {period}', { intro: display.intro, price: display.price, period: display.period ?? '' })}
           </Text>
         ) : null}
       </View>
@@ -114,7 +115,7 @@ export default function PaywallScreen() {
   const params = useLocalSearchParams<{ source?: string }>();
   const source: Source =
     params.source === 'onboarding' || params.source === 'locked' || params.source === 'milestone' ? params.source : 'default';
-  const heading = HEADINGS[source];
+  const heading = HEADINGS[source]();
 
   const userId = useAuthStore((s) => s.session?.user.id);
   const queryClient = useQueryClient();
@@ -132,15 +133,15 @@ export default function PaywallScreen() {
   const premiumSessions = programsQuery.data?.filter((program) => program.premium_only).length ?? 0;
 
   const benefits: { icon: IconName; text: string }[] = [
-    { icon: 'barbell-outline', text: 'A strength programme at your level, adjusted every week' },
-    { icon: 'restaurant-outline', text: 'Meals and a shopping list built around your calories' },
-    { icon: 'clipboard-outline', text: 'A weekly check-in that adapts sessions and meals to your week' },
+    { icon: 'barbell-outline', text: t('A strength programme at your level, adjusted every week') },
+    { icon: 'restaurant-outline', text: t('Meals and a shopping list built around your calories') },
+    { icon: 'clipboard-outline', text: t('A weekly check-in that adapts sessions and meals to your week') },
     {
       icon: 'moon-outline',
       text:
         premiumSessions > 0
-          ? `${premiumSessions} more wellbeing sessions: sleep, meditation, breathing…`
-          : 'The entire library of wellbeing sessions',
+          ? t('{count} more wellbeing sessions: sleep, meditation, breathing…', { count: premiumSessions })
+          : t('The entire library of wellbeing sessions'),
     },
   ];
 
@@ -168,8 +169,7 @@ export default function PaywallScreen() {
       if (outcome === 'premium') unlockPremium();
       if (outcome === 'not-activated') {
         setNotice(
-          'Payment went through, but Premium is not active yet (the purchase may still be pending). ' +
-            'Try “Restore purchases” again in a moment.'
+          t('Payment went through, but Premium is not active yet (the purchase may still be pending). Try “Restore purchases” again in a moment.')
         );
       }
     } catch (e) {
@@ -185,7 +185,7 @@ export default function PaywallScreen() {
     setBusy('restore');
     try {
       if (await restorePurchases()) unlockPremium();
-      else setNotice('No active Premium subscription was found for this App Store / Google Play account.');
+      else setNotice(t('No active Premium subscription was found for this App Store / Google Play account.'));
     } catch (e) {
       setError((e as Error).message);
     } finally {
@@ -201,21 +201,28 @@ export default function PaywallScreen() {
         canBuy ? (
           <View style={{ gap: 4 }}>
             <Button
-              label={trialDays ? `Try ${trialDays} days free` : 'Continue'}
+              label={trialDays ? t('Try {count} days free', { count: trialDays }) : t('Continue')}
               loading={busy === 'purchase'}
               disabled={busy !== null}
               onPress={handlePurchase}
             />
-            <Button label="Restore purchases" variant="ghost" size="md" loading={busy === 'restore'} disabled={busy !== null} onPress={handleRestore} />
+            <Button
+              label={t('Restore purchases')}
+              variant="ghost"
+              size="md"
+              loading={busy === 'restore'}
+              disabled={busy !== null}
+              onPress={handleRestore}
+            />
           </View>
         ) : undefined
       }
     >
       <View style={{ flexDirection: 'row', justifyContent: source === 'onboarding' ? 'flex-end' : 'flex-start', marginLeft: -10, marginBottom: 8 }}>
         {source === 'onboarding' ? (
-          <TextLink label="Not now" onPress={leave} tone="ink2" />
+          <TextLink label={t('Not now')} onPress={leave} tone="ink2" />
         ) : (
-          <IconButton icon="close" label="Close" onPress={leave} />
+          <IconButton icon="close" label={t('Close')} onPress={leave} />
         )}
       </View>
 
@@ -226,7 +233,7 @@ export default function PaywallScreen() {
           <Ionicons name="diamond" size={24} color={theme.yellow} />
         </View>
         <Text variant="overline" tone="premium">
-          Regain Premium
+          {t('Regain Premium')}
         </Text>
         <Text variant="title" style={{ marginTop: 6 }} accessibilityRole="header">
           {heading.title}
@@ -262,20 +269,20 @@ export default function PaywallScreen() {
           <LoadingSkeleton preset="list" />
         ) : offeringsQuery.isError ? (
           <ErrorState
-            title="The plans could not be loaded"
+            title={t('The plans could not be loaded')}
             body={errorMessage(offeringsQuery.error)}
             onRetry={() => offeringsQuery.refetch()}
             retrying={offeringsQuery.isFetching}
           />
         ) : packages.length === 0 ? (
           <Text variant="bodySm" tone="ink2">
-            No plans are available right now.
+            {t('No plans are available right now.')}
           </Text>
         ) : (
           <>
             {isUsingTestStore ? (
               <View style={{ alignSelf: 'center', marginBottom: 12 }}>
-                <Pill icon="flask-outline" label="RevenueCat test mode: nothing is charged" tone="premium" />
+                <Pill icon="flask-outline" label={t('RevenueCat test mode: nothing is charged')} tone="premium" />
               </View>
             ) : null}
             <View accessibilityRole="radiogroup">
@@ -309,7 +316,7 @@ export default function PaywallScreen() {
       </View>
 
       {source === 'onboarding' ? (
-        <Button label="Carry on with the free version" variant="ghost" onPress={leave} style={{ marginTop: 8 }} />
+        <Button label={t('Carry on with the free version')} variant="ghost" onPress={leave} style={{ marginTop: 8 }} />
       ) : null}
 
       {notice ? <InlineNotice message={notice} /> : null}
@@ -321,8 +328,8 @@ export default function PaywallScreen() {
 
       {hasLegalUrls ? (
         <View style={{ flexDirection: 'row', flexWrap: 'wrap', gap: 16, marginTop: 4 }}>
-          <TextLink label="Terms of use" icon={null} tone="ink2" onPress={() => Linking.openURL(TERMS_URL)} />
-          <TextLink label="Privacy policy" icon={null} tone="ink2" onPress={() => Linking.openURL(PRIVACY_URL)} />
+          <TextLink label={t('Terms of use')} icon={null} tone="ink2" onPress={() => Linking.openURL(TERMS_URL)} />
+          <TextLink label={t('Privacy policy')} icon={null} tone="ink2" onPress={() => Linking.openURL(PRIVACY_URL)} />
         </View>
       ) : (
         <InlineNotice

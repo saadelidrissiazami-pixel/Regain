@@ -1,3 +1,4 @@
+import { t } from '../../lib/i18n';
 import { toLocalISODate } from '../../lib/week';
 
 export type Sample = { at: string; value: number };
@@ -37,14 +38,14 @@ export function percentChange(current: number | null, previous: number | null): 
 
 /** Average energy (1-5), in words. */
 export function energyLabel(avg: number): { label: string; emoji: string } {
-  if (avg < 2.5) return { label: 'Low', emoji: '🪫' };
-  if (avg < 3.7) return { label: 'Medium', emoji: '🙂' };
-  return { label: 'Good', emoji: '⚡' };
+  if (avg < 2.5) return { label: t('Low'), emoji: '🪫' };
+  if (avg < 3.7) return { label: t('Medium'), emoji: '🙂' };
+  return { label: t('Good'), emoji: '⚡' };
 }
 
 /** Average mood after sessions (1-5), in words. */
 export function moodLabel(avg: number): string {
-  if (avg < 2.5) return 'Hard';
-  if (avg < 3.5) return 'Steady';
-  return 'Positive';
+  if (avg < 2.5) return t('Hard');
+  if (avg < 3.5) return t('Steady');
+  return t('Positive');
 }

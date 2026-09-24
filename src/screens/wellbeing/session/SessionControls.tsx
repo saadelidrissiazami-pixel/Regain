@@ -31,7 +31,11 @@ export function SessionRing({
         animate={false}
         trackColor={theme.dark ? theme.sage200 : 'rgba(255,255,255,0.7)'}
         color={theme.primary600}
-        accessibilityLabel={elapsed !== undefined && total !== undefined ? `${formatClock(elapsed)} of ${formatClock(total)}` : t('Session progress')}
+        accessibilityLabel={
+          elapsed !== undefined && total !== undefined
+            ? t('{elapsed} of {total}', { elapsed: formatClock(elapsed), total: formatClock(total) })
+            : t('Session progress')
+        }
       >
         {children ?? (
           <>

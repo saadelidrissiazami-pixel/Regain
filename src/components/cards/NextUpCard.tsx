@@ -2,6 +2,7 @@ import { Ionicons } from '@expo/vector-icons';
 import { View } from 'react-native';
 
 import type { CatalogActivity } from '../../features/planning/catalog';
+import { t } from '../../lib/i18n';
 import { CATEGORY_COLORS, CATEGORY_ICONS, CATEGORY_LABELS } from '../../features/planning/types';
 import { imageForActivity } from '../../theme/images';
 import { useTheme } from '../../theme/ThemeProvider';
@@ -20,7 +21,12 @@ export function NextUpCard({ when, activity, onPress }: { when: string; activity
     <Card
       padding={14}
       onPress={onPress}
-      accessibilityLabel={`${when}, ${activity.title}, ${CATEGORY_LABELS[activity.category]}, ${activity.duration_minutes} minutes`}
+      accessibilityLabel={t('{time}, {title}, {category}, {minutes} minutes', {
+        time: when,
+        title: activity.title,
+        category: CATEGORY_LABELS[activity.category],
+        minutes: activity.duration_minutes,
+      })}
     >
       <View style={{ flexDirection: 'row', alignItems: 'center' }}>
         <View

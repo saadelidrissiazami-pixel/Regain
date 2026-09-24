@@ -73,9 +73,16 @@ export function MonthGrid({
                 feedback="selection"
                 accessibilityRole="button"
                 accessibilityState={{ selected: date === selected }}
-                accessibilityLabel={`${new Date(date + 'T00:00:00').toLocaleDateString(locale, { weekday: 'long', month: 'long', day: 'numeric' })}${
-                  markers[date]?.count ? `, ${markers[date]!.count} activit${markers[date]!.count > 1 ? 'ies' : 'y'}` : ''
-                }`}
+                accessibilityLabel={[
+                  new Date(date + 'T00:00:00').toLocaleDateString(locale, { weekday: 'long', month: 'long', day: 'numeric' }),
+                  markers[date]?.count
+                    ? markers[date]!.count > 1
+                      ? t('{count} activities', { count: markers[date]!.count })
+                      : t('{count} activity', { count: markers[date]!.count })
+                    : null,
+                ]
+                  .filter(Boolean)
+                  .join(', ')}
                 wrapperStyle={{ flex: 1 }}
                 style={{ alignItems: 'center', paddingVertical: 4 }}
               >

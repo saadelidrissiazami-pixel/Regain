@@ -142,7 +142,11 @@ export default function AddActivityScreen() {
                 feedback="selection"
                 accessibilityRole="radio"
                 accessibilityState={{ selected: isSelected }}
-                accessibilityLabel={`${activity.title}, ${CATEGORY_LABELS[activity.category]}, ${activity.duration_minutes} minutes`}
+                accessibilityLabel={t('{title}, {category}, {minutes} minutes', {
+                  title: activity.title,
+                  category: CATEGORY_LABELS[activity.category],
+                  minutes: activity.duration_minutes,
+                })}
                 style={{
                   flexDirection: 'row',
                   alignItems: 'center',

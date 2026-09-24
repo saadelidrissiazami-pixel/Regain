@@ -4,6 +4,7 @@ import { ActivityIndicator, View } from 'react-native';
 
 import { useTheme } from '../src/theme/ThemeProvider';
 
+import { t } from '../src/lib/i18n';
 import { fetchProfile } from '../src/lib/profile';
 import { useAuthStore } from '../src/store/authStore';
 
@@ -20,7 +21,7 @@ export default function Index() {
   if (!isInitialized || (session && profileQuery.isLoading)) {
     return (
       <View style={{ flex: 1, alignItems: 'center', justifyContent: 'center', backgroundColor: theme.bg }}>
-        <ActivityIndicator color={theme.primary600} accessibilityLabel="Loading" />
+        <ActivityIndicator color={theme.primary600} accessibilityLabel={t('Loading')} />
       </View>
     );
   }

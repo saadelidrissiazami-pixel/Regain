@@ -3,6 +3,7 @@ import { Platform } from 'react-native';
 import type { AvailabilitySlot } from '../features/availability/types';
 import { trialReminderDate } from '../features/subscriptions/packages';
 import { activityStartDate } from '../features/planning/schedule';
+import { t } from './i18n';
 import type { PlannedActivityRow } from './planning';
 
 const MORNING_NUDGE_ID = 'morning-nudge';
@@ -49,7 +50,7 @@ export async function enableDailyReminder(): Promise<boolean> {
     identifier: MORNING_NUDGE_ID,
     content: {
       title: 'Regain',
-      body: 'Before you scroll? Two minutes of breathing or stretching instead of a feed 🌱',
+      body: t('Before you scroll? Two minutes of breathing or stretching instead of a feed 🌱'),
       data: { route: '/(tabs)/wellbeing' },
     },
     trigger: { type: Notifications.SchedulableTriggerInputTypes.DAILY, hour: 8, minute: 0 },
@@ -97,7 +98,7 @@ export async function scheduleActivityReminders(items: PlannedActivityRow[], ava
       identifier: `${ACTIVITY_PREFIX}${item.id}`,
       content: {
         title: 'Regain',
-        body: `In ${REMINDER_LEAD_MINUTES} min: ${item.activities_catalog.title}`,
+        body: t('In {minutes} min: {title}', { minutes: REMINDER_LEAD_MINUTES, title: item.activities_catalog.title }),
         data: { route: `/activity/${item.activities_catalog.id}` },
       },
       trigger: { type: Notifications.SchedulableTriggerInputTypes.DATE, date: reminderDate },
@@ -123,14 +124,18 @@ export async function scheduleTrialReminder(trialEnd: Date): Promise<boolean> {
   // How much notice depends on the trial's length, so it is read back off the date chosen rather
   // than stated as a fixed delay — otherwise a reminder sent the day before would say “in 2 days”.
   const daysLeft = Math.round((trialEnd.getTime() - date.getTime()) / 86_400_000);
-  const when = daysLeft <= 1 ? 'tomorrow' : `in ${daysLeft} days`;
 
   await Notifications.cancelScheduledNotificationAsync(TRIAL_REMINDER_ID).catch(() => {});
   await Notifications.scheduleNotificationAsync({
     identifier: TRIAL_REMINDER_ID,
     content: {
       title: 'Regain Premium',
-      body: `Your free trial ends ${when}. To avoid being charged, cancel from Profile → Settings → Manage my subscription.`,
+      body:
+        daysLeft <= 1
+          ? t('Your free trial ends tomorrow. To avoid being charged, cancel from Profile → Settings → Manage my subscription.')
+          : t('Your free trial ends in {count} days. To avoid being charged, cancel from Profile → Settings → Manage my subscription.', {
+              count: daysLeft,
+            }),
       data: { route: '/(tabs)/profile' },
     },
     trigger: { type: Notifications.SchedulableTriggerInputTypes.DATE, date },

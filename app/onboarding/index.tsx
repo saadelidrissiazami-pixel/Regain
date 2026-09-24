@@ -11,13 +11,14 @@ import type { OnboardingFormValues } from '../../src/features/onboarding/schema'
 import type { EnergyLevel } from '../../src/features/planning/catalog';
 import { completeOnboarding } from '../../src/lib/profile';
 import { useOnboardingForm } from '../../src/screens/profile/useOnboardingForm';
+import { t } from '../../src/lib/i18n';
 import { useAuthStore } from '../../src/store/authStore';
 
 const STEPS: { title: string; subtitle: string; fields: (keyof OnboardingFormValues)[] }[] = [
-  { title: 'Welcome to Regain 🌱', subtitle: 'What should we call you?', fields: ['firstName'] },
-  { title: 'What matters to you?', subtitle: 'Your coach picks your activities around this.', fields: ['primaryGoals'] },
-  { title: 'Your rhythm', subtitle: 'So each activity lands at the right time.', fields: ['sleepMinutes', 'energyBySlot'] },
-  { title: 'Your budget', subtitle: 'So the ideas actually suit you.', fields: ['budgetLevel'] },
+  { title: t('Welcome to Regain 🌱'), subtitle: t('What should we call you?'), fields: ['firstName'] },
+  { title: t('What matters to you?'), subtitle: t('Your coach picks your activities around this.'), fields: ['primaryGoals'] },
+  { title: t('Your rhythm'), subtitle: t('So each activity lands at the right time.'), fields: ['sleepMinutes', 'energyBySlot'] },
+  { title: t('Your budget'), subtitle: t('So the ideas actually suit you.'), fields: ['budgetLevel'] },
 ];
 
 /** Onboarding in 4 short steps: one question per screen. */
@@ -32,7 +33,7 @@ export default function OnboardingScreen() {
 
   const mutation = useMutation({
     mutationFn: () => {
-      if (!userId) throw new Error('No session found. Sign in again, then try once more.');
+      if (!userId) throw new Error(t('No session found. Sign in again, then try once more.'));
       return completeOnboarding(userId, values);
     },
     onSuccess: async () => {
@@ -53,14 +54,19 @@ export default function OnboardingScreen() {
       footer={
         <View style={{ gap: 4 }}>
           {mutation.isError ? <InlineNotice tone="error" message={errorMessage(mutation.error)} /> : null}
-          <Button label={isLast ? 'Get started' : 'Continue'} iconRight={isLast ? undefined : 'arrow-forward'} loading={mutation.isPending} onPress={next} />
-          {step > 0 ? <Button label="Back" variant="ghost" onPress={() => setStep((s) => s - 1)} /> : null}
+          <Button
+            label={isLast ? t('Get started') : t('Continue')}
+            iconRight={isLast ? undefined : 'arrow-forward'}
+            loading={mutation.isPending}
+            onPress={next}
+          />
+          {step > 0 ? <Button label={t('Back')} variant="ghost" onPress={() => setStep((s) => s - 1)} /> : null}
         </View>
       }
     >
       <View style={{ marginBottom: 28 }}>
         <Text variant="caption" tone="ink2" style={{ marginBottom: 8 }}>
-          Step {step + 1} of {STEPS.length}
+          {t('Step {current} of {total}', { current: step + 1, total: STEPS.length })}
         </Text>
         <ProgressBar progress={(step + 1) / STEPS.length} height={6} />
       </View>
@@ -70,10 +76,10 @@ export default function OnboardingScreen() {
 
         {step === 0 ? (
           <Field
-            label="Your first name"
+            label={t('Your first name')}
             value={values.firstName}
             onChangeText={(text) => set('firstName', text)}
-            placeholder="e.g. Camille"
+            placeholder={t('e.g. Camille')}
             autoFocus
             autoCapitalize="words"
             autoComplete="given-name"
@@ -87,12 +93,12 @@ export default function OnboardingScreen() {
         {step === 1 ? (
           <>
             <SelectMulti
-              label="Your goals"
-              title="What matters to you?"
+              label={t('Your goals')}
+              title={t('What matters to you?')}
               values={values.primaryGoals}
               options={[...GOAL_OPTIONS]}
               onChange={(goals) => set('primaryGoals', goals)}
-              placeholder="Pick one or more goals"
+              placeholder={t('Pick one or more goals')}
             />
             {errors.primaryGoals ? (
               <Text variant="caption" tone="danger">
@@ -104,9 +110,14 @@ export default function OnboardingScreen() {
 
         {step === 2 ? (
           <>
-            <Select label="How many hours do you usually sleep?" value={values.sleepMinutes} options={SLEEP_OPTIONS} onChange={(m) => set('sleepMinutes', m)} />
+            <Select
+              label={t('How many hours do you usually sleep?')}
+              value={values.sleepMinutes}
+              options={SLEEP_OPTIONS}
+              onChange={(m) => set('sleepMinutes', m)}
+            />
             <Text variant="label" style={{ marginTop: 16, marginBottom: 4 }}>
-              Your usual energy
+              {t('Your usual energy')}
             </Text>
             {ENERGY_SLOTS.map((slot) => (
               <View key={slot.key} style={{ marginTop: 10 }}>
@@ -114,7 +125,7 @@ export default function OnboardingScreen() {
                   {slot.label}
                 </Text>
                 <SegmentedControl<EnergyLevel>
-                  label={`Energy: ${slot.label}`}
+                  label={t('Energy: {slot}', { slot: slot.label })}
                   tone="surface"
                   value={values.energyBySlot[slot.key]}
                   onChange={(level) => set('energyBySlot', { ...values.energyBySlot, [slot.key]: level })}
@@ -126,7 +137,7 @@ export default function OnboardingScreen() {
         ) : null}
 
         {step === 3 ? (
-          <SegmentedControl label="Budget" tone="surface" value={values.budgetLevel} onChange={(b) => set('budgetLevel', b)} options={[...BUDGET_OPTIONS]} />
+          <SegmentedControl label={t('Budget')} tone="surface" value={values.budgetLevel} onChange={(b) => set('budgetLevel', b)} options={[...BUDGET_OPTIONS]} />
         ) : null}
       </Animated.View>
     </Screen>

@@ -2,6 +2,7 @@ import { Ionicons } from '@expo/vector-icons';
 import { useState } from 'react';
 import { View } from 'react-native';
 
+import { t } from '../../lib/i18n';
 import { useTheme } from '../../theme/ThemeProvider';
 import { TextLink } from '../ui/Button';
 import { Card } from '../ui/Card';
@@ -38,7 +39,11 @@ export function CoachCard({ message, title = 'A word from your coach' }: { messa
           </Text>
           {long ? (
             <View style={{ alignSelf: 'flex-end' }}>
-              <TextLink label={open ? 'Show less' : 'Show more'} icon={open ? 'chevron-up' : 'arrow-forward'} onPress={() => setOpen((v) => !v)} />
+              <TextLink
+                label={open ? t('Show less') : t('Show more')}
+                icon={open ? 'chevron-up' : 'arrow-forward'}
+                onPress={() => setOpen((v) => !v)}
+              />
             </View>
           ) : null}
         </View>

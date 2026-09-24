@@ -3,6 +3,7 @@ import { Modal, Pressable, ScrollView, useWindowDimensions, View } from 'react-n
 import Animated, { FadeIn, FadeOut, SlideInDown, SlideOutDown, useReducedMotion } from 'react-native-reanimated';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
+import { t } from '../../lib/i18n';
 import { useTheme } from '../../theme/ThemeProvider';
 import { withAlpha } from '../../theme/colors';
 import { Text } from './Text';
@@ -41,7 +42,7 @@ export function Sheet({
         exiting={FadeOut.duration(120)}
         style={{ flex: 1, backgroundColor: withAlpha('#0B1815', 0.4), justifyContent: 'flex-end' }}
       >
-        <Pressable style={{ flex: 1 }} onPress={onClose} accessibilityRole="button" accessibilityLabel="Close" />
+        <Pressable style={{ flex: 1 }} onPress={onClose} accessibilityRole="button" accessibilityLabel={t('Close')} />
         <Animated.View
           accessibilityViewIsModal
           entering={reduceMotion ? FadeIn.duration(160) : SlideInDown.duration(240)}

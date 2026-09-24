@@ -202,7 +202,7 @@ export default function PlanningHomeScreen() {
                 subtitle={[
                   relativeDayLabel(engagement.date, today, formatDayLabel),
                   engagement.startTime,
-                  `${engagement.durationMinutes} min`,
+                  t('{minutes} min', { minutes: engagement.durationMinutes }),
                 ]
                   .filter(Boolean)
                   .join(' · ')}

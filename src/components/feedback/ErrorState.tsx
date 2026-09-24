@@ -1,9 +1,10 @@
+import { t } from '../../lib/i18n';
 import { EmptyState } from './EmptyState';
 
 /** A failed load: what happened, then what can be done about it. */
 export function ErrorState({
-  title = 'Cannot load this right now',
-  body = 'The connection looks interrupted. Check your network, then try again.',
+  title = t('Cannot load this right now'),
+  body = t('The connection looks interrupted. Check your network, then try again.'),
   onRetry,
   retrying,
 }: {
@@ -17,7 +18,7 @@ export function ErrorState({
       icon="cloud-offline-outline"
       title={title}
       body={body}
-      actionLabel={onRetry ? 'Try again' : undefined}
+      actionLabel={onRetry ? t('Try again') : undefined}
       onAction={onRetry}
       actionLoading={retrying}
     />

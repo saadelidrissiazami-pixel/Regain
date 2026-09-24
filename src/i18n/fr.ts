@@ -894,4 +894,309 @@ export const FR: Record<string, string> = {
   'These sessions are not a substitute for a professional. If these moments keep coming back, talking to a doctor usually changes more than any exercise will.': "Ces séances ne remplacent pas un professionnel. Si ces moments reviennent souvent, en parler à un médecin change généralement plus de choses que n'importe quel exercice.",
   'Day {number}': 'Jour {number}',
   'You have done all {count} days. Nothing stops you doing one again when it would help — that is what they are for.': "Tu as fait les {count} jours. Rien ne t'empêche d'en refaire un quand il te sera utile — c'est même l'usage prévu.",
+
+  // Tracking
+  // The day initials of the mini bars, indexed from Sunday: French starts at “D” for dimanche.
+  'S,M,T,W,T,F,S': 'D,L,M,M,J,V,S',
+  'Tracking': 'Suivi',
+  'Your progress, at a glance': 'Ta progression, en un coup d’œil',
+  'Your tracking could not be loaded': 'Ton suivi n’a pas pu être chargé',
+  'Activities this week': 'Activités cette semaine',
+  'No plan yet': 'Pas encore de plan',
+  'Average energy': 'Énergie moyenne',
+  'Answer today’s check-in': "Fais le point d'aujourd'hui",
+  'Sleep': 'Sommeil',
+  'Your usual amount': 'Ta durée habituelle',
+  'Tell us your usual amount': 'Indique-nous ta durée habituelle',
+  'Mood after your sessions': 'Humeur après tes séances',
+  'Note how you feel at the end of a session': 'Note comment tu te sens en fin de séance',
+  'Note how you feel at the end of a session.': 'Note comment tu te sens en fin de séance.',
+  '{count} days in a row': '{count} jours d’affilée',
+  '{count} day in a row': '{count} jour d’affilée',
+  'Your streak starts today': "Ta série commence aujourd'hui",
+  'Keep going at your own pace.': 'Continue à ton rythme.',
+  'Keep going at your own pace': 'Continue à ton rythme',
+  'One activity ticked a day is enough to grow it.': 'Une activité cochée par jour suffit à la faire grandir.',
+  'Time by category': 'Temps par catégorie',
+  'What you got through this week': 'Ce que tu as accompli cette semaine',
+  'Nothing ticked off this week yet — tick your activities from the plan.':
+    'Rien de coché cette semaine — coche tes activités depuis le plan.',
+  'History': 'Historique',
+  'Nothing ticked off yet.': 'Rien de coché pour le moment.',
+  'Undo “{title}”': 'Annuler « {title} »',
+  'Undo': 'Annuler',
+  'See all {count} activities': 'Voir les {count} activités',
+  'Track your strength sessions': 'Suis tes séances de musculation',
+  'Session and weight tracking are part of the Premium fitness coach.':
+    'Le suivi des séances et du poids fait partie du coach forme Premium.',
+  'No fitness profile yet': 'Pas encore de profil forme',
+  'Sessions this week': 'Séances cette semaine',
+  'Target reached': 'Objectif atteint',
+  'Weight': 'Poids',
+  'Last check-in': 'Dernier bilan',
+  'Fitness profile': 'Profil forme',
+  'See my progress in detail': 'Voir ma progression en détail',
+  'Sessions finished': 'Séances terminées',
+  'Of the last 30': 'Sur les 30 dernières',
+  'Average rating': 'Note moyenne',
+  'How you felt after your sessions': 'Comment tu t’es senti·e après tes séances',
+  'Your last {count} rated sessions': 'Tes {count} dernières séances notées',
+  'With Premium: days of meals matched to what you need, and the shopping list that goes with them, already sorted by aisle. No more “what are we eating tonight?”.':
+    'Avec Premium : des journées de menus adaptées à tes besoins, et la liste de courses qui va avec, déjà rangée par rayon. Fini le « on mange quoi ce soir ? ».',
+  'Your nutrition numbers': 'Tes repères nutrition',
+  'Calories and macros worked out for you, with the fitness coach.':
+    'Calories et macros calculées pour toi, avec le coach forme.',
+  'Fill in my fitness profile': 'Remplir mon profil forme',
+  'Today’s numbers, worked out from your fitness profile.':
+    "Tes repères du jour, calculés d'après ton profil forme.",
+  'My meals and my shopping list': 'Mes menus et ma liste de courses',
+  'Hard': 'Difficile',
+  'Steady': 'Stable',
+  'Positive': 'Positive',
+
+  // Profile
+  'Welcome': 'Bienvenue',
+  'A little further each week 🌱': 'Un peu plus loin chaque semaine 🌱',
+  'What should we call you?': 'Comment on t’appelle ?',
+  'Add your first name': 'Ajouter ton prénom',
+  'weeks': 'semaines',
+  'activity': 'activité',
+  'activities': 'activités',
+  'days in a row': 'jours d’affilée',
+  'My goals': 'Mes objectifs',
+  'Settings': 'Réglages',
+  'Help & support': 'Aide et contact',
+  'Regain Premium': 'Regain Premium',
+  'Regain Premium active': 'Regain Premium actif',
+  'Regain Premium, unlock everything': 'Regain Premium, tout débloquer',
+  'Unlocked for development': 'Débloqué pour le développement',
+  'Active · manage my subscription': 'Actif · gérer mon abonnement',
+  'Unlock everything': 'Tout débloquer',
+  'Write to us': 'Nous écrire',
+  'Terms of use': 'Conditions d’utilisation',
+  'Privacy policy': 'Politique de confidentialité',
+  'My data': 'Mes données',
+  'Export or delete your account': 'Exporter ou supprimer ton compte',
+  'Regain is not a substitute for a health professional. If things get difficult, talk to your doctor.':
+    "Regain ne remplace pas un professionnel de santé. Si ça devient difficile, parles-en à ton médecin.",
+
+  // My goals
+  'Your coach uses these to choose your activities.': 'Ton coach s’en sert pour choisir tes activités.',
+  'Your first name': 'Ton prénom',
+  'e.g. Camille': 'ex. Camille',
+  'Your usual sleep': 'Ton sommeil habituel',
+  'Your budget for activities': 'Ton budget pour les activités',
+  'Budget': 'Budget',
+  'Your usual energy': 'Ton énergie habituelle',
+  'Energy: {slot}': 'Énergie : {slot}',
+  'Cut down on screen time': 'Réduire les écrans',
+  'Get my energy back': 'Retrouver de l’énergie',
+  'Move more': 'Bouger plus',
+  'Reconnect with people': 'Renouer avec les autres',
+  'Sleep better': 'Mieux dormir',
+  'Build self-confidence': 'Prendre confiance en moi',
+  'Handle stress better': 'Mieux gérer le stress',
+  'Build a steady routine': 'Installer une routine stable',
+  'Moderate': 'Modéré',
+  'Comfortable': 'Confortable',
+  '{hours}h': '{hours} h',
+  '{hours}h {minutes}': '{hours} h {minutes}',
+
+  // Settings
+  'Allow notifications for Regain in your device settings.':
+    'Autorise les notifications pour Regain dans les réglages de ton téléphone.',
+  'Appearance': 'Apparence',
+  'Auto': 'Auto',
+  'Light': 'Clair',
+  'Dark': 'Sombre',
+  'On automatic, Regain follows your phone’s light or dark setting.':
+    'En automatique, Regain suit le réglage clair ou sombre de ton téléphone.',
+  'Reminders and calendar': 'Rappels et agenda',
+  'Reminders': 'Rappels',
+  'A nudge at 8 am to pick breathing over scrolling, and a reminder when each activity is due.':
+    'Un rappel à 8 h pour préférer la respiration au scroll, et un rappel à l’heure de chaque activité.',
+  'Calendar': 'Agenda',
+  'Automatically adds each plan to a “Regain” calendar, at the times you are free.':
+    'Ajoute automatiquement chaque plan à un agenda « Regain », aux heures où tu es libre.',
+  'Sync the calendar': 'Synchroniser l’agenda',
+  '{count} activities from this week added. Future weeks will follow on their own.':
+    '{count} activités de cette semaine ajoutées. Les semaines suivantes suivront toutes seules.',
+  '{count} activity from this week added. Future weeks will follow on their own.':
+    '{count} activité de cette semaine ajoutée. Les semaines suivantes suivront toutes seules.',
+  'Syncing is off: upcoming activities have been removed from the calendar.':
+    'Synchronisation désactivée : les activités à venir ont été retirées de l’agenda.',
+  'Calendar syncing happens from the mobile app.': 'La synchronisation de l’agenda se fait depuis l’application mobile.',
+  'Subscription': 'Abonnement',
+  'Free plan': 'Formule gratuite',
+  'Unlocked for development. Purchases are unavailable here; a production build will ask for a real subscription.':
+    'Débloqué pour le développement. Les achats ne fonctionnent pas ici ; une version de production demandera un vrai abonnement.',
+  'See the subscription screen': 'Voir l’écran d’abonnement',
+  'Change or cancel your subscription any time from your App Store / Google Play account.':
+    'Modifie ou résilie ton abonnement à tout moment depuis ton compte App Store / Google Play.',
+  'Manage my subscription': 'Gérer mon abonnement',
+  'Go Premium for the fitness coach and the whole wellbeing library.':
+    'Passe à Premium pour le coach forme et toute la bibliothèque bien-être.',
+  'Privacy': 'Confidentialité',
+  'Notifications, calendar and location stay optional: they only turn on if you allow them, and they turn off here or in your device settings.':
+    'Notifications, agenda et localisation restent facultatifs : ils ne s’activent que si tu les autorises, et se désactivent ici ou dans les réglages de ton téléphone.',
+  'Export my data': 'Exporter mes données',
+  'Permanently delete your account and all your data? This cannot be undone.':
+    'Supprimer définitivement ton compte et toutes tes données ? C’est irréversible.',
+  'Deleting the account does not cancel the subscription — cancel it from “Manage my subscription”.':
+    'Supprimer le compte ne résilie pas l’abonnement — résilie-le depuis « Gérer mon abonnement ».',
+  'Delete permanently': 'Supprimer définitivement',
+  'Delete my account': 'Supprimer mon compte',
+  'Sign out': 'Se déconnecter',
+
+  // Paywall and subscription
+  'Your routine is ready': 'Ta routine est prête',
+  'The plan, the tracking and the journal stay free. Premium adds a fitness coach and the whole wellbeing library.':
+    'Le plan, le suivi et le journal restent gratuits. Premium ajoute un coach forme et toute la bibliothèque bien-être.',
+  'This one is part of Premium': 'Celui-ci fait partie de Premium',
+  'Unlock the fitness coach and every wellbeing session.':
+    'Débloque le coach forme et toutes les séances bien-être.',
+  'You have found a rhythm': 'Tu as trouvé ton rythme',
+  'Three sessions done. There is more where that came from, in the full library.':
+    'Trois séances faites. Il y en a bien d’autres, dans la bibliothèque complète.',
+  'Go further, with a coach that adapts to your week.':
+    'Va plus loin, avec un coach qui s’adapte à ta semaine.',
+  'A strength programme at your level, adjusted every week':
+    'Un programme de musculation à ton niveau, ajusté chaque semaine',
+  'Meals and a shopping list built around your calories':
+    'Des menus et une liste de courses construits autour de tes calories',
+  'A weekly check-in that adapts sessions and meals to your week':
+    'Un bilan hebdomadaire qui adapte séances et menus à ta semaine',
+  '{count} more wellbeing sessions: sleep, meditation, breathing…':
+    '{count} séances bien-être en plus : sommeil, méditation, respiration…',
+  'The entire library of wellbeing sessions': 'Toute la bibliothèque de séances bien-être',
+  'Payment went through, but Premium is not active yet (the purchase may still be pending). Try “Restore purchases” again in a moment.':
+    'Le paiement est passé, mais Premium n’est pas encore actif (l’achat est peut-être en attente). Réessaie « Restaurer mes achats » dans un instant.',
+  'No active Premium subscription was found for this App Store / Google Play account.':
+    'Aucun abonnement Premium actif n’a été trouvé pour ce compte App Store / Google Play.',
+  'Try {count} days free': 'Essayer {count} jours gratuits',
+  'Restore purchases': 'Restaurer mes achats',
+  'The plans could not be loaded': 'Les formules n’ont pas pu être chargées',
+  'No plans are available right now.': 'Aucune formule n’est disponible pour le moment.',
+  'RevenueCat test mode: nothing is charged': 'Mode test RevenueCat : rien n’est débité',
+  'Carry on with the free version': 'Continuer avec la version gratuite',
+  'Subscriptions are taken out from the mobile app.': 'Les abonnements se souscrivent depuis l’application mobile.',
+  'Subscriptions are unavailable at the moment. Try again in a few moments.':
+    'Les abonnements sont indisponibles pour le moment. Réessaie dans quelques instants.',
+  'Your subscription renews automatically unless it is cancelled at least 24 hours before the end of the current period. Payment is charged to your App Store or Google Play account on confirmation. You can manage or cancel your subscription at any time from your account settings.':
+    'Ton abonnement se renouvelle automatiquement sauf résiliation au moins 24 heures avant la fin de la période en cours. Le paiement est débité de ton compte App Store ou Google Play à la confirmation. Tu peux gérer ou résilier ton abonnement à tout moment depuis les réglages de ton compte.',
+  'Yearly': 'Annuel',
+  'per year': 'par an',
+  'Six-monthly': 'Semestriel',
+  'every 6 months': 'tous les 6 mois',
+  'Quarterly': 'Trimestriel',
+  'every 3 months': 'tous les 3 mois',
+  'Two-monthly': 'Bimestriel',
+  'every 2 months': 'tous les 2 mois',
+  'Monthly': 'Mensuel',
+  'per month': 'par mois',
+  'Weekly': 'Hebdomadaire',
+  'per week': 'par semaine',
+  'Lifetime': 'À vie',
+  'one-off payment': 'paiement unique',
+  '{count} days': '{count} jours',
+  '{count} day': '{count} jour',
+  '{count} weeks': '{count} semaines',
+  '{count} week': '{count} semaine',
+  '{count} months': '{count} mois',
+  '{count} month': '{count} mois',
+  '{count} years': '{count} ans',
+  '{count} year': '{count} an',
+  'day': 'jour',
+  'week': 'semaine',
+  'month': 'mois',
+  'year': 'an',
+  '{duration} free trial': '{duration} d’essai gratuit',
+  '{price} per {unit} for {duration}': '{price} par {unit} pendant {duration}',
+  '{price} for {duration}': '{price} pendant {duration}',
+  'that is {price} / month': 'soit {price} / mois',
+  '{intro}, then {price} {period}': '{intro}, puis {price} {period}',
+  'All of Premium unlocks': 'Tout Premium se débloque',
+  'We tell you the trial is about to end': 'On te prévient que l’essai se termine',
+  'First payment of {price}, unless you cancel before then':
+    'Premier paiement de {price}, sauf si tu annules avant',
+
+  // Onboarding and sign-in
+  'Welcome to Regain 🌱': 'Bienvenue sur Regain 🌱',
+  'What matters to you?': 'Qu’est-ce qui compte pour toi ?',
+  'Your coach picks your activities around this.': 'Ton coach choisit tes activités autour de ça.',
+  'Your rhythm': 'Ton rythme',
+  'So each activity lands at the right time.': 'Pour que chaque activité tombe au bon moment.',
+  'Your budget': 'Ton budget',
+  'So the ideas actually suit you.': 'Pour que les idées te correspondent vraiment.',
+  'No session found. Sign in again, then try once more.':
+    'Aucune session trouvée. Reconnecte-toi, puis réessaie.',
+  'Get started': 'Commencer',
+  'Continue': 'Continuer',
+  'Back': 'Retour',
+  'Step {current} of {total}': 'Étape {current} sur {total}',
+  'How many hours do you usually sleep?': 'Combien d’heures dors-tu d’habitude ?',
+  'Good to see you again': 'Content de te revoir',
+  'Welcome to Regain': 'Bienvenue sur Regain',
+  'Sign in to pick your week back up.': 'Connecte-toi pour reprendre ta semaine.',
+  'Create your account to get started.': 'Crée ton compte pour commencer.',
+  'Email address': 'Adresse e-mail',
+  'Password': 'Mot de passe',
+  '6 characters minimum': '6 caractères minimum',
+  'That email address does not look right': 'Cette adresse e-mail ne semble pas valide',
+  'That email or password is not right.': 'Cet e-mail ou ce mot de passe n’est pas correct.',
+  'This account is not confirmed yet. Open the link we emailed you, then come back and sign in.':
+    'Ce compte n’est pas encore confirmé. Ouvre le lien qu’on t’a envoyé par e-mail, puis reviens te connecter.',
+  'An account already exists for this address. Sign in instead.':
+    'Un compte existe déjà pour cette adresse. Connecte-toi plutôt.',
+  'Too many attempts on this address. Try again in a few minutes.':
+    'Trop de tentatives sur cette adresse. Réessaie dans quelques minutes.',
+  'Account created. Open the confirmation link sent to {email}, then sign in.':
+    'Compte créé. Ouvre le lien de confirmation envoyé à {email}, puis connecte-toi.',
+  'Sign in': 'Se connecter',
+  'Sign up': 'Créer un compte',
+  'No account yet? Sign up': 'Pas encore de compte ? Créer un compte',
+  'Already have an account? Sign in': 'Tu as déjà un compte ? Se connecter',
+
+  // The coach conversation
+  'Ask a question, any time': 'Pose une question, à tout moment',
+  'Your coach is part of Premium': 'Ton coach fait partie de Premium',
+  'Ask about your sessions, your meals or your energy, and get an answer that takes your goals into account.':
+    'Pose tes questions sur tes séances, tes menus ou ton énergie, et reçois une réponse qui tient compte de tes objectifs.',
+  'A question about your session, your meals or your recovery? Write it the way you would say it.':
+    'Une question sur ta séance, tes menus ou ta récupération ? Écris-la comme tu la dirais.',
+  'Tell me how you are feeling, or what is in the way right now. No judgement.':
+    'Dis-moi comment tu te sens, ou ce qui te bloque en ce moment. Sans jugement.',
+  'Your history could not be loaded.': 'Ton historique n’a pas pu être chargé.',
+  'Write to your coach…': 'Écris à ton coach…',
+  'Send': 'Envoyer',
+
+  // Shared components
+  'Loading': 'Chargement',
+  'Cannot load this right now': 'Impossible de charger ça pour le moment',
+  'The connection looks interrupted. Check your network, then try again.':
+    'La connexion semble interrompue. Vérifie ton réseau, puis réessaie.',
+  'Something went wrong. Try again in a moment.': 'Quelque chose s’est mal passé. Réessaie dans un instant.',
+  'Done': 'Terminé',
+  'You can choose more than one': 'Tu peux en choisir plusieurs',
+  '{count} selected': '{count} sélectionnés',
+  '{label}: {value}': '{label} : {value}',
+  '{label}: {value} grams': '{label} : {value} grammes',
+  'How do you feel after this session?': 'Comment te sens-tu après cette séance ?',
+  'done': 'fait',
+  '{time}, {title}, {category}, {minutes} minutes': '{time}, {title}, {category}, {minutes} minutes',
+  '{title}, {category}, {minutes} minutes': '{title}, {category}, {minutes} minutes',
+
+  'Show more': 'Voir plus',
+  '{label}: done': '{label} : fait',
+  'Mark “{label}” as done': 'Marquer « {label} » comme fait',
+  '{elapsed} of {total}': '{elapsed} sur {total}',
+
+  // Notifications
+  'Before you scroll? Two minutes of breathing or stretching instead of a feed 🌱':
+    'Avant de scroller ? Deux minutes de respiration ou d’étirements plutôt qu’un fil d’actu 🌱',
+  'In {minutes} min: {title}': 'Dans {minutes} min : {title}',
+  'Your free trial ends tomorrow. To avoid being charged, cancel from Profile → Settings → Manage my subscription.':
+    'Ton essai gratuit se termine demain. Pour ne pas être débité·e, résilie depuis Profil → Réglages → Gérer mon abonnement.',
+  'Your free trial ends in {count} days. To avoid being charged, cancel from Profile → Settings → Manage my subscription.':
+    'Ton essai gratuit se termine dans {count} jours. Pour ne pas être débité·e, résilie depuis Profil → Réglages → Gérer mon abonnement.',
 };

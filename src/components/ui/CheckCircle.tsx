@@ -2,6 +2,7 @@ import { Ionicons } from '@expo/vector-icons';
 import Animated, { ZoomIn } from 'react-native-reanimated';
 import { ActivityIndicator, View } from 'react-native';
 
+import { t } from '../../lib/i18n';
 import { useTheme } from '../../theme/ThemeProvider';
 import { haptic, PressableScale } from './motion';
 
@@ -55,7 +56,7 @@ export function CheckCircle({
       feedback={null}
       accessibilityRole="checkbox"
       accessibilityState={{ checked, busy: !!busy }}
-      accessibilityLabel={checked ? `${label}: done` : `Mark “${label}” as done`}
+      accessibilityLabel={checked ? t('{label}: done', { label }) : t('Mark “{label}” as done', { label })}
       style={{ width: 44, height: 44, alignItems: 'center', justifyContent: 'center' }}
     >
       {circle}

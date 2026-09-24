@@ -12,6 +12,7 @@ import { usePremium } from '../../lib/premium';
 import { fetchProfile, firstNameOf } from '../../lib/profile';
 import { fetchStreak } from '../../lib/tracking';
 import { useToday } from '../../lib/useCurrentDate';
+import { t } from '../../lib/i18n';
 import { fromLocalISODate } from '../../lib/week';
 import { useAuthStore } from '../../store/authStore';
 import { useTheme } from '../../theme/ThemeProvider';
@@ -70,22 +71,22 @@ export default function ProfileScreen() {
         <Avatar name={name ?? email} size={72} />
         <View style={{ flex: 1, marginLeft: 16 }}>
           <Text variant="headline" numberOfLines={1} accessibilityRole="header">
-            {name ?? 'Bienvenue'}
+            {name ?? t('Welcome')}
           </Text>
           <Text variant="bodySm" tone="ink2" style={{ marginTop: 2 }}>
-            {name ? 'A little further each week 🌱' : email}
+            {name ? t('A little further each week 🌱') : email}
           </Text>
         </View>
-        <IconButton icon="settings-outline" label="Settings" onPress={() => router.push('/settings')} />
+        <IconButton icon="settings-outline" label={t('Settings')} onPress={() => router.push('/settings')} />
       </View>
 
       {!name && profileQuery.isSuccess ? (
         <Appear>
-          <Card variant="tinted" padding={14} onPress={() => router.push('/profile/goals')} accessibilityLabel="Add your first name" style={{ marginBottom: 16 }}>
+          <Card variant="tinted" padding={14} onPress={() => router.push('/profile/goals')} accessibilityLabel={t('Add your first name')} style={{ marginBottom: 16 }}>
             <View style={{ flexDirection: 'row', alignItems: 'center', gap: 10 }}>
               <Ionicons name="person-add-outline" size={20} color={theme.primary600} />
               <Text variant="label" style={{ flex: 1 }}>
-                What should we call you?
+                {t('What should we call you?')}
               </Text>
               <Ionicons name="chevron-forward" size={16} color={theme.ink2} />
             </View>
@@ -96,11 +97,11 @@ export default function ProfileScreen() {
       <Appear index={1}>
         <Card padding={16}>
           <View style={{ flexDirection: 'row' }}>
-            <Stat value={weeks === null ? '–' : String(weeks)} label={weeks === 1 ? 'week' : 'weeks'} />
+            <Stat value={weeks === null ? '–' : String(weeks)} label={weeks === 1 ? t('week') : t('weeks')} />
             <View style={{ width: 1, backgroundColor: theme.divider }} />
-            <Stat value={countQuery.data === undefined ? '–' : String(countQuery.data)} label={countQuery.data === 1 ? 'activity' : 'activities'} />
+            <Stat value={countQuery.data === undefined ? '–' : String(countQuery.data)} label={countQuery.data === 1 ? t('activity') : t('activities')} />
             <View style={{ width: 1, backgroundColor: theme.divider }} />
-            <Stat value={String(streakQuery.data ?? 0)} label="days in a row" />
+            <Stat value={String(streakQuery.data ?? 0)} label={t('days in a row')} />
           </View>
         </Card>
       </Appear>
@@ -108,12 +109,12 @@ export default function ProfileScreen() {
       <Appear index={2}>
         <View style={{ gap: 10, marginTop: 16 }}>
           <View style={{ flexDirection: 'row', gap: 10 }}>
-            <MenuTile icon="flag-outline" title="My goals" onPress={() => router.push('/profile/goals')} />
-            <MenuTile icon="calendar-outline" title="When I am free" onPress={() => router.push('/availability')} />
+            <MenuTile icon="flag-outline" title={t('My goals')} onPress={() => router.push('/profile/goals')} />
+            <MenuTile icon="calendar-outline" title={t('When I am free')} onPress={() => router.push('/availability')} />
           </View>
           <View style={{ flexDirection: 'row', gap: 10 }}>
-            <MenuTile icon="settings-outline" title="Settings" onPress={() => router.push('/settings')} />
-            <MenuTile icon="help-circle-outline" title="Help & support" onPress={() => setHelpOpen(true)} />
+            <MenuTile icon="settings-outline" title={t('Settings')} onPress={() => router.push('/settings')} />
+            <MenuTile icon="help-circle-outline" title={t('Help & support')} onPress={() => setHelpOpen(true)} />
           </View>
         </View>
       </Appear>
@@ -122,7 +123,7 @@ export default function ProfileScreen() {
         <PressableScale
           onPress={() => router.push(isPremium && !isDevUnlock ? '/settings' : '/paywall')}
           accessibilityRole="button"
-          accessibilityLabel={isPremium ? 'Regain Premium active' : 'Regain Premium, unlock everything'}
+          accessibilityLabel={isPremium ? t('Regain Premium active') : t('Regain Premium, unlock everything')}
           style={{ marginTop: 16, borderRadius: 18, padding: 16, backgroundColor: theme.premium, flexDirection: 'row', alignItems: 'center', gap: 12 }}
         >
           <View style={{ width: 42, height: 42, borderRadius: 21, backgroundColor: theme.dark ? theme.bg : '#FFFFFF', alignItems: 'center', justifyContent: 'center' }}>
@@ -130,29 +131,39 @@ export default function ProfileScreen() {
           </View>
           <View style={{ flex: 1 }}>
             <Text variant="label" tone="premium">
-              Regain Premium
+              {t('Regain Premium')}
             </Text>
             <Text variant="caption" tone="premium" style={{ opacity: 0.85 }}>
-              {isPremium ? (isDevUnlock ? 'Unlocked for development' : 'Active · manage my subscription') : 'Unlock everything'}
+              {isPremium
+                ? isDevUnlock
+                  ? t('Unlocked for development')
+                  : t('Active · manage my subscription')
+                : t('Unlock everything')}
             </Text>
           </View>
           <Ionicons name="chevron-forward" size={18} color={theme.premiumInk} />
         </PressableScale>
       </Appear>
 
-      <Sheet visible={helpOpen} title="Help & support" onClose={() => setHelpOpen(false)} scroll={false}>
+      <Sheet visible={helpOpen} title={t('Help & support')} onClose={() => setHelpOpen(false)} scroll={false}>
         <View style={{ paddingHorizontal: 20 }}>
           {SUPPORT_EMAIL ? (
-            <ListRow icon="mail-outline" title="Write to us" subtitle={SUPPORT_EMAIL} onPress={() => Linking.openURL(`mailto:${SUPPORT_EMAIL}`)} divider />
+            <ListRow
+              icon="mail-outline"
+              title={t('Write to us')}
+              subtitle={SUPPORT_EMAIL}
+              onPress={() => Linking.openURL(`mailto:${SUPPORT_EMAIL}`)}
+              divider
+            />
           ) : null}
-          {TERMS_URL ? <ListRow icon="document-text-outline" title="Terms of use" onPress={() => Linking.openURL(TERMS_URL)} divider /> : null}
-          {PRIVACY_URL ? <ListRow icon="shield-checkmark-outline" title="Privacy policy" onPress={() => Linking.openURL(PRIVACY_URL)} divider /> : null}
-          <ListRow icon="lock-closed-outline" title="My data" subtitle="Export or delete your account" onPress={() => {
+          {TERMS_URL ? <ListRow icon="document-text-outline" title={t('Terms of use')} onPress={() => Linking.openURL(TERMS_URL)} divider /> : null}
+          {PRIVACY_URL ? <ListRow icon="shield-checkmark-outline" title={t('Privacy policy')} onPress={() => Linking.openURL(PRIVACY_URL)} divider /> : null}
+          <ListRow icon="lock-closed-outline" title={t('My data')} subtitle={t('Export or delete your account')} onPress={() => {
             setHelpOpen(false);
             router.push('/settings');
           }} />
           <Text variant="caption" tone="ink2" style={{ marginTop: 12 }}>
-            Regain is not a substitute for a health professional. If things get difficult, talk to your doctor.
+            {t('Regain is not a substitute for a health professional. If things get difficult, talk to your doctor.')}
           </Text>
         </View>
       </Sheet>
