@@ -12,6 +12,7 @@ import { InlineNotice } from '../feedback/InlineNotice';
 import { Button } from '../ui/Button';
 import { Card } from '../ui/Card';
 import { Text } from '../ui/Text';
+import { t } from '../../lib/i18n';
 
 export function NeighborhoodHistoryCard() {
   const theme = useTheme();
@@ -28,7 +29,7 @@ export function NeighborhoodHistoryCard() {
       const candidates = [place.neighbourhood, place.city].filter((v): v is string => !!v);
 
       if (candidates.length === 0) {
-        setErrorMessage('Could not work out your neighbourhood from your location.');
+        setErrorMessage(t('Could not work out your neighbourhood from your location.'));
         setStatus('error');
         return;
       }
@@ -45,8 +46,8 @@ export function NeighborhoodHistoryCard() {
     } catch (err) {
       setErrorMessage(
         err instanceof LocationPermissionDeniedError
-          ? 'Location declined. Turn it on in Settings to read about your neighbourhood.'
-          : 'Could not fetch this right now. Try again in a moment.'
+          ? t('Location declined. Turn it on in Settings to read about your neighbourhood.')
+          : t('Could not fetch this right now. Try again in a moment.')
       );
       setStatus('error');
     }
@@ -55,14 +56,14 @@ export function NeighborhoodHistoryCard() {
   return (
     <Card style={{ marginBottom: 16 }}>
       <Text variant="overline" tone="ink2">
-        🏙️ The story of your neighbourhood
+        🏙️ {t('The story of your neighbourhood')}
       </Text>
       {status === 'idle' ? (
         <>
           <Text variant="bodySm" tone="ink2" style={{ marginTop: 8, marginBottom: 12 }}>
-            We use your location to tell you a little of the history of the area or town you are about to explore.
+            {t('We use your location to tell you a little of the history of the area or town you are about to explore.')}
           </Text>
-          <Button label="Read about my area" variant="secondary" size="md" fullWidth={false} icon="location-outline" onPress={handleDiscover} />
+          <Button label={t('Read about my area')} variant="secondary" size="md" fullWidth={false} icon="location-outline" onPress={handleDiscover} />
         </>
       ) : status === 'loading' ? (
         <View style={{ paddingVertical: 12 }}>
@@ -71,7 +72,7 @@ export function NeighborhoodHistoryCard() {
       ) : status === 'error' ? (
         <>
           <InlineNotice tone="error" message={errorMessage} />
-          <Button label="Try again" variant="ghost" size="sm" fullWidth={false} onPress={handleDiscover} style={{ marginTop: 6 }} />
+          <Button label={t('Try again')} variant="ghost" size="sm" fullWidth={false} onPress={handleDiscover} style={{ marginTop: 6 }} />
         </>
       ) : (
         <>
@@ -79,10 +80,10 @@ export function NeighborhoodHistoryCard() {
             {placeLabel}
           </Text>
           <Text variant="bodySm" tone="ink2" style={{ marginTop: 6 }}>
-            {extract ?? 'No article for this exact spot — which may be reason enough to go and see it.'}
+            {extract ?? t('No article for this exact spot — which may be reason enough to go and see it.')}
           </Text>
           <Text variant="caption" tone="ink3" style={{ marginTop: 8 }}>
-            Source: Wikipedia.
+            {t('Source: Wikipedia.')}
           </Text>
         </>
       )}

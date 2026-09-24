@@ -10,6 +10,7 @@ import { imageForWellbeing } from '../../theme/images';
 import { useTheme } from '../../theme/ThemeProvider';
 import { Button } from '../ui/Button';
 import { Text } from '../ui/Text';
+import { t } from '../../lib/i18n';
 
 const HEIGHT = 300;
 
@@ -36,7 +37,7 @@ function Slide({ item, width, onStart }: { item: WellbeingRecommendation; width:
           <View style={{ flexDirection: 'row', alignItems: 'center', gap: 6 }}>
             <Ionicons name="sunny" size={16} color={theme.yellow} />
             <Text variant="caption" style={{ fontWeight: '700' }}>
-              Recommended for you
+              {t('Recommended for you')}
             </Text>
           </View>
           <Text variant="headline" style={{ marginTop: 12 }} numberOfLines={3}>
@@ -55,7 +56,7 @@ function Slide({ item, width, onStart }: { item: WellbeingRecommendation; width:
             {item.reason}
           </Text>
         </View>
-        <Button label="Start" icon="play" fullWidth={false} onPress={onStart} />
+        <Button label={t('Start')} icon="play" fullWidth={false} onPress={onStart} />
       </View>
     </View>
   );
@@ -89,7 +90,7 @@ export function RecommendationHero({
         scrollEventThrottle={32}
         style={{ marginHorizontal: -20 }}
         contentContainerStyle={{ paddingHorizontal: 20, gap }}
-        accessibilityLabel="Recommendations"
+        accessibilityLabel={t('Recommendations')}
       >
         {items.map((item) => (
           <Slide key={item.program.id} item={item} width={width} onStart={() => onStart(item)} />

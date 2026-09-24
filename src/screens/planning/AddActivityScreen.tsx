@@ -26,11 +26,12 @@ import { addPlannedActivity, fetchCatalog } from '../../lib/planning';
 import { useUpcomingDates } from '../../lib/useCurrentDate';
 import { useAuthStore } from '../../store/authStore';
 import { useTheme } from '../../theme/ThemeProvider';
+import { t } from '../../lib/i18n';
 
 const SLOTS: { value: TimeSlot; label: string }[] = [
-  { value: 'matin', label: 'Morning' },
-  { value: 'apres_midi', label: 'Afternoon' },
-  { value: 'soir', label: 'Evening' },
+  { value: 'matin', label: t('Morning') },
+  { value: 'apres_midi', label: t('Afternoon') },
+  { value: 'soir', label: t('Evening') },
 ];
 
 /** Add an activity from the catalogue to a chosen day and time. */
@@ -72,7 +73,7 @@ export default function AddActivityScreen() {
         <View>
           {addMutation.isError ? <InlineNotice tone="error" message={errorMessage(addMutation.error)} /> : null}
           <Button
-            label="Add to my plan"
+            label={t('Add to my plan')}
             icon="add"
             disabled={!activityId}
             loading={addMutation.isPending}
@@ -82,15 +83,15 @@ export default function AddActivityScreen() {
         </View>
       }
     >
-      <ScreenHeader title="Add an activity" subtitle="Pick the time, then what you feel like doing." onBack={() => goBack('/(tabs)/planning')} backLabel="Close" />
+      <ScreenHeader title={t('Add an activity')} subtitle={t('Pick the time, then what you feel like doing.')} onBack={() => goBack('/(tabs)/planning')} backLabel={t('Close')} />
 
-      <Select label="Day" value={date} options={dates} onChange={setDate} />
+      <Select label={t('Day')} value={date} options={dates} onChange={setDate} />
       <View style={{ marginBottom: 24 }}>
-        <SegmentedControl label="Time of day" tone="surface" value={slot} onChange={setSlot} options={SLOTS} />
+        <SegmentedControl label={t('Time of day')} tone="surface" value={slot} onChange={setSlot} options={SLOTS} />
       </View>
 
       <Text variant="section" style={{ marginBottom: 12 }} accessibilityRole="header">
-        Activity
+        {t('Activity')}
       </Text>
       <View
         style={{
@@ -109,14 +110,14 @@ export default function AddActivityScreen() {
         <TextInput
           value={search}
           onChangeText={setSearch}
-          placeholder="Search activities"
-          accessibilityLabel="Search activities"
+          placeholder={t('Search activities')}
+          accessibilityLabel={t('Search activities')}
           returnKeyType="search"
           style={{ flex: 1, marginLeft: 8, paddingVertical: 12 }}
         />
       </View>
       <ScrollView horizontal showsHorizontalScrollIndicator={false} style={{ marginHorizontal: -20, marginBottom: 12 }} contentContainerStyle={{ paddingHorizontal: 20, gap: 8 }}>
-        <ChoiceChip label="All" selected={category === null} multiple={false} onPress={() => setCategory(null)} />
+        <ChoiceChip label={t('All')} selected={category === null} multiple={false} onPress={() => setCategory(null)} />
         {categories.map((c) => (
           <ChoiceChip key={c} label={CATEGORY_LABELS[c]} selected={category === c} multiple={false} onPress={() => setCategory(c)} />
         ))}
@@ -128,7 +129,7 @@ export default function AddActivityScreen() {
         <ErrorState onRetry={() => catalogQuery.refetch()} />
       ) : filtered.length === 0 ? (
         <Text variant="bodySm" tone="ink2">
-          Nothing matches. Try another word, or another category.
+          {t('Nothing matches. Try another word, or another category.')}
         </Text>
       ) : (
         <View accessibilityRole="radiogroup">

@@ -1,6 +1,7 @@
 import { View } from 'react-native';
 
 import { pickBookForGoals } from '../../features/activities/books';
+import { t } from '../../lib/i18n';
 import { useTheme } from '../../theme/ThemeProvider';
 import { Card } from '../ui/Card';
 import { Text } from '../ui/Text';
@@ -11,7 +12,7 @@ export function BookSuggestionCard({ primaryGoals }: { primaryGoals: string[] })
   return (
     <Card style={{ marginBottom: 16 }}>
       <Text variant="overline" tone="ink2">
-        📖 A book to read
+        📖 {t('A book to read')}
       </Text>
       <Text variant="cardTitle" style={{ marginTop: 8 }}>
         {book.title}
@@ -25,7 +26,7 @@ export function BookSuggestionCard({ primaryGoals }: { primaryGoals: string[] })
         </Text>
       </View>
       <Text variant="caption" tone="ink3" style={{ marginTop: 8 }}>
-        A key idea put in our own words from this public-domain text, not an exact quotation.
+        {t('A key idea put in our own words from this public-domain text, not an exact quotation.')}
       </Text>
     </Card>
   );

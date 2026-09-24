@@ -13,6 +13,7 @@ import { DEFAULT_SLOT_START } from './schedule';
 import { sessionTitle } from '../fitness/schedule';
 import type { WeekTrackerDay } from '../fitness/schedule';
 import type { WorkoutSession } from '../fitness/types';
+import { t } from '../../lib/i18n';
 
 type TimeSlot = keyof typeof DEFAULT_SLOT_START;
 
@@ -109,8 +110,8 @@ export function shoppingCommitment({
     kind: 'courses',
     date: day.date,
     startTime: null,
-    title: 'Do the shopping',
-    subtitle: `${itemCount} items for your meals`,
+    title: t('Do the shopping'),
+    subtitle: t('{count} items for your meals', { count: itemCount }),
     durationMinutes: SHOPPING_MINUTES,
     href: '/fitness/nutrition',
     status: 'a_faire',

@@ -11,6 +11,7 @@ import { CheckCircle } from '../ui/CheckCircle';
 import { Tag } from '../ui/Tag';
 import { Text } from '../ui/Text';
 import { Thumbnail } from '../ui/Thumbnail';
+import { t } from '../../lib/i18n';
 
 type IconName = ComponentProps<typeof Thumbnail>['icon'];
 
@@ -81,7 +82,7 @@ export function NowCard({
       ) : null}
 
       <View style={{ marginTop: 16 }}>
-        <Button label={done ? 'View the activity' : 'Start'} icon={done ? 'eye-outline' : 'play'} onPress={onStart} variant={done ? 'secondary' : 'primary'} />
+        <Button label={done ? t('View the activity') : t('Start')} icon={done ? 'eye-outline' : 'play'} onPress={onStart} variant={done ? 'secondary' : 'primary'} />
       </View>
 
       {footer ? <View style={{ marginTop: 18, paddingTop: 16, borderTopWidth: 1, borderTopColor: theme.divider }}>{footer}</View> : null}

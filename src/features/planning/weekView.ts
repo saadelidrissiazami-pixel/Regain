@@ -1,10 +1,11 @@
+import { t } from '../../lib/i18n';
 type DatedItem = { date: string; status: string };
 
 /** A greeting for the time of day, lined up with the plan's own slots. */
 export function greetingFor(hour: number): string {
-  if (hour >= 5 && hour < 12) return 'Good morning';
-  if (hour >= 12 && hour < 18) return 'Good afternoon';
-  return 'Good evening';
+  if (hour >= 5 && hour < 12) return t('Good morning');
+  if (hour >= 12 && hour < 18) return t('Good afternoon');
+  return t('Good evening');
 }
 
 /** Minutes between now and an “HH:MM” time on the given day (negative once it has passed). */
@@ -23,17 +24,17 @@ export function isOver(date: string, startTime: string, durationMinutes: number,
 /** “in 25 min”, “in 1h 48”, “in 3h”; null once the time has passed. */
 export function formatCountdown(minutes: number): string | null {
   if (minutes <= 0) return null;
-  if (minutes < 60) return `in ${minutes} min`;
+  if (minutes < 60) return t('in {minutes} min', { minutes });
   const hours = Math.floor(minutes / 60);
   const rest = minutes % 60;
-  return rest === 0 ? `in ${hours}h` : `in ${hours}h ${String(rest).padStart(2, '0')}`;
+  return rest === 0 ? t('in {hours}h', { hours }) : t('in {hours}h {minutes}', { hours, minutes: String(rest).padStart(2, '0') });
 }
 
 /** The header's subtitle: what is left to do today. */
 export function todaySubtitle(pendingToday: number, hour: number): string {
-  if (pendingToday === 0) return 'Nothing planned before the day is out';
-  const until = hour >= 18 ? 'this evening' : 'today';
-  return `${pendingToday} activit${pendingToday > 1 ? 'ies' : 'y'} ${until}`;
+  if (pendingToday === 0) return t('Nothing planned before the day is out');
+  const until = hour >= 18 ? t('this evening') : t('today');
+  return pendingToday > 1 ? t('{count} activities {until}', { count: pendingToday, until }) : t('{count} activity {until}', { count: pendingToday, until });
 }
 
 export type WeekView<T extends DatedItem> = {
@@ -71,9 +72,9 @@ export function coachLine({
   pendingToday: number;
   hour: number;
 }): string {
-  if (!hasPlan) return 'Your week is still to be built — we will do it together.';
-  if (totalCount > 0 && doneCount === totalCount) return 'Week complete. Take the time to enjoy it.';
-  if (pendingToday === 0) return hour >= 18 ? 'Nothing else planned tonight. Enjoy your evening.' : 'Nothing else planned today.';
-  if (doneCount > 0) return 'Keep going — you are doing well.';
-  return 'Here is what is planned for today.';
+  if (!hasPlan) return t('Your week is still to be built — we will do it together.');
+  if (totalCount > 0 && doneCount === totalCount) return t('Week complete. Take the time to enjoy it.');
+  if (pendingToday === 0) return hour >= 18 ? t('Nothing else planned tonight. Enjoy your evening.') : t('Nothing else planned today.');
+  if (doneCount > 0) return t('Keep going — you are doing well.');
+  return t('Here is what is planned for today.');
 }

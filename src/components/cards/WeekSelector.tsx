@@ -4,8 +4,9 @@ import { fromLocalISODate } from '../../lib/week';
 import { useTheme } from '../../theme/ThemeProvider';
 import { PressableScale } from '../ui/motion';
 import { Text } from '../ui/Text';
+import { t } from '../../lib/i18n';
 
-const SHORT_DAYS = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'];
+const SHORT_DAYS = [t('Mon'), t('Tue'), t('Wed'), t('Thu'), t('Fri'), t('Sat'), t('Sun')];
 const LONG_DAYS = ['lundi', 'mardi', 'mercredi', 'jeudi', 'vendredi', 'samedi', 'dimanche'];
 
 export type DayMarker = { count: number; done: number };

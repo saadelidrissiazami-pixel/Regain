@@ -4,6 +4,7 @@ import MapView, { Marker, Polyline } from 'react-native-maps';
 
 import type { Coords } from '../../lib/location';
 import { useTheme } from '../../theme/ThemeProvider';
+import { t } from '../../lib/i18n';
 
 // The mobile version (iOS: Apple Maps, no key). The web uses RouteMap.web.tsx, since
 // react-native-maps has no browser implementation.
@@ -31,7 +32,7 @@ export function RouteMap({ path, start }: { path: Coords[]; start: Coords }) {
         }
       >
         <Polyline coordinates={path} strokeColor={theme.primary600} strokeWidth={4} />
-        <Marker coordinate={start} title="Start and finish" pinColor={theme.orange} />
+        <Marker coordinate={start} title={t('Start and finish')} pinColor={theme.orange} />
       </MapView>
     </View>
   );

@@ -1,5 +1,6 @@
 import { DEFAULT_SLOT_START } from '../planning/schedule';
 import { fromLocalISODate, getDateForDayOfWeek, toLocalISODate } from '../../lib/week';
+import { t } from '../../lib/i18n';
 import type { NutritionTargets } from './nutrition';
 import { intensityFromCheckin } from './planGenerator';
 import type { FitnessCheckin, FitnessPlan, WorkoutSession } from './types';
@@ -153,9 +154,9 @@ export function uniqueExercises(program: WorkoutSession[]): ExerciseSummary[] {
 
 /** A relative label for a date: “Today”, “Tomorrow”, otherwise “Monday, Sep 21”. */
 export function relativeDayLabel(date: string, today: string, format: (date: string) => string): string {
-  if (date === today) return 'Today';
+  if (date === today) return t('Today');
   const tomorrow = fromLocalISODate(today);
   tomorrow.setDate(tomorrow.getDate() + 1);
-  if (date === toLocalISODate(tomorrow)) return 'Tomorrow';
+  if (date === toLocalISODate(tomorrow)) return t('Tomorrow');
   return format(date);
 }

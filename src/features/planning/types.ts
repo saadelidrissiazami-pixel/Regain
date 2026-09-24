@@ -1,3 +1,4 @@
+import { t } from '../../lib/i18n';
 export type ActivityCategory =
   | 'physique'
   | 'outdoor'
@@ -10,15 +11,15 @@ export type ActivityCategory =
   | 'temps_libre';
 
 export const CATEGORY_LABELS: Record<ActivityCategory, string> = {
-  physique: 'Exercise',
-  outdoor: 'Outdoors',
-  indoor: 'At home',
-  social: 'Social',
-  relaxation: 'Relaxation',
-  meditation: 'Meditation',
-  dev_perso: 'Personal growth',
-  recuperation: 'Recovery',
-  temps_libre: 'Free time',
+  physique: t('Exercise'),
+  outdoor: t('Outdoors'),
+  indoor: t('At home'),
+  social: t('Social'),
+  relaxation: t('Relaxation'),
+  meditation: t('Meditation'),
+  dev_perso: t('Personal growth'),
+  recuperation: t('Recovery'),
+  temps_libre: t('Free time'),
 };
 
 // Accent colours (the dot before a category, the bars in tracking): muted, taken from the palette.

@@ -1,5 +1,7 @@
 import * as Location from 'expo-location';
 
+import { lang, t } from './i18n';
+
 export type Coords = { latitude: number; longitude: number };
 
 export type PlaceInfo = {
@@ -41,7 +43,7 @@ export async function reverseGeocode({ latitude, longitude }: Coords): Promise<P
 }
 
 // The Wikipedia REST API — a free public service, no key.
-export async function fetchWikipediaSummary(title: string, lang = 'en'): Promise<WikiSummary | null> {
+export async function fetchWikipediaSummary(title: string): Promise<WikiSummary | null> {
   try {
     const url = `https://${lang}.wikipedia.org/api/rest_v1/page/summary/${encodeURIComponent(title)}`;
     const response = await fetch(url, { headers: { Accept: 'application/json' } });
@@ -79,10 +81,10 @@ function destinationPoint({ latitude, longitude }: Coords, bearingDeg: number, d
 export type WalkingLeg = { instruction: string; distanceM: number; point: Coords };
 
 const COMPASS_LABELS: { bearing: number; label: string }[] = [
-  { bearing: 0, label: 'due north' },
-  { bearing: 90, label: 'due east' },
-  { bearing: 180, label: 'due south' },
-  { bearing: 270, label: 'due west' },
+  { bearing: 0, label: t('due north') },
+  { bearing: 90, label: t('due east') },
+  { bearing: 180, label: t('due south') },
+  { bearing: 270, label: t('due west') },
 ];
 
 // With no routing API key available, we build a geometric loop (a square) centred on the user's
@@ -103,10 +105,10 @@ export function generateWalkingLoop(start: Coords, totalMinutes: number): Walkin
     legs.push({
       instruction:
         i === 0
-          ? `Head ${compass.label} for about ${Math.round(legDistanceM / WALKING_SPEED_M_PER_MIN)} min.`
+          ? t('Head {direction} for about {minutes} min.', { direction: compass.label, minutes: Math.round(legDistanceM / WALKING_SPEED_M_PER_MIN) })
           : i === 3
-            ? `Head back towards where you started (${compass.label}).`
-            : `Turn and carry on ${compass.label} for about ${Math.round(legDistanceM / WALKING_SPEED_M_PER_MIN)} min.`,
+            ? t('Head back towards where you started ({direction}).', { direction: compass.label })
+            : t('Turn and carry on {direction} for about {minutes} min.', { direction: compass.label, minutes: Math.round(legDistanceM / WALKING_SPEED_M_PER_MIN) }),
       distanceM: legDistanceM,
       point: next,
     });
@@ -216,27 +218,27 @@ type OsrmResponse = {
 const OSRM_FOOT_URL = 'https://routing.openstreetmap.de/routed-foot/route/v1/foot';
 
 const DIRECTION_LABELS: Record<string, string> = {
-  left: 'left',
-  right: 'right',
-  'slight left': 'slightly left',
-  'slight right': 'slightly right',
-  'sharp left': 'sharp left',
-  'sharp right': 'sharp right',
-  straight: 'straight on',
+  left: t('left'),
+  right: t('right'),
+  'slight left': t('slightly left'),
+  'slight right': t('slightly right'),
+  'sharp left': t('sharp left'),
+  'sharp right': t('sharp right'),
+  straight: t('straight on'),
 };
 
 function describeStep(step: OsrmStep): string {
   const { type, modifier } = step.maneuver;
-  const street = step.name ? ` onto ${step.name}` : '';
+  const onto = (what: string) => (step.name ? t('{what} onto {street}', { what, street: step.name }) : what);
 
-  if (type === 'depart') return `Set off${street}`;
-  if (type === 'arrive') return 'You are back where you started';
-  if (modifier === 'uturn') return `Turn around${street}`;
-  if (type === 'roundabout' || type === 'rotary') return `Take the roundabout${street}`;
+  if (type === 'depart') return onto(t('Set off'));
+  if (type === 'arrive') return t('You are back where you started');
+  if (modifier === 'uturn') return onto(t('Turn around'));
+  if (type === 'roundabout' || type === 'rotary') return onto(t('Take the roundabout'));
 
   const direction = modifier ? DIRECTION_LABELS[modifier] : undefined;
-  if (!direction || direction === 'straight on') return `Carry straight on${street}`;
-  return `Turn ${direction}${street}`;
+  if (!direction || modifier === 'straight') return onto(t('Carry straight on'));
+  return onto(t('Turn {direction}', { direction }));
 }
 
 const MIN_STEP_METERS = 15;

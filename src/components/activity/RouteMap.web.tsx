@@ -1,6 +1,7 @@
 import { View } from 'react-native';
 import Svg, { Circle, Polyline } from 'react-native-svg';
 
+import { t } from '../../lib/i18n';
 import type { Coords } from '../../lib/location';
 import { useTheme } from '../../theme/ThemeProvider';
 import { Text } from '../ui/Text';
@@ -41,7 +42,7 @@ export function RouteMap({ path, start }: { path: Coords[]; start: Coords }) {
         <Circle cx={startPoint.x} cy={startPoint.y} r={7} fill={theme.orange} stroke="#FFFFFF" strokeWidth={2} />
       </Svg>
       <Text variant="caption" tone="ink2" style={{ paddingHorizontal: 12, paddingBottom: 8 }}>
-        Route preview — the interactive map appears in the mobile app.
+        {t('Route preview — the interactive map appears in the mobile app.')}
       </Text>
     </View>
   );

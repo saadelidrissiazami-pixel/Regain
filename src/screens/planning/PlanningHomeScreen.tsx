@@ -20,6 +20,7 @@ import { firstNameOf } from '../../lib/profile';
 import { relativeDayLabel } from '../../features/fitness/schedule';
 import { useAuthStore } from '../../store/authStore';
 import { activityReason } from './reason';
+import { t } from '../../lib/i18n';
 
 /** Home: “What should I be doing now?” */
 export default function PlanningHomeScreen() {
@@ -54,7 +55,7 @@ export default function PlanningHomeScreen() {
     const start = startOf(item);
     if (item.date === today) {
       const countdown = formatCountdown(minutesUntil(item.date, start, now));
-      return [start, countdown ?? 'in progress'].join(' · ');
+      return [start, countdown ?? t('in progress')].join(' · ');
     }
     return `${relativeDayLabel(item.date, today, formatDayLabel)} · ${start}`;
   };
@@ -69,7 +70,7 @@ export default function PlanningHomeScreen() {
         subtitle={coachLine({ hasPlan, doneCount: view.doneCount, totalCount: view.totalCount, pendingToday, hour })}
         size="display"
         right={
-          <PressableScale onPress={() => router.navigate('/(tabs)/profile')} accessibilityRole="button" accessibilityLabel="My profile">
+          <PressableScale onPress={() => router.navigate('/(tabs)/profile')} accessibilityRole="button" accessibilityLabel={t('My profile')}>
             <Avatar name={name ?? email} size={44} />
           </PressableScale>
         }
@@ -85,7 +86,7 @@ export default function PlanningHomeScreen() {
         <LoadingSkeleton preset="hero" />
       ) : planQuery.isError ? (
         <ErrorState
-          title="Your plan could not be loaded"
+          title={t('Your plan could not be loaded')}
           onRetry={() => planQuery.refetch()}
           retrying={planQuery.isFetching}
         />
@@ -94,18 +95,18 @@ export default function PlanningHomeScreen() {
           {hasAvailability ? (
             <EmptyState
               icon="sparkles-outline"
-              title="Shall we prepare your week?"
-              body="Regain places activities into the times you are free, around your energy and your goals."
-              actionLabel="Prepare my week"
+              title={t('Shall we prepare your week?')}
+              body={t('Regain places activities into the times you are free, around your energy and your goals.')}
+              actionLabel={t('Prepare my week')}
               onAction={() => generateMutation.mutate()}
               actionLoading={generateMutation.isPending}
             />
           ) : (
             <EmptyState
               icon="time-outline"
-              title="Start with when you are free"
-              body="Tell Regain when you are free, and it suggests what to do, at the right time."
-              actionLabel="Add my free times"
+              title={t('Start with when you are free')}
+              body={t('Tell Regain when you are free, and it suggests what to do, at the right time.')}
+              actionLabel={t('Add my free times')}
               onAction={() => router.push('/availability')}
             />
           )}
@@ -115,7 +116,7 @@ export default function PlanningHomeScreen() {
         <Appear index={1}>
           <NowCard
             key={next.id}
-            label={next.date === today ? 'Now' : 'Up next'}
+            label={next.date === today ? t('Now') : t('Up next')}
             when={whenOf(next)}
             activity={next.activities_catalog}
             reason={activityReason(next.activities_catalog, planning.preferences)}
@@ -126,7 +127,7 @@ export default function PlanningHomeScreen() {
             footer={
               <>
                 <Text variant="label" style={{ marginBottom: 10 }}>
-                  How are you feeling right now?
+                  {t('How are you feeling right now?')}
                 </Text>
                 <EnergySelector value={energy.level} onChange={energy.save} savingLevel={energy.savingLevel} disabled={energy.saving} />
               </>
@@ -137,13 +138,13 @@ export default function PlanningHomeScreen() {
         <Appear index={1}>
           <EmptyState
             icon={allDone ? 'trophy-outline' : 'moon-outline'}
-            title={allDone ? 'Everything is done for this week' : 'Nothing else planned before the week is out'}
+            title={allDone ? t('Everything is done for this week') : t('Nothing else planned before the week is out')}
             body={
               allDone
-                ? 'Well done. See what you got through in Tracking.'
-                : 'Enjoy the free time, or add an activity if you feel like it.'
+                ? t('Well done. See what you got through in Tracking.')
+                : t('Enjoy the free time, or add an activity if you feel like it.')
             }
-            actionLabel={allDone ? 'See my progress' : 'Add an activity'}
+            actionLabel={allDone ? t('See my progress') : t('Add an activity')}
             onAction={() => (allDone ? router.navigate('/(tabs)/tracking') : router.push('/planning/add'))}
           />
         </Appear>
@@ -155,8 +156,8 @@ export default function PlanningHomeScreen() {
             <View style={{ paddingHorizontal: 12 }}>
               <ListRow
                 icon="checkmark-done-outline"
-                title={`${toCheck} activit${toCheck > 1 ? 'ies' : 'y'} to tick off`}
-                subtitle="Already done? Tick it off from your week."
+                title={toCheck > 1 ? t('{count} activities to tick off', { count: toCheck }) : t('{count} activity to tick off', { count: toCheck })}
+                subtitle={t('Already done? Tick it off from your week.')}
                 onPress={() => router.push('/planning/week')}
                 compact
               />
@@ -168,7 +169,7 @@ export default function PlanningHomeScreen() {
       {after ? (
         <Appear index={3}>
           <View style={{ marginTop: 28 }}>
-            <SectionHeader title="Up next" actionLabel="See the week" onAction={() => router.push('/planning/week')} />
+            <SectionHeader title={t('Up next')} actionLabel={t('See the week')} onAction={() => router.push('/planning/week')} />
             <NextUpCard
               when={whenOf(after)}
               activity={after.activities_catalog}
@@ -192,7 +193,7 @@ export default function PlanningHomeScreen() {
       {aVenir.length > 0 ? (
         <Appear index={5}>
           <View style={{ marginTop: 28 }}>
-            <SectionHeader title="Your commitments" actionLabel="My fitness" onAction={() => router.push('/(tabs)/fitness')} />
+            <SectionHeader title={t('Your commitments')} actionLabel={t('My fitness')} onAction={() => router.push('/(tabs)/fitness')} />
             {aVenir.map((engagement, index) => (
               <ListRow
                 key={engagement.id}
@@ -217,15 +218,15 @@ export default function PlanningHomeScreen() {
       <Appear index={6}>
         <View style={{ marginTop: 32 }}>
           <Text variant="overline" tone="ink2" style={{ marginBottom: 4 }}>
-            Organise my week
+            {t('Organise my week')}
           </Text>
-          <ListRow icon="calendar-outline" title="See the whole week" onPress={() => router.push('/planning/week')} divider compact />
-          <ListRow icon="time-outline" title="When I am free" onPress={() => router.push('/availability')} divider compact />
+          <ListRow icon="calendar-outline" title={t('See the whole week')} onPress={() => router.push('/planning/week')} divider compact />
+          <ListRow icon="time-outline" title={t('When I am free')} onPress={() => router.push('/availability')} divider compact />
           {hasPlan ? (
             <ListRow
               icon="refresh-outline"
-              title="Rebuild my week"
-              subtitle="Activities already done stay where they are."
+              title={t('Rebuild my week')}
+              subtitle={t('Activities already done stay where they are.')}
               onPress={() => setConfirmRegenerate(true)}
               divider
               compact
@@ -234,7 +235,7 @@ export default function PlanningHomeScreen() {
           {hasPlan && !calendarUnavailableReason ? (
             <ListRow
               icon="sync-outline"
-              title={calendarSyncMutation.isPending ? 'Syncing…' : 'Sync with my calendar'}
+              title={calendarSyncMutation.isPending ? t('Syncing…') : t('Sync with my calendar')}
               onPress={() => calendarSyncMutation.mutate()}
               compact
               chevron={false}
@@ -255,25 +256,25 @@ export default function PlanningHomeScreen() {
             />
           ) : null}
           {hasPlan && generateMutation.isError ? <InlineNotice tone="error" message={errorMessage(generateMutation.error)} /> : null}
-          {hasPlan && generateMutation.isSuccess ? <InlineNotice tone="success" message="Your week has been adapted." /> : null}
+          {hasPlan && generateMutation.isSuccess ? <InlineNotice tone="success" message={t('Your week has been adapted.')} /> : null}
         </View>
       </Appear>
 
       <Sheet
         visible={confirmRegenerate}
-        title="Rebuild your week?"
-        subtitle="Regain suggests new activities. The ones you have already done stay where they are."
+        title={t('Rebuild your week?')}
+        subtitle={t('Regain suggests new activities. The ones you have already done stay where they are.')}
         onClose={() => setConfirmRegenerate(false)}
         scroll={false}
         footer={
           <View style={{ gap: 8 }}>
             <Button
-              label="Rebuild"
+              label={t('Rebuild')}
               icon="refresh"
               loading={generateMutation.isPending}
               onPress={() => generateMutation.mutate(undefined, { onSettled: () => setConfirmRegenerate(false) })}
             />
-            <Button label="Cancel" variant="ghost" onPress={() => setConfirmRegenerate(false)} />
+            <Button label={t('Cancel')} variant="ghost" onPress={() => setConfirmRegenerate(false)} />
           </View>
         }
       >

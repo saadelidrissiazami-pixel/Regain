@@ -1,4 +1,5 @@
 import type { EnergyLevel } from './catalog';
+import { t } from '../../lib/i18n';
 
 /**
  * What to say back once somebody has told you how their energy is.
@@ -9,19 +10,19 @@ import type { EnergyLevel } from './catalog';
  */
 export const ENERGY_LINES: Record<EnergyLevel, string[]> = {
   bas: [
-    'A low day is still a day. Nothing here asks you to be at your best.',
-    'Saying so is already something. What comes next can be small.',
-    'You have nothing to catch up on today. Small is enough.',
+    t('A low day is still a day. Nothing here asks you to be at your best.'),
+    t('Saying so is already something. What comes next can be small.'),
+    t('You have nothing to catch up on today. Small is enough.'),
   ],
   moyen: [
-    'No need to give everything today. One step is enough.',
-    'Steady energy is already a solid base to build on.',
-    'You do not have to be at your best to move a little.',
+    t('No need to give everything today. One step is enough.'),
+    t('Steady energy is already a solid base to build on.'),
+    t('You do not have to be at your best to move a little.'),
   ],
   eleve: [
-    'This kind of energy is worth spending on what matters to you.',
-    'You are carried along today — put it into something you genuinely want to do.',
-    'A good day to start the thing you keep putting off.',
+    t('This kind of energy is worth spending on what matters to you.'),
+    t('You are carried along today — put it into something you genuinely want to do.'),
+    t('A good day to start the thing you keep putting off.'),
   ],
 };
 
@@ -36,10 +37,10 @@ export function isLowEnergy(level: EnergyLevel): boolean {
 
 /** Quiet lines at the foot of the Wellbeing screen. */
 export const CALM_QUOTES = [
-  'A small step each day adds up to a great deal.',
-  'Take the time to be here.',
-  'Breathing is already a way of looking after yourself.',
-  'Going at your own pace is still going.',
+  t('A small step each day adds up to a great deal.'),
+  t('Take the time to be here.'),
+  t('Breathing is already a way of looking after yourself.'),
+  t('Going at your own pace is still going.'),
 ];
 
 /** One line a day, steady for the whole day. */

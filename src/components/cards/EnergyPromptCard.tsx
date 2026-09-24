@@ -15,6 +15,7 @@ import { Card } from '../ui/Card';
 import { Sheet } from '../ui/Sheet';
 import { Text } from '../ui/Text';
 import { energyChoice, EnergySelector } from './EnergySelector';
+import { lang, t } from '../../lib/i18n';
 
 /**
  * “How is your energy today?” opens the check-in. Answering it has to lead somewhere: the answer
@@ -31,10 +32,12 @@ export function EnergyPromptCard() {
   const suggestion = useEnergySuggestion(level);
   const line = level ? lineForEnergy(level, today) : null;
 
-  const title = choice ? `${choice.label} energy today` : 'How is your energy today?';
+  const title = choice
+    ? t('{level} energy today', { level: lang === 'fr' ? choice.label.toLowerCase() : choice.label })
+    : t('How is your energy today?');
   // Only the suggestions read this answer — the week's plan is built from the rhythm given at
   // sign-up — so this does not claim the plan changes.
-  const subtitle = line ?? 'It changes what we suggest next.';
+  const subtitle = line ?? t('It changes what we suggest next.');
 
   return (
     <>
@@ -43,7 +46,7 @@ export function EnergyPromptCard() {
         padding={16}
         onPress={() => setOpen(true)}
         accessibilityLabel={`${title}. ${subtitle}`}
-        accessibilityHint="Opens the energy check-in"
+        accessibilityHint={t('Opens the energy check-in')}
       >
         <View style={{ flexDirection: 'row', alignItems: 'center' }}>
           <View
@@ -71,8 +74,8 @@ export function EnergyPromptCard() {
 
       <Sheet
         visible={open}
-        title="How are you feeling right now?"
-        subtitle="Your suggestions adapt to your answer."
+        title={t('How are you feeling right now?')}
+        subtitle={t('Your suggestions adapt to your answer.')}
         onClose={() => setOpen(false)}
         scroll={false}
         footer={
@@ -82,14 +85,14 @@ export function EnergyPromptCard() {
             // guided minute can be the one demand too many.
             <View style={{ flexDirection: 'row', gap: 10 }}>
               <Button
-                label="Not now"
+                label={t('Not now')}
                 variant="outline"
                 fullWidth={false}
                 style={{ flex: 1 }}
                 onPress={() => setOpen(false)}
               />
               <Button
-                label="Start"
+                label={t('Start')}
                 icon="play"
                 fullWidth={false}
                 style={{ flex: 1 }}
@@ -100,7 +103,7 @@ export function EnergyPromptCard() {
               />
             </View>
           ) : (
-            <Button label="Close" variant="secondary" onPress={() => setOpen(false)} />
+            <Button label={t('Close')} variant="secondary" onPress={() => setOpen(false)} />
           )
         }
       >

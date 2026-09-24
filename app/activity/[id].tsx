@@ -17,16 +17,17 @@ import { usePlanning } from '../../src/hooks/usePlanning';
 import { fetchActivityById, fetchCatalog } from '../../src/lib/planning';
 import { imageForActivity } from '../../src/theme/images';
 import { useTheme } from '../../src/theme/ThemeProvider';
+import { t } from '../../src/lib/i18n';
 
 type IconName = ComponentProps<typeof Thumbnail>['icon'];
 
 // These three extras belong to catalogue rows from an earlier version, which are no longer
 // offered but are still referenced by older plans. The titles matched here are the ones the
 // person reads, after localiseActivity has done its work — not the ones stored in the database.
-const NEIGHBORHOOD_HISTORY_TITLES = ['Explore a new neighbourhood'];
-const WALKING_LOOP_TITLES = ['A brisk 30-minute walk', 'A walk in nature'];
-const BOOK_TITLES = ['Read a book'];
-const COST_LABELS = { gratuit: 'Free', faible: 'Low cost', modere: 'Moderate cost' } as const;
+const NEIGHBORHOOD_HISTORY_TITLES = [t('Explore a new neighbourhood')];
+const WALKING_LOOP_TITLES = [t('A brisk 30-minute walk'), t('A walk in nature')];
+const BOOK_TITLES = [t('Read a book')];
+const COST_LABELS = { gratuit: t('Free'), faible: t('Low cost'), modere: t('Moderate cost') } as const;
 
 /** One activity: why it was suggested, how to do it, and how to tick it off. */
 export default function ActivityDetailScreen() {
@@ -52,7 +53,7 @@ export default function ActivityDetailScreen() {
       footer={
         occurrence ? (
           <Button
-            label={done ? 'Done ✓ · Undo' : 'Mark as done'}
+            label={done ? t('Done ✓ · Undo') : t('Mark as done')}
             variant={done ? 'outline' : 'primary'}
             icon={done ? undefined : 'checkmark'}
             loading={planning.isToggling(occurrence)}
@@ -61,14 +62,14 @@ export default function ActivityDetailScreen() {
         ) : undefined
       }
     >
-      <ScreenHeader title={activity?.title ?? 'Activity'} onBack={() => goBack('/(tabs)/planning')} size="headline" />
+      <ScreenHeader title={activity?.title ?? t('Activity')} onBack={() => goBack('/(tabs)/planning')} size="headline" />
 
       {activityQuery.isLoading ? (
         <LoadingSkeleton preset="hero" />
       ) : activityQuery.isError ? (
         <ErrorState onRetry={() => activityQuery.refetch()} />
       ) : !activity ? (
-        <EmptyState title="Activity not found" />
+        <EmptyState title={t('Activity not found')} />
       ) : (
         <>
           <Appear>
@@ -97,13 +98,13 @@ export default function ActivityDetailScreen() {
             <Appear index={1}>
               <Card variant="tinted" style={{ marginTop: 20 }}>
                 <Text variant="label" style={{ marginBottom: 6 }}>
-                  How to start
+                  {t('How to start')}
                 </Text>
                 <Text variant="body">{activity.first_action}</Text>
                 {activity.stop_rule ? (
                   <View style={{ marginTop: 14 }}>
                     <Text variant="overline" tone="ink3">
-                      When to stop
+                      {t('When to stop')}
                     </Text>
                     <Text variant="caption" tone="ink2" style={{ marginTop: 2 }}>
                       {activity.stop_rule}
@@ -118,32 +119,32 @@ export default function ActivityDetailScreen() {
             <Appear index={1}>
               <Card variant="tinted" style={{ marginTop: 20 }}>
                 <Text variant="label" style={{ marginBottom: 6 }}>
-                  Why this one
+                  {t('Why this one')}
                 </Text>
                 <ListRow
                   icon="flag-outline"
                   compact
-                  title={fit.matchedGoalLabels.length > 0 ? `Serves your goals: ${fit.matchedGoalLabels.join(', ').toLowerCase()}` : 'Worth a try if you feel like it'}
+                  title={fit.matchedGoalLabels.length > 0 ? t('Serves your goals: {goals}', { goals: fit.matchedGoalLabels.join(', ').toLowerCase() }) : t('Worth a try if you feel like it')}
                 />
                 <ListRow
                   icon="flash-outline"
                   compact
                   title={
                     fit.goodEnergySlotLabels.length === 3
-                      ? 'Fits your energy at any time of day'
+                      ? t('Fits your energy at any time of day')
                       : fit.goodEnergySlotLabels.length > 0
-                        ? `Better suited to the ${fit.goodEnergySlotLabels.join(', ').toLowerCase()}`
-                        : 'Asks for a bit more energy — better on a good day'
+                        ? t('Better suited to the {slots}', { slots: fit.goodEnergySlotLabels.join(', ').toLowerCase() })
+                        : t('Asks for a bit more energy — better on a good day')
                   }
                 />
-                <ListRow icon="wallet-outline" compact title={fit.budgetFits ? 'Within your budget' : 'A little above your usual budget'} />
+                <ListRow icon="wallet-outline" compact title={fit.budgetFits ? t('Within your budget') : t('A little above your usual budget')} />
               </Card>
             </Appear>
           ) : null}
 
           {activity.steps.length > 0 ? (
             <View style={{ marginTop: 28 }}>
-              <SectionHeader title="How to do it" />
+              <SectionHeader title={t('How to do it')} />
               {activity.steps.map((step, i) => (
                 <Appear key={i} index={i + 2}>
                   <Card padding={14} style={{ marginBottom: 10 }}>
@@ -176,10 +177,10 @@ export default function ActivityDetailScreen() {
 
           {complementary.length > 0 ? (
             <View style={{ marginTop: 16 }}>
-              <SectionHeader title="In the same vein" />
+              <SectionHeader title={t('In the same vein')} />
               {complementary.map((a) => (
                 <View key={a.id} style={{ marginBottom: 10 }}>
-                  <NextUpCard when="Suggestion" activity={a} onPress={() => router.push(`/activity/${a.id}`)} />
+                  <NextUpCard when={t('Suggestion')} activity={a} onPress={() => router.push(`/activity/${a.id}`)} />
                 </View>
               ))}
             </View>

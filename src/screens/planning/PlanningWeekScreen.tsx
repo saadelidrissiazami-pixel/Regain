@@ -16,6 +16,7 @@ import { usePlanning } from '../../hooks/usePlanning';
 import { formatDayLabel } from '../../lib/formatDate';
 import { fetchPlanRange, type PlannedActivityRow } from '../../lib/planning';
 import { fromLocalISODate, getDateForDayOfWeek, toLocalISODate } from '../../lib/week';
+import { lang, t } from '../../lib/i18n';
 
 type Mode = 'week' | 'month';
 
@@ -98,18 +99,18 @@ export default function PlanningWeekScreen() {
       refreshing={planning.refreshing}
       onRefresh={planning.refresh}
       footer={
-        <Button label="Add an activity" icon="add" onPress={() => router.push({ pathname: '/planning/add', params: { date: selected } })} />
+        <Button label={t('Add an activity')} icon="add" onPress={() => router.push({ pathname: '/planning/add', params: { date: selected } })} />
       }
     >
-      <ScreenHeader title="Plan" subtitle="Your week at a glance" onBack={() => goBack('/(tabs)/planning')} />
+      <ScreenHeader title={t('Plan')} subtitle={t('Your week at a glance')} onBack={() => goBack('/(tabs)/planning')} />
 
       <SegmentedControl
-        label="View"
+        label={t('View')}
         value={mode}
         onChange={setMode}
         options={[
-          { value: 'week', label: 'Week' },
-          { value: 'month', label: 'Month' },
+          { value: 'week', label: t('Week') },
+          { value: 'month', label: t('Month') },
         ]}
       />
 
@@ -138,16 +139,16 @@ export default function PlanningWeekScreen() {
         items.length === 0 ? (
           <EmptyState
             icon="calendar-outline"
-            title="Nothing planned this week"
-            body="Prepare your week from the home screen, or add an activity yourself."
+            title={t('Nothing planned this week')}
+            body={t('Prepare your week from the home screen, or add an activity yourself.')}
           />
         ) : weekGroups.length === 0 ? (
-          <EmptyState icon="moon-outline" title="Nothing planned from this day on" body="Pick another day, or add an activity." />
+          <EmptyState icon="moon-outline" title={t('Nothing planned from this day on')} body={t('Pick another day, or add an activity.')} />
         ) : (
           weekGroups.map(renderGroup)
         )
       ) : dayItems.length === 0 ? (
-        <EmptyState bare icon="sunny-outline" title={`Nothing planned on ${formatDayLabel(selected)}`} />
+        <EmptyState bare icon="sunny-outline" title={t('Nothing planned on {day}', { day: lang === 'fr' ? formatDayLabel(selected).toLowerCase() : formatDayLabel(selected) })} />
       ) : (
         dayItems.map(renderGroup)
       )}

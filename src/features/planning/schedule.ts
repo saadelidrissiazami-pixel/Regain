@@ -1,5 +1,6 @@
 import type { AvailabilitySlot, TimeSlot } from '../availability/types';
 import { fromLocalISODate } from '../../lib/week';
+import { t } from '../../lib/i18n';
 
 /** The time used when no availability says when the slot starts. */
 export const DEFAULT_SLOT_START: Record<TimeSlot, string> = { matin: '09:00', apres_midi: '14:00', soir: '19:00' };
@@ -43,7 +44,7 @@ export function buildCalendarEvents(items: CalendarItem[], availability: Availab
   return items.map((item) => {
     const activity = item.activities_catalog;
     const startDate = activityStartDate(item, availability);
-    const notes = [activity.instructions?.trim(), `Open in Regain: regain://activity/${activity.id}`]
+    const notes = [activity.instructions?.trim(), t('Open in Regain: {link}', { link: `regain://activity/${activity.id}` })]
       .filter(Boolean)
       .join('\n\n');
     return {

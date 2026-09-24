@@ -28,3 +28,8 @@ export function t(english: string, vars?: Record<string, string | number>): stri
   const text = lang === 'fr' ? (FR[english] ?? english) : english;
   return vars ? text.replace(/\{(\w+)\}/g, (hole, key: string) => String(vars[key] ?? hole)) : text;
 }
+
+/** A number with a fixed count of decimals, and the decimal mark the language uses (2.5 / 2,5). */
+export function decimal(n: number, digits = 1): string {
+  return n.toLocaleString(locale, { minimumFractionDigits: digits, maximumFractionDigits: digits });
+}

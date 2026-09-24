@@ -6,7 +6,7 @@ import { IconButton } from '../ui/IconButton';
 import { PressableScale } from '../ui/motion';
 import { Text } from '../ui/Text';
 import type { DayMarker } from './WeekSelector';
-import { locale } from '../../lib/i18n';
+import { t, locale } from '../../lib/i18n';
 
 const HEADERS = ['M', 'T', 'W', 'T', 'F', 'S', 'S'];
 const MONTH_FORMATTER = new Intl.DateTimeFormat(locale, { month: 'long', year: 'numeric' });
@@ -50,11 +50,11 @@ export function MonthGrid({
   return (
     <View>
       <View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', marginBottom: 8 }}>
-        <IconButton icon="chevron-back" label="Previous month" onPress={onPrev} size={20} />
+        <IconButton icon="chevron-back" label={t('Previous month')} onPress={onPrev} size={20} />
         <Text variant="cardTitle" accessibilityRole="header" style={{ textTransform: 'capitalize' }}>
           {label}
         </Text>
-        <IconButton icon="chevron-forward" label="Next month" onPress={onNext} size={20} />
+        <IconButton icon="chevron-forward" label={t('Next month')} onPress={onNext} size={20} />
       </View>
       <View style={{ flexDirection: 'row', marginBottom: 4 }}>
         {HEADERS.map((h, i) => (

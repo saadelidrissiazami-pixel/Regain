@@ -1,7 +1,7 @@
 import { readFileSync, readdirSync, statSync } from 'node:fs';
 import { join } from 'node:path';
 
-import { describe, expect, it } from 'vitest';
+import { describe, expect, it, vi } from 'vitest';
 
 import { FR } from '../src/i18n/fr';
 
@@ -44,5 +44,17 @@ describe('the French dictionary', () => {
     const holes = (s: string) => [...s.matchAll(/\{\w+\}/g)].map((m) => m[0]).sort().join();
     const mismatched = Object.entries(FR).filter(([en, fr]) => holes(en) !== holes(fr)).map(([en]) => en);
     expect(mismatched).toEqual([]);
+  });
+});
+
+describe('the language', () => {
+  it('is the first of the phone\'s languages that Regain speaks, holes filled', async () => {
+    vi.resetModules();
+    vi.doMock('expo-localization', () => ({ getLocales: () => [{ languageCode: 'de' }, { languageCode: 'fr' }] }));
+    const { lang, t } = await import('../src/lib/i18n');
+    expect(lang).toBe('fr');
+    expect(t('in {hours}h {minutes}', { hours: 1, minutes: '05' })).toBe('dans 1 h 05');
+    expect(t('A sentence nobody translated')).toBe('A sentence nobody translated');
+    vi.doUnmock('expo-localization');
   });
 });

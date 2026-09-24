@@ -5,8 +5,9 @@ import type { WeekTrackerDay } from '../../features/fitness/schedule';
 import { useTheme } from '../../theme/ThemeProvider';
 import { Card } from '../ui/Card';
 import { Text } from '../ui/Text';
+import { t } from '../../lib/i18n';
 
-const SHORT = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'];
+const SHORT = [t('Mon'), t('Tue'), t('Wed'), t('Thu'), t('Fri'), t('Sat'), t('Sun')];
 const LONG = ['lundi', 'mardi', 'mercredi', 'jeudi', 'vendredi', 'samedi', 'dimanche'];
 
 /** The week's sessions: one circle per day, ticked once the session is done. */
@@ -15,7 +16,7 @@ export function WeekTracker({ days }: { days: WeekTrackerDay[] }) {
   const done = days.filter((d) => d.done).length;
   const planned = days.filter((d) => d.isTraining).length;
   return (
-    <Card padding={14} accessibilityLabel={`${done} of ${planned} sessions done this week`}>
+    <Card padding={14} accessibilityLabel={t('{done} of {planned} sessions done this week', { done, planned })}>
       <View style={{ flexDirection: 'row', justifyContent: 'space-between' }}>
         {days.map((day) => {
           const size = 30;
@@ -24,8 +25,8 @@ export function WeekTracker({ days }: { days: WeekTrackerDay[] }) {
               key={day.date}
               style={{ flex: 1, alignItems: 'center' }}
               accessible
-              accessibilityLabel={`${LONG[day.dayIndex]}${day.isToday ? ', today' : ''} : ${
-                day.done ? 'session done' : day.isTraining ? 'session planned' : 'rest'
+              accessibilityLabel={`${LONG[day.dayIndex]}${day.isToday ? ", aujourd'hui" : ''} : ${
+                day.done ? t('session done') : day.isTraining ? t('session planned') : 'rest'
               }`}
             >
               <Text
@@ -69,7 +70,7 @@ export function WeekTracker({ days }: { days: WeekTrackerDay[] }) {
         })}
       </View>
       <Text variant="caption" tone="ink2" center style={{ marginTop: 10 }}>
-        {done} of {planned} sessions done this week
+        {t('{done} of {planned} sessions done this week', { done, planned })}
       </Text>
     </Card>
   );

@@ -17,6 +17,7 @@ import { Button, TextLink } from '../ui/Button';
 import { Card } from '../ui/Card';
 import { Text } from '../ui/Text';
 import { RouteMap } from './RouteMap';
+import { decimal, t } from '../../lib/i18n';
 
 const FIX_THE_MAP_URL = 'https://www.openstreetmap.org/fixthemap';
 
@@ -52,8 +53,8 @@ export function WalkingLoopCard({ durationMinutes }: { durationMinutes: number }
     } catch (err) {
       setErrorMessage(
         err instanceof LocationPermissionDeniedError
-          ? 'Location declined. You can turn it on in Settings to get a route.'
-          : 'Could not build the route right now. Try again in a moment.'
+          ? t('Location declined. You can turn it on in Settings to get a route.')
+          : t('Could not build the route right now. Try again in a moment.')
       );
       setStatus('error');
     }
@@ -62,36 +63,36 @@ export function WalkingLoopCard({ durationMinutes }: { durationMinutes: number }
   return (
     <Card style={{ marginBottom: 16 }}>
       <Text variant="overline" tone="ink2">
-        🧭 A walking route near you
+        🧭 {t('A walking route near you')}
       </Text>
 
       {status === 'idle' ? (
         <>
           <Text variant="bodySm" tone="ink2" style={{ marginTop: 8, marginBottom: 12 }}>
-            We trace a loop through the streets around you, sized to this activity, with a map and step-by-step directions.
+            {t('We trace a loop through the streets around you, sized to this activity, with a map and step-by-step directions.')}
           </Text>
-          <Button label="Build my route" variant="secondary" size="md" fullWidth={false} icon="navigate-outline" onPress={handleLocate} />
+          <Button label={t('Build my route')} variant="secondary" size="md" fullWidth={false} icon="navigate-outline" onPress={handleLocate} />
         </>
       ) : status === 'loading' ? (
         <View style={{ flexDirection: 'row', alignItems: 'center', gap: 10, paddingVertical: 12 }}>
           <ActivityIndicator color={theme.primary600} />
           <Text variant="bodySm" tone="ink2" style={{ flex: 1 }}>
-            Adjusting the route to fit {durationMinutes} min…
+            {t('Adjusting the route to fit {minutes} min…', { minutes: durationMinutes })}
           </Text>
         </View>
       ) : status === 'error' ? (
         <>
           <InlineNotice tone="error" message={errorMessage} />
-          <Button label="Try again" variant="ghost" size="sm" fullWidth={false} onPress={handleLocate} style={{ marginTop: 6 }} />
+          <Button label={t('Try again')} variant="ghost" size="sm" fullWidth={false} onPress={handleLocate} style={{ marginTop: 6 }} />
         </>
       ) : result?.kind === 'route' ? (
         <View style={{ marginTop: 12 }}>
           <RouteMap path={result.route.path} start={result.start} />
           <Text variant="cardTitle" tabular>
-            {(result.route.distanceM / 1000).toFixed(1)} km · about {Math.round(result.route.durationS / 60)} min
+            {t('{km} km · about {minutes} min', { km: decimal(result.route.distanceM / 1000), minutes: Math.round(result.route.durationS / 60) })}
           </Text>
           <Text variant="caption" tone="ink2" style={{ marginTop: 2, marginBottom: 12 }}>
-            A loop from {startLabel ?? 'where you are'} and back to the same place, to fit within {durationMinutes} min.
+            {t('A loop from {start} and back to the same place, to fit within {minutes} min.', { start: startLabel ?? t('where you are'), minutes: durationMinutes })}
           </Text>
           {result.route.steps.map((step, i) => (
             <View key={i} style={{ flexDirection: 'row', alignItems: 'flex-start', marginBottom: 8 }}>
@@ -104,18 +105,18 @@ export function WalkingLoopCard({ durationMinutes }: { durationMinutes: number }
               </Text>
             </View>
           ))}
-          <Button label="Another loop" variant="outline" size="sm" fullWidth={false} icon="refresh" onPress={handleLocate} style={{ marginTop: 6 }} />
+          <Button label={t('Another loop')} variant="outline" size="sm" fullWidth={false} icon="refresh" onPress={handleLocate} style={{ marginTop: 6 }} />
           <View style={{ marginTop: 8, flexDirection: 'row', flexWrap: 'wrap', alignItems: 'center' }}>
             <Text variant="caption" tone="ink3">
-              Route © OpenStreetMap contributors ·{' '}
+              {t('Route © OpenStreetMap contributors')} ·{' '}
             </Text>
-            <TextLink label="Report a map error" icon={null} tone="ink2" onPress={() => Linking.openURL(FIX_THE_MAP_URL)} />
+            <TextLink label={t('Report a map error')} icon={null} tone="ink2" onPress={() => Linking.openURL(FIX_THE_MAP_URL)} />
           </View>
         </View>
       ) : (
         <View style={{ marginTop: 10 }}>
           <Text variant="caption" tone="ink2" style={{ marginBottom: 10 }}>
-            Step-by-step directions are unavailable right now. Here is an indicative loop from {startLabel ?? 'where you are'}.
+            {t('Step-by-step directions are unavailable right now. Here is an indicative loop from {start}.', { start: startLabel ?? t('where you are') })}
           </Text>
           {result?.legs.map((leg, i) => (
             <View key={i} style={{ flexDirection: 'row', alignItems: 'flex-start', marginBottom: 8 }}>
@@ -127,7 +128,7 @@ export function WalkingLoopCard({ durationMinutes }: { durationMinutes: number }
               </Text>
             </View>
           ))}
-          <Button label="Try again" variant="outline" size="sm" fullWidth={false} onPress={handleLocate} style={{ marginTop: 6 }} />
+          <Button label={t('Try again')} variant="outline" size="sm" fullWidth={false} onPress={handleLocate} style={{ marginTop: 6 }} />
         </View>
       )}
     </Card>

@@ -1,4 +1,5 @@
 import type { TimeSlot } from '../features/availability/types';
+import { t } from './i18n';
 
 export const TIME_OPTIONS: string[] = (() => {
   const options: string[] = [];
@@ -27,9 +28,9 @@ export function formatTimeRange(start: string, end: string): string {
 }
 
 const TIME_GROUP_LABELS: Record<TimeSlot, string> = {
-  matin: 'Morning',
-  apres_midi: 'Afternoon',
-  soir: 'Evening',
+  matin: t('Morning'),
+  apres_midi: t('Afternoon'),
+  soir: t('Evening'),
 };
 
 /** Time options for a dropdown, grouped by part of the day. */

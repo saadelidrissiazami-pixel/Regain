@@ -4,11 +4,12 @@ import type { EnergyLevel } from '../../features/planning/catalog';
 import { useTheme } from '../../theme/ThemeProvider';
 import { PressableScale } from '../ui/motion';
 import { Text } from '../ui/Text';
+import { lang, t } from '../../lib/i18n';
 
 export const ENERGY_CHOICES: { value: EnergyLevel; label: string; emoji: string }[] = [
-  { value: 'bas', label: 'Low', emoji: '🪫' },
-  { value: 'moyen', label: 'Medium', emoji: '🙂' },
-  { value: 'eleve', label: 'High', emoji: '⚡' },
+  { value: 'bas', label: t('Low'), emoji: '🪫' },
+  { value: 'moyen', label: t('Medium'), emoji: '🙂' },
+  { value: 'eleve', label: t('High'), emoji: '⚡' },
 ];
 
 export function energyChoice(level: EnergyLevel) {
@@ -29,7 +30,7 @@ export function EnergySelector({
 }) {
   const theme = useTheme();
   return (
-    <View accessibilityRole="radiogroup" accessibilityLabel="Your energy" style={{ flexDirection: 'row', gap: 8 }}>
+    <View accessibilityRole="radiogroup" accessibilityLabel={t('Your energy')} style={{ flexDirection: 'row', gap: 8 }}>
       {ENERGY_CHOICES.map((choice) => {
         const selected = value === choice.value;
         return (
@@ -40,7 +41,7 @@ export function EnergySelector({
             feedback="selection"
             accessibilityRole="radio"
             accessibilityState={{ selected, disabled: !!disabled }}
-            accessibilityLabel={`${choice.label} energy`}
+            accessibilityLabel={t('{level} energy', { level: lang === 'fr' ? choice.label.toLowerCase() : choice.label })}
             wrapperStyle={{ flex: 1 }}
             style={{
               minHeight: 46,
