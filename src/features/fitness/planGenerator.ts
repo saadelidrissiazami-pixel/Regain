@@ -239,7 +239,7 @@ export function buildWorkoutProgram(
 
 // --- Meals -----------------------------------------------------------------------------------
 
-const EXCLUDED_ANIMALS: Record<Diet, AnimalSource[]> = {
+export const EXCLUDED_ANIMALS: Record<Diet, AnimalSource[]> = {
   omnivore: [],
   halal: ['porc'],
   pescetarien: ['viande', 'porc', 'volaille'],

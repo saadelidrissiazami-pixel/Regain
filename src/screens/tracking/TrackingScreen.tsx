@@ -4,6 +4,8 @@ import { router } from 'expo-router';
 import { useState } from 'react';
 import { ActivityIndicator, View } from 'react-native';
 
+import { AddFoodSheet } from '../../components/cards/AddFoodSheet';
+import { CalorieProgressCard } from '../../components/cards/CalorieProgressCard';
 import { MiniBars, StatCard } from '../../components/cards/StatCard';
 import { TargetsCard } from '../../components/cards/TargetsCard';
 import { EmptyState, ErrorState, LoadingSkeleton } from '../../components/feedback';
@@ -26,6 +28,7 @@ import { CATEGORY_COLORS, CATEGORY_LABELS, type ActivityCategory } from '../../f
 import { averageMood, moodOption } from '../../features/wellbeing/reflection';
 import { average, dailyAverages, energyLabel, lastDays, moodLabel, percentChange, splitWeeks } from '../../features/tracking/insights';
 import { useFitness } from '../../hooks/useFitness';
+import { useNutritionLog } from '../../hooks/useNutritionLog';
 import { fetchEnergyCheckins } from '../../lib/energyCheckin';
 import { formatDayLabel } from '../../lib/formatDate';
 import { fetchCompletedActivities, markActivityUndone } from '../../lib/planning';
@@ -51,6 +54,8 @@ export default function TrackingScreen() {
   const fitness = useFitness();
   const [tab, setTab] = useState<Tab>('overview');
   const [showAllHistory, setShowAllHistory] = useState(false);
+  const nutrition = useNutritionLog();
+  const [addingFood, setAddingFood] = useState(false);
 
   const statsQuery = useQuery({ queryKey: ['trackingStats', userId, weekStart], queryFn: () => fetchWeekStats(userId!, weekStart), enabled: !!userId });
   const streakQuery = useQuery({ queryKey: ['streak', userId], queryFn: () => fetchStreak(userId!), enabled: !!userId });
@@ -336,6 +341,11 @@ export default function TrackingScreen() {
         Today’s numbers, worked out from your fitness profile.
       </Text>
       <TargetsCard targets={fitness.targets} />
+      {/* The target above, what was actually eaten below: on its own the target is a number with
+          nothing to compare it to. */}
+      <View style={{ marginTop: 16 }}>
+        <CalorieProgressCard log={nutrition} onAdd={() => setAddingFood(true)} />
+      </View>
       {fitness.plan ? (
         <View style={{ marginTop: 16 }}>
           <ListRow icon="restaurant-outline" title="My meals and my shopping list" onPress={() => router.push('/fitness/nutrition')} />
@@ -366,6 +376,7 @@ export default function TrackingScreen() {
           {tab === 'overview' ? overview : tab === 'fitness' ? fitnessTab : tab === 'wellbeing' ? wellbeingTab : nutritionTab}
         </Appear>
       )}
+      <AddFoodSheet log={nutrition} visible={addingFood} onClose={() => setAddingFood(false)} />
     </Screen>
   );
 }

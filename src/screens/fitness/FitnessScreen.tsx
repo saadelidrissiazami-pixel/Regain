@@ -4,6 +4,8 @@ import { useEffect, useState } from 'react';
 import { View } from 'react-native';
 
 import { AdjustmentsList } from '../../components/AdjustmentsList';
+import { AddFoodSheet } from '../../components/cards/AddFoodSheet';
+import { CalorieProgressCard } from '../../components/cards/CalorieProgressCard';
 import { CoachCard } from '../../components/cards/CoachCard';
 import { TargetsCard } from '../../components/cards/TargetsCard';
 import { WeekTracker } from '../../components/cards/WeekTracker';
@@ -12,6 +14,7 @@ import { EmptyState, ErrorState, errorMessage, InlineNotice, LoadingSkeleton } f
 import { Appear, Card, haptic, IconButton, ListRow, Screen, ScreenHeader, SectionHeader, SegmentedControl, Text, TextLink } from '../../components/ui';
 import { relativeDayLabel } from '../../features/fitness/schedule';
 import { useFitness } from '../../hooks/useFitness';
+import { useNutritionLog } from '../../hooks/useNutritionLog';
 import { createFitnessPlan } from '../../lib/fitness';
 import { formatDateTimeLabel, formatDayLabel } from '../../lib/formatDate';
 import { midSentence, t } from '../../lib/i18n';
@@ -33,6 +36,8 @@ export default function FitnessScreen() {
     return () => clearTimeout(timer);
   }, [recalcule]);
   const [showAllAdjustments, setShowAllAdjustments] = useState(false);
+  const nutrition = useNutritionLog();
+  const [addingFood, setAddingFood] = useState(false);
 
   const generateMutation = useMutation({
     mutationFn: () => createFitnessPlan(userId!, profile!),
@@ -174,22 +179,30 @@ export default function FitnessScreen() {
           </Appear>
         ) : null}
 
-        {plan.coach_notes ? (
+        {fitness.targets ? (
           <Appear index={4}>
+            <View style={{ marginTop: 16 }}>
+              <CalorieProgressCard log={nutrition} onAdd={() => setAddingFood(true)} />
+            </View>
+          </Appear>
+        ) : null}
+
+        {plan.coach_notes ? (
+          <Appear index={5}>
             <View style={{ marginTop: 16 }}>
               <CoachCard message={plan.coach_notes} />
             </View>
           </Appear>
         ) : null}
 
-        <Appear index={5}>
+        <Appear index={6}>
           <View style={{ marginTop: 28 }}>
             <SectionHeader title={t('Your sessions this week')} />
             <WeekTracker days={fitness.tracker} />
           </View>
         </Appear>
 
-        <Appear index={6}>
+        <Appear index={7}>
           <View style={{ marginTop: 20 }}>
             <ListRow
               icon="clipboard-outline"
@@ -224,6 +237,7 @@ export default function FitnessScreen() {
         />
       ) : null}
       {body}
+      <AddFoodSheet log={nutrition} visible={addingFood} onClose={() => setAddingFood(false)} />
       <Text variant="caption" tone="ink3" style={{ marginTop: 28 }}>
         {t('Regain is not a substitute for a doctor or a dietitian. If you have a health condition, an injury or are pregnant, speak to a professional before you start.')}
       </Text>
