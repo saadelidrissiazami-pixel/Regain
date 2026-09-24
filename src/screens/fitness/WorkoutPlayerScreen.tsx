@@ -152,7 +152,7 @@ function Player({ session, sessionIndex, planId }: { session: WorkoutSession; se
           </Text>
         </Card>
         <Text variant="section" style={{ marginTop: 24, marginBottom: 8 }}>
-          Au programme
+          Coming up
         </Text>
         {exercises.map((exercise, i) => (
           <View key={i} style={{ flexDirection: 'row', alignItems: 'center', paddingVertical: 10, borderBottomWidth: 1, borderBottomColor: theme.divider }}>
@@ -226,7 +226,7 @@ function Player({ session, sessionIndex, planId }: { session: WorkoutSession; se
     content = (
       <View style={{ alignItems: 'center', paddingTop: 24 }}>
         <Text variant="overline" tone="ink2">
-          Repos
+          Rest
         </Text>
         <View style={{ marginTop: 20 }}>
           <ProgressRing progress={state.left / state.total} size={220} strokeWidth={12} animate={false} accessibilityLabel={`Rest, ${state.left} seconds left`}>

@@ -107,16 +107,16 @@ export default function SettingsScreen() {
     <Screen>
       <ScreenHeader title="Settings" subtitle={email} onBack={() => goBack('/(tabs)/profile')} />
 
-      <Section title="Apparence">
+      <Section title="Appearance">
         <SegmentedControl<ThemeMode>
-          label="Apparence"
+          label="Appearance"
           tone="surface"
           value={theme.mode}
           onChange={theme.setMode}
           options={[
             { value: 'auto', label: 'Auto' },
-            { value: 'light', label: 'Clair' },
-            { value: 'dark', label: 'Sombre' },
+            { value: 'light', label: 'Light' },
+            { value: 'dark', label: 'Dark' },
           ]}
         />
         <Text variant="caption" tone="ink2" style={{ marginTop: 10 }}>
@@ -127,7 +127,7 @@ export default function SettingsScreen() {
       <Section title="Reminders and calendar">
         <ListRow
           icon="notifications-outline"
-          title="Rappels"
+          title="Reminders"
           subtitle="A nudge at 8 am to pick breathing over scrolling, and a reminder when each activity is due."
           chevron={false}
           divider
@@ -137,7 +137,7 @@ export default function SettingsScreen() {
               value={!!remindersQuery.data}
               onValueChange={(v) => toggleReminders.mutate(v)}
               disabled={remindersQuery.isLoading || toggleReminders.isPending}
-              accessibilityLabel="Rappels"
+              accessibilityLabel="Reminders"
               {...switchProps}
             />
           }
@@ -145,7 +145,7 @@ export default function SettingsScreen() {
         {toggleReminders.isError ? <InlineNotice tone="error" message={errorMessage(toggleReminders.error)} /> : null}
         <ListRow
           icon="calendar-outline"
-          title="Calendrier"
+          title="Calendar"
           subtitle={
             calendarUnavailableReason ??
             'Automatically adds each plan to a “Regain” calendar, at the times you are free.'
@@ -180,7 +180,7 @@ export default function SettingsScreen() {
         ) : null}
       </Section>
 
-      <Section title="Abonnement">
+      <Section title="Subscription">
         <Text variant="label">{isPremium ? 'Regain Premium' : 'Formule gratuite'}</Text>
         {isDevUnlock ? (
           <>

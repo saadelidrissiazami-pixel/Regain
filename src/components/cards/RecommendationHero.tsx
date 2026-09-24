@@ -89,7 +89,7 @@ export function RecommendationHero({
         scrollEventThrottle={32}
         style={{ marginHorizontal: -20 }}
         contentContainerStyle={{ paddingHorizontal: 20, gap }}
-        accessibilityLabel="Recommandations"
+        accessibilityLabel="Recommendations"
       >
         {items.map((item) => (
           <Slide key={item.program.id} item={item} width={width} onStart={() => onStart(item)} />

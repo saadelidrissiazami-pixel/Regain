@@ -19,7 +19,7 @@ export default function CourseScreen() {
       <Screen>
         <EmptyState
           icon="search-outline"
-          title="Parcours introuvable"
+          title="Course not found"
           body="You will find the courses in the Wellbeing tab."
           actionLabel="Go back"
           onAction={() => goBack('/(tabs)/wellbeing')}
@@ -33,7 +33,7 @@ export default function CourseScreen() {
   return (
     <Screen>
       <ScreenHeader
-        overline="Parcours"
+        overline="Course"
         title={course.title}
         subtitle={course.subtitle}
         onBack={() => goBack('/(tabs)/wellbeing')}

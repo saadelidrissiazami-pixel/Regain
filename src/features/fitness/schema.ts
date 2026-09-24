@@ -35,8 +35,8 @@ export const fitnessQuestionnaireSchema = z.object({
     const year = Number(v.trim());
     return Number.isInteger(year) && year >= currentYear - 90 && year <= currentYear - 18;
   }, 'The fitness coach is for adults only (18 and over): enter a valid year of birth'),
-  heightCm: decimalInRange('Taille (cm)', 120, 230),
-  weightKg: decimalInRange('Poids (kg)', 35, 250),
+  heightCm: decimalInRange('Height (cm)', 120, 230),
+  weightKg: decimalInRange('Weight (kg)', 35, 250),
   activityLevel: enumOf(ACTIVITY_LEVELS),
   experience: enumOf(EXPERIENCE_LEVELS),
   equipment: enumOf(EQUIPMENT_OPTIONS),

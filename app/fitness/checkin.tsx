@@ -152,15 +152,15 @@ export default function FitnessCheckinScreen() {
       <Select
         label="Your energy this week"
         title="How did you hold up?"
-        placeholder="Choisir"
+        placeholder="Choose"
         value={energy}
         options={ENERGY_LEVELS}
         onChange={setEnergy}
       />
 
       <Field
-        label="Poids actuel (facultatif)"
-        placeholder={profile ? `Dernier poids : ${profile.weight_kg} kg` : 'Poids (kg)'}
+        label="Current weight (optional)"
+        placeholder={profile ? `Last weight: ${profile.weight_kg} kg` : 'Weight (kg)'}
         keyboardType="decimal-pad"
         value={weightText}
         onChangeText={setWeightText}

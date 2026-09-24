@@ -80,7 +80,7 @@ export default function GoalsScreen() {
             label="Your first name"
             value={values.firstName}
             onChangeText={(text) => set('firstName', text)}
-            placeholder="Ex. : Camille"
+            placeholder="e.g. Camille"
             autoCapitalize="words"
             autoComplete="given-name"
             textContentType="givenName"

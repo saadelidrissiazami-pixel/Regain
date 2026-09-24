@@ -52,8 +52,8 @@ export function TargetsCard({ targets }: { targets: NutritionTargets }) {
       </Text>
       <View style={{ flexDirection: 'row', gap: 8, marginTop: 14 }}>
         <MacroCard value={targets.proteinG} label="Protein" background={theme.protein} />
-        <MacroCard value={targets.carbsG} label="Glucides" background={theme.carbs} />
-        <MacroCard value={targets.fatG} label="Lipides" background={theme.fat} />
+        <MacroCard value={targets.carbsG} label="Carbs" background={theme.carbs} />
+        <MacroCard value={targets.fatG} label="Fat" background={theme.fat} />
       </View>
       {targets.floorApplied ? (
         <Text variant="caption" tone="ink2" style={{ marginTop: 10 }}>

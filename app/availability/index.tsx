@@ -248,11 +248,11 @@ export default function AvailabilityScreen() {
                   <ActivityIndicator />
                 ) : confirming ? (
                   <View style={{ flexDirection: 'row' }}>
-                    <Button label="Supprimer" variant="destructive" size="sm" fullWidth={false} onPress={() => deleteMutation.mutate(slot.id)} />
-                    <Button label="Garder" variant="ghost" size="sm" fullWidth={false} onPress={() => setPendingDeleteId(null)} />
+                    <Button label="Delete" variant="destructive" size="sm" fullWidth={false} onPress={() => deleteMutation.mutate(slot.id)} />
+                    <Button label="Keep" variant="ghost" size="sm" fullWidth={false} onPress={() => setPendingDeleteId(null)} />
                   </View>
                 ) : (
-                  <Button label="Retirer" variant="ghost" size="sm" fullWidth={false} onPress={() => setPendingDeleteId(slot.id)} />
+                  <Button label="Remove" variant="ghost" size="sm" fullWidth={false} onPress={() => setPendingDeleteId(slot.id)} />
                 )}
               </View>
             </Card>

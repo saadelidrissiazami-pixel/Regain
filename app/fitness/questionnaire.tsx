@@ -154,7 +154,7 @@ function QuestionnaireForm({
           name="sex"
           render={({ field: { value, onChange } }) => (
             <View style={{ marginBottom: 16 }}>
-              <SegmentedControl label="Sexe" tone="surface" value={value} onChange={onChange} options={[...SEX_OPTIONS]} />
+              <SegmentedControl label="Sex" tone="surface" value={value} onChange={onChange} options={[...SEX_OPTIONS]} />
             </View>
           )}
         />
@@ -171,7 +171,7 @@ function QuestionnaireForm({
               control={control}
               name="heightCm"
               render={({ field: { value, onChange } }) => (
-                <Field label="Taille (cm)" placeholder="170" keyboardType="number-pad" value={value} onChangeText={onChange} error={errors.heightCm?.message} />
+                <Field label="Height (cm)" placeholder="170" keyboardType="number-pad" value={value} onChangeText={onChange} error={errors.heightCm?.message} />
               )}
             />
           </View>
@@ -180,7 +180,7 @@ function QuestionnaireForm({
               control={control}
               name="weightKg"
               render={({ field: { value, onChange } }) => (
-                <Field label="Poids (kg)" placeholder="65" keyboardType="decimal-pad" value={value} onChangeText={onChange} error={errors.weightKg?.message} />
+                <Field label="Weight (kg)" placeholder="65" keyboardType="decimal-pad" value={value} onChangeText={onChange} error={errors.weightKg?.message} />
               )}
             />
           </View>
@@ -196,14 +196,14 @@ function QuestionnaireForm({
 
       <Section title="Your training">
         <Text variant="label" style={{ marginBottom: 8 }}>
-          Niveau en musculation
+          Strength-training level
         </Text>
         <Controller
           control={control}
           name="experience"
           render={({ field: { value, onChange } }) => (
             <View style={{ marginBottom: 16 }}>
-              <SegmentedControl label="Niveau" tone="surface" value={value} onChange={onChange} options={[...EXPERIENCE_LEVELS]} />
+              <SegmentedControl label="Level" tone="surface" value={value} onChange={onChange} options={[...EXPERIENCE_LEVELS]} />
             </View>
           )}
         />

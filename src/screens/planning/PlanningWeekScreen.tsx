@@ -101,7 +101,7 @@ export default function PlanningWeekScreen() {
       <ScreenHeader title="Plan" subtitle="Your week at a glance" onBack={() => goBack('/(tabs)/planning')} />
 
       <SegmentedControl
-        label="Affichage"
+        label="View"
         value={mode}
         onChange={setMode}
         options={[

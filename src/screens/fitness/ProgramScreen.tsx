@@ -79,7 +79,7 @@ export default function ProgramScreen() {
             onChange={setTab}
             options={[
               { value: 'sessions', label: 'Sessions' },
-              { value: 'exercises', label: 'Exercices' },
+              { value: 'exercises', label: 'Exercises' },
               { value: 'progress', label: 'Progression' },
             ]}
           />

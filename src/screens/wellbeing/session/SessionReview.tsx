@@ -32,7 +32,7 @@ export function SessionReview({
   const submit = () => onSubmit({ mood, reflections: cleanReflections(reflections), note });
 
   return (
-    <Screen keyboard footer={<Button label="Valider" loading={saving} onPress={submit} />}>
+    <Screen keyboard footer={<Button label="Save" loading={saving} onPress={submit} />}>
       <ScreenHeader
         title="How do you feel?"
         subtitle="After this session"

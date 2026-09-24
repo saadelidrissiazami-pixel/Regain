@@ -136,7 +136,7 @@ export default function TrackingScreen() {
         <StatCard
           icon="moon-outline"
           iconColor={theme.purple}
-          title="Sommeil"
+          title="Sleep"
           value={sleepQuery.data ? formatSleep(sleepQuery.data) : '–'}
           caption={sleepQuery.data ? 'Your usual amount' : 'Tell us your usual amount'}
           onPress={() => router.push('/profile/goals')}
@@ -195,7 +195,7 @@ export default function TrackingScreen() {
       </View>
 
       <View style={{ marginTop: 28 }}>
-        <SectionHeader title="Historique" />
+        <SectionHeader title="History" />
         {historyQuery.isLoading ? (
           <LoadingSkeleton preset="list" />
         ) : history.length === 0 ? (
@@ -272,7 +272,7 @@ export default function TrackingScreen() {
         </StatCard>
         <StatCard
           icon="scale-outline"
-          title="Poids"
+          title="Weight"
           value={fitness.lastCheckin?.weight_kg ? String(fitness.lastCheckin.weight_kg).replace('.', ',') : String(fitness.profile.weight_kg).replace('.', ',')}
           unit="kg"
           caption={fitness.lastCheckin?.weight_kg ? 'Dernier bilan' : 'Profil forme'}
@@ -294,7 +294,7 @@ export default function TrackingScreen() {
         <StatCard
           icon="happy-outline"
           iconColor={theme.yellow}
-          title="Ressenti moyen"
+          title="Average rating"
           value={wellbeingAvg === null ? '–' : `${moodOption(Math.round(wellbeingAvg))?.emoji ?? ''} ${String(wellbeingAvg).replace('.', ',')}/5`}
         />
       </View>
@@ -347,12 +347,12 @@ export default function TrackingScreen() {
     <Screen inTabs refreshing={refreshing} onRefresh={refresh}>
       <ScreenHeader title="Tracking" subtitle="Your progress, at a glance" />
       <SegmentedControl
-        label="Suivi"
+        label="Tracking"
         value={tab}
         onChange={setTab}
         options={[
           { value: 'overview', label: 'Overview' },
-          { value: 'fitness', label: 'Forme' },
+          { value: 'fitness', label: 'Fitness' },
           { value: 'wellbeing', label: 'Wellbeing' },
           { value: 'nutrition', label: 'Nutrition' },
         ]}

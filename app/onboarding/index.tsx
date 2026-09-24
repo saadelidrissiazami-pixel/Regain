@@ -73,7 +73,7 @@ export default function OnboardingScreen() {
             label="Your first name"
             value={values.firstName}
             onChangeText={(text) => set('firstName', text)}
-            placeholder="Ex. : Camille"
+            placeholder="e.g. Camille"
             autoFocus
             autoCapitalize="words"
             autoComplete="given-name"

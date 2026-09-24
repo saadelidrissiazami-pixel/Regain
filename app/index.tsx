@@ -20,7 +20,7 @@ export default function Index() {
   if (!isInitialized || (session && profileQuery.isLoading)) {
     return (
       <View style={{ flex: 1, alignItems: 'center', justifyContent: 'center', backgroundColor: theme.bg }}>
-        <ActivityIndicator color={theme.primary600} accessibilityLabel="Chargement" />
+        <ActivityIndicator color={theme.primary600} accessibilityLabel="Loading" />
       </View>
     );
   }

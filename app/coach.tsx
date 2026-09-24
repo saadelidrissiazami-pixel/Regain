@@ -158,7 +158,7 @@ export default function CoachScreen() {
         />
         {/* `send` does nothing while the field is empty: the opacity says so at a glance. */}
         <View style={{ opacity: sendMutation.isPending || input.trim().length === 0 ? 0.4 : 1 }}>
-          <IconButton icon="arrow-up" label="Envoyer" variant="primary" onPress={send} />
+          <IconButton icon="arrow-up" label="Send" variant="primary" onPress={send} />
         </View>
       </View>
     </KeyboardAvoidingView>

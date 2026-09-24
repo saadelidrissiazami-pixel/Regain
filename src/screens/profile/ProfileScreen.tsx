@@ -113,7 +113,7 @@ export default function ProfileScreen() {
           </View>
           <View style={{ flexDirection: 'row', gap: 10 }}>
             <MenuTile icon="settings-outline" title="Settings" onPress={() => router.push('/settings')} />
-            <MenuTile icon="help-circle-outline" title="Aide & support" onPress={() => setHelpOpen(true)} />
+            <MenuTile icon="help-circle-outline" title="Help & support" onPress={() => setHelpOpen(true)} />
           </View>
         </View>
       </Appear>
@@ -140,12 +140,12 @@ export default function ProfileScreen() {
         </PressableScale>
       </Appear>
 
-      <Sheet visible={helpOpen} title="Aide & support" onClose={() => setHelpOpen(false)} scroll={false}>
+      <Sheet visible={helpOpen} title="Help & support" onClose={() => setHelpOpen(false)} scroll={false}>
         <View style={{ paddingHorizontal: 20 }}>
           {SUPPORT_EMAIL ? (
             <ListRow icon="mail-outline" title="Write to us" subtitle={SUPPORT_EMAIL} onPress={() => Linking.openURL(`mailto:${SUPPORT_EMAIL}`)} divider />
           ) : null}
-          {TERMS_URL ? <ListRow icon="document-text-outline" title="Conditions d'utilisation" onPress={() => Linking.openURL(TERMS_URL)} divider /> : null}
+          {TERMS_URL ? <ListRow icon="document-text-outline" title="Terms of use" onPress={() => Linking.openURL(TERMS_URL)} divider /> : null}
           {PRIVACY_URL ? <ListRow icon="shield-checkmark-outline" title="Privacy policy" onPress={() => Linking.openURL(PRIVACY_URL)} divider /> : null}
           <ListRow icon="lock-closed-outline" title="My data" subtitle="Export or delete your account" onPress={() => {
             setHelpOpen(false);

@@ -46,7 +46,7 @@ export default function FitnessScreen() {
     <>
       <ScreenHeader
         overline="Your coach"
-        title="Forme"
+        title="Fitness"
         subtitle="A stronger body, a calmer mind."
         right={
           fitness.isPremium && profile ? (
@@ -57,7 +57,7 @@ export default function FitnessScreen() {
       {plan ? (
         <View style={{ marginBottom: 18 }}>
           <SegmentedControl
-            label="Forme"
+            label="Fitness"
             value="overview"
             onChange={(value) => {
               if (value === 'program') router.push('/fitness/program');
@@ -92,7 +92,7 @@ export default function FitnessScreen() {
     body = (
       <EmptyState
         icon="chatbubbles-outline"
-        title="Faisons connaissance"
+        title="Let us get to know you"
         body="A few questions about your goals, your level and your habits, and your coach builds a programme around them."
         actionLabel="Start the questionnaire"
         onAction={() => router.push('/fitness/questionnaire')}

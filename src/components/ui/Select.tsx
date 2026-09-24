@@ -176,7 +176,7 @@ export function Select<T extends string | number>({
   value,
   options,
   onChange,
-  placeholder = 'Choisir',
+  placeholder = 'Choose',
   title,
   subtitle,
 }: {
@@ -222,7 +222,7 @@ export function SelectMulti<T extends string>({
   values,
   options,
   onChange,
-  placeholder = 'Choisir',
+  placeholder = 'Choose',
   title,
   subtitle,
 }: {
