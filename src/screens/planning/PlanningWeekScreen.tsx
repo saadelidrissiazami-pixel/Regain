@@ -68,9 +68,12 @@ export default function PlanningWeekScreen() {
     <Appear key={date} index={index}>
       <View style={{ marginBottom: 12 }}>
         <Text variant="label" style={{ marginBottom: 10 }} accessibilityRole="header">
-          {date === today || relativeDayLabel(date, today, formatDayLabel) === 'Demain'
-            ? `${relativeDayLabel(date, today, formatDayLabel)} · ${formatDayLabel(date)}`
-            : formatDayLabel(date)}
+          {/* “Today” and “Tomorrow” get the date alongside them; every other day is just the date.
+              Comparing the two labels rather than matching a word keeps this working whatever
+              relativeDayLabel decides to say. */}
+          {relativeDayLabel(date, today, formatDayLabel) === formatDayLabel(date)
+            ? formatDayLabel(date)
+            : `${relativeDayLabel(date, today, formatDayLabel)} · ${formatDayLabel(date)}`}
         </Text>
         {dayRows.map((item) => (
           <ActivityRow

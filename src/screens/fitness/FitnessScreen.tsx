@@ -200,7 +200,7 @@ export default function FitnessScreen() {
               title="Do my weekly check-in"
               subtitle={
                 fitness.lastCheckin
-                  ? `Dernier bilan : ${formatDateTimeLabel(fitness.lastCheckin.created_at).toLowerCase()}`
+                  ? `Last check-in: ${formatDateTimeLabel(fitness.lastCheckin.created_at)}`
                   : 'Your coach then adjusts your programme'
               }
               onPress={() => router.push('/fitness/checkin')}

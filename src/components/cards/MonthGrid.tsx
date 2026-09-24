@@ -8,7 +8,7 @@ import { Text } from '../ui/Text';
 import type { DayMarker } from './WeekSelector';
 
 const HEADERS = ['M', 'T', 'W', 'T', 'F', 'S', 'S'];
-const MONTH_FORMATTER = new Intl.DateTimeFormat('fr-FR', { month: 'long', year: 'numeric' });
+const MONTH_FORMATTER = new Intl.DateTimeFormat('en-US', { month: 'long', year: 'numeric' });
 
 /** The dates shown for a month (whole weeks, Monday to Sunday). */
 export function monthCells(year: number, month: number): (string | null)[] {
@@ -72,8 +72,8 @@ export function MonthGrid({
                 feedback="selection"
                 accessibilityRole="button"
                 accessibilityState={{ selected: date === selected }}
-                accessibilityLabel={`${new Date(date + 'T00:00:00').toLocaleDateString('fr-FR', { weekday: 'long', day: 'numeric', month: 'long' })}${
-                  markers[date]?.count ? `, ${markers[date]!.count} activity${markers[date]!.count > 1 ? 'ies' : ''}` : ''
+                accessibilityLabel={`${new Date(date + 'T00:00:00').toLocaleDateString('en-US', { weekday: 'long', month: 'long', day: 'numeric' })}${
+                  markers[date]?.count ? `, ${markers[date]!.count} activit${markers[date]!.count > 1 ? 'ies' : 'y'}` : ''
                 }`}
                 wrapperStyle={{ flex: 1 }}
                 style={{ alignItems: 'center', paddingVertical: 4 }}
