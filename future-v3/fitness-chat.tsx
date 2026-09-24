@@ -77,8 +77,8 @@ export default function FitnessChatScreen() {
         {messages.length === 0 && !historyQuery.isLoading ? (
           <View className="mt-2 rounded-2xl border border-line bg-surface p-4 shadow-sm">
             <Text className="text-sm leading-5 text-ink-soft">
-              Une question sur un exercice, une idée de repas, un coup de moins bien ? Je connais votre programme et
-              vos objectifs, demandez-moi.
+              A question about an exercise, an idea for a meal, a rough patch? I know your programme and your
+              goals — just ask.
             </Text>
           </View>
         ) : null}
@@ -101,7 +101,7 @@ export default function FitnessChatScreen() {
       <View className="flex-row items-center gap-2 border-t border-line bg-paper px-5 py-3 pb-8">
         <TextInput
           className="flex-1 rounded-2xl border border-line bg-surface px-4 py-3 text-ink"
-          placeholder="Écrivez à votre coach…"
+          placeholder="Write to your coach…"
           placeholderTextColor="#B5AB9A"
           value={input}
           onChangeText={setInput}

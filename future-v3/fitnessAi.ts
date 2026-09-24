@@ -1,24 +1,24 @@
-// Client du coach forme IA (Edge Function supabase/functions/fitness-coach), mis de côté tant
-// que la version gratuite par règles (src/features/fitness/planGenerator.ts) suffit.
-// Voir future-v3/README.md pour le réactiver.
+// The AI fitness coach's client (the supabase/functions/fitness-coach Edge Function), parked for
+// as long as the free rule-based version (src/features/fitness/planGenerator.ts) is enough.
+// See future-v3/README.md to bring it back.
 
 import type { NutritionTargets } from '../src/features/fitness/nutrition';
 import type { FitnessPlan } from '../src/features/fitness/types';
 import { supabase } from '../src/lib/supabase';
 
-// invoke() renvoie une error pour tout statut non-2xx : on relaie le message réel de la
-// fonction (quota, refus, panne) plutôt que de supposer qu'elle n'est pas déployée.
+// invoke() returns an error for any non-2xx status: we relay the function's real message
+// (quota, refusal, outage) rather than assume it is not deployed.
 async function invokeFitnessCoach<T>(body: Record<string, unknown>): Promise<T> {
   const { data, error } = await supabase.functions.invoke<T>('fitness-coach', { body });
   if (error) {
     const response = (error as { context?: Response }).context;
     if (response?.status === 404) {
-      throw new Error("Le coach forme n'est pas encore déployé côté serveur.");
+      throw new Error('The fitness coach is not deployed on the server yet.');
     }
     const payload = await response?.json().catch(() => null);
-    throw new Error(payload?.error ?? 'Le coach est momentanément indisponible. Réessayez dans un instant.');
+    throw new Error(payload?.error ?? 'The coach is unavailable for the moment. Try again shortly.');
   }
-  if (!data) throw new Error("Le coach n'a pas renvoyé de réponse.");
+  if (!data) throw new Error('The coach did not send anything back.');
   return data;
 }
 

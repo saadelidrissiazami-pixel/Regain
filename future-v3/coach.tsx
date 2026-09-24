@@ -62,10 +62,10 @@ export default function CoachScreen() {
     >
       <View className="px-5 pb-3 pt-16">
         <Text style={{ fontFamily: 'Nunito_700Bold' }} className="mb-1 text-sm text-primary">
-          Toujours là
+          Always here
         </Text>
         <Text style={{ fontFamily: 'Nunito_800ExtraBold' }} className="text-[28px] leading-8 text-ink">
-          Votre coach
+          Your coach
         </Text>
       </View>
 
@@ -78,8 +78,8 @@ export default function CoachScreen() {
         {optimisticMessages.length === 0 && !historyQuery.isLoading ? (
           <View className="mt-6 rounded-2xl border border-line bg-surface p-4 shadow-sm">
             <Text className="text-sm text-ink-soft">
-              Dites-moi comment vous vous sentez, ou demandez-moi d'adapter votre semaine — je suis là pour vous
-              accompagner, sans jugement.
+              Tell me how you are feeling, or ask me to adapt your week — I am here to help, with no
+              judgement.
             </Text>
           </View>
         ) : null}
@@ -102,7 +102,7 @@ export default function CoachScreen() {
       <View className="flex-row items-center gap-2 border-t border-line bg-paper px-5 py-3">
         <TextInput
           className="flex-1 rounded-2xl border border-line bg-surface px-4 py-3 text-ink"
-          placeholder="Écrivez à votre coach…"
+          placeholder="Write to your coach…"
           placeholderTextColor="#B5AB9A"
           value={input}
           onChangeText={setInput}
