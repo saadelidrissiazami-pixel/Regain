@@ -181,7 +181,7 @@ export default function SettingsScreen() {
       </Section>
 
       <Section title="Subscription">
-        <Text variant="label">{isPremium ? 'Regain Premium' : 'Formule gratuite'}</Text>
+        <Text variant="label">{isPremium ? 'Regain Premium' : 'Free plan'}</Text>
         {isDevUnlock ? (
           <>
             <Text variant="caption" tone="ink2" style={{ marginTop: 4 }}>

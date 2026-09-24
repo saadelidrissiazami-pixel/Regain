@@ -177,7 +177,7 @@ export default function ProgramScreen() {
                         {formatDateTimeLabel(checkin.created_at)}
                       </Text>
                       <Text variant="caption" tabular>
-                        {checkin.weight_kg ? `${String(checkin.weight_kg).replace('.', ',')} kg · ` : ''}
+                        {checkin.weight_kg ? `${checkin.weight_kg} kg · ` : ''}
                         {checkin.sessions_done} session{checkin.sessions_done > 1 ? 's' : ''} · energy {checkin.energy}/5
                       </Text>
                     </View>

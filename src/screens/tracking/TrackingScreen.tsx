@@ -273,9 +273,9 @@ export default function TrackingScreen() {
         <StatCard
           icon="scale-outline"
           title="Weight"
-          value={fitness.lastCheckin?.weight_kg ? String(fitness.lastCheckin.weight_kg).replace('.', ',') : String(fitness.profile.weight_kg).replace('.', ',')}
+          value={String(fitness.lastCheckin?.weight_kg ?? fitness.profile.weight_kg)}
           unit="kg"
-          caption={fitness.lastCheckin?.weight_kg ? 'Dernier bilan' : 'Profil forme'}
+          caption={fitness.lastCheckin?.weight_kg ? 'Last check-in' : 'Fitness profile'}
         />
       </View>
       <View style={{ marginTop: 16 }}>
@@ -295,7 +295,7 @@ export default function TrackingScreen() {
           icon="happy-outline"
           iconColor={theme.yellow}
           title="Average rating"
-          value={wellbeingAvg === null ? '–' : `${moodOption(Math.round(wellbeingAvg))?.emoji ?? ''} ${String(wellbeingAvg).replace('.', ',')}/5`}
+          value={wellbeingAvg === null ? '–' : `${moodOption(Math.round(wellbeingAvg))?.emoji ?? ''} ${wellbeingAvg}/5`}
         />
       </View>
       <Card style={{ marginTop: 16 }}>

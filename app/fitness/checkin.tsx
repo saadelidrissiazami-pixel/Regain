@@ -39,7 +39,7 @@ export default function FitnessCheckinScreen() {
 
   const submitMutation = useMutation({
     mutationFn: async (): Promise<{ plan: FitnessPlan; adjustments: PlanAdjustment[] }> => {
-      if (!userId || !profile) throw new Error('Profil forme introuvable.');
+      if (!userId || !profile) throw new Error('Fitness profile not found.');
       if (sessionsDone === null || energy === null) {
         throw new Error('Tell us how many sessions you did and how your energy was.');
       }
