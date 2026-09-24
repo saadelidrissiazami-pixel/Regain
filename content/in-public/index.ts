@@ -1,203 +1,204 @@
-// Séances « en public », narrées.
+// “In public” sessions, narrated.
 //
-// Pensées pour être suivies les yeux ouverts et discrètement : transports, salle d'attente,
-// file, open space. C'est le thème où le défilement automatique compte le plus — taper sur son
-// écran toutes les vingt secondes dans un métro bondé est exactement ce qu'on cherche à éviter.
+// Written to be followed with the eyes open and without drawing attention: on a train, in a
+// waiting room, in a queue, in an open-plan office. This is the theme where running on its own
+// matters most — tapping your screen every twenty seconds on a packed train is exactly what we
+// are trying to avoid.
 //
-// Aucune ne demande de fermer les yeux, ni de respirer d'une façon particulière. L'attention va
-// vers l'extérieur, jamais vers l'exploration de ce qu'on ressent.
+// None of them asks you to close your eyes, or to breathe in any particular way. The attention
+// goes outwards, never towards exploring what you feel.
 //
-// « Se détacher du regard des autres » garde son format interactif : elle mesure la gêne avant
-// et après, et cette comparaison est tout son intérêt.
+// “Letting go of being watched” keeps its interactive format: it measures the discomfort before
+// and after, and that comparison is the whole point of it.
 
 import type { ProgramContent } from '../../src/features/wellbeing/types';
 
-/** Ancrage rapide — 1 minute, 60 s. */
+/** Quick grounding — 1 minute, 60 s. */
 export const ancrageRapide: ProgramContent = {
   type: 'narrated',
   blocks: [
     {
-      text: "Sans rien changer à ta posture, sens le contact de tes pieds, ou de ton corps avec ce qui te porte.",
+      text: 'Without changing how you are sitting or standing, feel your feet, or wherever your body meets what is holding it.',
       speakSeconds: 12,
       silenceSeconds: 8,
     },
     {
-      text: "Une seule respiration, normale. Ne la force pas.",
+      text: 'One breath, a normal one. Do not force it.',
       speakSeconds: 10,
       silenceSeconds: 15,
     },
     {
-      text: "C'est suffisant. Tu peux reprendre ce que tu faisais.",
+      text: 'That is enough. You can go back to what you were doing.',
       speakSeconds: 10,
       silenceSeconds: 5,
     },
   ],
 };
 
-/** Kit d'urgence — 2 minutes, 120 s. */
+/** The two-minute emergency kit — 2 minutes, 120 s. */
 export const kitDurgence: ProgramContent = {
   type: 'narrated',
   blocks: [
     {
-      text: "Deux minutes, où que tu sois. Pose tes pieds au sol et trouve trois objets autour de toi.",
+      text: 'Two minutes, wherever you are. Put your feet on the floor and find three objects around you.',
       speakSeconds: 16,
       silenceSeconds: 14,
     },
     {
-      text: "Trois respirations : inspire doucement, ajoute une toute petite inspiration par-dessus, puis expire longuement.",
+      text: 'Three breaths: in gently, add a tiny second breath in on top, then a long breath out.',
       speakSeconds: 14,
       silenceSeconds: 16,
     },
     {
-      text: "Dis-toi : je n'ai pas besoin de tout résoudre maintenant.",
+      text: 'Tell yourself: I do not have to solve all of this now.',
       speakSeconds: 12,
       silenceSeconds: 18,
     },
     {
-      text: "Quelle est ta prochaine petite action ? Fais uniquement celle-là.",
+      text: 'What is your next small action? Do only that one.',
       speakSeconds: 14,
       silenceSeconds: 16,
     },
   ],
 };
 
-/** Sortie de trois minutes — 3 minutes, 180 s. */
+/** The three-minute outing — 3 minutes, 180 s. */
 export const sortieDeTroisMinutes: ProgramContent = {
   type: 'narrated',
   blocks: [
     {
-      text: "Tu sens que tu satures. Ne pars pas tout de suite : arrête-toi quelques secondes et pose tes pieds au sol.",
+      text: 'You can feel yourself saturating. Do not leave straight away: stop for a few seconds and put your feet on the floor.',
       speakSeconds: 18,
       silenceSeconds: 12,
     },
     {
-      text: "Trois respirations lentes.",
+      text: 'Three slow breaths.',
       speakSeconds: 10,
       silenceSeconds: 10,
     },
     {
-      text: "Si tu peux, rejoins un endroit plus calme : un couloir, dehors, un banc, un coin moins fréquenté.",
+      text: 'If you can, get somewhere quieter: a corridor, outside, a bench, a less busy corner.',
       speakSeconds: 12,
       silenceSeconds: 13,
     },
     {
-      text: "Maintenant, deux minutes sans téléphone. Trouve cinq choses que tu vois, quatre que tu entends, trois que tu sens dans ton corps.",
+      text: 'Now two minutes with no phone. Find five things you can see, four you can hear, three you can feel in your body.',
       speakSeconds: 14,
       silenceSeconds: 66,
     },
     {
-      text: "Tu veux y retourner maintenant, ou prendre encore quelques minutes ? Décide calmement. Les deux sont acceptables.",
+      text: 'Do you want to go back now, or take a few more minutes? Decide calmly. Either is fine.',
       speakSeconds: 15,
       silenceSeconds: 10,
     },
   ],
 };
 
-/** Mode observateur — 4 minutes, 240 s. */
+/** Observer mode — 4 minutes, 240 s. */
 export const modeObservateur: ProgramContent = {
   type: 'narrated',
   blocks: [
     {
-      text: "Sans bouger d'où tu es : tu n'es pas obligé de participer à tout ce qui se passe ici. Tu peux redevenir un moment simple observateur.",
+      text: 'Without moving from where you are: you are not obliged to take part in everything happening here. You can go back to simply observing for a while.',
       speakSeconds: 20,
       silenceSeconds: 15,
     },
     {
-      text: "Cherche trois couleurs autour de toi.",
+      text: 'Look for three colours around you.',
       speakSeconds: 10,
       silenceSeconds: 30,
     },
     {
-      text: "Trois formes.",
+      text: 'Three shapes.',
       speakSeconds: 8,
       silenceSeconds: 32,
     },
     {
-      text: "Trois sons.",
+      text: 'Three sounds.',
       speakSeconds: 8,
       silenceSeconds: 32,
     },
     {
-      text: "Et trois sensations : tes pieds au sol, ton dos contre le dossier, l'air sur ton visage.",
+      text: 'And three sensations: your feet on the floor, your back against the seat, the air on your face.',
       speakSeconds: 14,
       silenceSeconds: 31,
     },
     {
-      text: "Je n'ai pas besoin de contrôler la pièce. Je peux simplement être dedans.",
+      text: 'I do not need to control the room. I can simply be in it.',
       speakSeconds: 15,
       silenceSeconds: 25,
     },
   ],
 };
 
-/** Le bouton pause — 4 minutes, 240 s. */
+/** The pause button — 4 minutes, 240 s. */
 export const boutonPause: ProgramContent = {
   type: 'narrated',
   blocks: [
     {
-      text: "Dis-toi mentalement : pause.",
+      text: 'Say it to yourself, in your head: pause.',
       speakSeconds: 8,
       silenceSeconds: 12,
     },
     {
-      text: "Pousse légèrement tes pieds contre le sol. Sens le contact.",
+      text: 'Press your feet lightly into the floor. Feel the contact.',
       speakSeconds: 12,
       silenceSeconds: 23,
     },
     {
-      text: "Trois respirations : inspiration douce, expiration lente. Sans rien forcer.",
+      text: 'Three breaths: gently in, slowly out. Forcing nothing.',
       speakSeconds: 14,
       silenceSeconds: 31,
     },
     {
-      text: "Choisis une phrase courte, pour toi seul. « Je suis ici. » Ou : « Je n'ai rien à prouver. »",
+      text: 'Choose a short sentence, for yourself alone. “I am here.” Or: “I have nothing to prove.”',
       speakSeconds: 16,
       silenceSeconds: 29,
     },
     {
-      text: "Ne réfléchis pas à toute la situation d'un coup. Demande-toi seulement : quelle est la prochaine petite chose que j'ai à faire ?",
+      text: 'Do not think about the whole situation at once. Ask only this: what is the next small thing I have to do?',
       speakSeconds: 18,
       silenceSeconds: 32,
     },
     {
-      text: "Fais uniquement celle-là. Puis la suivante, une à la fois.",
+      text: 'Do only that one. Then the next, one at a time.',
       speakSeconds: 15,
       silenceSeconds: 30,
     },
   ],
 };
 
-/** Respirer dans la foule — 4 minutes, 240 s. */
+/** Breathing in a crowd — 4 minutes, 240 s. */
 export const respirerDansLaFoule: ProgramContent = {
   type: 'narrated',
   blocks: [
     {
-      text: "Ce trajet peut sembler long, entouré de monde. Tu n'as rien à performer ici.",
+      text: 'This journey can feel long, surrounded by people. You have nothing to perform here.',
       speakSeconds: 16,
       silenceSeconds: 19,
     },
     {
-      text: "Choisis un point fixe où poser ton regard. Pas pour l'examiner : juste pour le poser.",
+      text: 'Choose one fixed point to rest your eyes on. Not to examine it: just to rest them.',
       speakSeconds: 14,
       silenceSeconds: 26,
     },
     {
-      text: "Compte quatre respirations. Ne change pas ta façon de respirer, compte seulement.",
+      text: 'Count four breaths. Do not change how you breathe, only count.',
       speakSeconds: 12,
       silenceSeconds: 33,
     },
     {
-      text: "Remarque que personne ne te fixe. Chacun est pris dans son propre trajet, ses propres pensées.",
+      text: 'Notice that nobody is staring at you. Everyone is caught up in their own journey, their own thoughts.',
       speakSeconds: 16,
       silenceSeconds: 24,
     },
     {
-      text: "Tes épaules peuvent descendre un peu. Ta mâchoire peut se desserrer.",
+      text: 'Your shoulders can come down a little. Your jaw can unclench.',
       speakSeconds: 12,
       silenceSeconds: 28,
     },
     {
-      text: "Le trajet avance à son rythme, que tu sois tendu ou non. Autant l'être un peu moins.",
+      text: 'The journey moves at its own pace whether you are tense or not. You may as well be a little less so.',
       speakSeconds: 15,
       silenceSeconds: 25,
     },
@@ -205,38 +206,38 @@ export const respirerDansLaFoule: ProgramContent = {
 };
 
 /**
- * Se détacher du regard des autres — format interactif conservé.
- * Elle mesure la gêne avant et après, et cette comparaison chiffrée est ce qu'elle apporte de
- * plus que les autres : la personne repart avec une preuve, pas une impression.
+ * Letting go of being watched — the interactive format is kept.
+ * It measures the discomfort before and after, and that number is what it offers over the others:
+ * you leave with evidence rather than an impression.
  */
 export const detachementRegardAutres: ProgramContent = {
   type: 'grounding',
   steps: [
-    { kind: 'text', text: "Vous êtes entouré de monde. Ce moment vous appartient autant qu'à n'importe qui d'autre ici." },
+    { kind: 'text', text: 'You are surrounded by people. This moment is as much yours as anybody else’s here.' },
     {
       kind: 'scale',
-      prompt: 'Là, maintenant : à quel point vous sentez-vous observé·e ou mal à l’aise ?',
+      prompt: 'Right now: how watched or uncomfortable do you feel?',
       key: 'before',
     },
     {
       kind: 'text',
-      text: "Sans fermer les yeux, posez votre regard sur quelque chose de neutre — une fenêtre, le sol, un point fixe.",
+      text: 'Without closing your eyes, rest your gaze on something neutral — a window, the floor, a fixed point.',
     },
-    { kind: 'confirm', text: 'Prenez le temps de le trouver.', buttonLabel: "J'ai trouvé mon point" },
+    { kind: 'confirm', text: 'Take the time to find one.', buttonLabel: 'I have found my point' },
     {
       kind: 'text',
-      text: "La plupart des gens autour de vous sont pris dans leurs propres pensées, pas dans les vôtres. On est rarement aussi observé qu'on le croit.",
+      text: 'Most of the people around you are caught up in their own thoughts, not in yours. We are rarely as watched as we believe.',
     },
     {
       kind: 'breath-counter',
-      text: 'Respirez normalement, sans rien forcer. Appuyez à chaque respiration.',
+      text: 'Breathe normally, forcing nothing. Tap with each breath.',
       count: 3,
     },
-    { kind: 'text', text: "Sentez vos pieds au sol, ou votre corps posé sur le siège. Un point d'ancrage simple, toujours là." },
-    { kind: 'text', text: "Vous n'avez rien à prouver ici. Juste à être là, jusqu'à la prochaine étape." },
+    { kind: 'text', text: 'Feel your feet on the floor, or your body resting on the seat. One simple anchor, always there.' },
+    { kind: 'text', text: 'You have nothing to prove here. Only to be here, until the next step.' },
     {
       kind: 'scale',
-      prompt: 'Et maintenant : où en êtes-vous ?',
+      prompt: 'And now: where are you?',
       key: 'after',
     },
   ],

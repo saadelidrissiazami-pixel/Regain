@@ -1,14 +1,14 @@
-// Méditations narrées.
+// Narrated meditations.
 //
-// Chaque séance se déroule seule : un bloc de texte, puis un silence pour le vivre. Les durées
-// sont écrites à la main plutôt qu'estimées, et leur somme est la durée réelle de la séance —
-// tests/narration.test.ts et tests/catalogue.test.ts veillent à ce qu'elle corresponde à ce que
-// le catalogue annonce.
+// Each session runs on its own: a block of text, then a silence to live it in. The durations are
+// written by hand rather than estimated, and their sum is the session's real length —
+// tests/narration.test.ts and tests/catalogue.test.ts make sure it matches what the catalogue
+// claims.
 //
-// Toutes suivent le même arc : on s'installe, on trouve un appui concret, on choisit un point
-// d'attention, on apprend quoi faire quand une pensée arrive, on pratique avec moins de guidage,
-// on accueille l'état du moment, on revient. Le silence s'allonge après l'enseignement du geste,
-// puis se resserre à la sortie. Rien ne demande d'aller mieux.
+// They all follow the same arc: settle in, find something concrete to rest on, choose a point of
+// attention, learn what to do when a thought arrives, practise with less guidance, accept
+// whatever state you are in, come back. The silence lengthens once the move has been taught, then
+// tightens on the way out. Nothing asks you to feel better.
 
 import type { ProgramContent } from '../../src/features/wellbeing/types';
 
@@ -17,243 +17,243 @@ export const pauseUneMinute: ProgramContent = {
   type: 'narrated',
   blocks: [
     {
-      text: "Une minute, là où tu es. Tu peux fermer les yeux, ou juste baisser le regard.",
+      text: 'One minute, right where you are. You can close your eyes, or just lower your gaze.',
       speakSeconds: 12,
       silenceSeconds: 8,
     },
     {
-      text: "Laisse passer trois respirations sans rien y changer. Tu observes, tu ne corriges pas.",
+      text: 'Let three breaths go by without changing anything. You are watching, not correcting.',
       speakSeconds: 10,
       silenceSeconds: 18,
     },
     {
-      text: "C'est déjà fini. Reprends quand tu veux.",
+      text: 'That is already it. Pick things up whenever you want.',
       speakSeconds: 8,
       silenceSeconds: 4,
     },
   ],
 };
 
-/** Ancrage du matin — 3 minutes, 180 s. */
+/** Morning anchor — 3 minutes, 180 s. */
 export const ancrageMatin: ProgramContent = {
   type: 'narrated',
   blocks: [
     {
-      text: "Installe-toi comme tu peux, assis ou allongé. Tu peux fermer les yeux ou garder le regard posé devant toi. Tu peux aussi bouger, ou arrêter, à tout moment.",
+      text: 'Settle however you can, sitting or lying down. You can close your eyes or rest your gaze in front of you. You can move, or stop, at any point.',
       speakSeconds: 20,
       silenceSeconds: 10,
     },
     {
-      text: "Remarque le contact entre ton corps et ce qui te soutient : la chaise, le lit, le sol. Choisis un endroit où le contact est facile à sentir.",
+      text: 'Notice where your body meets whatever is holding it: the chair, the bed, the floor. Pick one place where that contact is easy to feel.',
       speakSeconds: 18,
       silenceSeconds: 12,
     },
     {
-      text: "Si c'est confortable, remarque maintenant le mouvement de ta respiration. Laisse-la suivre son rythme, sans l'allonger.",
+      text: 'If it is comfortable, notice the movement of your breathing now. Let it keep its own rhythm, without stretching it out.',
       speakSeconds: 16,
       silenceSeconds: 14,
     },
     {
-      text: "Des pensées vont arriver, c'est normal. Quand tu remarques que tu les suis, reviens simplement à ton appui. Ce retour, c'est tout l'exercice.",
+      text: 'Thoughts will arrive, and that is normal. When you notice you are following one, simply come back to your anchor. That return is the whole exercise.',
       speakSeconds: 20,
       silenceSeconds: 10,
     },
     {
-      text: "Je te laisse un peu de silence. Reviens à ton appui quand tu y penses.",
+      text: 'I will leave you a little silence. Come back to your anchor whenever you think of it.',
       speakSeconds: 10,
       silenceSeconds: 15,
     },
     {
-      text: "Pose-toi cette question, sans y répondre tout de suite : de quoi est-ce que j'ai besoin aujourd'hui ?",
+      text: 'Ask yourself this, without answering straight away: what do I need today?',
       speakSeconds: 14,
       silenceSeconds: 6,
     },
     {
-      text: "Remarque les sons autour de toi. Ouvre les yeux à ton rythme.",
+      text: 'Notice the sounds around you. Open your eyes in your own time.',
       speakSeconds: 10,
       silenceSeconds: 5,
     },
   ],
 };
 
-/** Méditation du soir — 5 minutes, 300 s. Se termine sans rien demander. */
+/** Evening meditation — 5 minutes, 300 s. Ends without asking for anything. */
 export const meditationSoir: ProgramContent = {
   type: 'narrated',
   endsQuietly: true,
   blocks: [
     {
-      text: "Installe-toi là où tu es, sans chercher à être ailleurs. La journée est derrière toi, même si elle s'est mal passée.",
+      text: 'Settle where you are, without trying to be somewhere else. The day is behind you, even if it went badly.',
       speakSeconds: 22,
       silenceSeconds: 13,
     },
     {
-      text: "Repasse la journée sans la juger, comme un paysage qui défile par une fenêtre. Tu n'as pas à en faire le bilan.",
+      text: 'Let the day go past without judging it, like scenery through a window. You do not have to sum it up.',
       speakSeconds: 20,
       silenceSeconds: 30,
     },
     {
-      text: "Est-ce qu'il reste quelque chose que tu portes encore ? Une tension, une phrase, une pensée qui revient.",
+      text: 'Is there something you are still carrying? A tightness, a sentence, a thought that keeps coming back.',
       speakSeconds: 20,
       silenceSeconds: 30,
     },
     {
-      text: "Tu n'as pas à la résoudre maintenant. Tu peux simplement la reconnaître, et la poser à côté de toi pour ce soir. Elle sera encore là demain si elle compte.",
+      text: 'You do not have to solve it now. You can simply recognise it, and set it down beside you for tonight. It will still be there tomorrow if it matters.',
       speakSeconds: 22,
       silenceSeconds: 28,
     },
     {
-      text: "Sens le poids de ton corps, un peu plus posé à chaque expiration.",
+      text: 'Feel the weight of your body settling a little further with each breath out.',
       speakSeconds: 16,
       silenceSeconds: 34,
     },
     {
-      text: "Tu n'as plus rien à accomplir aujourd'hui. Même si la liste n'est pas finie, elle peut attendre la lumière du jour.",
+      text: 'There is nothing left to get done today. Even if the list is unfinished, it can wait for daylight.',
       speakSeconds: 18,
       silenceSeconds: 22,
     },
     {
-      text: "La voix va s'arrêter maintenant. Tu n'as rien à valider, rien à toucher.",
+      text: 'The voice is going to stop now. There is nothing to confirm, nothing to tap.',
       speakSeconds: 15,
       silenceSeconds: 10,
     },
   ],
 };
 
-/** Méditation des 5 sens — 5 minutes, 300 s. */
+/** Five senses — 5 minutes, 300 s. */
 export const meditationCinqSens: ProgramContent = {
   type: 'narrated',
   blocks: [
     {
-      text: "Garde les yeux ouverts pour celle-ci. On va traverser les cinq sens, un par un, sans se presser. Rien à réussir.",
+      text: 'Keep your eyes open for this one. We will go through the five senses, one at a time, unhurried. Nothing to get right.',
       speakSeconds: 22,
       silenceSeconds: 8,
     },
     {
-      text: "La vue. Trouve cinq choses que tu vois autour de toi. Nomme-les dans ta tête, sans les juger. Prends ton temps pour les cinq.",
+      text: 'Sight. Find five things you can see around you. Name them in your head, without judging them. Take your time over all five.',
       speakSeconds: 20,
       silenceSeconds: 40,
     },
     {
-      text: "L'ouïe. Maintenant quatre sons, même discrets : une voix au loin, une ventilation, ta propre respiration.",
+      text: 'Hearing. Now four sounds, however faint: a voice further off, a fan, your own breathing.',
       speakSeconds: 18,
       silenceSeconds: 37,
     },
     {
-      text: "Le toucher. Trois sensations physiques : tes pieds sur le sol, un tissu contre ta peau, le dossier contre ton dos.",
+      text: 'Touch. Three physical sensations: your feet on the floor, fabric against your skin, the chair against your back.',
       speakSeconds: 18,
       silenceSeconds: 32,
     },
     {
-      text: "L'odorat. Deux odeurs, même très légères. Si tu n'en trouves pas, reste simplement attentif quelques instants.",
+      text: 'Smell. Two smells, however slight. If you cannot find any, simply stay attentive for a moment.',
       speakSeconds: 16,
       silenceSeconds: 29,
     },
     {
-      text: "Le goût. Une seule sensation dans ta bouche, telle qu'elle est.",
+      text: 'Taste. One single sensation in your mouth, exactly as it is.',
       speakSeconds: 15,
       silenceSeconds: 20,
     },
     {
-      text: "Tu viens de faire le tour. Tu es ici, maintenant, et tu n'as rien à résoudre pendant ces quelques minutes.",
+      text: 'You have been all the way round. You are here, now, and there is nothing to solve for these few minutes.',
       speakSeconds: 20,
       silenceSeconds: 5,
     },
   ],
 };
 
-/** Observer ses pensées — 8 minutes, 480 s. */
+/** Watching your thoughts — 8 minutes, 480 s. */
 export const meditationObserverPensees: ProgramContent = {
   type: 'narrated',
   blocks: [
     {
-      text: "Installe-toi et respire normalement. Ferme les yeux si tu es à l'aise, sinon pose le regard devant toi.",
+      text: 'Settle in and breathe normally. Close your eyes if that is comfortable, otherwise rest your gaze in front of you.',
       speakSeconds: 22,
       silenceSeconds: 13,
     },
     {
-      text: "Pendant ces huit minutes, tu ne vas pas chercher à arrêter tes pensées. Personne n'y arrive, et ce n'est pas le but.",
+      text: 'Over these eight minutes you are not going to try to stop your thoughts. Nobody manages that, and it is not the point.',
       speakSeconds: 22,
       silenceSeconds: 23,
     },
     {
-      text: "Voilà le geste : quand une pensée arrive et que tu remarques que tu la suis, dis-toi doucement « une pensée ». Puis reviens à ta respiration. Sans te presser.",
+      text: 'Here is the move: when a thought arrives and you notice you are following it, say to yourself gently, “a thought”. Then come back to your breathing. No rush.',
       speakSeconds: 25,
       silenceSeconds: 35,
     },
     {
-      text: "Si tu penses « je n'y arrive pas » : une pensée. Retour au souffle. Si tu penses « je devrais faire autre chose » : une pensée. Retour au souffle.",
+      text: 'If you think “I cannot do this”: a thought. Back to the breath. If you think “I should be doing something else”: a thought. Back to the breath.',
       speakSeconds: 22,
       silenceSeconds: 38,
     },
     {
-      text: "Essaie maintenant par toi-même. Je te laisse du silence.",
+      text: 'Try it on your own now. I will leave you some silence.',
       speakSeconds: 12,
       silenceSeconds: 63,
     },
     {
-      text: "Continue. Il n'y a pas de bon score, et remarquer que tu étais parti loin, c'est déjà réussir.",
+      text: 'Carry on. There is no score to beat, and noticing that you had wandered a long way off is already the thing working.',
       speakSeconds: 10,
       silenceSeconds: 70,
     },
     {
-      text: "Tu n'essaies pas de supprimer tes pensées. Tu apprends la différence entre avoir une pensée et devoir la croire, ou agir selon elle.",
+      text: 'You are not trying to get rid of your thoughts. You are learning the difference between having a thought and having to believe it, or act on it.',
       speakSeconds: 25,
       silenceSeconds: 35,
     },
     {
-      text: "Encore quelques instants, puis nous nous arrêterons. Une pensée n'est pas forcément un fait.",
+      text: 'A few moments more, then we will stop. A thought is not necessarily a fact.',
       speakSeconds: 20,
       silenceSeconds: 45,
     },
   ],
 };
 
-/** Scanner corporel — 9 minutes, 540 s. */
+/** Body scan — 9 minutes, 540 s. */
 export const meditationScanCorporel: ProgramContent = {
   type: 'narrated',
   blocks: [
     {
-      text: "Assieds-toi ou allonge-toi. On va parcourir le corps lentement, de bas en haut. Tu observes, tu ne corriges rien.",
+      text: 'Sit or lie down. We will travel slowly through the body, from the bottom up. You are watching, not fixing anything.',
       speakSeconds: 22,
       silenceSeconds: 13,
     },
     {
-      text: "Commence par tes pieds. Chaleur, fraîcheur, appui, tension. Ce que tu trouves, et aussi l'absence de sensation.",
+      text: 'Start with your feet. Warmth, coolness, pressure, tightness. Whatever you find, and the absence of sensation too.',
       speakSeconds: 20,
       silenceSeconds: 40,
     },
     {
-      text: "Remonte vers les mollets, puis les cuisses. Observe simplement, sans chercher à détendre quoi que ce soit.",
+      text: 'Move up to the calves, then the thighs. Simply observe, without trying to relax anything.',
       speakSeconds: 18,
       silenceSeconds: 42,
     },
     {
-      text: "Ton ventre. Remarque le mouvement de la respiration à cet endroit précis.",
+      text: 'Your stomach. Notice the movement of the breath at exactly that spot.',
       speakSeconds: 18,
       silenceSeconds: 42,
     },
     {
-      text: "Ta poitrine. La respiration continue toute seule, sans que tu aies à t'en occuper.",
+      text: 'Your chest. The breathing carries on by itself, without you having to see to it.',
       speakSeconds: 16,
       silenceSeconds: 44,
     },
     {
-      text: "Tes épaules. Sont-elles remontées ? Si oui, laisse-les descendre d'un centimètre. Pas plus.",
+      text: 'Your shoulders. Are they up around your ears? If they are, let them come down a centimetre. No more than that.',
       speakSeconds: 20,
       silenceSeconds: 45,
     },
     {
-      text: "Ta mâchoire. Desserre les dents, laisse la langue se poser. C'est souvent là que la journée s'accroche.",
+      text: 'Your jaw. Unclench your teeth, let your tongue rest. That is often where the day hangs on.',
       speakSeconds: 18,
       silenceSeconds: 42,
     },
     {
-      text: "Ton visage. Le front, le contour des yeux, les joues, la bouche.",
+      text: 'Your face. The forehead, around the eyes, the cheeks, the mouth.',
       speakSeconds: 20,
       silenceSeconds: 45,
     },
     {
-      text: "Pour finir, observe ton corps comme un ensemble. Tu n'as pas à faire disparaître les sensations qui restent — tu peux simplement les laisser être là.",
+      text: 'To finish, take in your body as a whole. You do not have to make the sensations that remain go away — you can simply let them be there.',
       speakSeconds: 25,
       silenceSeconds: 50,
     },

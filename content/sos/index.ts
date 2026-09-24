@@ -1,94 +1,93 @@
-// Séances SOS : deux minutes, à déclencher au moment où ça ne va pas.
+// SOS sessions: two minutes, to reach for at the moment things are bad.
 //
-// Elles ne ressemblent pas aux autres, et c'est voulu. Une seule consigne à la fois, peu
-// d'explications, les yeux ouverts, et une sortie concrète à la fin. On ne va pas explorer ce
-// qu'on ressent : l'attention est tournée vers l'extérieur, parce que c'est ce qui aide sur le
-// moment.
+// They do not look like the others, and that is deliberate. One instruction at a time, little
+// explanation, eyes open, and a concrete way out at the end. There is no exploring what you feel:
+// the attention turns outwards, because that is what helps in the moment.
 //
-// Aucune ne demande de grande inspiration ni de rétention du souffle. Respirer fort quand on
-// panique aggrave souvent les choses, et une consigne respiratoire ratée devient une preuve de
-// plus qu'on n'y arrive pas.
+// None of them asks for a big breath in or for holding the breath. Breathing hard while panicking
+// often makes things worse, and a breathing instruction that fails becomes one more piece of
+// evidence that you cannot do this.
 //
-// Elles sont gratuites, toutes les quatre, et le resteront : mettre du contenu de détresse
-// derrière un abonnement ne se défend pas.
+// All four are free, and will stay free: putting content for distress behind a subscription is
+// not defensible.
 
 import type { ProgramContent } from '../../src/features/wellbeing/types';
 
-/** Crise d'angoisse — 2 minutes. L'attention va vers la pièce, pas vers le souffle. */
+/** Panic rising — 2 minutes. The attention goes to the room, not to the breath. */
 export const sosAngoisse: ProgramContent = {
   type: 'narrated',
   blocks: [
     {
-      text: "Garde les yeux ouverts si tu peux. Regarde autour de toi et choisis un objet immobile. Remarque sa couleur, puis sa forme. Pour les prochaines secondes, tu n'as rien d'autre à faire que le regarder.",
+      text: 'Keep your eyes open if you can. Look around and choose one object that is not moving. Notice its colour, then its shape. For the next few seconds you have nothing to do but look at it.',
       speakSeconds: 20,
       silenceSeconds: 10,
     },
     {
-      text: "Remarque maintenant un contact : tes pieds sur le sol, ton dos contre le siège, ta main sur un tissu. Choisis celui qui te convient. Sens la surface, sans appuyer fort.",
+      text: 'Now notice one point of contact: your feet on the floor, your back against the seat, your hand on some fabric. Pick whichever suits you. Feel the surface, without pressing hard.',
       speakSeconds: 20,
       silenceSeconds: 10,
     },
     {
-      text: "Laisse ta respiration se faire, sans chercher à prendre de grandes inspirations. Porte plutôt ton attention sur un son autour de toi. Puis sur un deuxième, s'il y en a un.",
+      text: 'Let your breathing happen, without trying to take big breaths in. Put your attention on a sound around you instead. Then on a second one, if there is one.',
       speakSeconds: 20,
       silenceSeconds: 10,
     },
     {
-      text: "C'est bientôt fini. Si tu as besoin d'une présence, tu peux appeler quelqu'un et dire : « Je traverse un moment difficile, tu peux rester avec moi ? » Tu n'as pas à attendre que ce soit pire pour demander.",
+      text: 'This is nearly over. If you need somebody with you, you can call and say: “I am having a hard time, can you stay with me?” You do not have to wait for it to get worse before you ask.',
       speakSeconds: 20,
       silenceSeconds: 10,
     },
   ],
 };
 
-/** Avant de prendre la parole — 2 minutes. On ne cherche pas le calme, on prépare un geste. */
+/** Before you speak up — 2 minutes. Not aiming for calm, preparing one move. */
 export const sosPriseDeParole: ProgramContent = {
   type: 'narrated',
   blocks: [
     {
-      text: "Sens tes pieds au sol, ou ton corps sur le siège. Pose ton regard sur un point stable devant toi. Tu as le droit de prendre cet instant avant de commencer.",
+      text: 'Feel your feet on the floor, or your body on the seat. Rest your gaze on something steady in front of you. You are allowed to take this moment before you start.',
       speakSeconds: 15,
       silenceSeconds: 15,
     },
     {
-      text: "Si tu peux, desserre un peu la mâchoire et les mains. Laisse passer une respiration à ton rythme. Tu n'as pas besoin de faire disparaître la nervosité — elle sert aussi à quelque chose.",
+      text: 'If you can, unclench your jaw and your hands a little. Let one breath go by at your own pace. You do not need to make the nerves disappear — they are good for something too.',
       speakSeconds: 15,
       silenceSeconds: 15,
     },
     {
-      text: "Choisis seulement ta première phrase. Par exemple : « Je vais vous présenter le point principal. » Dis-la une fois dans ta tête, un peu plus lentement que d'habitude.",
+      text: 'Choose only your first sentence. For instance: “I am going to take you through the main point.” Say it once in your head, a little slower than usual.',
       speakSeconds: 15,
       silenceSeconds: 15,
     },
     {
-      text: "Au moment de commencer, retrouve tes appuis, dis ta première phrase, puis autorise-toi une pause. Tu peux parler avec une voix imparfaite et avancer une phrase après l'autre.",
+      text: 'When it is time to start, find your footing, say your first sentence, then allow yourself a pause. You can speak with an imperfect voice and get there one sentence at a time.',
       speakSeconds: 15,
       silenceSeconds: 15,
     },
   ],
 };
 
-/** Coup de stress au travail — 2 minutes. Discret, yeux ouverts, orienté vers une décision. */
+/** A spike of stress at work — 2 minutes. Discreet, eyes open, aimed at a decision. */
 export const sosStressTravail: ProgramContent = {
   type: 'narrated',
   blocks: [
     {
-      text: "Si tu peux t'interrompre sans risque, pose les mains un instant et détourne le regard de l'écran. La prochaine réponse peut attendre quelques secondes.",
+      text: 'If you can stop safely, rest your hands for a moment and look away from the screen. The next reply can wait a few seconds.',
       speakSeconds: 15,
       silenceSeconds: 15,
     },
     {
-      text: "Sens un contact avec le sol ou le siège. Laisse tes épaules prendre une position un peu plus confortable. Respire comme ça vient, sans chercher à réussir un exercice.",
+      text: 'Feel a point of contact with the floor or the seat. Let your shoulders find a slightly more comfortable position. Breathe however it comes, without trying to get an exercise right.',
       speakSeconds: 15,
       silenceSeconds: 15,
     },
     {
-      text: "Demande-toi : quelle est la seule chose utile, maintenant ? Une petite action, une précision à demander, ou une pause. Tu n'as pas à traiter toute la liste.",
+      text: 'Ask yourself: what is the one useful thing, right now? A small action, a detail to ask about, or a break. You do not have to get through the whole list.',
       speakSeconds: 15,
       silenceSeconds: 15,
     },
     {
-      text: "Choisis la suite la plus réaliste. Si la demande dépasse ce que tu peux faire, tu peux dire : « J'ai besoin qu'on choisisse la priorité. » Puis avance à ton rythme.",
+      text: 'Choose the most realistic next step. If what is being asked is beyond what you can do, you can say: “I need us to choose the priority.” Then move at your own pace.',
       speakSeconds: 15,
       silenceSeconds: 15,
     },
@@ -96,31 +95,31 @@ export const sosStressTravail: ProgramContent = {
 };
 
 /**
- * Ruminations nocturnes — 2 minutes, fin silencieuse.
- * Aucune résolution de problème, aucune projection sur demain, aucune relance à la fin : tout
- * cela réveillerait précisément ce qu'on essaie de laisser retomber.
+ * Night-time rumination — 2 minutes, ending in silence.
+ * No problem-solving, nothing projected onto tomorrow, and nothing asked at the end: all of that
+ * would wake up precisely what we are trying to let settle.
  */
 export const sosRuminations: ProgramContent = {
   type: 'narrated',
   endsQuietly: true,
   blocks: [
     {
-      text: "Une pensée revient peut-être en boucle. Pour cet instant, tu n'as pas besoin de terminer le raisonnement. Tu peux simplement la reconnaître : voilà cette préoccupation.",
+      text: 'A thought may be going round and round. For this moment, you do not need to finish the reasoning. You can simply recognise it: there is that worry.',
       speakSeconds: 20,
       silenceSeconds: 10,
     },
     {
-      text: "Remarque un contact avec le lit : ta tête sur l'oreiller, une main posée, le poids d'une jambe. Choisis une sensation assez neutre, et laisse ton attention s'y poser.",
+      text: 'Notice one point of contact with the bed: your head on the pillow, a resting hand, the weight of a leg. Choose a fairly neutral sensation, and let your attention settle there.',
       speakSeconds: 20,
       silenceSeconds: 10,
     },
     {
-      text: "Si la pensée revient, reprends les mêmes mots : voilà cette préoccupation. Puis retrouve le contact. Tu peux refaire ce mouvement autant de fois qu'il se présente, sans compter.",
+      text: 'If the thought comes back, use the same words again: there is that worry. Then find the contact again. You can make that move as many times as it comes, without counting.',
       speakSeconds: 20,
       silenceSeconds: 10,
     },
     {
-      text: "La voix va s'arrêter. Tu n'as rien à valider, rien à toucher. Pour le moment, aucune réponse n'est attendue de toi.",
+      text: 'The voice is going to stop. There is nothing to confirm, nothing to tap. For now, no answer is expected of you.',
       speakSeconds: 20,
       silenceSeconds: 10,
     },

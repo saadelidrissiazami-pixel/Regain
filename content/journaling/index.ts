@@ -1,214 +1,214 @@
-// Séances d'écriture, narrées.
+// Writing sessions, narrated.
 //
-// Ici le silence n'est pas une respiration : c'est le temps d'écrire. Il est donc nettement plus
-// long qu'ailleurs, et c'est voulu — une question posée puis suivie de huit secondes est une
-// question qu'on n'a pas le temps de se poser.
+// Here the silence is not a breath: it is the time to write. So it is markedly longer than
+// elsewhere, and deliberately so — a question followed by eight seconds is a question you have no
+// time to ask yourself.
 //
-// Les séances demandent une feuille ou l'application Notes, et le disent d'entrée.
+// These sessions need paper or the Notes app, and say so from the start.
 
 import type { ProgramContent } from '../../src/features/wellbeing/types';
 
-/** Gratitude express — 1 minute, 60 s. */
+/** Quick gratitude — 1 minute, 60 s. */
 export const gratitudeExpress: ProgramContent = {
   type: 'narrated',
   blocks: [
     {
-      text: "Une seule question, et tu n'as même pas besoin de l'écrire. Quelle petite chose agréable s'est produite aujourd'hui ?",
+      text: 'One question only, and you do not even have to write it down. What small good thing happened today?',
       speakSeconds: 12,
       silenceSeconds: 8,
     },
     {
-      text: "Qui ou quoi t'a aidé, même un peu, même sans le savoir ?",
+      text: 'Who or what helped you, even a little, even without knowing it?',
       speakSeconds: 10,
       silenceSeconds: 15,
     },
     {
-      text: "Garde ça pour toi. C'était le but.",
+      text: 'Keep it to yourself. That was the point.',
       speakSeconds: 10,
       silenceSeconds: 5,
     },
   ],
 };
 
-/** Clarifier sa journée — 3 minutes, 180 s. */
+/** Clear your day — 3 minutes, 180 s. */
 export const clarifierJournee: ProgramContent = {
   type: 'narrated',
   blocks: [
     {
-      text: "Repense à ta journée, sans la juger. On va juste la regarder.",
+      text: 'Think back over your day, without judging it. We are only going to look at it.',
       speakSeconds: 16,
       silenceSeconds: 9,
     },
     {
-      text: "Qu'est-ce qui a pris le plus de place aujourd'hui ? Dans ton temps, ou dans ta tête — les deux ne sont pas toujours la même chose.",
+      text: 'What took up the most room today? In your time, or in your head — the two are not always the same thing.',
       speakSeconds: 14,
       silenceSeconds: 26,
     },
     {
-      text: "Y a-t-il eu un moment, même minuscule, qui t'a fait du bien ?",
+      text: 'Was there a moment, however tiny, that did you good?',
       speakSeconds: 12,
       silenceSeconds: 28,
     },
     {
-      text: "Qu'est-ce que tu ferais autrement demain, si l'occasion se représentait ?",
+      text: 'What would you do differently tomorrow, if the chance came round again?',
       speakSeconds: 14,
       silenceSeconds: 26,
     },
     {
-      text: "Tu n'as rien à noter. Laisse simplement ces réponses infuser.",
+      text: 'You do not have to write any of it down. Just let those answers settle.',
       speakSeconds: 15,
       silenceSeconds: 20,
     },
   ],
 };
 
-/** Vider sa tête — 4 minutes, 240 s. */
+/** Empty your head — 4 minutes, 240 s. */
 export const viderSaTete: ProgramContent = {
   type: 'narrated',
   blocks: [
     {
-      text: "Si ta tête est pleine, ce moment sert à en sortir un peu. Pas à tout résoudre.",
+      text: 'If your head is full, this is for getting some of it out. Not for solving all of it.',
       speakSeconds: 18,
       silenceSeconds: 12,
     },
     {
-      text: "Qu'est-ce qui tourne en boucle depuis un moment ?",
+      text: 'What has been going round and round for a while now?',
       speakSeconds: 12,
       silenceSeconds: 28,
     },
     {
-      text: "Est-ce une chose à faire, une chose à décider, ou juste une chose à ressentir ? Les trois ne se traitent pas pareil.",
+      text: 'Is it something to do, something to decide, or just something to feel? The three are not handled the same way.',
       speakSeconds: 14,
       silenceSeconds: 26,
     },
     {
-      text: "Si c'est à faire : quelle serait la toute première petite étape ? Pas le plan, juste la première étape.",
+      text: 'If it is something to do: what would the very first small step be? Not the plan, just the first step.',
       speakSeconds: 16,
       silenceSeconds: 29,
     },
     {
-      text: "Si c'est à décider : qu'est-ce qui te manque ? Du temps, une information, l'avis de quelqu'un ? Et si c'est juste un ressenti, il n'a pas besoin d'être réglé — seulement remarqué.",
+      text: 'If it is something to decide: what are you missing? Time, a piece of information, somebody else’s view? And if it is only a feeling, it does not need settling — only noticing.',
       speakSeconds: 16,
       silenceSeconds: 29,
     },
     {
-      text: "Une dernière question. Dans tout ça, qu'est-ce qui ne t'appartient pas vraiment à porter ?",
+      text: 'One last question. In all of that, what is not really yours to carry?',
       speakSeconds: 15,
       silenceSeconds: 25,
     },
   ],
 };
 
-/** Le déchargement mental — 7 minutes, 420 s. Avec une vraie plage d'écriture libre. */
+/** The mental offload — 7 minutes, 420 s. With a real stretch of free writing. */
 export const dechargementMental: ProgramContent = {
   type: 'narrated',
   blocks: [
     {
-      text: "Pour celle-ci, il te faut une feuille ou l'application Notes. Prends-la maintenant, je t'attends.",
+      text: 'For this one you need paper or the Notes app. Fetch it now, I will wait.',
       speakSeconds: 20,
       silenceSeconds: 15,
     },
     {
-      text: "Tu vas écrire tout ce qui te traverse l'esprit. Sans grammaire, sans structure, sans relire. Même « je ne sais pas quoi écrire » compte, et tu continues.",
+      text: 'You are going to write down everything going through your head. No grammar, no structure, no reading back. Even “I do not know what to write” counts, and you keep going.',
       speakSeconds: 18,
       silenceSeconds: 12,
     },
     {
-      text: "C'est parti. Écris sans t'arrêter, je ne dirai plus rien pendant trois minutes.",
+      text: 'Off you go. Write without stopping — I will say nothing for three minutes.',
       speakSeconds: 12,
       silenceSeconds: 168,
     },
     {
-      text: "Arrête-toi. Relis, et sépare ce que tu as écrit en deux : ce qui est sous ton contrôle, et ce qui ne l'est pas. Tes décisions et tes actions le sont. Le passé et les réactions des autres, non.",
+      text: 'Stop there. Read it back, and split what you wrote in two: what is under your control, and what is not. Your decisions and your actions are. The past and other people’s reactions are not.',
       speakSeconds: 20,
       silenceSeconds: 40,
     },
     {
-      text: "Dans la colonne « sous mon contrôle », choisis une seule action. Une seule. Par exemple : envoyer ce message.",
+      text: 'In the “under my control” column, choose one single action. One. For instance: send that message.',
       speakSeconds: 18,
       silenceSeconds: 32,
     },
     {
-      text: "Tu peux jeter la feuille. Ce qui comptait, c'est que ce soit sorti de ta tête.",
+      text: 'You can throw the paper away. What mattered is that it is out of your head.',
       speakSeconds: 15,
       silenceSeconds: 50,
     },
   ],
 };
 
-/** Journal de confiance — 6 minutes, 360 s. */
+/** The confidence journal — 6 minutes, 360 s. */
 export const journalDeConfiance: ProgramContent = {
   type: 'narrated',
   blocks: [
     {
-      text: "Cinq questions. Une phrase par réponse suffit, dans ta tête ou sur papier.",
+      text: 'Five questions. One sentence each is plenty, in your head or on paper.',
       speakSeconds: 18,
       silenceSeconds: 12,
     },
     {
-      text: "Qu'as-tu fait aujourd'hui malgré une difficulté ? Même tout petit. Surtout tout petit.",
+      text: 'What did you do today in spite of something being hard? However small. Especially if it was small.',
       speakSeconds: 14,
       silenceSeconds: 46,
     },
     {
-      text: "Quelle situation as-tu mieux gérée que tu ne l'aurais fait il y a un an ?",
+      text: 'Which situation did you handle better than you would have a year ago?',
       speakSeconds: 14,
       silenceSeconds: 46,
     },
     {
-      text: "Qu'est-ce que ça dit de toi ? Par exemple : je suis capable de continuer même quand c'est inconfortable.",
+      text: 'What does that say about you? For instance: I am able to keep going even when it is uncomfortable.',
       speakSeconds: 16,
       silenceSeconds: 54,
     },
     {
-      text: "Quel petit acte de courage as-tu posé ? Poser une question, dire non, essayer quelque chose de nouveau.",
+      text: 'What small act of courage did you manage? Asking a question, saying no, trying something new.',
       speakSeconds: 16,
       silenceSeconds: 54,
     },
     {
-      text: "Et pour finir : quelle chose petite et réalisable vas-tu oser demain ?",
+      text: 'And to finish: what small, doable thing will you risk tomorrow?',
       speakSeconds: 15,
       silenceSeconds: 55,
     },
   ],
 };
 
-/** Mettre la peur en plan — 8 minutes, 480 s. */
+/** Turn a fear into a plan — 8 minutes, 480 s. */
 export const peurEnPlan: ProgramContent = {
   type: 'narrated',
   blocks: [
     {
-      text: "De quoi as-tu peur, précisément ? Prends le temps de le formuler, même si c'est désagréable.",
+      text: 'What exactly are you afraid of? Take the time to put it into words, even if that is unpleasant.',
       speakSeconds: 14,
       silenceSeconds: 41,
     },
     {
-      text: "Quel est le scénario catastrophe que ton cerveau fabrique ? Sois précis. Les peurs vagues sont les plus lourdes à porter.",
+      text: 'What is the worst-case story your mind is building? Be specific. Vague fears are the heaviest to carry.',
       speakSeconds: 16,
       silenceSeconds: 49,
     },
     {
-      text: "Quelle est la probabilité réelle que ça arrive ? Pas besoin d'un chiffre juste, une intuition honnête suffit.",
+      text: 'How likely is it, really, that this happens? You do not need an accurate number — an honest hunch will do.',
       speakSeconds: 16,
       silenceSeconds: 49,
     },
     {
-      text: "Si ça arrivait quand même, que pourrais-tu faire ? Cherche trois possibilités, même imparfaites.",
+      text: 'And if it did happen anyway, what could you do? Look for three possibilities, imperfect ones included.',
       speakSeconds: 18,
       silenceSeconds: 62,
     },
     {
-      text: "Qu'est-ce qui est réellement sous ton contrôle dans cette situation ?",
+      text: 'What is genuinely under your control in this situation?',
       speakSeconds: 16,
       silenceSeconds: 54,
     },
     {
-      text: "Et qu'est-ce qui ne l'est pas du tout, et que tu portes quand même ?",
+      text: 'And what is not under your control at all, but you are carrying anyway?',
       speakSeconds: 16,
       silenceSeconds: 54,
     },
     {
-      text: "Pour finir : tu n'as pas besoin d'être certain que tout se passera bien. Tu as seulement besoin de savoir que tu pourras faire face à ce qui arrivera.",
+      text: 'To finish: you do not need to be certain everything will go well. You only need to know that you will be able to face whatever does happen.',
       speakSeconds: 20,
       silenceSeconds: 55,
     },

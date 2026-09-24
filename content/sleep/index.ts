@@ -1,251 +1,251 @@
-// Séances de sommeil, narrées.
+// Sleep sessions, narrated.
 //
-// Particularité de ce thème : on les écoute au lit, souvent les yeux déjà fermés. Elles se
-// terminent donc sans rien réclamer — pas de vibration, pas de bilan à remplir, pas de question.
-// C'est le rôle de `endsQuietly`. Seule la première fait exception : elle marque la transition
-// avant de se coucher, on est encore debout.
+// What sets this theme apart: they are listened to in bed, often with the eyes already closed. So
+// they end without asking for anything — no buzz, no review to fill in, no question. That is what
+// `endsQuietly` is for. Only the first is an exception: it marks the transition before bed, while
+// you are still up.
 //
-// Aucune ne promet l'endormissement. Vérifier si le sommeil arrive est précisément ce qui
-// l'empêche, et une séance qui promet crée exactement cette vérification.
+// None of them promises sleep. Checking whether sleep is coming is precisely what keeps it away,
+// and a session that promises sleep creates exactly that checking.
 
 import type { ProgramContent } from '../../src/features/wellbeing/types';
 
-/** Ralentir avant de dormir — 1 minute, 60 s. Avant le lit : le bilan reste proposé. */
+/** Slow down before sleep — 1 minute, 60 s. Before bed, so the review is still offered. */
 export const ralentirAvantDormir: ProgramContent = {
   type: 'narrated',
   blocks: [
     {
-      text: "Éteins ton écran, ou pose-le loin de toi. C'est le seul geste de cette minute.",
+      text: 'Turn your screen off, or put it somewhere away from you. That is the only thing to do this minute.',
       speakSeconds: 14,
       silenceSeconds: 6,
     },
     {
-      text: "Respire une fois, lentement, sans rien changer d'autre.",
+      text: 'Take one slow breath, without changing anything else.',
       speakSeconds: 12,
       silenceSeconds: 13,
     },
     {
-      text: "Tu n'as plus rien à accomplir aujourd'hui. Le reste attendra demain.",
+      text: 'There is nothing left to get done today. The rest will wait until tomorrow.',
       speakSeconds: 10,
       silenceSeconds: 5,
     },
   ],
 };
 
-/** Relâcher les tensions — 3 minutes, 180 s. */
+/** Release the tension — 3 minutes, 180 s. */
 export const relacherTensions: ProgramContent = {
   type: 'narrated',
   endsQuietly: true,
   blocks: [
     {
-      text: "Allonge-toi confortablement. Baisse la lumière si tu peux. Tu n'as plus besoin de bien faire quoi que ce soit.",
+      text: 'Lie down comfortably. Dim the light if you can. You do not need to do anything well any more.',
       speakSeconds: 20,
       silenceSeconds: 10,
     },
     {
-      text: "Laisse tes épaules redescendre. Juste d'un centimètre, ça suffit.",
+      text: 'Let your shoulders come back down. A centimetre is enough.',
       speakSeconds: 16,
       silenceSeconds: 14,
     },
     {
-      text: "Desserre un peu la mâchoire. C'est souvent là que la journée reste accrochée.",
+      text: 'Unclench your jaw a little. That is often where the day stays hooked.',
       speakSeconds: 16,
       silenceSeconds: 19,
     },
     {
-      text: "À chaque expiration, la journée s'éloigne un peu plus. Tu n'as pas à l'aider.",
+      text: 'With every breath out, the day moves a little further off. You do not have to help it.',
       speakSeconds: 14,
       silenceSeconds: 21,
     },
     {
-      text: "Tes jambes sont lourdes, posées. Aucun effort à fournir.",
+      text: 'Your legs are heavy, resting. No effort required.',
       speakSeconds: 12,
       silenceSeconds: 18,
     },
     {
-      text: "La voix va s'arrêter. Il n'y a plus rien à faire.",
+      text: 'The voice is going to stop. There is nothing left to do.',
       speakSeconds: 12,
       silenceSeconds: 8,
     },
   ],
 };
 
-/** Scan corporel complet — 6 minutes, 360 s. */
+/** Full body scan — 6 minutes, 360 s. */
 export const scanCorporelComplet: ProgramContent = {
   type: 'narrated',
   endsQuietly: true,
   blocks: [
     {
-      text: "Allonge-toi et laisse ton corps s'enfoncer dans le matelas. On va le parcourir lentement, sans rien corriger.",
+      text: 'Lie down and let your body sink into the mattress. We will travel slowly through it, fixing nothing.',
       speakSeconds: 20,
       silenceSeconds: 15,
     },
     {
-      text: "Tes pieds. Relâche-les sans les bouger, par la seule intention.",
+      text: 'Your feet. Let them go without moving them, on intention alone.',
       speakSeconds: 16,
       silenceSeconds: 29,
     },
     {
-      text: "Remonte vers les jambes. Sens leur poids, et laisse-les se relâcher un peu plus.",
+      text: 'Move up to the legs. Feel their weight, and let them loosen a little further.',
       speakSeconds: 16,
       silenceSeconds: 29,
     },
     {
-      text: "Ton ventre se soulève et redescend, à son rythme, sans ton aide.",
+      text: 'Your stomach rises and falls, at its own pace, with no help from you.',
       speakSeconds: 14,
       silenceSeconds: 31,
     },
     {
-      text: "Tes épaules. Elles peuvent descendre encore un peu, même si tu les croyais détendues.",
+      text: 'Your shoulders. They can come down a little more, even if you thought they were relaxed.',
       speakSeconds: 16,
       silenceSeconds: 29,
     },
     {
-      text: "Ton visage. Le front, le contour des yeux, la mâchoire.",
+      text: 'Your face. The forehead, around the eyes, the jaw.',
       speakSeconds: 16,
       silenceSeconds: 29,
     },
     {
-      text: "Sens maintenant ton corps entier, lourd et posé.",
+      text: 'Now feel your whole body, heavy and settled.',
       speakSeconds: 16,
       silenceSeconds: 34,
     },
     {
-      text: "C'est fini. Rien à valider, rien à toucher.",
+      text: 'That is the end. Nothing to confirm, nothing to tap.',
       speakSeconds: 12,
       silenceSeconds: 38,
     },
   ],
 };
 
-/** Respiration pour s'endormir — 8 minutes, 480 s. */
+/** Breathing towards sleep — 8 minutes, 480 s. */
 export const respirationEndormissement: ProgramContent = {
   type: 'narrated',
   endsQuietly: true,
   blocks: [
     {
-      text: "Allonge-toi, baisse la lumière, pose tes mains confortablement.",
+      text: 'Lie down, dim the light, let your hands rest comfortably.',
       speakSeconds: 20,
       silenceSeconds: 20,
     },
     {
-      text: "Pour commencer, respire normalement. Ne change rien, observe seulement.",
+      text: 'To start with, breathe normally. Change nothing, just watch.',
       speakSeconds: 16,
       silenceSeconds: 39,
     },
     {
-      text: "Maintenant, ralentis un peu : inspire environ quatre secondes, expire environ six. Sans jamais retenir ton souffle. Si c'est inconfortable, reviens à ton rythme naturel.",
+      text: 'Now slow it down a little: in for about four seconds, out for about six. Never holding your breath. If that is uncomfortable, go back to your natural rhythm.',
       speakSeconds: 22,
       silenceSeconds: 38,
     },
     {
-      text: "À chaque expiration, un peu plus lourd. Commence par les pieds.",
+      text: 'With every breath out, a little heavier. Start with the feet.',
       speakSeconds: 12,
       silenceSeconds: 48,
     },
     {
-      text: "Les jambes, puis le ventre.",
+      text: 'The legs, then the stomach.',
       speakSeconds: 14,
       silenceSeconds: 51,
     },
     {
-      text: "Les épaules.",
+      text: 'The shoulders.',
       speakSeconds: 12,
       silenceSeconds: 53,
     },
     {
-      text: "Le visage.",
+      text: 'The face.',
       speakSeconds: 12,
       silenceSeconds: 53,
     },
     {
-      text: "Si tu as perdu le fil, ce n'est pas grave : personne ne tient huit minutes sans partir ailleurs. La voix s'arrête là.",
+      text: 'If you lost the thread, it does not matter: nobody holds eight minutes without drifting off somewhere. The voice stops here.',
       speakSeconds: 15,
       silenceSeconds: 55,
     },
   ],
 };
 
-/** Mettre son cerveau en veille — 7 minutes, 420 s. */
+/** Putting the mind on standby — 7 minutes, 420 s. */
 export const cerveauEnVeille: ProgramContent = {
   type: 'narrated',
   endsQuietly: true,
   blocks: [
     {
-      text: "Ferme les yeux. Ce soir, on ne va rien résoudre. On va seulement ranger.",
+      text: 'Close your eyes. Tonight we are not going to solve anything. We are only going to put things away.',
       speakSeconds: 22,
       silenceSeconds: 18,
     },
     {
-      text: "Imagine une boîte posée à côté de toi. Chaque pensée qui arrive, tu la mets dedans. Tu ne la discutes pas.",
+      text: 'Picture a box beside you. Every thought that arrives, you put in it. You do not argue with it.',
       speakSeconds: 20,
       silenceSeconds: 35,
     },
     {
-      text: "Une pensée arrive — « demain, il faut que je… ». Dans la boîte. Pas maintenant, demain.",
+      text: 'A thought arrives — “tomorrow I have to…”. Into the box. Not now, tomorrow.',
       speakSeconds: 18,
       silenceSeconds: 42,
     },
     {
-      text: "Une autre — « et si… ». Dans la boîte aussi. Tu ne combats rien, tu ranges.",
+      text: 'Another one — “what if…”. Into the box as well. You are not fighting anything, you are filing.',
       speakSeconds: 20,
       silenceSeconds: 45,
     },
     {
-      text: "Continue seul. Chaque fois que tu remarques une pensée, range-la et reviens à ta respiration.",
+      text: 'Carry on alone. Each time you notice a thought, put it away and come back to your breathing.',
       speakSeconds: 12,
       silenceSeconds: 58,
     },
     {
-      text: "Si une tâche insiste vraiment, tu peux la noter sur un papier à côté du lit. Ton cerveau cesse de la répéter dès qu'il sait qu'elle ne sera pas oubliée.",
+      text: 'If one task really insists, you can write it on a piece of paper by the bed. Your mind stops repeating it as soon as it knows it will not be forgotten.',
       speakSeconds: 20,
       silenceSeconds: 45,
     },
     {
-      text: "La boîte reste là. Elle sera encore pleine demain, et ce sera très bien.",
+      text: 'The box stays there. It will still be full tomorrow, and that will be perfectly fine.',
       speakSeconds: 15,
       silenceSeconds: 50,
     },
   ],
 };
 
-/** Voyage mental monotone — 7 minutes, 420 s. */
+/** The monotonous journey — 7 minutes, 420 s. */
 export const voyageMentalMonotone: ProgramContent = {
   type: 'narrated',
   endsQuietly: true,
   blocks: [
     {
-      text: "Imagine un endroit calme. Une plage vide, un chemin connu. Surtout pas une histoire captivante.",
+      text: 'Picture somewhere quiet. An empty beach, a path you know. Above all, not a gripping story.',
       speakSeconds: 20,
       silenceSeconds: 20,
     },
     {
-      text: "On cherche la monotonie, pas l'évasion. Des détails qui se répètent : un pas, puis une vague. Un pas, puis une vague.",
+      text: 'We are after monotony, not escape. Details that repeat: a step, then a wave. A step, then a wave.',
       speakSeconds: 18,
       silenceSeconds: 37,
     },
     {
-      text: "Je marche. J'entends les vagues. Un pas. Une vague.",
+      text: 'I am walking. I can hear the waves. A step. A wave.',
       speakSeconds: 14,
       silenceSeconds: 46,
     },
     {
-      text: "Je regarde le sable. Un pas. Une vague.",
+      text: 'I look at the sand. A step. A wave.',
       speakSeconds: 12,
       silenceSeconds: 53,
     },
     {
-      text: "Continue à ton rythme.",
+      text: 'Carry on at your own pace.',
       speakSeconds: 10,
       silenceSeconds: 60,
     },
     {
-      text: "Si ton esprit se met à raconter quelque chose, reviens simplement à : un pas, une vague.",
+      text: 'If your mind starts telling a story, simply come back to: a step, a wave.',
       speakSeconds: 16,
       silenceSeconds: 49,
     },
     {
-      text: "Si les images deviennent floues ou disparaissent, laisse-les partir. Ce n'est pas un échec — c'est souvent le signe que le sommeil approche.",
+      text: 'If the pictures go blurry or disappear, let them go. That is not a failure — it is often the sign that sleep is close.',
       speakSeconds: 12,
       silenceSeconds: 53,
     },

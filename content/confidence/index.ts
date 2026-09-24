@@ -1,205 +1,205 @@
-// Séances de confiance en soi, narrées.
+// Confidence sessions, narrated.
 //
-// Deux d'entre elles demandent de se lever ou d'agir pour de bon : le silence y devient une
-// plage de temps réelle, pas une respiration. Une séance qui dit « fais-le » puis enchaîne dix
-// secondes plus tard n'a jamais laissé le temps de le faire.
+// Two of them ask you to stand up or to act for real: the silence there becomes a genuine stretch
+// of time, not a breath. A session that says “do it” and then moves on ten seconds later never
+// left time to do it.
 //
-// Le registre évite les formules qu'on se répète sans y croire. On cherche des preuves, pas des
-// affirmations.
+// The register avoids the phrases people repeat without believing them. We are after evidence,
+// not affirmations.
 
 import type { ProgramContent } from '../../src/features/wellbeing/types';
 
-/** Trois qualités — 1 minute, 60 s. */
+/** Three qualities — 1 minute, 60 s. */
 export const troisQualites: ProgramContent = {
   type: 'narrated',
   blocks: [
     {
-      text: "Une qualité que tes proches te reconnaissent, même si tu la minimises quand on te le dit.",
+      text: 'One quality the people close to you see in you, even if you play it down when they say so.',
       speakSeconds: 12,
       silenceSeconds: 8,
     },
     {
-      text: "Une qualité que tu as dû développer, qui ne t'était pas naturelle au départ.",
+      text: 'One quality you had to build, which did not come naturally at first.',
       speakSeconds: 10,
       silenceSeconds: 15,
     },
     {
-      text: "Et une chose que tu fais bien sans même y penser.",
+      text: 'And one thing you do well without even thinking about it.',
       speakSeconds: 10,
       silenceSeconds: 5,
     },
   ],
 };
 
-/** Se rappeler une réussite — 3 minutes, 180 s. */
+/** Remember something you did well — 3 minutes, 180 s. */
 export const seRappelerReussite: ProgramContent = {
   type: 'narrated',
   blocks: [
     {
-      text: "Pense à un moment, même modeste, où tu as accompli quelque chose dont tu étais fier.",
+      text: 'Think of a time, however modest, when you got something done that you were proud of.',
       speakSeconds: 16,
       silenceSeconds: 19,
     },
     {
-      text: "Où étais-tu ? Qu'est-ce qu'il avait fallu surmonter pour y arriver ?",
+      text: 'Where were you? What had you needed to get past to manage it?',
       speakSeconds: 14,
       silenceSeconds: 26,
     },
     {
-      text: "Qu'est-ce que cette réussite dit de toi ? Pas de ta chance ce jour-là — de toi.",
+      text: 'What does that say about you? Not about your luck that day — about you.',
       speakSeconds: 14,
       silenceSeconds: 26,
     },
     {
-      text: "Cette capacité-là est toujours là. Elle ne s'est pas perdue en route.",
+      text: 'That ability is still there. It did not get lost on the way.',
       speakSeconds: 12,
       silenceSeconds: 23,
     },
     {
-      text: "Tu n'as pas à tout réussir d'un coup. Un pas après l'autre a déjà marché une fois.",
+      text: 'You do not have to get everything right at once. One step after another has already worked before.',
       speakSeconds: 15,
       silenceSeconds: 15,
     },
   ],
 };
 
-/** Préparer un moment difficile — 4 minutes, 240 s. */
+/** Prepare for a hard moment — 4 minutes, 240 s. */
 export const preparationMomentDifficile: ProgramContent = {
   type: 'narrated',
   blocks: [
     {
-      text: "Pense au moment qui approche, celui qui te rend nerveux.",
+      text: 'Think about the moment coming up, the one making you nervous.',
       speakSeconds: 14,
       silenceSeconds: 16,
     },
     {
-      text: "Qu'est-ce que tu redoutes précisément ? Un jugement, un échec, la réaction de quelqu'un ?",
+      text: 'What exactly are you dreading? Being judged, failing, somebody’s reaction?',
       speakSeconds: 16,
       silenceSeconds: 24,
     },
     {
-      text: "Une version de cette peur est-elle déjà arrivée ? Et comment ça s'est passé, vraiment, pas dans le souvenir que tu en gardes ?",
+      text: 'Has a version of this fear already happened? And how did it actually go — not in the memory you kept of it?',
       speakSeconds: 16,
       silenceSeconds: 29,
     },
     {
-      text: "Quelle est la pire issue réaliste ? Pas la pire imaginable : la plus probable si les choses tournent mal.",
+      text: 'What is the worst realistic outcome? Not the worst imaginable one: the most likely one if things go badly.',
       speakSeconds: 18,
       silenceSeconds: 27,
     },
     {
-      text: "Tu survivrais à ça. Ce ne serait pas agréable, et tu continuerais quand même.",
+      text: 'You would survive that. It would not be pleasant, and you would carry on anyway.',
       speakSeconds: 14,
       silenceSeconds: 26,
     },
     {
-      text: "Tu n'as pas besoin de te sentir prêt à cent pour cent. Personne ne l'est, et ça se fait quand même.",
+      text: 'You do not need to feel a hundred per cent ready. Nobody is, and it gets done anyway.',
       speakSeconds: 20,
       silenceSeconds: 20,
     },
   ],
 };
 
-/** Posture de présence — 3 minutes, 180 s. Debout, avec une vraie minute de marche. */
+/** The posture of presence — 3 minutes, 180 s. Standing, with a real minute of walking. */
 export const postureDePresence: ProgramContent = {
   type: 'narrated',
   blocks: [
     {
-      text: "Mets-toi debout, pieds écartés à peu près à la largeur des épaules. Ne gonfle pas le torse : on ne joue pas un personnage.",
+      text: 'Stand up, feet roughly shoulder-width apart. Do not puff your chest out: we are not playing a character.',
       speakSeconds: 20,
       silenceSeconds: 10,
     },
     {
-      text: "Sens tes pieds sur le sol. Juste ça, quelques secondes.",
+      text: 'Feel your feet on the floor. Just that, for a few seconds.',
       speakSeconds: 10,
       silenceSeconds: 15,
     },
     {
-      text: "Épaules relâchées, tête droite, regard à l'horizontale, mâchoire desserrée, respiration lente.",
+      text: 'Shoulders loose, head level, gaze on the horizon, jaw unclenched, breathing slow.',
       speakSeconds: 18,
       silenceSeconds: 12,
     },
     {
-      text: "Répète dans ta tête : je n'ai pas besoin d'impressionner. Je peux prendre ma place. Je peux être imparfait et rester digne de respect.",
+      text: 'Say this to yourself: I do not need to impress anyone. I can take up my space. I can be imperfect and still deserve respect.',
       speakSeconds: 14,
       silenceSeconds: 11,
     },
     {
-      text: "Maintenant, marche tranquillement pendant une minute. Le but n'est pas d'avoir l'air confiant, c'est d'occuper l'espace sans te faire petit.",
+      text: 'Now walk calmly for one minute. The point is not to look confident, it is to take up space without making yourself small.',
       speakSeconds: 12,
       silenceSeconds: 58,
     },
   ],
 };
 
-/** Micro-défi social — 7 minutes, 420 s. Avec le temps de faire l'action pour de vrai. */
+/** The small social challenge — 7 minutes, 420 s. With time to actually do it. */
 export const microDefiSocial: ProgramContent = {
   type: 'narrated',
   blocks: [
     {
-      text: "Choisis une petite action sociale légèrement inconfortable : dire bonjour, poser une question, remercier quelqu'un, donner ton avis. Quelque chose de faisable dans les minutes qui viennent.",
+      text: 'Choose one small social act that is slightly uncomfortable: saying hello, asking a question, thanking somebody, giving your opinion. Something doable in the next few minutes.',
       speakSeconds: 20,
       silenceSeconds: 25,
     },
     {
-      text: "Avant de la faire, note ton inconfort de zéro à dix. Retiens le chiffre.",
+      text: 'Before you do it, rate your discomfort from zero to ten. Remember the number.',
       speakSeconds: 12,
       silenceSeconds: 18,
     },
     {
-      text: "Vas-y. Je ne dis plus rien pendant trois minutes. Ne cherche pas à analyser pendant que tu le fais.",
+      text: 'Go on. I will say nothing for three minutes. Do not try to analyse it while you are doing it.',
       speakSeconds: 14,
       silenceSeconds: 166,
     },
     {
-      text: "C'est fait. Note ton inconfort maintenant, sur la même échelle.",
+      text: 'Done. Rate your discomfort now, on the same scale.',
       speakSeconds: 14,
       silenceSeconds: 46,
     },
     {
-      text: "Qu'est-ce que tu pensais qui allait arriver ? Et qu'est-ce qui s'est réellement passé ?",
+      text: 'What did you think was going to happen? And what actually happened?',
       speakSeconds: 16,
       silenceSeconds: 44,
     },
     {
-      text: "Chaque petit défi accumule une preuve réelle. C'est plus solide que n'importe quel discours pour se rassurer.",
+      text: 'Every small challenge builds up real evidence. That holds better than any pep talk.',
       speakSeconds: 15,
       silenceSeconds: 30,
     },
   ],
 };
 
-/** La preuve des trois victoires — 4 minutes, 240 s. */
+/** The proof of three wins — 4 minutes, 240 s. */
 export const preuveDesTroisVictoires: ProgramContent = {
   type: 'narrated',
   blocks: [
     {
-      text: "Trois victoires d'aujourd'hui. Même minuscules — surtout minuscules.",
+      text: 'Three wins from today. However tiny — especially the tiny ones.',
       speakSeconds: 14,
       silenceSeconds: 16,
     },
     {
-      text: "Une victoire facile, d'abord : quelque chose que tu as simplement réussi à faire.",
+      text: 'An easy win first: something you simply managed to do.',
       speakSeconds: 12,
       silenceSeconds: 28,
     },
     {
-      text: "Une victoire difficile : quelque chose qui t'a demandé un effort, malgré la nervosité.",
+      text: 'A hard win: something that cost you an effort, nerves and all.',
       speakSeconds: 14,
       silenceSeconds: 31,
     },
     {
-      text: "Une victoire invisible : quelque chose que personne n'a remarqué. Rester calme alors que tu voulais partir, par exemple.",
+      text: 'An invisible win: something nobody noticed. Staying calm when you wanted to leave, for instance.',
       speakSeconds: 16,
       silenceSeconds: 29,
     },
     {
-      text: "Qu'est-ce que tu as appris sur toi aujourd'hui ? Une phrase suffit.",
+      text: 'What did you learn about yourself today? One sentence is enough.',
       speakSeconds: 14,
       silenceSeconds: 31,
     },
     {
-      text: "Répété, ça devient une preuve. Pas un discours : une preuve.",
+      text: 'Repeated, that becomes evidence. Not a pep talk: evidence.',
       speakSeconds: 15,
       silenceSeconds: 20,
     },
