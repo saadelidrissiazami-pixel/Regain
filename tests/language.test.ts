@@ -26,7 +26,11 @@ const STORED_VALUES = new Set(['Parcours', 'Confiance en soi', 'Méditation', 'R
  * build and cannot say which language it wants. Everything else in that function is English, which
  * is how `Message manquant` sat there unnoticed until this test started reading it.
  */
-const DELIBERATE_FRENCH = new Set(['- Réponds en français.']);
+const DELIBERATE_FRENCH = new Set([
+  '- Réponds en français.',
+  // Keywords matched against the allergies and health notes people typed — 1.1 users typed French.
+  'coiffe des rotateurs',
+]);
 
 function sourceFiles(dir: string): string[] {
   return readdirSync(dir).flatMap((entry) => {

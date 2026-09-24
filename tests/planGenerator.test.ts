@@ -64,6 +64,18 @@ describe('reading the free-text fields', () => {
     expect(parseAllergies('no nutrition problems, I eat eggplant, I take codeine')).toEqual([]);
   });
 
+  it('recognises allergies written in French, whatever the app speaks', () => {
+    expect(parseAllergies('Allergique aux arachides, aux noix et aux œufs ; intolérant au lait')).toEqual(
+      expect.arrayContaining(['arachides', 'fruits_a_coque', 'oeufs', 'lactose'])
+    );
+    expect(parseAllergies('pas de souci, je mange de tout')).toEqual([]);
+  });
+
+  it('picks up joint trouble written in French, irregular plurals included', () => {
+    expect(detectJointIssues('Mal aux genoux et une vieille blessure à l’épaule')).toEqual(['genou', 'epaule']);
+    expect(detectJointIssues('Opéré des ligaments croisés')).toEqual(['genou']);
+  });
+
   it('picks up the joint trouble reported', () => {
     expect(detectJointIssues('Bad back and an old injury to my right shoulder')).toEqual(['dos', 'epaule']);
   });

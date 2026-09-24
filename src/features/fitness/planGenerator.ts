@@ -60,17 +60,19 @@ function mentions(text: string, keywords: string[]): boolean {
   return keywords.some((keyword) => new RegExp(`\\b${keyword}s?\\b`).test(normalized));
 }
 
-// Matched against what the person typed, so the words are the ones they would write.
+// Matched against what the person typed, so the words are the ones they would write — in English
+// and in French whatever the app's language, since missing an allergy costs far more than a stray
+// match. French plurals that do not end in `s` are listed as words of their own.
 const ALLERGY_KEYWORDS: Record<Allergen, string[]> = {
-  gluten: ['gluten', 'wheat', 'coeliac', 'celiac'],
-  lactose: ['lactose', 'milk', 'dairy', 'cheese'],
-  oeufs: ['egg'],
-  arachides: ['peanut', 'groundnut'],
-  fruits_a_coque: ['nut', 'almond', 'hazelnut', 'cashew', 'pistachio', 'walnut', 'pecan'],
-  poisson: ['fish', 'salmon', 'cod', 'tuna'],
-  crustaces: ['shellfish', 'crustacean', 'prawn', 'shrimp', 'crab', 'lobster'],
-  soja: ['soy', 'soya'],
-  sesame: ['sesame', 'tahini'],
+  gluten: ['gluten', 'wheat', 'coeliac', 'celiac', 'ble', 'froment', 'coeliaque', 'celiaque'],
+  lactose: ['lactose', 'milk', 'dairy', 'cheese', 'lait', 'laitier', 'fromage'],
+  oeufs: ['egg', 'oeuf'],
+  arachides: ['peanut', 'groundnut', 'arachide', 'cacahuete'],
+  fruits_a_coque: ['nut', 'almond', 'hazelnut', 'cashew', 'pistachio', 'walnut', 'pecan', 'noix', 'amande', 'noisette', 'cajou', 'pistache', 'fruits? a coque'],
+  poisson: ['fish', 'salmon', 'cod', 'tuna', 'poisson', 'saumon', 'cabillaud', 'thon'],
+  crustaces: ['shellfish', 'crustacean', 'prawn', 'shrimp', 'crab', 'lobster', 'crustace', 'crevette', 'fruits de mer', 'crabe', 'homard'],
+  soja: ['soy', 'soya', 'soja'],
+  sesame: ['sesame', 'tahini', 'tahin'],
 };
 
 export const ALLERGEN_LABELS: Record<Allergen, string> = {
@@ -90,9 +92,9 @@ export function parseAllergies(text: string): Allergen[] {
 }
 
 const JOINT_KEYWORDS: Record<JointStress, string[]> = {
-  genou: ['knee', 'meniscus', 'kneecap', 'patella', 'cruciate', 'acl'],
-  dos: ['back', 'lumbar', 'hernia', 'sciatica', 'spine', 'disc'],
-  epaule: ['shoulder', 'rotator cuff'],
+  genou: ['knee', 'meniscus', 'kneecap', 'patella', 'cruciate', 'acl', 'genou', 'genoux', 'menisque', 'rotule', 'ligaments? croises?'],
+  dos: ['back', 'lumbar', 'hernia', 'sciatica', 'spine', 'disc', 'dos', 'lombaire', 'hernie', 'sciatique', 'colonne'],
+  epaule: ['shoulder', 'rotator cuff', 'epaule', 'coiffe des rotateurs'],
 };
 
 const JOINT_LABELS: Record<JointStress, string> = { genou: 'knee', dos: 'back', epaule: 'shoulder' };
