@@ -17,6 +17,9 @@ import { Text } from '../ui/Text';
  * app that does harm, and the target is an estimate in the first place.
  */
 function summaryOf(log: NutritionLog): string {
+  // A failed read must not look like an empty day: both would otherwise show "nothing noted yet",
+  // and somebody would add their lunch a second time.
+  if (log.isError) return t('Today could not be loaded.');
   switch (log.status) {
     case 'empty':
       return t('Nothing noted yet today.');
