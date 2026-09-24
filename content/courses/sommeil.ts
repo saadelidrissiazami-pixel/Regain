@@ -1,411 +1,411 @@
-// Parcours « Mieux dormir » — dix jours, de 3 à 7 minutes.
+// The “Sleeping better” course — ten days, 3 to 7 minutes.
 //
-// Le fil du parcours est de réduire l'effort, pas d'en ajouter. Aucun jour ne promet
-// l'endormissement : vérifier si le sommeil arrive est exactement ce qui le repousse, et une
-// promesse crée cette vérification.
+// The thread running through it is taking effort away, not adding any. No day promises sleep:
+// checking whether sleep is coming is exactly what pushes it back, and a promise creates that
+// checking.
 //
-// Les jours 1 et 6 se font debout, avant de se coucher — ils gardent donc le bilan de fin. Tous
-// les autres s'écoutent au lit et se terminent en silence, sans rien demander.
+// Days 1 and 6 are done standing up, before bed — so they keep the closing review. All the others
+// are listened to in bed and end in silence, asking for nothing.
 
 import type { ProgramContent } from '../../src/features/wellbeing/types';
 
-/** Jour 1 — Terminer la journée, 3 minutes. Avant le lit. */
+/** Day 1 — End the day, 3 minutes. Before bed. */
 export const sommeilJour1: ProgramContent = {
   type: 'narrated',
   blocks: [
     {
-      text: "Premier jour, et il se fait debout. On va marquer la fin de la journée, avant même de penser à dormir.",
+      text: 'Day one, and it is done on your feet. We are going to mark the end of the day, before even thinking about sleep.',
       speakSeconds: 16,
       silenceSeconds: 14,
     },
     {
-      text: "Regarde ce qui reste en cours autour de toi. Choisis une seule chose à suspendre pour ce soir, et laisse-la où elle est.",
+      text: 'Look at what is still unfinished around you. Choose one single thing to suspend for tonight, and leave it where it is.',
       speakSeconds: 16,
       silenceSeconds: 19,
     },
     {
-      text: "Maintenant, choisis ce que tu vas faire jusqu'au coucher : quelque chose de calme, et que tu aimes. Lire, écouter, ranger doucement.",
+      text: 'Now choose what you will do until bedtime: something quiet, and something you like. Reading, listening, tidying gently.',
       speakSeconds: 18,
       silenceSeconds: 22,
     },
     {
-      text: "Cette bascule compte plus qu'on ne croit. Le corps a besoin d'une frontière entre la journée et la nuit, et rien ne la pose à ta place.",
+      text: 'That switch counts for more than people think. The body needs a border between the day and the night, and nothing draws it for you.',
       speakSeconds: 16,
       silenceSeconds: 24,
     },
     {
-      text: "C'est tout pour aujourd'hui. Demain, on sera déjà au lit.",
+      text: 'That is all for today. Tomorrow we will already be in bed.',
       speakSeconds: 13,
       silenceSeconds: 22,
     },
   ],
 };
 
-/** Jour 2 — Sentir le soutien du lit, 3 minutes. */
+/** Day 2 — Feel the bed hold you, 3 minutes. */
 export const sommeilJour2: ProgramContent = {
   type: 'narrated',
   endsQuietly: true,
   blocks: [
     {
-      text: "Tu es au lit. On ne va rien faire d'autre que remarquer où ton corps est porté.",
+      text: 'You are in bed. We are going to do nothing but notice where your body is held.',
       speakSeconds: 16,
       silenceSeconds: 14,
     },
     {
-      text: "Trouve un premier contact avec le matelas ou l'oreiller. La tête, une épaule, le bas du dos.",
+      text: 'Find a first point of contact with the mattress or the pillow. Your head, a shoulder, the small of your back.',
       speakSeconds: 16,
       silenceSeconds: 19,
     },
     {
-      text: "Un deuxième, ailleurs.",
+      text: 'A second one, somewhere else.',
       speakSeconds: 10,
       silenceSeconds: 30,
     },
     {
-      text: "Et un troisième, si tu en trouves un.",
+      text: 'And a third, if you find one.',
       speakSeconds: 10,
       silenceSeconds: 30,
     },
     {
-      text: "Le lit te porte entièrement. Tu n'as rien à tenir.",
+      text: 'The bed is holding all of you. There is nothing for you to hold.',
       speakSeconds: 13,
       silenceSeconds: 22,
     },
   ],
 };
 
-/** Jour 3 — Laisser respirer, 4 minutes. */
+/** Day 3 — Let it breathe, 4 minutes. */
 export const sommeilJour3: ProgramContent = {
   type: 'narrated',
   endsQuietly: true,
   blocks: [
     {
-      text: "Aujourd'hui, la respiration — mais sans rythme à suivre. On observe seulement.",
+      text: 'Today, the breath — but with no rhythm to follow. We are only watching.',
       speakSeconds: 16,
       silenceSeconds: 14,
     },
     {
-      text: "Remarque quelques respirations telles qu'elles viennent. Ne les allonge pas, ne les ralentis pas.",
+      text: 'Notice a few breaths exactly as they come. Do not lengthen them, do not slow them down.',
       speakSeconds: 16,
       silenceSeconds: 24,
     },
     {
-      text: "Si tu te surprends à vouloir bien respirer, laisse tomber : c'est encore un effort, et on en enlève, on n'en ajoute pas.",
+      text: 'If you catch yourself wanting to breathe well, let it go: that is another effort, and we are taking effort away, not adding it.',
       speakSeconds: 17,
       silenceSeconds: 28,
     },
     {
-      text: "Reviens maintenant aux contacts d'hier, le lit sous toi.",
+      text: 'Now come back to yesterday’s contacts, the bed underneath you.',
       speakSeconds: 12,
       silenceSeconds: 33,
     },
     {
-      text: "Souffle, ou contacts. Les deux sont là si tu en as besoin.",
+      text: 'Breath, or contact. Both are there if you need them.',
       speakSeconds: 14,
       silenceSeconds: 31,
     },
     {
-      text: "C'est fini.",
+      text: 'That is the end.',
       speakSeconds: 10,
       silenceSeconds: 25,
     },
   ],
 };
 
-/** Jour 4 — Desserrer doucement, 4 minutes. */
+/** Day 4 — Loosen gently, 4 minutes. */
 export const sommeilJour4: ProgramContent = {
   type: 'narrated',
   endsQuietly: true,
   blocks: [
     {
-      text: "On va relâcher trois endroits, sans les contracter d'abord. Contracter pour mieux relâcher réveille plus qu'autre chose.",
+      text: 'We are going to let three places go, without tensing them first. Tensing in order to relax better wakes you up more than anything else.',
       speakSeconds: 16,
       silenceSeconds: 14,
     },
     {
-      text: "Les mains. Laisse les doigts s'ouvrir un peu, d'eux-mêmes.",
+      text: 'The hands. Let the fingers open a little, of their own accord.',
       speakSeconds: 14,
       silenceSeconds: 26,
     },
     {
-      text: "La mâchoire. Les dents n'ont pas besoin de se toucher.",
+      text: 'The jaw. Your teeth do not need to be touching.',
       speakSeconds: 13,
       silenceSeconds: 32,
     },
     {
-      text: "Les épaules. Elles peuvent descendre d'un centimètre, pas plus.",
+      text: 'The shoulders. They can come down a centimetre, no more than that.',
       speakSeconds: 13,
       silenceSeconds: 32,
     },
     {
-      text: "Si rien ne se détend, ce n'est pas grave. Tu as quand même arrêté de serrer pendant une minute.",
+      text: 'If nothing loosens, it does not matter. You still stopped clenching for a minute.',
       speakSeconds: 14,
       silenceSeconds: 31,
     },
     {
-      text: "C'est terminé.",
+      text: 'That is it.',
       speakSeconds: 10,
       silenceSeconds: 25,
     },
   ],
 };
 
-/** Jour 5 — Parcourir le corps, 5 minutes. */
+/** Day 5 — Travel through the body, 5 minutes. */
 export const sommeilJour5: ProgramContent = {
   type: 'narrated',
   endsQuietly: true,
   blocks: [
     {
-      text: "On reprend les zones d'hier, et on parcourt tout le corps, des pieds à la tête.",
+      text: 'We take yesterday’s places and travel through the whole body, feet to head.',
       speakSeconds: 16,
       silenceSeconds: 14,
     },
     {
-      text: "Les pieds. Sans les bouger, juste en y posant l'attention.",
+      text: 'The feet. Without moving them, just by putting your attention there.',
       speakSeconds: 14,
       silenceSeconds: 26,
     },
     {
-      text: "Les jambes, puis les hanches.",
+      text: 'The legs, then the hips.',
       speakSeconds: 12,
       silenceSeconds: 33,
     },
     {
-      text: "Le ventre, le dos, la poitrine.",
+      text: 'The stomach, the back, the chest.',
       speakSeconds: 12,
       silenceSeconds: 38,
     },
     {
-      text: "Les mains, les bras, les épaules.",
+      text: 'The hands, the arms, the shoulders.',
       speakSeconds: 12,
       silenceSeconds: 38,
     },
     {
-      text: "La mâchoire, le visage, le front.",
+      text: 'The jaw, the face, the forehead.',
       speakSeconds: 12,
       silenceSeconds: 33,
     },
     {
-      text: "Le corps entier, d'un seul tenant.",
+      text: 'The whole body, all of a piece.',
       speakSeconds: 12,
       silenceSeconds: 28,
     },
   ],
 };
 
-/** Jour 6 — Déposer ce qui reste, 5 minutes. Avant le lit, avec un papier. */
+/** Day 6 — Put down what is left, 5 minutes. Before bed, with paper. */
 export const sommeilJour6: ProgramContent = {
   type: 'narrated',
   blocks: [
     {
-      text: "Celle-ci se fait avant de te coucher, avec un papier et un crayon. Prends-les maintenant.",
+      text: 'This one is done before you get into bed, with paper and a pen. Fetch them now.',
       speakSeconds: 16,
       silenceSeconds: 14,
     },
     {
-      text: "Écris une préoccupation. Une seule, celle qui revient le plus. Prends le temps de la formuler en entier.",
+      text: 'Write down one worry. Just one, the one that comes back most. Take the time to put all of it into words.',
       speakSeconds: 14,
       silenceSeconds: 26,
     },
     {
-      text: "Relis-la. Est-ce qu'elle dit vraiment ce qui t'inquiète, ou seulement ce qui se voit ?",
+      text: 'Read it back. Does it actually say what worries you, or only the part that shows?',
       speakSeconds: 15,
       silenceSeconds: 30,
     },
     {
-      text: "En dessous, écris une toute petite action possible demain. Pas la solution : la première étape.",
+      text: 'Underneath, write one very small action that is possible tomorrow. Not the solution: the first step.',
       speakSeconds: 16,
       silenceSeconds: 29,
     },
     {
-      text: "Ferme le carnet, ou retourne la feuille. Ce geste compte : ton cerveau arrête de répéter ce qu'il sait consigné ailleurs.",
+      text: 'Close the notebook, or turn the paper over. That gesture counts: your mind stops repeating what it knows is recorded somewhere else.',
       speakSeconds: 18,
       silenceSeconds: 32,
     },
     {
-      text: "S'il reste d'autres préoccupations, elles attendront le carnet de demain.",
+      text: 'If other worries are left, they can wait for tomorrow’s page.',
       speakSeconds: 14,
       silenceSeconds: 31,
     },
     {
-      text: "Tu peux aller te coucher.",
+      text: 'You can go to bed.',
       speakSeconds: 12,
       silenceSeconds: 23,
     },
   ],
 };
 
-/** Jour 7 — Reconnaître le scénario, 5 minutes. */
+/** Day 7 — Recognise the script, 5 minutes. */
 export const sommeilJour7: ProgramContent = {
   type: 'narrated',
   endsQuietly: true,
   blocks: [
     {
-      text: "Ce soir, on s'occupe des pensées qui tournent. On ne va pas les résoudre.",
+      text: 'Tonight we deal with the thoughts that go round. We are not going to solve them.',
       speakSeconds: 16,
       silenceSeconds: 14,
     },
     {
-      text: "Quand une préoccupation revient, nomme-la : voilà cette préoccupation. Puis retrouve un contact avec le lit.",
+      text: 'When a worry comes back, name it: there is that worry. Then find a point of contact with the bed again.',
       speakSeconds: 18,
       silenceSeconds: 22,
     },
     {
-      text: "Cette préoccupation revient. Tu peux la reconnaître sans poursuivre la discussion maintenant.",
+      text: 'That worry is back. You can recognise it without carrying on the argument now.',
       speakSeconds: 14,
       silenceSeconds: 31,
     },
     {
-      text: "Essaie, sans que je parle.",
+      text: 'Try it, with me saying nothing.',
       speakSeconds: 10,
       silenceSeconds: 40,
     },
     {
-      text: "Si la même revient dix fois, nomme-la dix fois. Ce n'est pas un échec, c'est un entraînement.",
+      text: 'If the same one comes back ten times, name it ten times. That is not a failure, it is practice.',
       speakSeconds: 14,
       silenceSeconds: 36,
     },
     {
-      text: "Encore un moment.",
+      text: 'A little longer.',
       speakSeconds: 10,
       silenceSeconds: 35,
     },
     {
-      text: "La nuit n'est pas le bon moment pour décider. Rien de ce que tu trancherais maintenant ne tiendrait demain.",
+      text: 'The night is not the right time to decide anything. Nothing you settled now would hold tomorrow.',
       speakSeconds: 15,
       silenceSeconds: 25,
     },
   ],
 };
 
-/** Jour 8 — Retrouver un lieu familier, 6 minutes. */
+/** Day 8 — Return to a familiar place, 6 minutes. */
 export const sommeilJour8: ProgramContent = {
   type: 'narrated',
   endsQuietly: true,
   blocks: [
     {
-      text: "Ce soir, un lieu. Pas un lieu de rêve : un endroit réel que tu connais, calme ou simplement neutre.",
+      text: 'Tonight, a place. Not a dream place: somewhere real that you know, quiet or simply unremarkable.',
       speakSeconds: 18,
       silenceSeconds: 17,
     },
     {
-      text: "Choisis-le. Une pièce, un chemin, une plage vue une fois.",
+      text: 'Choose it. A room, a path, a beach you saw once.',
       speakSeconds: 14,
       silenceSeconds: 36,
     },
     {
-      text: "Qu'est-ce que tu vois d'abord ? Reste sur un détail, pas sur l'ensemble.",
+      text: 'What do you see first? Stay with one detail, not the whole of it.',
       speakSeconds: 15,
       silenceSeconds: 40,
     },
     {
-      text: "Qu'est-ce que tu entends là-bas ?",
+      text: 'What can you hear there?',
       speakSeconds: 10,
       silenceSeconds: 50,
     },
     {
-      text: "Et qu'est-ce que tu sens sous tes pieds, ou sur ta peau ?",
+      text: 'And what can you feel under your feet, or on your skin?',
       speakSeconds: 12,
       silenceSeconds: 48,
     },
     {
-      text: "Si le lieu se brouille ou disparaît, laisse-le partir. Reviens aux contacts du lit : ils sont toujours là.",
+      text: 'If the place blurs or disappears, let it go. Come back to the contacts of the bed: they are always there.',
       speakSeconds: 15,
       silenceSeconds: 40,
     },
     {
-      text: "Reste où tu veux, là-bas ou ici.",
+      text: 'Stay wherever you like, there or here.',
       speakSeconds: 10,
       silenceSeconds: 35,
     },
   ],
 };
 
-/** Jour 9 — Laisser le sommeil venir, 6 minutes. */
+/** Day 9 — Let sleep come, 6 minutes. */
 export const sommeilJour9: ProgramContent = {
   type: 'narrated',
   endsQuietly: true,
   blocks: [
     {
-      text: "Ce soir, on s'occupe de l'effort lui-même. Celui qu'on fait pour s'endormir.",
+      text: 'Tonight we deal with the effort itself. The effort of trying to fall asleep.',
       speakSeconds: 18,
       silenceSeconds: 17,
     },
     {
-      text: "Remarque si une partie de toi surveille : est-ce que ça vient ? est-ce que ça marche ? C'est cette surveillance qui tient éveillé, pas le bruit ni les pensées.",
+      text: 'Notice whether part of you is keeping watch: is it coming? is this working? It is that watching that keeps you awake, not the noise and not the thoughts.',
       speakSeconds: 20,
       silenceSeconds: 30,
     },
     {
-      text: "Tu n'as pas à vérifier si le sommeil arrive. Pour l'instant, laisse simplement ton corps trouver une position confortable.",
+      text: 'You do not have to check whether sleep is coming. For now, simply let your body find a comfortable position.',
       speakSeconds: 15,
       silenceSeconds: 40,
     },
     {
-      text: "Choisis une technique que tu connais déjà : les contacts, le souffle, le lieu d'hier. Celle qui te convient ce soir.",
+      text: 'Choose a technique you already know: the contacts, the breath, yesterday’s place. Whichever suits you tonight.',
       speakSeconds: 15,
       silenceSeconds: 45,
     },
     {
-      text: "Reste avec elle, sans attendre de résultat.",
+      text: 'Stay with it, expecting no result.',
       speakSeconds: 10,
       silenceSeconds: 50,
     },
     {
-      text: "Se reposer les yeux fermés a déjà de la valeur, même sans dormir. Ça enlève l'enjeu, et l'enjeu est le problème.",
+      text: 'Resting with your eyes closed is already worth something, even without sleep. It takes the stakes away, and the stakes are the problem.',
       speakSeconds: 15,
       silenceSeconds: 40,
     },
     {
-      text: "Plus rien à faire.",
+      text: 'Nothing left to do.',
       speakSeconds: 10,
       silenceSeconds: 35,
     },
   ],
 };
 
-/** Jour 10 — Composer son rituel, 7 minutes. */
+/** Day 10 — Build your own ritual, 7 minutes. */
 export const sommeilJour10: ProgramContent = {
   type: 'narrated',
   endsQuietly: true,
   blocks: [
     {
-      text: "Dernier soir. On assemble : une transition avant le lit, et un seul exercice une fois couché.",
+      text: 'Last night. We put it together: one transition before bed, and one single exercise once you are lying down.',
       speakSeconds: 18,
       silenceSeconds: 17,
     },
     {
-      text: "D'abord la transition. Qu'est-ce qui marquera la fin de ta journée, demain soir ? Une chose simple, que tu feras vraiment.",
+      text: 'The transition first. What will mark the end of your day tomorrow evening? One simple thing that you will actually do.',
       speakSeconds: 18,
       silenceSeconds: 32,
     },
     {
-      text: "Ensuite, un seul exercice pour le lit. Les contacts, le relâchement, le parcours du corps, le lieu familier. Celui que tu as préféré.",
+      text: 'Then one exercise for the bed. The contacts, the loosening, the travel through the body, the familiar place. Whichever you liked best.',
       speakSeconds: 18,
       silenceSeconds: 37,
     },
     {
-      text: "Fais-le maintenant, celui que tu viens de choisir. Je te laisse.",
+      text: 'Do it now, the one you have just chosen. I will leave you to it.',
       speakSeconds: 12,
       silenceSeconds: 48,
     },
     {
-      text: "Continue.",
+      text: 'Carry on.',
       speakSeconds: 8,
       silenceSeconds: 52,
     },
     {
-      text: "Deux choses, c'est un rituel suffisant. Trois, on ne le tient pas.",
+      text: 'Two things is ritual enough. Three, and nobody keeps it up.',
       speakSeconds: 14,
       silenceSeconds: 46,
     },
     {
-      text: "Si les nuits restent difficiles plusieurs semaines, en parler à un médecin apporte plus que n'importe quel exercice : il existe des prises en charge qui marchent vraiment.",
+      text: 'If the nights stay hard for several weeks, talking to a doctor is worth more than any exercise: there are treatments that genuinely work.',
       speakSeconds: 20,
       silenceSeconds: 35,
     },
     {
-      text: "Bonne nuit.",
+      text: 'Good night.',
       speakSeconds: 10,
       silenceSeconds: 35,
     },
