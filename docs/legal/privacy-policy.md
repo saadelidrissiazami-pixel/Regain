@@ -68,7 +68,8 @@ on your phone.
 | Anthropic | your coach's replies, if you use it | United States, standard contractual clauses |
 
 Apple never passes us your card number. RevenueCat receives only your Regain account identifier
-and the state of your subscription.
+and the state of your subscription. If you installed Regain from an Apple Ads advert, Apple gives
+RevenueCat an anonymous token saying which campaign it was — no tracking, no advertising identifier.
 
 ## How long it is kept
 

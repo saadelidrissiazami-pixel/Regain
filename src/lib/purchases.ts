@@ -58,6 +58,8 @@ export async function initPurchases(userId: string) {
 
   if (configuredUserId === null) {
     Purchases.configure({ apiKey: API_KEY!, appUserID: userId });
+    // Apple Ads attribution through Apple's AdServices token: no ATT prompt, no tracking.
+    if (Platform.OS === 'ios') Purchases.enableAdServicesAttributionTokenCollection().catch(() => {});
   } else {
     await Purchases.logIn(userId);
   }
