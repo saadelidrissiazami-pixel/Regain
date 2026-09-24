@@ -27,7 +27,7 @@ function MealDayCard({ day, defaultOpen }: { day: MealDay; defaultOpen: boolean 
         }}
         accessibilityRole="button"
         accessibilityState={{ expanded: open }}
-        accessibilityLabel={`${day.day_label}, ${day.total_calories} kilocalories, ${day.meals.length} repas`}
+        accessibilityLabel={`${day.day_label}, ${day.total_calories} kilocalories, ${day.meals.length} meals`}
         style={{ flexDirection: 'row', alignItems: 'center', minHeight: 64, paddingHorizontal: 16, paddingVertical: 12 }}
       >
         <View style={{ flex: 1, paddingRight: 12 }}>

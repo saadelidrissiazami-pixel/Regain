@@ -54,7 +54,7 @@ describe('buildCalendarEvents', () => {
     const [event] = buildCalendarEvents([{ date: MONDAY, time_slot: 'soir', status: 'propose', activities_catalog: activity }], [slot({})]);
     expect(event.title).toBe('Marche rapide');
     expect(event.endDate.getTime() - event.startDate.getTime()).toBe(30 * 60_000);
-    expect(event.notes).toBe('Rythme soutenu.\n\nOuvrir dans Regain : regain://activity/a1');
+    expect(event.notes).toBe('Rythme soutenu.\n\nOpen in Regain: regain://activity/a1');
   });
 
   it('marks the activities already done', () => {
@@ -63,6 +63,6 @@ describe('buildCalendarEvents', () => {
       []
     );
     expect(event.title).toBe('✓ Marche rapide');
-    expect(event.notes).toBe('Ouvrir dans Regain : regain://activity/a1');
+    expect(event.notes).toBe('Open in Regain: regain://activity/a1');
   });
 });

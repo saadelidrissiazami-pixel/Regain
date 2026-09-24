@@ -19,7 +19,7 @@ type Tab = 'sessions' | 'exercises' | 'progress';
 function tipsFor({ deload, strategy }: { deload: boolean; strategy: string | undefined }): string[] {
   return [
     'Protect the quality of your sleep',
-    'Hydrate-toi suffisamment',
+    'Drink enough water',
     deload ? 'Keep the weights comfortable this week' : strategy === 'surplus' ? 'Add weight gradually' : 'Get the technique right before the load',
     'Listen to how your body feels',
   ];

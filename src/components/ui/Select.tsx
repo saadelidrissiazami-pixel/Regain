@@ -250,7 +250,7 @@ export function SelectMulti<T extends string>({
       <Sheet
         visible={open}
         title={title ?? label}
-        subtitle={subtitle ?? 'Plusieurs choix possibles'}
+        subtitle={subtitle ?? 'You can choose more than one'}
         onClose={() => setOpen(false)}
         footer={<Button label="Done" onPress={() => setOpen(false)} />}
       >

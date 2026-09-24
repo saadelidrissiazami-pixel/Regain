@@ -170,9 +170,9 @@ export default function SettingsScreen() {
         {toggleCalendar.isSuccess && toggleCalendar.data !== null ? (
           <InlineNotice
             tone="success"
-            message={`${toggleCalendar.data} activit${toggleCalendar.data > 1 ? 'ies' : 'y'} from this week added${
-              toggleCalendar.data > 1 ? 's' : ''
-            }. Les prochains plannings suivront automatiquement.`}
+            message={`${toggleCalendar.data} activit${
+              toggleCalendar.data > 1 ? 'ies' : 'y'
+            } from this week added. Future weeks will follow on their own.`}
           />
         ) : null}
         {toggleCalendar.isSuccess && toggleCalendar.data === null ? (

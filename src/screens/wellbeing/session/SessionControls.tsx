@@ -38,7 +38,7 @@ export function SessionRing({
               {formatClock(elapsed ?? 0)}
             </Text>
             <Text variant="caption" tone="ink2" tabular>
-              sur {formatClock(total ?? 0)}
+              of {formatClock(total ?? 0)}
             </Text>
           </>
         )}
@@ -86,7 +86,7 @@ export function SessionControls({
         onPress={onToggle}
         feedback="medium"
         accessibilityRole="button"
-        accessibilityLabel={running ? 'Mettre en pause' : 'Reprendre'}
+        accessibilityLabel={running ? 'Pause' : 'Resume'}
         style={{ width: 68, height: 68, borderRadius: 34, backgroundColor: theme.primary, alignItems: 'center', justifyContent: 'center' }}
       >
         <Ionicons name={running ? 'pause' : 'play'} size={28} color={theme.onPrimary} style={running ? undefined : { marginLeft: 3 }} />

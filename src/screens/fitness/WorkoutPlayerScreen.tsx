@@ -119,7 +119,7 @@ function Player({ session, sessionIndex, planId }: { session: WorkoutSession; se
         {position ? (
           <>
             <Text variant="caption" tone="ink2" center>
-              Exercice {position.exercise + 1} sur {exercises.length}
+              Exercise {position.exercise + 1} of {exercises.length}
             </Text>
             <View style={{ marginTop: 6 }}>
               <ProgressBar progress={progress} height={6} />

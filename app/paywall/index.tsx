@@ -101,7 +101,7 @@ function PackageOption({
         ) : null}
         {display.intro ? (
           <Text variant="caption" tone="accent" style={{ marginTop: 2 }}>
-            {display.intro}, puis {display.price} {display.period}
+            {display.intro}, then {display.price} {display.period}
           </Text>
         ) : null}
       </View>

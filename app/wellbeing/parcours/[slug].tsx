@@ -72,7 +72,7 @@ export default function CourseScreen() {
       {progress.days.map((day) => (
         <View key={day.program.id} style={{ flexDirection: 'row', alignItems: 'center', gap: 12 }}>
           <Text variant="caption" tone="ink3" tabular style={{ width: 46 }}>
-            Jour {day.day}
+            Day {day.day}
           </Text>
           <View style={{ flex: 1 }}>
             <ProgramRow

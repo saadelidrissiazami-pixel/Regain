@@ -220,9 +220,9 @@ export default function AvailabilityScreen() {
       ) : null}
 
       {clearAllMutation.isError ? (
-        <InlineNotice tone="error" message={`Suppression impossible : ${errorMessage(clearAllMutation.error)}`} />
+        <InlineNotice tone="error" message={`Could not remove: ${errorMessage(clearAllMutation.error)}`} />
       ) : null}
-      {deleteMutation.isError ? <InlineNotice tone="error" message={`Suppression impossible : ${errorMessage(deleteMutation.error)}`} /> : null}
+      {deleteMutation.isError ? <InlineNotice tone="error" message={`Could not remove: ${errorMessage(deleteMutation.error)}`} /> : null}
       {slotsQuery.isLoading ? <LoadingSkeleton preset="list" /> : null}
       {slotsQuery.isSuccess && slots.length === 0 ? (
         <EmptyState icon="time-outline" title="No times yet" body="Add your first one above." />

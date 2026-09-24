@@ -97,7 +97,7 @@ export async function scheduleActivityReminders(items: PlannedActivityRow[], ava
       identifier: `${ACTIVITY_PREFIX}${item.id}`,
       content: {
         title: 'Regain',
-        body: `Dans ${REMINDER_LEAD_MINUTES} min : ${item.activities_catalog.title}`,
+        body: `In ${REMINDER_LEAD_MINUTES} min: ${item.activities_catalog.title}`,
         data: { route: `/activity/${item.activities_catalog.id}` },
       },
       trigger: { type: Notifications.SchedulableTriggerInputTypes.DATE, date: reminderDate },

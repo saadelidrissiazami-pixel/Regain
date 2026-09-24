@@ -9,7 +9,7 @@ type ScheduledItem = { date: string; time_slot: TimeSlot };
 /** An activity's real start time: the one from the availability that placed it (a one-off beats
  *  a recurring one), otherwise the slot's default time. */
 export function resolveStartTime(item: ScheduledItem, availability: AvailabilitySlot[]): string {
-  const dayOfWeek = (fromLocalISODate(item.date).getDay() + 6) % 7; // 0 = lundi, comme day_of_week
+  const dayOfWeek = (fromLocalISODate(item.date).getDay() + 6) % 7; // 0 = Monday, matching day_of_week
   const matching = availability.filter(
     (slot) =>
       slot.time_slot === item.time_slot &&
@@ -43,7 +43,7 @@ export function buildCalendarEvents(items: CalendarItem[], availability: Availab
   return items.map((item) => {
     const activity = item.activities_catalog;
     const startDate = activityStartDate(item, availability);
-    const notes = [activity.instructions?.trim(), `Ouvrir dans Regain : regain://activity/${activity.id}`]
+    const notes = [activity.instructions?.trim(), `Open in Regain: regain://activity/${activity.id}`]
       .filter(Boolean)
       .join('\n\n');
     return {
