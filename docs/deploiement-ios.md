@@ -1,228 +1,245 @@
-# Publier Regain sur l'App Store
+# Publishing Regain on the App Store
 
-Marche à suivre, dans l'ordre. Les étapes marquées **(toi)** demandent tes identifiants ou tes
-coordonnées bancaires : je ne peux pas les faire à ta place, et je ne dois jamais saisir ces
-informations. Tout le reste est déjà prêt dans le code.
+The run-through, in order. The steps marked **(you)** need your credentials or your bank details:
+I cannot do them for you, and I must never enter that information. Everything else is already done
+in the code.
 
-Compte à prévoir : **99 $ par an** pour le compte Apple Developer. Le compte Expo est gratuit.
+Budget: **$99 a year** for the Apple Developer account. The Expo account is free.
 
 ---
 
-## 1. Compte Apple Developer **(toi)** — fait le 20 septembre 2026
+## 1. An Apple Developer account **(you)** — done on 20 September 2026
 
 1. [developer.apple.com/programs](https://developer.apple.com/programs/) → *Enroll*.
-2. En tant que personne physique, aucun numéro D-U-N-S n'est demandé ; en société, il faut ce
-   numéro et cela prend quelques jours.
-3. Active la double authentification sur ton identifiant Apple : elle est obligatoire.
+2. As an individual, no D-U-N-S number is asked for; as a company, that number is required and it
+   takes a few days.
+3. Turn two-factor authentication on for your Apple ID: it is mandatory.
 
-Le **contrat applications gratuites** est actif dès la validation du compte. Le contrat payant,
-lui, se signe à la main (étape 3).
+The **free apps agreement** is active as soon as the account is approved. The paid agreement is
+signed by hand (step 3).
 
-## 2. Statut de commerçant (DSA) **(toi)**
+## 2. Trader status (DSA) **(you)**
 
-*Business → Contrats → « Compléter les exigences de conformité ».*
+*Business → Agreements → “Complete compliance requirements”.*
 
-Depuis le règlement européen sur les services numériques, Apple doit publier les coordonnées de
-tout vendeur qui distribue dans l'UE. **Sans ce statut, aucune app ni mise à jour ne peut être
-soumise pour l'Union européenne**, et les apps déjà en ligne en sont retirées. Tu déclares
-adresse, téléphone et e-mail, qui seront visibles sur la fiche App Store.
+Under the European Digital Services Act, Apple has to publish the contact details of any seller
+distributing in the EU. **Without this status, no app and no update can be submitted for the
+European Union**, and apps already live are pulled from it. You declare an address, a phone number
+and an email, all of which will be visible on the App Store listing.
 
-Tant que tu y es : *Modifier l'entité juridique*, exigé avant de pouvoir signer le contrat payant.
+While you are there: *Edit legal entity*, which is required before the paid agreement can be
+signed.
 
-## 3. Ton encaissement **(toi)**
+## 3. Getting paid **(you)**
 
-C'est Apple qui encaisse les abonnements et te reverse l'argent. Rien de tout cela ne passe par
-l'app : tes coordonnées bancaires restent chez Apple.
+Apple takes the subscription payments and passes the money on to you. None of it goes through the
+app: your bank details stay with Apple.
 
-1. **Accords, taxes et banque** → signer le contrat **Apps payantes**.
-2. **Informations bancaires** : ajoute un compte à ton nom (IBAN). Un compte au nom d'une autre
-   personne bloque les versements.
-3. **Informations fiscales** : formulaire français, plus le formulaire américain W-8BEN proposé
-   automatiquement.
-4. **[App Store Small Business Program](https://developer.apple.com/app-store/small-business-program/)** :
-   inscris-toi. La commission passe de 30 % à **15 %** tant que tu gagnes moins d'un million de
-   dollars par an. C'est une simple case à cocher, et beaucoup l'oublient.
-5. Les versements arrivent environ 45 jours après la fin du mois concerné.
+1. **Agreements, Tax, and Banking** → sign the **Paid Apps** agreement.
+2. **Bank details**: add an account in your own name (IBAN). An account in somebody else's name
+   blocks the payouts.
+3. **Tax details**: the French form, plus the US W-8BEN form that is offered automatically.
+4. **[App Store Small Business Program](https://developer.apple.com/app-store/small-business-program/)**:
+   sign up. The commission drops from 30% to **15%** for as long as you earn under a million
+   dollars a year. It is a single checkbox, and plenty of people forget it.
+5. Payouts arrive about 45 days after the end of the month concerned.
 
-## 4. L'app et les deux abonnements **(toi)**
+## 4. The app and the two subscriptions **(you)**
 
-D'abord l'app elle-même : [appstoreconnect.apple.com](https://appstoreconnect.apple.com) → *Apps*
-→ **+**.
+The app itself first: [appstoreconnect.apple.com](https://appstoreconnect.apple.com) → *Apps* → **+**.
 
-| Champ | Valeur |
+| Field | Value |
 |---|---|
-| Nom | Regain |
-| Langue principale | Français (France) |
-| Identifiant de lot | `com.saadelidrissiazami.regain` |
+| Name | Regain |
+| Primary language | English (U.S.) |
+| Bundle identifier | `com.saadelidrissiazami.regain` |
 | SKU | `regain-ios` |
 
-L'identifiant de lot n'apparaît dans la liste qu'une fois enregistré : laisse `eas build` le créer
-(étape 9), ou déclare-le dans *Certificates, Identifiers & Profiles → Identifiers*.
+> The app was created with French as its primary language. From 1.2 the app is in English, so that
+> setting has to be changed on the app record — the listing's language alone is not enough.
 
-Ensuite, dans *Monétisation → Abonnements*, crée le groupe **Regain Premium**, puis :
+The bundle identifier only appears in the list once it has been registered: let `eas build` create
+it (step 9), or declare it in *Certificates, Identifiers & Profiles → Identifiers*.
 
-| Produit | Identifiant | Prix | Offre |
+Then, under *Monetisation → Subscriptions*, create the **Regain Premium** group, and in it:
+
+| Product | Identifier | Price | Offer |
 |---|---|---|---|
-| Annuel | `regain_premium_annual` | 49,99 € | essai gratuit de 3 jours |
-| Mensuel | `regain_premium_monthly` | 9,99 € | aucune |
+| Yearly | `regain_premium_annual` | €49.99 | a 3-day free trial |
+| Monthly | `regain_premium_monthly` | €9.99 | none |
 
-Ces identifiants doivent être **exactement** ceux-là : le code s'appuie dessus
+These identifiers have to be **exactly** those: the code relies on them
 ([src/config/subscriptions.ts](../src/config/subscriptions.ts)).
 
-Pour chaque produit : nom affiché, description, et une capture de l'écran d'abonnement de l'app
-(Apple l'exige pour la revue).
+For each product: a display name, a description, and a screenshot of the app's subscription screen
+(Apple requires it for review). If those display names were entered in French, change them too.
 
-## 5. RevenueCat **(toi)**
+## 5. RevenueCat **(you)**
 
-Détail complet dans [docs/abonnements.md](abonnements.md). En résumé :
+The full detail is in [docs/abonnements.md](abonnements.md). In short:
 
-1. ~~Projet « Regain », droit d'accès `premium`, les deux produits, offre `default`.~~ **Fait**,
-   et le parcours complet (essai, achat, déblocage) a été vérifié sur le Test Store.
-2. *Apps & providers → App Store* : ajoute `com.saadelidrissiazami.regain`, puis dépose la clé
-   d'achat intégré (fichier `.p8` généré dans App Store Connect → *Utilisateurs et accès →
-   Intégrations*).
-3. Rattache les produits **App Store** au droit `premium` et à l'offre `default`, à côté de ceux
-   du Test Store.
-4. Copie la clé publique iOS (`appl_…`) : c'est `EXPO_PUBLIC_REVENUECAT_IOS_KEY`.
+1. ~~A “Regain” project, the `premium` entitlement, both products, the `default` offering.~~ **Done**,
+   and the whole flow (trial, purchase, unlock) has been checked against the Test Store.
+2. *Apps & providers → App Store*: add `com.saadelidrissiazami.regain`, then upload the in-app
+   purchase key (the `.p8` file generated in App Store Connect → *Users and Access → Integrations*).
+3. Attach the **App Store** products to the `premium` entitlement and the `default` offering,
+   alongside the Test Store ones.
+4. Copy the iOS public key (`appl_…`): that is `EXPO_PUBLIC_REVENUECAT_IOS_KEY`.
 
-La clé `.p8` ne se télécharge qu'**une seule fois** : garde-la dans ton gestionnaire de mots de
-passe. Perdue, il faut en générer une autre.
+The `.p8` key can be downloaded **only once**: keep it in your password manager. Lost, it has to be
+regenerated.
 
-## 6. Les pages légales **(toi)**
+## 6. The legal pages **(you)**
 
-Apple exige une politique de confidentialité accessible publiquement, et un lien vers tes
-conditions sur l'écran d'abonnement. Les deux textes sont rédigés et t'attendent :
+Apple requires a publicly reachable privacy policy, and a link to your terms on the subscription
+screen. Both texts are written and waiting:
 
-- [docs/legal/politique-de-confidentialite.md](legal/politique-de-confidentialite.md)
-- [docs/legal/conditions-utilisation.md](legal/conditions-utilisation.md)
+- [docs/legal/privacy-policy.md](legal/privacy-policy.md)
+- [docs/legal/terms-of-use.md](legal/terms-of-use.md)
 
-**C'est fait** : le site est publié par GitHub Pages depuis `main` / `docs`.
+**This is done**: the site is published by GitHub Pages from `main` / `docs`.
 
-- Conditions d'utilisation : <https://saadelidrissiazami-pixel.github.io/Regain/legal/conditions-utilisation>
-- Politique de confidentialité : <https://saadelidrissiazami-pixel.github.io/Regain/legal/politique-de-confidentialite>
+- Terms of use: <https://saadelidrissiazami-pixel.github.io/Regain/legal/terms-of-use>
+- Privacy policy: <https://saadelidrissiazami-pixel.github.io/Regain/legal/privacy-policy>
 
-Ces deux adresses vont dans les variables ci-dessous, et la seconde dans App Store Connect.
+The French pages stay published for the versions already installed:
 
-## 7. Les variables d'environnement
+- <https://saadelidrissiazami-pixel.github.io/Regain/legal/conditions-utilisation>
+- <https://saadelidrissiazami-pixel.github.io/Regain/legal/politique-de-confidentialite>
 
-EAS ne lit pas ton fichier `.env` : les variables vivent sur le serveur, par environnement.
+Both English addresses go into the variables below, and the second goes into App Store Connect.
 
-| Variable | Valeur | État |
+## 7. The environment variables
+
+EAS does not read your `.env` file: the variables live on the server, per environment.
+
+| Variable | Value | State |
 |---|---|---|
-| `EXPO_PUBLIC_SUPABASE_URL` | l'adresse de ton projet Supabase | ✅ `production` + `preview` |
-| `EXPO_PUBLIC_SUPABASE_ANON_KEY` | la clé publique Supabase | ✅ `production` + `preview` |
-| `EXPO_PUBLIC_TERMS_URL` | l'adresse des conditions | ✅ `production` + `preview` |
-| `EXPO_PUBLIC_PRIVACY_URL` | l'adresse de la confidentialité | ✅ `production` + `preview` |
-| `EXPO_PUBLIC_REVENUECAT_IOS_KEY` | la clé `appl_…` | ❌ dépend de l'étape 5 |
+| `EXPO_PUBLIC_SUPABASE_URL` | your Supabase project's address | ✅ `production` + `preview` |
+| `EXPO_PUBLIC_SUPABASE_ANON_KEY` | the Supabase public key | ✅ `production` + `preview` |
+| `EXPO_PUBLIC_TERMS_URL` | the terms' address | ⚠️ set, but still pointing at the French page |
+| `EXPO_PUBLIC_PRIVACY_URL` | the privacy policy's address | ⚠️ set, but still pointing at the French page |
+| `EXPO_PUBLIC_REVENUECAT_IOS_KEY` | the `appl_…` key | ❌ depends on step 5 |
 
-Les quatre premières sont publiques par construction : le préfixe `EXPO_PUBLIC_` les inscrit dans
-le bundle livré, donc elles sont de toute façon lisibles dans l'app. À poser ainsi :
+The first four are public by construction: the `EXPO_PUBLIC_` prefix writes them into the shipped
+bundle, so they are readable in the app either way. Set them like this:
 
 ```bash
-npx eas-cli@latest env:set --name NOM --value "valeur" --environment production --visibility plaintext
+npx eas-cli@latest env:set --name NAME --value "value" --environment production --visibility plaintext
 ```
 
-Ne mets **jamais** `EXPO_PUBLIC_REVENUECAT_TEST_STORE_KEY` ni `EXPO_PUBLIC_SIMULATE_FREE` en
-production. Un contrôle automatique refuse la compilation dans ce cas :
+**Never** put `EXPO_PUBLIC_REVENUECAT_TEST_STORE_KEY` or `EXPO_PUBLIC_SIMULATE_FREE` in production.
+An automatic check refuses the build if you do:
 
 ```bash
 npm run preflight -- production
 ```
 
-## 8. Préparer la base de données **(toi)**
+## 8. Preparing the database **(you)**
 
-1. Applique les migrations manquantes dans le *SQL Editor* Supabase, dans l'ordre (voir
+1. Apply any missing migrations in Supabase's *SQL Editor*, in order (see
    [supabase/migrations](../supabase/migrations)).
-2. Dans *Authentication → Providers → Email*, **réactive « Confirm email »** : il avait été
-   désactivé pour les tests.
-3. Déploie la fonction de suppression de compte : `npx supabase functions deploy delete-account`.
-   Sans elle, le bouton « Supprimer mon compte » échoue, et Apple vérifie ce point depuis 2022.
-   **Fait** le 20 septembre 2026, depuis l'éditeur du tableau de bord.
+2. Under *Authentication → Providers → Email*, **turn “Confirm email” back on**: it was switched
+   off for testing.
+3. Deploy the account-deletion function: `npx supabase functions deploy delete-account`.
+   Without it, the “Delete my account” button fails, and Apple has been checking this since 2022.
+   **Done** on 20 September 2026, from the dashboard's editor.
 
-## 8 bis. Activer le coach IA **(toi)**
+## 8b. Switching the AI coach on **(you)**
 
-Le coach conversationnel est réservé aux abonnés et plafonné côté serveur (30 messages par heure,
-**20 par jour**) : sans ce plafond, un seul compte peut faire tourner la facture.
+The conversational coach is for subscribers only and capped on the server (30 messages an hour,
+**20 a day**): without that cap, a single account can run up the bill.
 
-1. Crée une clé sur [console.anthropic.com](https://console.anthropic.com), puis :
+1. Create a key on [console.anthropic.com](https://console.anthropic.com), then:
    `npx supabase secrets set ANTHROPIC_API_KEY=sk-ant-...`
 2. `npx supabase functions deploy coach`
-3. Vérifie dans l'app : sans abonnement, l'entrée renvoie au paywall ; avec, une question obtient
-   une réponse.
+3. Check it in the app: without a subscription the entry point leads to the paywall; with one, a
+   question gets an answer.
 
-Sans clé ni déploiement, l'app reste entière : l'écran affiche le message d'indisponibilité et
-tout le reste — planning, séances, programme, menus, courses — continue de fonctionner, puisque
-rien de tout cela n'utilise l'IA.
+With no key and no deployment the app is still whole: the screen shows its unavailable message and
+everything else — the plan, the sessions, the programme, the meals, the shopping — carries on,
+since none of that uses AI.
 
-**La politique de confidentialité a été mise à jour en conséquence** (Anthropic ajouté aux
-sous-traitants) : republie les pages avant de soumettre, sinon la page en ligne est fausse.
+**The privacy policy was updated accordingly** (Anthropic added to the processors): republish the
+pages before submitting, or the page online is wrong.
 
-## 9. Compiler et envoyer
+The two coach prompts now instruct English. They run on the server, so deploying them changes what
+every installed build sees at once — they should go out with the English release, not before it.
 
-Le paquet s'appelle `eas-cli` (et non `eas`) : `npx eas login` échoue avec « could not determine
-executable to run ». Pour éviter de le retélécharger à chaque commande : `npm install -g eas-cli`,
-puis remplace `npx eas-cli@latest` par `eas`.
+## 9. Building and submitting
+
+The package is called `eas-cli` (not `eas`): `npx eas login` fails with “could not determine
+executable to run”. To avoid re-downloading it on every command: `npm install -g eas-cli`, then use
+`eas` in place of `npx eas-cli@latest`.
 
 ```bash
 npx eas-cli@latest login
-npx eas-cli@latest init          # relie le projet à ton compte Expo, ajoute un identifiant dans app.json
+```
+
+```bash
+npx eas-cli@latest init
+```
+
+```bash
 npx eas-cli@latest build --platform ios --profile production
+```
+
+```bash
 npx eas-cli@latest submit --platform ios --latest
 ```
 
-EAS crée et garde les certificats et le profil de distribution : tu n'as rien à générer dans
-Xcode. La première compilation demande ton identifiant Apple.
+EAS creates and keeps the certificates and the distribution profile: there is nothing to generate
+in Xcode. The first build asks for your Apple ID.
 
-## 10. Tester les achats avant la sortie **(toi)**
+## 10. Testing purchases before release **(you)**
 
-1. App Store Connect → *Utilisateurs et accès → Testeurs Sandbox* : crée un compte de test avec
-   une adresse e-mail que tu n'utilises pas déjà chez Apple.
-2. Sur l'iPhone : *Réglages → App Store → Compte Sandbox*, connecte ce compte.
-3. Installe la version TestFlight et souscris : l'achat est simulé, rien n'est débité, et un essai
-   de 3 jours dure environ une minute en sandbox.
-4. Vérifie l'essai, la restauration d'achat, et le lien « Gérer mon abonnement ».
+1. App Store Connect → *Users and Access → Sandbox Testers*: create a test account with an email
+   address you do not already use with Apple.
+2. On the iPhone: *Settings → App Store → Sandbox Account*, sign that account in.
+3. Install the TestFlight version and subscribe: the purchase is simulated, nothing is charged, and
+   a 3-day trial lasts about a minute in the sandbox.
+4. Check the trial, restoring a purchase, and the “Manage my subscription” link.
 
-## 11. Fiche App Store et revue
+## 11. The listing and the review
 
-Textes, mots-clés, notes pour l'équipe de revue et réponses au questionnaire de confidentialité :
+Text, keywords, notes for the review team and the answers to the privacy questionnaire:
 [docs/app-store.md](app-store.md).
 
-Points qui font échouer une revue, déjà traités dans l'app :
-- prix, durée et renouvellement affichés sur l'écran d'abonnement ;
-- bouton « Restaurer mes achats » ;
-- liens vers les conditions et la confidentialité ;
-- suppression du compte depuis l'app.
+Things that fail a review, already handled in the app:
+- price, duration and renewal shown on the subscription screen;
+- a “Restore purchases” button;
+- links to the terms and the privacy policy;
+- deleting the account from inside the app.
 
-Reste à fournir par toi : **un compte de démonstration** (e-mail et mot de passe d'un compte
-Regain rempli d'exemples) dans les notes de revue, sinon l'app est renvoyée.
+Still for you to provide: **a demo account** (the email and password of a Regain account filled with
+examples) in the review notes, or the app comes straight back.
 
-L'adresse retenue est un **alias** de la boîte personnelle : `+demo` en fait un compte distinct
-pour Supabase, alors que Gmail livre les e-mails dans la même boîte. Les données personnelles
-restent donc intactes, et l'équipe de revue ne voit pas le compte de tous les jours.
+The address used is an **alias** of the personal mailbox: `+demo` makes it a separate account as far
+as Supabase is concerned, while Gmail delivers the mail to the same inbox. The personal data stays
+untouched, and the review team never sees the everyday account.
 
-Choisis un mot de passe, puis lance la commande en **remplaçant `mot-de-passe`** par celui-ci :
+Choose a password, then run the command **replacing `your-password`** with it:
 
 ```bash
-DEMO_EMAIL=saadelidrissiazami+demo@gmail.com DEMO_PASSWORD='mot-de-passe' node scripts/seed-demo.mjs
+DEMO_EMAIL=saadelidrissiazami+demo@gmail.com DEMO_PASSWORD='your-password' node scripts/seed-demo.mjs
 ```
 
-Au premier appel, le compte n'existe pas : Supabase le crée et envoie un lien de confirmation.
-Ouvre-le dans la boîte, puis **relance la même commande** — elle se connectera cette fois, et
-remplira le compte.
+On the first call the account does not exist: Supabase creates it and sends a confirmation link.
+Open it in the mailbox, then **run the same command again** — this time it signs in and fills the
+account.
 
-Le script se connecte comme ce compte et lui crée des disponibilités, un planning dont deux
-activités cochées, des check-ins d'énergie, quatre séances de bien-être avec ressenti et réponses,
-et un profil forme. Ton mot de passe ne sort pas de ton terminal. Termine dans l'app par
-*Forme → Générer mon programme*.
+The script signs in as that account and gives it availability, a plan with two activities ticked
+off, energy check-ins, four wellbeing sessions with ratings and answers, and a fitness profile. Your
+password never leaves your terminal. Finish in the app with *Fitness → Build my programme*.
 
-**Le script efface d'abord les créneaux, les check-ins d'énergie et les séances terminées du
-compte** avant de réécrire les siens — c'est la raison de l'alias : lancé sur le compte personnel,
-il ferait disparaître ces données-là.
+**The script first erases the account's availability slots, energy check-ins and finished
+sessions** before writing its own — that is the reason for the alias: run against the personal
+account, it would make that data disappear.
 
-## 12. Après la publication
+## 12. After release
 
-- Surveille RevenueCat : essais lancés, conversions, résiliations.
-- Active le **délai de grâce** dans RevenueCat : il rattrape les échecs de paiement, qui
-  représentent près d'un tiers des annulations sur Android.
-- Pour une mise à jour : `npx eas-cli@latest build --platform ios --profile production` puis
-  `npx eas-cli@latest submit`. Le numéro de version monte tout seul.
+- Keep an eye on RevenueCat: trials started, conversions, cancellations.
+- Turn **grace period** on in RevenueCat: it catches failed payments, which account for close to a
+  third of cancellations on Android.
+- For an update: `npx eas-cli@latest build --platform ios --profile production` then
+  `npx eas-cli@latest submit`. The build number climbs on its own.

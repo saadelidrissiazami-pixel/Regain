@@ -1,97 +1,98 @@
-# Abonnements Premium — mise en route
+# Premium subscriptions — getting set up
 
-Le code est prêt : paywall ([app/paywall/index.tsx](../app/paywall/index.tsx)), logique d'achat
-([src/lib/purchases.ts](../src/lib/purchases.ts)) et identifiants
-([src/config/subscriptions.ts](../src/config/subscriptions.ts)). Il reste à créer les comptes et
-les produits, ce que vous seul pouvez faire. Les identifiants ci-dessous doivent être recopiés
-**à l'identique** partout.
+The code is ready: the paywall ([app/paywall/index.tsx](../app/paywall/index.tsx)), the purchase
+logic ([src/lib/purchases.ts](../src/lib/purchases.ts)) and the identifiers
+([src/config/subscriptions.ts](../src/config/subscriptions.ts)). What is left is creating the
+accounts and the products, which only you can do. The identifiers below have to be copied
+**exactly** everywhere.
 
-| Élément | Identifiant |
+| Thing | Identifier |
 |---|---|
-| Entitlement RevenueCat | `premium` |
-| Offre RevenueCat | `default` (marquée *Current*) |
-| Abonnement mensuel | `regain_premium_monthly` |
-| Abonnement annuel | `regain_premium_annual` |
-| Bundle iOS / package Android | `com.saadelidrissiazami.regain` |
+| RevenueCat entitlement | `premium` |
+| RevenueCat offering | `default` (marked *Current*) |
+| Monthly subscription | `regain_premium_monthly` |
+| Yearly subscription | `regain_premium_annual` |
+| iOS bundle / Android package | `com.saadelidrissiazami.regain` |
 
-> Les achats intégrés ne fonctionnent **ni dans Expo Go ni sur le web** : il faut un build de
-> développement. Dans Expo Go, l'écran Premium l'explique et Premium reste débloqué pour tester.
+> In-app purchases work **neither in Expo Go nor on the web**: a development build is required.
+> In Expo Go the Premium screen explains this, and Premium stays unlocked for testing.
 
-## Étape 1 — Tester tout de suite, sans Apple ni Google (gratuit)
+## Step 1 — Test it right away, with no Apple or Google account (free)
 
-RevenueCat fournit un **Test Store** : de faux achats, mais un vrai parcours complet.
+RevenueCat provides a **Test Store**: fake purchases, but a real end-to-end flow.
 
-1. ~~Créez un compte sur [revenuecat.com](https://www.revenuecat.com) et un projet « Regain ».~~ **Fait**
-2. ~~*Product catalog → Entitlements* : `premium`.~~ **Fait**
-3. ~~*Product catalog → Products* (Test Store) : `regain_premium_monthly` (9,99) et
-   `regain_premium_annual` (49,99, essai 3 jours), rattachés à `premium`.~~ **Fait**
-4. ~~*Product catalog → Offerings* : `default`, packages `$rc_monthly` et `$rc_annual`.~~ **Fait**
-5. *Apps* : copiez la clé Test Store dans `.env` :
+1. ~~Create an account on [revenuecat.com](https://www.revenuecat.com) and a “Regain” project.~~ **Done**
+2. ~~*Product catalog → Entitlements*: `premium`.~~ **Done**
+3. ~~*Product catalog → Products* (Test Store): `regain_premium_monthly` (9.99) and
+   `regain_premium_annual` (49.99, a 3-day trial), attached to `premium`.~~ **Done**
+4. ~~*Product catalog → Offerings*: `default`, with the `$rc_monthly` and `$rc_annual` packages.~~ **Done**
+5. *Apps*: copy the Test Store key into `.env`:
    `EXPO_PUBLIC_REVENUECAT_TEST_STORE_KEY=...`
 
-> Le projet créé par RevenueCat contient un catalogue de démonstration (`regain_pro`,
-> `monthly`/`yearly`/`lifetime`) qu'il ne faut pas confondre avec le nôtre. Seul l'entitlement
-> `premium` débloque l'app ; les prix du Test Store sont en dollars, ceux de l'App Store seront
-> en euros.
+> The project RevenueCat creates comes with a demonstration catalogue (`regain_pro`,
+> `monthly`/`yearly`/`lifetime`) that should not be confused with ours. Only the `premium`
+> entitlement unlocks the app; the Test Store's prices are in dollars, the App Store's will be in
+> euros.
 >
-> **Le produit de test garde un essai d'une semaine**, alors que l'App Store est réglé sur
-> 3 jours : prix et essai d'un produit Test Store ne sont plus modifiables après création, et le
-> recréer casserait ses liens avec l'offre et l'entitlement. Sans conséquence sur le code, qui
-> lit la durée depuis la boutique — mais en développement l'écran annonce 7 jours, pas 3.
-> À vérifier en bac à sable TestFlight, seul endroit où la vraie durée s'affiche.
-6. Lancez un build de développement :
-   - simulateur iOS (Xcode requis, sans compte Apple payant) : `npx expo run:ios` ;
-   - ou émulateur / téléphone Android : `npx expo run:android` ;
-   - ou via EAS : `npx eas-cli@latest build --profile development --platform ios|android`.
+> **The test product keeps a one-week trial**, while the App Store is set to 3 days: a Test Store
+> product's price and trial cannot be changed after creation, and recreating it would break its
+> links to the offering and the entitlement. This has no effect on the code, which reads the
+> length from the store — but in development the screen says 7 days, not 3. Check it in the
+> TestFlight sandbox, the only place the real length shows.
+6. Start a development build:
+   - the iOS simulator (Xcode required, no paid Apple account): `npx expo run:ios`;
+   - or an Android emulator / phone: `npx expo run:android`;
+   - or through EAS: `npx eas-cli@latest build --profile development --platform ios|android`.
 
-Sur le paywall, un bandeau « Mode test » s'affiche et l'achat ouvre une fenêtre de simulation
-(succès, échec, annulation). La clé Test Store n'est lue qu'en développement : **ne la mettez
-jamais dans l'environnement de production** (Apple rejette les apps configurées avec).
+On the paywall a “Test mode” banner appears and buying opens a simulation window (success,
+failure, cancellation). The Test Store key is only read in development: **never put it in the
+production environment** (Apple rejects apps configured with it).
 
-## Étape 2 — Vrais abonnements iOS (Apple Developer, 99 $/an)
+## Step 2 — Real iOS subscriptions (Apple Developer, $99/year)
 
-1. App Store Connect → *Accords, taxes et banque* : signez l'accord **Apps payantes** et
-   renseignez banque et fiscalité (sans cela, aucun produit ne se charge).
-2. Créez l'app `com.saadelidrissiazami.regain`, puis *Abonnements* → groupe « Regain Premium »
-   avec les deux produits ci-dessus (prix, durée, et éventuellement un essai gratuit : le
-   paywall l'affiche automatiquement).
-3. *Utilisateurs et accès → Intégrations → Achats intégrés* : générez une clé (.p8) et
-   importez-la dans RevenueCat (*Apps & providers → App Store*).
-4. Rattachez les produits App Store à l'entitlement `premium` et à l'offre `default`.
-5. Copiez la clé publique iOS (`appl_…`) : `EXPO_PUBLIC_REVENUECAT_IOS_KEY`.
+1. App Store Connect → *Agreements, Tax, and Banking*: sign the **Paid Apps** agreement and fill
+   in the banking and tax details (without them, no product loads).
+2. Create the app `com.saadelidrissiazami.regain`, then *Subscriptions* → a “Regain Premium” group
+   with the two products above (price, duration, and optionally a free trial: the paywall shows it
+   automatically).
+3. *Users and Access → Integrations → In-App Purchase*: generate a key (.p8) and upload it to
+   RevenueCat (*Apps & providers → App Store*).
+4. Attach the App Store products to the `premium` entitlement and the `default` offering.
+5. Copy the iOS public key (`appl_…`) into `EXPO_PUBLIC_REVENUECAT_IOS_KEY`.
 
-## Étape 3 — Vrais abonnements Android (Google Play Console, 25 $ une fois)
+## Step 3 — Real Android subscriptions (Google Play Console, $25 once)
 
-1. Créez l'app `com.saadelidrissiazami.regain` et publiez un premier build sur un canal de
-   test interne (Google n'affiche les abonnements qu'après un premier envoi).
-2. *Monétiser → Abonnements* : créez les deux produits avec un forfait de base chacun.
-3. Créez un compte de service Google Cloud avec accès à la Play Console et importez son JSON
-   dans RevenueCat (*Apps & providers → Play Store*).
-4. Rattachez les produits à `premium` / `default`, puis copiez la clé publique (`goog_…`) :
+1. Create the app `com.saadelidrissiazami.regain` and publish a first build to an internal test
+   track (Google only shows subscriptions after a first upload).
+2. *Monetise → Subscriptions*: create the two products, each with one base plan.
+3. Create a Google Cloud service account with access to the Play Console and upload its JSON to
+   RevenueCat (*Apps & providers → Play Store*).
+4. Attach the products to `premium` / `default`, then copy the public key (`goog_…`) into
    `EXPO_PUBLIC_REVENUECAT_ANDROID_KEY`.
 
-## Étape 4 — Variables d'environnement des builds EAS
+## Step 4 — Environment variables for EAS builds
 
-EAS Build **ne lit pas** votre fichier `.env` (il n'est pas envoyé). Déclarez les variables
-sur [expo.dev](https://expo.dev) → projet → *Environment variables*, pour chaque environnement
-(`development`, `preview`, `production` — déjà reliés aux profils de [eas.json](../eas.json)) :
+EAS Build **does not read** your `.env` file (it is not uploaded). Declare the variables on
+[expo.dev](https://expo.dev) → project → *Environment variables*, for each environment
+(`development`, `preview`, `production` — already wired to the profiles in [eas.json](../eas.json)):
 
-- `EXPO_PUBLIC_SUPABASE_URL`, `EXPO_PUBLIC_SUPABASE_ANON_KEY` (sinon l'app ne démarre pas) ;
-- `EXPO_PUBLIC_REVENUECAT_IOS_KEY`, `EXPO_PUBLIC_REVENUECAT_ANDROID_KEY` ;
-- `EXPO_PUBLIC_TERMS_URL`, `EXPO_PUBLIC_PRIVACY_URL` ;
-- `EXPO_PUBLIC_REVENUECAT_TEST_STORE_KEY` : **uniquement** en `development`.
+- `EXPO_PUBLIC_SUPABASE_URL`, `EXPO_PUBLIC_SUPABASE_ANON_KEY` (without them the app does not start);
+- `EXPO_PUBLIC_REVENUECAT_IOS_KEY`, `EXPO_PUBLIC_REVENUECAT_ANDROID_KEY`;
+- `EXPO_PUBLIC_TERMS_URL`, `EXPO_PUBLIC_PRIVACY_URL`;
+- `EXPO_PUBLIC_REVENUECAT_TEST_STORE_KEY`: in `development` **only**.
 
-## Avant la soumission — ce qu'Apple et Google vérifient
+## Before submitting — what Apple and Google check
 
-- [x] Prix, durée, renouvellement automatique et essai affichés sur le paywall
-- [x] Bouton « Restaurer mes achats »
-- [x] Lien « Gérer mon abonnement » (Profil)
-- [ ] Liens CGU et confidentialité renseignés (`EXPO_PUBLIC_TERMS_URL`, `EXPO_PUBLIC_PRIVACY_URL`)
-- [ ] Achat testé en sandbox (compte testeur App Store Connect / testeur de licence Google Play)
-- [ ] Un compte de démonstration fourni aux reviewers dans App Store Connect
+- [x] Price, duration, automatic renewal and the trial shown on the paywall
+- [x] A “Restore purchases” button
+- [x] A “Manage my subscription” link (Profile)
+- [ ] Terms and privacy links set (`EXPO_PUBLIC_TERMS_URL`, `EXPO_PUBLIC_PRIVACY_URL`) — these now
+      point at the English pages, see [app-store.md](app-store.md)
+- [ ] A purchase tested in the sandbox (an App Store Connect tester / a Google Play licence tester)
+- [ ] A demo account given to the reviewers in App Store Connect
 
-## Plus tard — vérification côté serveur
+## Later — checking on the server
 
-Aujourd'hui Premium est vérifié dans l'app (RevenueCat). Pour protéger aussi les données côté
-Supabase, l'étape suivante est un webhook RevenueCat vers une Edge Function qui tient à jour
-une table `subscriptions`, lue par les politiques RLS des tables Premium.
+Today Premium is checked inside the app (RevenueCat). To protect the data on the Supabase side as
+well, the next step is a RevenueCat webhook to an Edge Function that keeps a `subscriptions` table
+up to date, read by the RLS policies of the Premium tables.

@@ -1,172 +1,174 @@
-# Regain — premiers contenus et campagne test
+# Regain — first content and a test campaign
 
-Version de travail, 21 septembre 2026. Marché de départ : France, en français. Avant publication, remplacer `[LIEN]` par le lien TestFlight, la page d'attente ou la fiche de téléchargement selon l'état de l'application.
+A working draft, 21 September 2026, rewritten in English on 24 September 2026. Before publishing anything, replace `[LINK]` with the TestFlight link, the waiting-list page or the store listing, depending on where the app has got to.
 
-## Message central
+> **One decision this document cannot make for you.** It was written for a French launch, in French. The app is now in English, so the copy below is in English too — but the *market* is still a choice: an English app aimed at France is not the same bet as an English app aimed at the UK, Ireland, Canada or the US, and the targeting, the budget and the cost per install all move with it. Everything below assumes an English-speaking audience. If the plan is still France first, the app needs a French localisation rather than this document needing a French one.
 
-**Une routine qui tient dans la vraie vie.** Regain propose des activités selon les disponibilités et l'énergie du moment, avec des séances de bien-être guidées et un suivi. Ton calme, concret, sans promesse de résultat médical.
+## The core message
 
-Trois angles à tester :
+**A routine that fits the life you actually have.** Regain suggests activities around the time you are free and the energy you have, with guided wellbeing sessions and tracking. The tone is calm and concrete, with no promise of a medical result.
 
-1. **Temps** — « J'ai 20 minutes libres : qu'est-ce que je peux faire ? »
-2. **Énergie** — « Mon planning peut s'adapter à ma journée. »
-3. **Progression** — « Une petite activité terminée vaut mieux qu'un programme abandonné. »
+Three angles to test:
 
-## Budget conseillé pour le premier mois
+1. **Time** — “I have 20 minutes free: what can I do?”
+2. **Energy** — “My plan can adapt to my day.”
+3. **Progress** — “One small activity finished beats a programme abandoned.”
 
-**900 € de publicité**, en deux temps : 600 € sur les 14 premiers jours (360 € Meta, 240 € TikTok), puis 300 € sur la ou les créations qui amènent le plus d'inscriptions qualifiées ou de premières utilisations. Prévoir séparément 0 à 100 € de production si les visuels sont créés en interne. YouTube Shorts démarre en organique. Ce montant est un budget test proposé, sans garantie de volume ou de coût par acquisition.
+## A suggested budget for the first month
 
-Si Regain n'est pas encore téléchargeable, réserver ce budget jusqu'à ce qu'une page d'attente ou une bêta publique soit prête. Ne lancer les campagnes d'installation qu'après disponibilité sur le store et vérification de la mesure.
+**€900 of advertising**, in two parts: €600 over the first 14 days (€360 Meta, €240 TikTok), then €300 on whichever creative brings in the most qualified sign-ups or first uses. Budget €0 to €100 separately for production if the visuals are made in-house. YouTube Shorts starts organic. This is a proposed test budget, with no guarantee of volume or cost per acquisition.
 
-## Publications photo prêtes à utiliser
+If Regain is not downloadable yet, hold the budget until a waiting-list page or a public beta is ready. Only start install campaigns once it is on the store and the measurement has been checked.
 
-Les trois visuels sont générés dans `marketing/output/` par `scripts/marketing.py`.
+## Photo posts, ready to use
 
-**Photo 1 — Une routine qui tient.** Légende : « Une routine utile doit trouver sa place dans la vie qu'on a vraiment. Regain part de tes disponibilités et de ton énergie pour proposer une activité à la fois. 🌱 Découvre le projet : [LIEN] #routine #bienetre »
+The three visuals are generated into `marketing/output/` by `scripts/marketing.py`.
 
-**Photo 2 — 20 minutes libres.** Légende : « Pas besoin de réorganiser toute ta semaine pour commencer. Que ferais-tu de 20 minutes pour toi aujourd'hui ? Regain aide à transformer ces moments disponibles en activités concrètes. [LIEN] #organisation #routine »
+**Photo 1 — A routine that holds.** Caption: “A useful routine has to fit the life you actually have. Regain starts from the time you are free and the energy you have, and suggests one activity at a time. 🌱 See the project: [LINK] #routine #wellbeing”
 
-**Photo 3 — Pause guidée.** Légende : « Prendre quelques minutes pour soi peut être simple. Regain réunit des séances guidées de respiration et de méditation à intégrer à son rythme. [LIEN] #respiration #bienetre »
+**Photo 2 — 20 minutes free.** Caption: “You do not need to reorganise your whole week to start. What would you do with 20 minutes for yourself today? Regain helps turn those free moments into something concrete. [LINK] #organisation #routine”
 
-## Production commune
+**Photo 3 — A guided pause.** Caption: “Taking a few minutes for yourself can be simple. Regain brings together guided breathing and meditation sessions to fit around your own pace. [LINK] #breathing #wellbeing”
 
-Tourner en vertical 9:16, idéalement 1080 × 1920, avec sous-titres lisibles et une démonstration réelle de l'app. Prévoir une version de 12 à 20 secondes de chaque concept. Filmer les écrans sur un compte de démonstration. Utiliser uniquement de la musique dont la licence couvre aussi les publicités.
+## Production, in common
 
-Chaque vidéo suit : accroche visible dès la première seconde → écran de l'app en action → bénéfice concret → appel à l'action. Garder le texte loin des bords et des zones couvertes par les boutons des plateformes.
+Shoot vertical 9:16, ideally 1080 × 1920, with readable subtitles and a real demonstration of the app. Plan a 12 to 20 second version of each concept. Film the screens on a demo account. Use only music whose licence covers advertising as well.
 
-## Publications TikTok et YouTube Shorts
+Every video follows the same shape: a hook visible in the first second → the app on screen doing something → a concrete benefit → a call to action. Keep the text away from the edges and from the areas the platforms' own buttons cover.
 
-### Vidéo 1 — « 20 minutes libres »
+## TikTok and YouTube Shorts posts
 
-**Plan 0–3 s :** face caméra ou texte sur fond quotidien : « J'ai 20 minutes devant moi. Je fais quoi ? »
+### Video 1 — “20 minutes free”
 
-**Plan 3–12 s :** capture de Regain : disponibilités → proposition d'activité → carte « À suivre ».
+**0–3 s:** to camera, or text over an everyday background: “I have 20 minutes. What do I do?”
 
-**Voix off :** « J'indique quand je suis libre. Regain me propose une activité qui rentre dans ma journée. »
+**3–12 s:** a capture of Regain: availability → a suggested activity → the “Up next” card.
 
-**Fin 12–18 s :** « Une activité à la fois. Découvre Regain : [LIEN]. »
+**Voice-over:** “I say when I am free. Regain suggests something that fits into my day.”
 
-**Légende TikTok :** « Une routine plus simple commence parfois par 20 minutes disponibles. 🌱 Regain organise des activités autour de ta vraie semaine. [LIEN] #routine #bienetre #organisation »
+**12–18 s:** “One activity at a time. Find Regain: [LINK].”
 
-**Titre YouTube Shorts :** « Que faire avec 20 minutes libres ? | Regain »
+**TikTok caption:** “A simpler routine sometimes starts with 20 free minutes. 🌱 Regain builds activities around your real week. [LINK] #routine #wellbeing #organisation”
 
-**Description YouTube :** « Regain propose des activités selon tes disponibilités et ton énergie. Découvrir : [LIEN] »
+**YouTube Shorts title:** “What can you do with 20 free minutes? | Regain”
 
-### Vidéo 2 — « Le planning s'adapte »
+**YouTube description:** “Regain suggests activities around the time you are free and the energy you have. Have a look: [LINK]”
 
-**Plan 0–3 s :** « Un planning identique tous les jours ? Très peu pour moi. »
+### Video 2 — “The plan adapts”
 
-**Plan 3–12 s :** montrer le choix de l'énergie puis deux propositions différentes dans l'app. Ne montrer que des comportements réellement disponibles dans la version filmée.
+**0–3 s:** “The same plan every single day? Not for me.”
 
-**Voix off :** « Certains jours, je veux bouger. D'autres, prendre quelques minutes pour souffler. Regain tient compte de mon énergie. »
+**3–12 s:** show choosing your energy, then two different suggestions in the app. Only show behaviour that genuinely exists in the version being filmed.
 
-**Fin 12–18 s :** « Construis une routine à ton rythme. [LIEN] »
+**Voice-over:** “Some days I want to move. Others, a few minutes to breathe. Regain takes my energy into account.”
 
-**Légende TikTok :** « La même énergie tous les jours ? Pas chez moi. Regain m'aide à choisir une activité adaptée au moment. #routine #energie #bienetre »
+**12–18 s:** “Build a routine at your own pace. [LINK]”
 
-**Titre YouTube Shorts :** « Une routine adaptée à ton énergie | Regain »
+**TikTok caption:** “The same energy every day? Not here. Regain helps me pick something that suits the moment. #routine #energy #wellbeing”
 
-### Vidéo 3 — « Une pause guidée »
+**YouTube Shorts title:** “A routine that suits your energy | Regain”
 
-**Plan 0–3 s :** « Ma pause de quelques minutes, sans avoir à chercher quoi faire. »
+### Video 3 — “A guided pause”
 
-**Plan 3–12 s :** ouvrir une séance de respiration ou de méditation, puis montrer son déroulement.
+**0–3 s:** “My few minutes off, without having to work out what to do.”
 
-**Voix off :** « J'ouvre Regain, je choisis une séance guidée et je prends ce temps pour moi. »
+**3–12 s:** open a breathing or meditation session, then show it running.
 
-**Fin 12–18 s :** « Découvre les séances de Regain. [LIEN] »
+**Voice-over:** “I open Regain, pick a guided session, and take that time for myself.”
 
-**Légende TikTok :** « Une petite pause guidée peut trouver sa place dans une journée bien remplie. 🌿 #respiration #routine #bienetre »
+**12–18 s:** “Have a look at Regain's sessions. [LINK]”
 
-**Titre YouTube Shorts :** « Une pause guidée dans ta journée | Regain »
+**TikTok caption:** “A short guided pause can find room in a full day. 🌿 #breathing #routine #wellbeing”
 
-### Vidéo 4 — « Construire en public »
+**YouTube Shorts title:** “A guided pause in your day | Regain”
 
-**Plan 0–4 s :** fondateur face caméra : « J'ai créé Regain autour d'une question : quelle serait une bonne activité pour moi maintenant ? »
+### Video 4 — “Building in public”
 
-**Plan 4–16 s :** trois écrans rapides : planning, séance, suivi.
+**0–4 s:** the founder to camera: “I built Regain around one question: what would be a good activity for me right now?”
 
-**Voix off :** « Je voulais une app qui parte du temps et de l'énergie qu'on a vraiment, puis aide à avancer une activité après l'autre. »
+**4–16 s:** three quick screens: the plan, a session, the tracking.
 
-**Fin 16–25 s :** « Je prépare Regain. Dis-moi ce que tu aimerais voir dans une routine plus réaliste. »
+**Voice-over:** “I wanted an app that starts from the time and the energy you actually have, and then helps you move one activity at a time.”
 
-**Légende TikTok :** « Je construis Regain pour rendre les routines plus réalistes. Quelle est la chose qui fait le plus souvent dérailler la tienne ? #buildinpublic #routine »
+**16–25 s:** “I am building Regain. Tell me what you would want from a more realistic routine.”
 
-**Titre YouTube Shorts :** « Pourquoi j'ai créé Regain »
+**TikTok caption:** “I am building Regain to make routines more realistic. What is the thing that most often derails yours? #buildinpublic #routine”
 
-## Campagne publicitaire test
+**YouTube Shorts title:** “Why I built Regain”
 
-### Avant la mise en ligne
+## The test campaign
 
-Objectif : inscriptions à la liste d'attente ou demandes de bêta. Destination : page courte qui montre l'app, indique clairement son état et collecte uniquement l'information nécessaire. Mesurer le coût par inscription et la part des inscrits qui installent ensuite l'app.
+### Before release
 
-### Après la mise en ligne
+The goal: waiting-list sign-ups or beta requests. The destination: a short page that shows the app, says plainly where it has got to, and collects only what it needs. Measure the cost per sign-up and the share of those who go on to install.
 
-Objectif : téléchargements, puis premières utilisations utiles. Destination : fiche store. Mesurer au minimum le coût par installation, la part des personnes qui terminent l'accueil et créent leur premier planning, puis le retour à 7 jours. Configurer la mesure des événements avant d'optimiser les campagnes pour des actions dans l'app.
+### After release
 
-### Répartition de départ
+The goal: downloads, then first uses that mean something. The destination: the store listing. Measure at least the cost per install, the share of people who finish onboarding and create their first plan, and the return at 7 days. Set up event measurement before optimising campaigns for in-app actions.
 
-Pour un **test de 600 € sur 14 jours** :
+### The opening split
 
-| Canal | Budget test | Créations | Question à trancher |
+For a **€600 test over 14 days**:
+
+| Channel | Test budget | Creatives | The question it settles |
 |---|---:|---|---|
-| Meta : Facebook + Instagram Reels | 360 € | Vidéos 1 et 2 | Le message « temps » ou « énergie » suscite-t-il plus d'actions utiles ? |
-| TikTok Ads | 240 € | Vidéos 1 et 4 | Une démonstration ou la voix du fondateur fonctionne-t-elle mieux ? |
+| Meta: Facebook + Instagram Reels | €360 | Videos 1 and 2 | Does the “time” message or the “energy” one drive more useful action? |
+| TikTok Ads | €240 | Videos 1 and 4 | Does a demonstration work better than the founder's voice? |
 
-Ce budget est une **hypothèse de travail**, pas une estimation de résultats. Avec moins de 500 €, concentrer le test sur un seul canal pour avoir assez de données par création. Ajouter YouTube Shorts Ads seulement après avoir identifié une vidéo et un appel à l'action qui fonctionnent en organique ou sur le premier canal payant.
+This budget is a **working assumption**, not a forecast. Under €500, put the whole test on one channel so there is enough data per creative. Only add YouTube Shorts Ads once a video and a call to action have proved themselves organically or on the first paid channel.
 
-**Ciblage initial :** France, francophone, adultes ; un ensemble d'audience assez large par plateforme. Éviter de multiplier les intérêts et ensembles d'annonces avec un petit budget. Exclure les mineurs des campagnes payantes de départ.
+**Opening targeting:** an English-speaking market (see the note at the top), adults; a reasonably broad audience set per platform. Avoid multiplying interests and ad sets on a small budget. Exclude minors from the opening paid campaigns.
 
-**Cadence :** jours 1–3, vérifier que liens, affichage et mesure fonctionnent ; jours 4–7, repérer les vidéos qui obtiennent des clics et des actions utiles ; jours 8–14, garder les meilleures et créer une variante de leur première phrase. Ne pas juger une campagne sur les vues seules.
+**Cadence:** days 1–3, check that the links, the rendering and the measurement all work; days 4–7, spot the videos getting clicks and useful actions; days 8–14, keep the best and make a variant of their opening line. Do not judge a campaign on views alone.
 
-### Textes d'annonces
+### Ad copy
 
-**Meta, variante temps**
+**Meta, the time variant**
 
-Texte principal : « Une activité qui trouve sa place dans ta vraie semaine. Indique tes disponibilités : Regain t'aide à construire un planning réaliste, une étape à la fois. »
+Primary text: “An activity that fits your real week. Tell Regain when you are free, and it helps you build a realistic plan, one step at a time.”
 
-Titre : « Une routine à ton rythme »
+Headline: “A routine at your own pace”
 
-Bouton : « En savoir plus » avant lancement ; « Installer » après lancement.
+Button: “Learn more” before launch; “Install” after.
 
-**Meta, variante énergie**
+**Meta, the energy variant**
 
-Texte principal : « Certaines journées invitent à bouger, d'autres à faire une pause. Regain propose des activités selon ton temps disponible et ton énergie. »
+Primary text: “Some days call for moving, others for a pause. Regain suggests activities around the time you have and the energy you have.”
 
-Titre : « Découvre Regain »
+Headline: “Meet Regain”
 
-**TikTok, variante démonstration**
+**TikTok, the demonstration variant**
 
-Texte à l'écran : « 20 minutes libres → une activité qui rentre dans ma journée »
+On-screen text: “20 free minutes → something that fits into my day”
 
-Description : « Une routine qui suit ta vraie semaine. Découvre Regain. »
+Description: “A routine that follows your real week. Meet Regain.”
 
-**TikTok, variante fondateur**
+**TikTok, the founder variant**
 
-Texte à l'écran : « J'ai créé une app pour répondre à : je fais quoi maintenant ? »
+On-screen text: “I built an app to answer: what do I do now?”
 
-Description : « Voici Regain : planning, séances guidées et suivi, à ton rythme. »
+Description: “This is Regain: a plan, guided sessions and tracking, at your own pace.”
 
-## Calendrier organique de départ
+## An opening organic calendar
 
-| Semaine | Mardi | Jeudi | Samedi |
+| Week | Tuesday | Thursday | Saturday |
 |---|---|---|---|
-| 1 | Vidéo 1 | Vidéo 4 | Vidéo 3 |
-| 2 | Vidéo 2 | Variante de la meilleure accroche | Réponse vidéo à une question reçue |
+| 1 | Video 1 | Video 4 | Video 3 |
+| 2 | Video 2 | A variant of the best hook | A video answer to a question received |
 
-Publier la même idée sur TikTok et YouTube Shorts, en adaptant titre et description. Répondre aux commentaires avec des exemples concrets de l'app. Noter pour chaque publication : vues, vues jusqu'à la fin, visites du profil ou clics, inscriptions ou installations.
+Post the same idea to TikTok and YouTube Shorts, adapting the title and description. Answer comments with concrete examples from the app. For each post, note: views, views to the end, profile visits or clicks, sign-ups or installs.
 
-## Points à valider avant diffusion payante
+## To settle before any paid distribution
 
-- Statut réel de Regain, lien de destination et disponibilité iOS/Android.
-- Captures vidéo de la version testée, sans données personnelles.
-- Page de destination et politique de confidentialité à jour.
-- Accès aux comptes publicitaires, moyen de paiement et mesure des conversions.
-- Éviter les promesses de guérison, de réduction garantie du stress ou de résultat physique. Montrer ce que l'app fait réellement.
+- Where Regain actually stands, the destination link, and iOS/Android availability.
+- Video captures of the version being tested, with no personal data.
+- The landing page and the privacy policy up to date — the English pages, now that the app is English.
+- Access to the ad accounts, a payment method, and conversion measurement.
+- Avoid promises of cure, of guaranteed stress reduction or of a physical result. Show what the app really does.
 
-## Sources de plateforme consultées
+## Platform sources consulted
 
-- [TikTok : conseils créatifs pour petites entreprises](https://ads.tiktok.com/business/library/TikTok_SMB_Creative_Playbook_2025.pdf) : format vertical et vidéos courtes.
-- [TikTok : objectif de promotion d'application](https://ads.tiktok.com/help/article/app-installs-objective?lang=en) : installation et événements dans l'app.
-- [Meta : publicités Reels](https://www.facebook.com/business/ads/facebook-instagram-reels-ads) : format vertical.
-- [Google Ads : spécifications des annonces YouTube Shorts](https://support.google.com/google-ads/answer/16041697?hl=en-GB) : vidéo verticale et recommandations de durée.
+- [TikTok: creative guidance for small businesses](https://ads.tiktok.com/business/library/TikTok_SMB_Creative_Playbook_2025.pdf): vertical format and short videos.
+- [TikTok: the app promotion objective](https://ads.tiktok.com/help/article/app-installs-objective?lang=en): installs and in-app events.
+- [Meta: Reels ads](https://www.facebook.com/business/ads/facebook-instagram-reels-ads): vertical format.
+- [Google Ads: YouTube Shorts ad specifications](https://support.google.com/google-ads/answer/16041697?hl=en-GB): vertical video and duration guidance.

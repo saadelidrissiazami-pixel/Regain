@@ -3,40 +3,70 @@
     {
       "id": "post-routine",
       "photo": "wellbeing-hero.jpg",
-      "headline": "Une routine qui tient dans la vraie vie.",
-      "subline": "Du temps pour toi, à ton rythme.",
-      "cta": "Découvre Regain"
+      "headline": "A routine that fits real life.",
+      "subline": "Time for yourself, at your own pace.",
+      "cta": "Meet Regain"
     },
     {
       "id": "post-temps",
       "photo": "reading.jpg",
-      "headline": "20 minutes libres ?",
-      "subline": "Une activité peut trouver sa place dans ta journée.",
-      "cta": "Découvre Regain"
+      "headline": "20 minutes free?",
+      "subline": "One activity can find room in your day.",
+      "cta": "Meet Regain"
     },
     {
       "id": "post-pause",
       "photo": "meditation.jpg",
-      "headline": "Prends une pause guidée.",
-      "subline": "Respiration, méditation et petits moments pour toi.",
-      "cta": "Découvre Regain"
+      "headline": "Take a guided pause.",
+      "subline": "Breathing, meditation and small moments for yourself.",
+      "cta": "Meet Regain"
     }
   ],
   "videos": [
     {
       "id": "video-temps",
       "scenes": [
-        {"photo": "reading.jpg", "headline": "20 minutes libres ?", "subline": "Et si tu en faisais un moment pour toi ?", "cta": "Regain"},
-        {"photo": "nature.jpg", "headline": "Une activité à la fois.", "subline": "Selon ton temps et ton énergie.", "cta": "Regain"},
-        {"photo": "wellbeing-hero.jpg", "headline": "Une routine à ton rythme.", "subline": "Planning, séances guidées et suivi.", "cta": "Découvre Regain"}
+        {
+          "photo": "reading.jpg",
+          "headline": "20 minutes free?",
+          "subline": "What if you made them a moment for yourself?",
+          "cta": "Regain"
+        },
+        {
+          "photo": "nature.jpg",
+          "headline": "One activity at a time.",
+          "subline": "Around your time and your energy.",
+          "cta": "Regain"
+        },
+        {
+          "photo": "wellbeing-hero.jpg",
+          "headline": "A routine at your own pace.",
+          "subline": "A plan, guided sessions and tracking.",
+          "cta": "Meet Regain"
+        }
       ]
     },
     {
       "id": "video-pause",
       "scenes": [
-        {"photo": "rest.jpg", "headline": "Une pause dans ta journée.", "subline": "Quelques minutes, juste pour toi.", "cta": "Regain"},
-        {"photo": "meditation.jpg", "headline": "Laisse-toi guider.", "subline": "Respiration et méditation dans Regain.", "cta": "Regain"},
-        {"photo": "wellbeing-hero.jpg", "headline": "Reprends à ton rythme.", "subline": "Une petite étape à la fois.", "cta": "Découvre Regain"}
+        {
+          "photo": "rest.jpg",
+          "headline": "A pause in your day.",
+          "subline": "A few minutes, just for you.",
+          "cta": "Regain"
+        },
+        {
+          "photo": "meditation.jpg",
+          "headline": "Let yourself be guided.",
+          "subline": "Breathing and meditation, in Regain.",
+          "cta": "Regain"
+        },
+        {
+          "photo": "wellbeing-hero.jpg",
+          "headline": "Pick things up at your own pace.",
+          "subline": "One small step at a time.",
+          "cta": "Meet Regain"
+        }
       ]
     }
   ]

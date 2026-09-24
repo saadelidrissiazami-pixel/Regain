@@ -1,11 +1,11 @@
-# Production des contenus Regain
+# Producing Regain's content
 
-Modifier `content.json` pour changer les textes et sélectionner une photo dans `assets/images/`. Puis lancer depuis la racine du projet :
+Edit `content.json` to change the text and pick a photo from `assets/images/`. Then run, from the project root:
 
 ```bash
 python3 scripts/marketing.py
 ```
 
-Le script crée trois images 1080 × 1350 et deux vidéos verticales 1080 × 1920, 12 secondes, dans `marketing/output/`. Il utilise Pillow ; les vidéos nécessitent `ffmpeg` ou le paquet Python `imageio-ffmpeg`. Les vidéos sont **muettes** : ajouter une voix enregistrée et une musique autorisée pour la publicité avant diffusion. Les visuels sont des accroches de marque ; ajouter de vraies captures de l'app pour les annonces qui démontrent ses fonctions. Vérifier le texte et le lien de destination avant publication.
+The script creates three 1080 × 1350 images and two vertical 1080 × 1920 videos, 12 seconds each, in `marketing/output/`. It uses Pillow; the videos need `ffmpeg` or the `imageio-ffmpeg` Python package. The videos are **silent**: add a recorded voice and music licensed for advertising before publishing. The visuals are brand hooks; add real captures of the app for any ad that demonstrates what it does. Check the text and the destination link before publishing.
 
-La génération est reproductible : mêmes textes et photos donnent les mêmes fichiers. L'automatisation de publication et des dépenses publicitaires reste à configurer dans les comptes des plateformes après validation des créations.
+Generation is reproducible: the same text and photos give the same files. Automating publishing and ad spend is still to be set up in the platforms' own accounts, once the creatives are signed off.
