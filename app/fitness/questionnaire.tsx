@@ -137,7 +137,7 @@ function QuestionnaireForm({
     >
       <ScreenHeader overline="Your fitness coach" title="Your profile" subtitle="So the programme is genuinely built for you." onBack={() => goBack('/(tabs)/fitness')} />
 
-      <Section title="Tes objectifs">
+      <Section title="Your goals">
         <Controller
           control={control}
           name="goals"
@@ -244,7 +244,7 @@ function QuestionnaireForm({
         </Text>
       </Section>
 
-      <Section title="Ton alimentation">
+      <Section title="How you eat">
         <Controller
           control={control}
           name="diet"
@@ -292,7 +292,7 @@ export default function FitnessQuestionnaireScreen() {
   if (!userId || profileQuery.isLoading || scheduleQuery.isLoading) {
     return (
       <Screen>
-        <ScreenHeader title="Ton profil" onBack={() => goBack('/(tabs)/fitness')} />
+        <ScreenHeader title="Your profile" onBack={() => goBack('/(tabs)/fitness')} />
         <LoadingSkeleton preset="list" />
       </Screen>
     );

@@ -69,7 +69,7 @@ export default function PlanningHomeScreen() {
         subtitle={coachLine({ hasPlan, doneCount: view.doneCount, totalCount: view.totalCount, pendingToday, hour })}
         size="display"
         right={
-          <PressableScale onPress={() => router.navigate('/(tabs)/profile')} accessibilityRole="button" accessibilityLabel="Mon profil">
+          <PressableScale onPress={() => router.navigate('/(tabs)/profile')} accessibilityRole="button" accessibilityLabel="My profile">
             <Avatar name={name ?? email} size={44} />
           </PressableScale>
         }
@@ -85,7 +85,7 @@ export default function PlanningHomeScreen() {
         <LoadingSkeleton preset="hero" />
       ) : planQuery.isError ? (
         <ErrorState
-          title="Ton planning n'a pas pu se charger"
+          title="Your plan could not be loaded"
           onRetry={() => planQuery.refetch()}
           retrying={planQuery.isFetching}
         />

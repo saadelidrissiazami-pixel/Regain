@@ -53,7 +53,7 @@ export function MonthGrid({
         <Text variant="cardTitle" accessibilityRole="header" style={{ textTransform: 'capitalize' }}>
           {label}
         </Text>
-        <IconButton icon="chevron-forward" label="Mois suivant" onPress={onNext} size={20} />
+        <IconButton icon="chevron-forward" label="Next month" onPress={onNext} size={20} />
       </View>
       <View style={{ flexDirection: 'row', marginBottom: 4 }}>
         {HEADERS.map((h, i) => (

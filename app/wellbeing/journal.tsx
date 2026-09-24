@@ -67,7 +67,7 @@ export default function WellbeingJournalScreen() {
       {journalQuery.isLoading ? (
         <LoadingSkeleton preset="list" />
       ) : journalQuery.isError ? (
-        <ErrorState title="Ton journal n'a pas pu se charger" onRetry={() => journalQuery.refetch()} />
+        <ErrorState title="Your journal could not be loaded" onRetry={() => journalQuery.refetch()} />
       ) : entries.length === 0 ? (
         <EmptyState
           icon="book-outline"

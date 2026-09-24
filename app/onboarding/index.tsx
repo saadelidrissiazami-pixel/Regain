@@ -87,7 +87,7 @@ export default function OnboardingScreen() {
         {step === 1 ? (
           <>
             <SelectMulti
-              label="Tes objectifs"
+              label="Your goals"
               title="What matters to you?"
               values={values.primaryGoals}
               options={[...GOAL_OPTIONS]}

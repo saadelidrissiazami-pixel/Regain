@@ -108,7 +108,7 @@ export default function ProfileScreen() {
       <Appear index={2}>
         <View style={{ gap: 10, marginTop: 16 }}>
           <View style={{ flexDirection: 'row', gap: 10 }}>
-            <MenuTile icon="flag-outline" title="Mes objectifs" onPress={() => router.push('/profile/goals')} />
+            <MenuTile icon="flag-outline" title="My goals" onPress={() => router.push('/profile/goals')} />
             <MenuTile icon="calendar-outline" title="When I am free" onPress={() => router.push('/availability')} />
           </View>
           <View style={{ flexDirection: 'row', gap: 10 }}>

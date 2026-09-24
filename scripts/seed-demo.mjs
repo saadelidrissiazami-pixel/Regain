@@ -172,7 +172,12 @@ await api('/rest/v1/availability_slots', {
 });
 
 // 3. The week's plan, through the same function the app uses.
-const catalog = await api('/rest/v1/activities_catalog?select=id,title,duration_minutes&order=duration_minutes&limit=8');
+// `active=is.true` matters more than it looks: the rows left inactive are the ones from an
+// earlier catalogue, which this build has no English wording for. Without the filter the demo
+// account — the one Apple reviews — ends up with French activity titles on its home screen.
+const catalog = await api(
+  '/rest/v1/activities_catalog?select=id,title,duration_minutes&active=is.true&order=duration_minutes&limit=8',
+);
 const weekStart = mondayOfThisWeek();
 const items = [0, 2, 4, 5].map((offset, index) => {
   const date = new Date(weekStart);

@@ -104,7 +104,7 @@ export function WalkingLoopCard({ durationMinutes }: { durationMinutes: number }
               </Text>
             </View>
           ))}
-          <Button label="Autre boucle" variant="outline" size="sm" fullWidth={false} icon="refresh" onPress={handleLocate} style={{ marginTop: 6 }} />
+          <Button label="Another loop" variant="outline" size="sm" fullWidth={false} icon="refresh" onPress={handleLocate} style={{ marginTop: 6 }} />
           <View style={{ marginTop: 8, flexDirection: 'row', flexWrap: 'wrap', alignItems: 'center' }}>
             <Text variant="caption" tone="ink3">
               Route © OpenStreetMap contributors ·{' '}

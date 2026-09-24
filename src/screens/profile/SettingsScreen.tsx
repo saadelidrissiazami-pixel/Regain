@@ -124,7 +124,7 @@ export default function SettingsScreen() {
         </Text>
       </Section>
 
-      <Section title="Rappels et calendrier">
+      <Section title="Reminders and calendar">
         <ListRow
           icon="notifications-outline"
           title="Rappels"
@@ -251,7 +251,7 @@ export default function SettingsScreen() {
             {deleteMutation.isError ? <InlineNotice tone="error" message={errorMessage(deleteMutation.error)} /> : null}
           </View>
         ) : (
-          <Button label="Supprimer mon compte" variant="ghost" size="md" onPress={() => setConfirmingDelete(true)} style={{ marginTop: 4 }} />
+          <Button label="Delete my account" variant="ghost" size="md" onPress={() => setConfirmingDelete(true)} style={{ marginTop: 4 }} />
         )}
       </Section>
 

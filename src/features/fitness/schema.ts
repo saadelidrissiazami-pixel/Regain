@@ -28,7 +28,7 @@ function decimalInRange(label: string, min: number, max: number) {
 const currentYear = new Date().getFullYear();
 
 export const fitnessQuestionnaireSchema = z.object({
-  goals: z.array(enumOf(FITNESS_GOALS)).min(1, 'Choisis au moins un objectif'),
+  goals: z.array(enumOf(FITNESS_GOALS)).min(1, 'Pick at least one goal'),
   sex: enumOf(SEX_OPTIONS),
   // Adults only: calorie and strength plans are not suitable for minors.
   birthYear: z.string().refine((v) => {

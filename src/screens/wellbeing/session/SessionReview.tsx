@@ -57,7 +57,7 @@ export function SessionReview({
         ))}
         <Appear index={prompts.length + 1}>
           <Field
-            label="Un petit mot ? (facultatif)"
+            label="A note? (optional)"
             value={note}
             onChangeText={setNote}
             multiline

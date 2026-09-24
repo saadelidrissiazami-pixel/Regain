@@ -22,7 +22,7 @@ const ALARM_MINUTES_BEFORE = 15;
 const CLEAR_HORIZON_DAYS = 60;
 
 export const calendarUnavailableReason: string | null = isWeb
-  ? "La synchronisation avec le calendrier se fait depuis l'app mobile."
+  ? 'Calendar syncing happens from the mobile app.'
   : isExpoGo
     ? 'Expo Go has no calendar access: syncing will work in the installed app (a development build or a published release).'
     : null;
@@ -52,7 +52,7 @@ async function createRegainCalendar(Calendar: CalendarModule): Promise<ExpoCalen
       Calendar.getDefaultCalendarSync().source,
       ...Calendar.getSourcesSync().filter((s) => s.type === Calendar.SourceType.LOCAL),
     ];
-    let lastError: unknown = new Error('Aucun compte de calendrier disponible sur cet appareil.');
+    let lastError: unknown = new Error('No calendar account is available on this device.');
     for (const source of sources) {
       try {
         return await Calendar.createCalendar({

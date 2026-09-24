@@ -45,7 +45,7 @@ export default function FitnessCheckinScreen() {
       }
       const weight = weightText.trim() ? Number(weightText.trim().replace(',', '.')) : null;
       if (weight !== null && (!Number.isFinite(weight) || weight < 35 || weight > 250)) {
-        throw new Error('Poids : entre 35 et 250 kg.');
+        throw new Error('Weight: between 35 and 250 kg.');
       }
 
       await createCheckin(userId, {
@@ -127,7 +127,7 @@ export default function FitnessCheckinScreen() {
       }
     >
       <ScreenHeader
-        overline="Ton coach forme"
+        overline="Your fitness coach"
         title="This week’s check-in"
         subtitle="A few honest answers, and your coach adjusts the week ahead. A busy week happens."
         onBack={() => goBack('/(tabs)/fitness')}

@@ -28,9 +28,9 @@ import { useAuthStore } from '../../store/authStore';
 import { useTheme } from '../../theme/ThemeProvider';
 
 const SLOTS: { value: TimeSlot; label: string }[] = [
-  { value: 'matin', label: 'Matin' },
+  { value: 'matin', label: 'Morning' },
   { value: 'apres_midi', label: 'Afternoon' },
-  { value: 'soir', label: 'Soir' },
+  { value: 'soir', label: 'Evening' },
 ];
 
 /** Add an activity from the catalogue to a chosen day and time. */
@@ -84,7 +84,7 @@ export default function AddActivityScreen() {
     >
       <ScreenHeader title="Add an activity" subtitle="Pick the time, then what you feel like doing." onBack={() => goBack('/(tabs)/planning')} backLabel="Close" />
 
-      <Select label="Jour" value={date} options={dates} onChange={setDate} />
+      <Select label="Day" value={date} options={dates} onChange={setDate} />
       <View style={{ marginBottom: 24 }}>
         <SegmentedControl label="Time of day" tone="surface" value={slot} onChange={setSlot} options={SLOTS} />
       </View>
@@ -116,7 +116,7 @@ export default function AddActivityScreen() {
         />
       </View>
       <ScrollView horizontal showsHorizontalScrollIndicator={false} style={{ marginHorizontal: -20, marginBottom: 12 }} contentContainerStyle={{ paddingHorizontal: 20, gap: 8 }}>
-        <ChoiceChip label="Tout" selected={category === null} multiple={false} onPress={() => setCategory(null)} />
+        <ChoiceChip label="All" selected={category === null} multiple={false} onPress={() => setCategory(null)} />
         {categories.map((c) => (
           <ChoiceChip key={c} label={CATEGORY_LABELS[c]} selected={category === c} multiple={false} onPress={() => setCategory(c)} />
         ))}

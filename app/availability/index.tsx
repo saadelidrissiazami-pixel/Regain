@@ -146,7 +146,7 @@ export default function AvailabilityScreen() {
       />
 
       <Text variant="label" style={{ marginTop: 20, marginBottom: 4 }}>
-        {kind === 'recurring' ? 'Jours' : 'Dates'}
+        {kind === 'recurring' ? 'Days' : 'Dates'}
       </Text>
       <Text variant="caption" tone="ink2" style={{ marginBottom: 10 }}>
         You can pick several at once.
@@ -195,7 +195,7 @@ export default function AvailabilityScreen() {
           Saved times
         </Text>
         {slots.length > 0 && !confirmingClearAll ? (
-          <Button label="Tout retirer" variant="ghost" size="sm" fullWidth={false} onPress={() => setConfirmingClearAll(true)} />
+          <Button label="Remove all" variant="ghost" size="sm" fullWidth={false} onPress={() => setConfirmingClearAll(true)} />
         ) : null}
       </View>
 
@@ -207,7 +207,7 @@ export default function AvailabilityScreen() {
           </Text>
           <View style={{ flexDirection: 'row' }}>
             <Button
-              label="Tout retirer"
+              label="Remove all"
               variant="destructive"
               size="sm"
               fullWidth={false}

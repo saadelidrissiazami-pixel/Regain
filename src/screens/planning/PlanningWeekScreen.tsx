@@ -105,8 +105,8 @@ export default function PlanningWeekScreen() {
         value={mode}
         onChange={setMode}
         options={[
-          { value: 'week', label: 'Semaine' },
-          { value: 'month', label: 'Mois' },
+          { value: 'week', label: 'Week' },
+          { value: 'month', label: 'Month' },
         ]}
       />
 

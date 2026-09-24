@@ -306,7 +306,7 @@ export default function TrackingScreen() {
         {lastMoods.length > 0 ? <MiniBars values={lastMoods.map((e) => e.mood)} max={5} height={56} color={theme.primary500} /> : null}
       </Card>
       <View style={{ marginTop: 16 }}>
-        <ListRow icon="book-outline" title="Relire mon journal" onPress={() => router.push('/wellbeing/journal')} />
+        <ListRow icon="book-outline" title="Read my journal" onPress={() => router.push('/wellbeing/journal')} />
       </View>
     </>
   );
@@ -326,7 +326,7 @@ export default function TrackingScreen() {
       icon="nutrition-outline"
       title="Your nutrition numbers"
       body="Calories and macros worked out for you, with the fitness coach."
-      actionLabel="Remplir mon profil forme"
+      actionLabel="Fill in my fitness profile"
       onAction={() => router.push('/fitness/questionnaire')}
     />
   ) : (
@@ -359,7 +359,7 @@ export default function TrackingScreen() {
       />
       <View style={{ height: 18 }} />
       {statsQuery.isError && tab === 'overview' ? (
-        <ErrorState title="Ton suivi n'a pas pu se charger" onRetry={refresh} />
+        <ErrorState title="Your tracking could not be loaded" onRetry={refresh} />
       ) : (
         <Appear key={tab}>
           {tab === 'overview' ? overview : tab === 'fitness' ? fitnessTab : tab === 'wellbeing' ? wellbeingTab : nutritionTab}

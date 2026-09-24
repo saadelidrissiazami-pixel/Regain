@@ -57,7 +57,7 @@ export async function exportUserData(userId: string): Promise<void> {
   file.write(json);
 
   if (!(await Sharing.isAvailableAsync())) {
-    throw new Error("Le partage de fichiers n'est pas disponible sur cet appareil.");
+    throw new Error('File sharing is not available on this device.');
   }
   await Sharing.shareAsync(file.uri, { mimeType: 'application/json', dialogTitle: 'Export my Regain data' });
 }

@@ -14,7 +14,7 @@ const TEST_STORE_KEY = process.env.EXPO_PUBLIC_REVENUECAT_TEST_STORE_KEY;
 const API_KEY = __DEV__ && TEST_STORE_KEY ? TEST_STORE_KEY : Platform.OS === 'ios' ? IOS_KEY : ANDROID_KEY;
 
 export const purchasesUnavailableReason: string | null = isWeb
-  ? "Les abonnements se souscrivent depuis l'app mobile."
+  ? 'Subscriptions are taken out from the mobile app.'
   : isExpoGo
     ? 'In-app purchases do not work in Expo Go: test them in a development build (see docs/abonnements.md).'
     : !API_KEY

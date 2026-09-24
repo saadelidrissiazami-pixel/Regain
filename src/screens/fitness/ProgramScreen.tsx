@@ -53,10 +53,10 @@ export default function ProgramScreen() {
   return (
     <Screen refreshing={fitness.isRefetching} onRefresh={() => fitness.refetch()}>
       <ScreenHeader
-        title="Mon programme"
+        title="My programme"
         subtitle={subtitle}
         onBack={() => goBack('/(tabs)/fitness')}
-        right={<IconButton icon="settings-outline" label="Mon profil forme" onPress={() => router.push('/fitness/questionnaire')} />}
+        right={<IconButton icon="settings-outline" label="My fitness profile" onPress={() => router.push('/fitness/questionnaire')} />}
       />
 
       {fitness.isLoading ? (
@@ -74,7 +74,7 @@ export default function ProgramScreen() {
       ) : (
         <>
           <SegmentedControl
-            label="Mon programme"
+            label="My programme"
             value={tab}
             onChange={setTab}
             options={[

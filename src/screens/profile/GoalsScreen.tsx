@@ -87,7 +87,7 @@ export default function GoalsScreen() {
             error={errors.firstName}
           />
           <SelectMulti
-            label="Tes objectifs"
+            label="Your goals"
             values={values.primaryGoals}
             options={[...GOAL_OPTIONS]}
             onChange={(goals) => set('primaryGoals', goals)}
@@ -98,7 +98,7 @@ export default function GoalsScreen() {
               {errors.primaryGoals}
             </Text>
           ) : null}
-          <Select label="Ton sommeil habituel" value={values.sleepMinutes} options={SLEEP_OPTIONS} onChange={(m) => set('sleepMinutes', m)} />
+          <Select label="Your usual sleep" value={values.sleepMinutes} options={SLEEP_OPTIONS} onChange={(m) => set('sleepMinutes', m)} />
 
           <Text variant="label" style={{ marginTop: 12, marginBottom: 8 }}>
             Your budget for activities

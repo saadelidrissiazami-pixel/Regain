@@ -6,8 +6,8 @@ import { PressableScale } from '../ui/motion';
 import { Text } from '../ui/Text';
 
 export const ENERGY_CHOICES: { value: EnergyLevel; label: string; emoji: string }[] = [
-  { value: 'bas', label: 'Basse', emoji: '🪫' },
-  { value: 'moyen', label: 'Moyenne', emoji: '🙂' },
+  { value: 'bas', label: 'Low', emoji: '🪫' },
+  { value: 'moyen', label: 'Medium', emoji: '🙂' },
   { value: 'eleve', label: 'High', emoji: '⚡' },
 ];
 

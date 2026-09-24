@@ -45,12 +45,12 @@ export default function FitnessScreen() {
   const header = (
     <>
       <ScreenHeader
-        overline="Ton coach"
+        overline="Your coach"
         title="Forme"
         subtitle="A stronger body, a calmer mind."
         right={
           fitness.isPremium && profile ? (
-            <IconButton icon="settings-outline" label="Mon profil forme" onPress={() => router.push('/fitness/questionnaire')} />
+            <IconButton icon="settings-outline" label="My fitness profile" onPress={() => router.push('/fitness/questionnaire')} />
           ) : undefined
         }
       />
@@ -87,7 +87,7 @@ export default function FitnessScreen() {
     );
   } else if (fitness.isError) {
     // Without this state, a network fault would look like having no profile.
-    body = <ErrorState title="Ton espace forme n'a pas pu se charger" onRetry={() => fitness.refetch()} retrying={fitness.isRefetching} />;
+    body = <ErrorState title="Your fitness area could not be loaded" onRetry={() => fitness.refetch()} retrying={fitness.isRefetching} />;
   } else if (!profile) {
     body = (
       <EmptyState
@@ -103,7 +103,7 @@ export default function FitnessScreen() {
       <>
         <EmptyState
           icon="sparkles-outline"
-          title="Ton programme t'attend"
+          title="Your programme is waiting"
           body={
             generateMutation.isPending
               ? 'Preparing your sessions, your meals and your shopping list…'
