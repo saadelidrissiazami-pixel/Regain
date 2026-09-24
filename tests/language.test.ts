@@ -3,7 +3,7 @@ import { join } from 'node:path';
 
 import { describe, expect, it } from 'vitest';
 
-// The app is English, but the database is not: slugs, category keys and the activity titles that
+// The code is English — French lives in src/i18n/fr.ts and content/fr — but the database is not: slugs, category keys and the activity titles that
 // key the wording overlay are French on purpose, because they are values in rows that belong to
 // real people. So this file cannot simply ban French — it bans French *in the words somebody
 // reads*, and leaves the identifiers alone.
@@ -16,7 +16,12 @@ import { describe, expect, it } from 'vitest';
 const ROOTS = ['src', 'app', 'supabase/functions'];
 
 /** Keyed by a stored French value, so the French in it is the key and not the wording. */
-const FILES_WITH_DELIBERATE_FRENCH = ['src/features/activities/catalogue.ts'];
+const FILES_WITH_DELIBERATE_FRENCH = [
+  'src/features/activities/catalogue.ts',
+  // The French half of the app, and the one place that picks the French date locale.
+  'src/i18n/fr.ts',
+  'src/lib/i18n.ts',
+];
 
 /** Values the database stores, which the app translates for display but must send back as-is. */
 const STORED_VALUES = new Set(['Parcours', 'Confiance en soi', 'Méditation', 'Respiration', 'Sommeil']);

@@ -1,44 +1,69 @@
-import {
+import * as en_breathing from '../../../content/breathing';
+import * as fr_breathing from '../../../content/fr/breathing';
+import * as en_meditation from '../../../content/meditation';
+import * as fr_meditation from '../../../content/fr/meditation';
+import * as en_journaling from '../../../content/journaling';
+import * as fr_journaling from '../../../content/fr/journaling';
+import * as en_confidence from '../../../content/confidence';
+import * as fr_confidence from '../../../content/fr/confidence';
+import * as en_sleep from '../../../content/sleep';
+import * as fr_sleep from '../../../content/fr/sleep';
+import * as en_in_public from '../../../content/in-public';
+import * as fr_in_public from '../../../content/fr/in-public';
+import * as en_courses_meditation from '../../../content/courses/meditation';
+import * as fr_courses_meditation from '../../../content/fr/courses/meditation';
+import * as en_courses_sommeil from '../../../content/courses/sommeil';
+import * as fr_courses_sommeil from '../../../content/fr/courses/sommeil';
+import * as en_sos from '../../../content/sos';
+import * as fr_sos from '../../../content/fr/sos';
+
+import { lang } from '../../lib/i18n';
+import type { ProgramContent } from './types';
+
+// Every session exists twice, content/ in English and content/fr/ in French, with the same names.
+const pick = <T,>(en: T, fr: T): T => (lang === 'fr' ? fr : en);
+
+const {
   respirationExpress,
   respiration478,
   coherenceCardiaque,
   respiration46,
   soupirPhysiologique,
   respirationEscalier,
-} from '../../../content/breathing';
-import {
+} = pick(en_breathing, fr_breathing);
+const {
   pauseUneMinute,
   ancrageMatin,
   meditationSoir,
   meditationCinqSens,
   meditationObserverPensees,
   meditationScanCorporel,
-} from '../../../content/meditation';
-import {
+} = pick(en_meditation, fr_meditation);
+const {
   gratitudeExpress,
   clarifierJournee,
   viderSaTete,
   dechargementMental,
   journalDeConfiance,
   peurEnPlan,
-} from '../../../content/journaling';
-import {
+} = pick(en_journaling, fr_journaling);
+const {
   troisQualites,
   seRappelerReussite,
   preparationMomentDifficile,
   postureDePresence,
   microDefiSocial,
   preuveDesTroisVictoires,
-} from '../../../content/confidence';
-import {
+} = pick(en_confidence, fr_confidence);
+const {
   ralentirAvantDormir,
   relacherTensions,
   scanCorporelComplet,
   respirationEndormissement,
   cerveauEnVeille,
   voyageMentalMonotone,
-} from '../../../content/sleep';
-import {
+} = pick(en_sleep, fr_sleep);
+const {
   ancrageRapide,
   detachementRegardAutres,
   respirerDansLaFoule,
@@ -46,17 +71,16 @@ import {
   modeObservateur,
   boutonPause,
   kitDurgence,
-} from '../../../content/in-public';
-import {
+} = pick(en_in_public, fr_in_public);
+const {
   meditationJour1, meditationJour2, meditationJour3, meditationJour4, meditationJour5,
   meditationJour6, meditationJour7, meditationJour8, meditationJour9, meditationJour10,
-} from '../../../content/courses/meditation';
-import {
+} = pick(en_courses_meditation, fr_courses_meditation);
+const {
   sommeilJour1, sommeilJour2, sommeilJour3, sommeilJour4, sommeilJour5,
   sommeilJour6, sommeilJour7, sommeilJour8, sommeilJour9, sommeilJour10,
-} from '../../../content/courses/sommeil';
-import { sosAngoisse, sosPriseDeParole, sosRuminations, sosStressTravail } from '../../../content/sos';
-import type { ProgramContent } from './types';
+} = pick(en_courses_sommeil, fr_courses_sommeil);
+const { sosAngoisse, sosPriseDeParole, sosRuminations, sosStressTravail } = pick(en_sos, fr_sos);
 
 export const CONTENT_BY_SLUG: Record<string, ProgramContent> = {
   'respiration-express': respirationExpress,

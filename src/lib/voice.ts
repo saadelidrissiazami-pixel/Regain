@@ -1,8 +1,31 @@
 import * as Speech from 'expo-speech';
 
+import { lang, locale } from './i18n';
+
 // expo-speech doesn't expose a voice's gender (and neither iOS, Android nor the web reports it
-// reliably) — so we pick out the English voices with a typically female name among those installed.
+// reliably) — so we pick out the voices in the app's language with a typically female name among those installed.
 const FEMALE_NAME_HINTS = [
+  // French
+  'audrey',
+  'amelie',
+  'amélie',
+  'aurelie',
+  'aurélie',
+  'julie',
+  'marie',
+  'celine',
+  'céline',
+  'charlotte',
+  'chantal',
+  'virginie',
+  'lea',
+  'léa',
+  'manon',
+  'elise',
+  'élise',
+  'sophie',
+  'claire',
+  // English
   'samantha',
   'karen',
   'moira',
@@ -27,17 +50,17 @@ const FEMALE_NAME_HINTS = [
 
 let cachedVoiceId: string | null | undefined;
 
-async function resolveGentleEnglishVoice(): Promise<string | null> {
+async function resolveGentleVoice(): Promise<string | null> {
   if (cachedVoiceId !== undefined) return cachedVoiceId;
   try {
     const voices = await Speech.getAvailableVoicesAsync();
-    const enVoices = voices.filter((v) => v.language?.toLowerCase().startsWith('en'));
-    const female = enVoices.find((v) =>
+    const ownVoices = voices.filter((v) => v.language?.toLowerCase().startsWith(lang));
+    const female = ownVoices.find((v) =>
       FEMALE_NAME_HINTS.some(
         (hint) => v.name?.toLowerCase().includes(hint) || v.identifier?.toLowerCase().includes(hint)
       )
     );
-    cachedVoiceId = female?.identifier ?? enVoices[0]?.identifier ?? null;
+    cachedVoiceId = female?.identifier ?? ownVoices[0]?.identifier ?? null;
   } catch {
     cachedVoiceId = null;
   }
@@ -47,9 +70,9 @@ async function resolveGentleEnglishVoice(): Promise<string | null> {
 export async function speakGently(text: string) {
   try {
     Speech.stop();
-    const voice = await resolveGentleEnglishVoice();
+    const voice = await resolveGentleVoice();
     Speech.speak(text, {
-      language: 'en-US',
+      language: locale,
       voice: voice ?? undefined,
       pitch: 1.1,
       rate: 0.85,

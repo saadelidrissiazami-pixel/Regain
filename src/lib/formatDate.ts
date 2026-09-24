@@ -1,4 +1,6 @@
-const DAY_FORMATTER = new Intl.DateTimeFormat('en-US', { weekday: 'long', day: 'numeric', month: 'short' });
+import { locale } from './i18n';
+
+const DAY_FORMATTER = new Intl.DateTimeFormat(locale, { weekday: 'long', day: 'numeric', month: 'short' });
 
 export function formatDayLabel(dateStr: string): string {
   const d = new Date(dateStr + 'T00:00:00');
@@ -6,7 +8,7 @@ export function formatDayLabel(dateStr: string): string {
   return label.charAt(0).toUpperCase() + label.slice(1);
 }
 
-const DATE_TIME_FORMATTER = new Intl.DateTimeFormat('en-US', {
+const DATE_TIME_FORMATTER = new Intl.DateTimeFormat(locale, {
   weekday: 'long',
   day: 'numeric',
   month: 'short',

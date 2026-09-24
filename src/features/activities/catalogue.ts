@@ -14,6 +14,8 @@
 // An unknown title falls through to whatever the database holds, so a row added later shows up
 // in its original wording instead of disappearing.
 
+import { lang } from '../../lib/i18n';
+
 type Wording = { title: string; firstAction: string; stopRule: string };
 
 const WORDING_BY_STORED_TITLE: Record<string, Wording> = {
@@ -312,6 +314,8 @@ type WithWording = {
  * A row this build has no wording for keeps the text the database gave it.
  */
 export function localiseActivity<T extends WithWording>(activity: T): T {
+  // The rows are French already, so French reads them as they are.
+  if (lang === 'fr') return activity;
   const wording = WORDING_BY_STORED_TITLE[activity.title];
   if (wording) {
     return {

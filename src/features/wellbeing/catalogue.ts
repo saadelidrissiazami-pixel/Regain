@@ -12,6 +12,7 @@
 // theme's icon, colour and illustration, and it routes — so it is never shown as-is: THEME_LABELS
 // turns it into something to read.
 
+import { lang } from '../../lib/i18n';
 import type { WellbeingProgram } from './types';
 
 const TITLE_BY_SLUG: Record<string, string> = {
@@ -113,16 +114,20 @@ export const THEME_LABELS: Record<string, string> = {
 
 /** A session's title, in this build's language. Falls back to what the database holds. */
 export function programTitle(program: Pick<WellbeingProgram, 'slug' | 'title'>): string {
+  // The rows are French already, so French reads them as they are.
+  if (lang === 'fr') return program.title;
   return TITLE_BY_SLUG[program.slug] ?? program.title;
 }
 
 /** A title from a slug alone, for the journal, where only the stored title came back. */
 export function titleForSlug(slug: string, fallback: string): string {
+  if (lang === 'fr') return fallback;
   return TITLE_BY_SLUG[slug] ?? fallback;
 }
 
 /** A theme's name on screen. An unknown category is shown as the database spells it. */
 export function themeLabel(category: string): string {
+  if (lang === 'fr') return category;
   return THEME_LABELS[category] ?? category;
 }
 

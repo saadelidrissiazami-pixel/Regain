@@ -1,0 +1,11 @@
+{
+  "ios": {
+    "NSCalendarsUsageDescription": "Regain synchronise votre planning avec votre calendrier.",
+    "NSCalendarsFullAccessUsageDescription": "Regain synchronise votre planning avec votre calendrier.",
+    "NSRemindersUsageDescription": "Regain ne crée pas de rappels : cette autorisation ne vous sera jamais demandée.",
+    "NSRemindersFullAccessUsageDescription": "Regain ne crée pas de rappels : cette autorisation ne vous sera jamais demandée.",
+    "NSLocationWhenInUseUsageDescription": "Regain utilise votre position pour proposer un itinéraire de marche et l'histoire de votre quartier.",
+    "NSMotionUsageDescription": "Regain ne suit pas votre activité physique : cette autorisation ne vous sera jamais demandée.",
+    "NSMicrophoneUsageDescription": "Regain joue du son mais n'enregistre jamais : cette autorisation ne vous sera jamais demandée."
+  }
+}

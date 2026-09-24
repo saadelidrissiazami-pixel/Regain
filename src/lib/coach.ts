@@ -1,3 +1,4 @@
+import { lang } from './i18n';
 import { supabase } from './supabase';
 
 export type CoachMessage = {
@@ -25,7 +26,7 @@ export async function sendCoachMessage(message: string, subject?: CoachSubject):
   const { data, error } = await supabase.functions.invoke<{ reply?: string }>('coach', {
     // This build is in English and says so. Older French builds send nothing, and the function
     // keeps answering them in French — which is why it can be deployed before 1.2 ships.
-    body: { message, subject, language: 'en' },
+    body: { message, subject, language: lang },
   });
 
   // invoke() returns an error for any non-2xx status: a server fault, a spent quota and an

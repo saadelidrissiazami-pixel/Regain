@@ -14,7 +14,8 @@
         "usesNonExemptEncryption": false
       },
       "infoPlist": {
-        "ITSAppUsesNonExemptEncryption": false
+        "ITSAppUsesNonExemptEncryption": false,
+        "CFBundleAllowMixedLocalizations": true
       }
     },
     "android": {
@@ -51,7 +52,7 @@
         "expo-calendar",
         {
           "calendarPermission": "Regain syncs your plan with your calendar.",
-          "remindersPermission": "Regain does not create reminders \u2014 you will never be asked for this permission."
+          "remindersPermission": "Regain does not create reminders — you will never be asked for this permission."
         }
       ],
       [
@@ -60,7 +61,7 @@
           "locationWhenInUsePermission": "Regain uses your location to suggest a walking route and the history of your neighbourhood.",
           "locationAlwaysPermission": false,
           "locationAlwaysAndWhenInUsePermission": false,
-          "motionUsagePermission": "Regain does not track your physical activity \u2014 you will never be asked for this permission."
+          "motionUsagePermission": "Regain does not track your physical activity — you will never be asked for this permission."
         }
       ],
       "expo-sharing",
@@ -68,12 +69,27 @@
       [
         "expo-audio",
         {
-          "microphonePermission": "Regain plays sound but never records \u2014 you will never be asked for this permission.",
+          "microphonePermission": "Regain plays sound but never records — you will never be asked for this permission.",
           "recordAudioAndroid": false
         }
       ],
       "expo-font",
-      "expo-asset"
+      "expo-asset",
+      [
+        "expo-localization",
+        {
+          "supportedLocales": {
+            "ios": [
+              "en",
+              "fr"
+            ],
+            "android": [
+              "en",
+              "fr"
+            ]
+          }
+        }
+      ]
     ],
     "description": "Regain helps you rebuild a routine: a realistic weekly plan, guided wellbeing sessions and a fitness coach.",
     "primaryColor": "#17483E",
@@ -88,6 +104,9 @@
     },
     "updates": {
       "url": "https://u.expo.dev/1709f3ff-d7e0-4903-8701-fd76d1142bc8"
+    },
+    "locales": {
+      "fr": "./languages/fr.json"
     }
   }
 }
