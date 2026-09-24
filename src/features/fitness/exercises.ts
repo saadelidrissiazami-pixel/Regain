@@ -113,7 +113,16 @@ export const EXERCISES: ExerciseDef[] = [
  */
 export function muscleGroupOf(name: string): MuscleGroup | null {
   const wanted = name.trim().toLowerCase();
-  return EXERCISES.find((exercise) => exercise.name.trim().toLowerCase() === wanted)?.group ?? null;
+  // The stored name is also tried through t(): the catalogue's keys are the English names, so a
+  // plan generated in English still matches a catalogue rendered in French. The reverse (a French
+  // plan read in English) has no key to look up and still falls back to the session image.
+  const translated = t(name).trim().toLowerCase();
+  return (
+    EXERCISES.find((exercise) => {
+      const own = exercise.name.trim().toLowerCase();
+      return own === wanted || own === translated;
+    })?.group ?? null
+  );
 }
 
 /**
