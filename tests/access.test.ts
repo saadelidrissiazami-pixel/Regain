@@ -8,38 +8,38 @@ import { COURSE_CATEGORY } from '../src/features/wellbeing/courses';
 import { SOS_CATEGORY, SOS_SLUGS } from '../src/features/wellbeing/sos';
 import { parseFreeSlugsFromMigration, parseSeededCatalogue } from './helpers/catalogue';
 
-describe('offre gratuite de la bibliothèque bien-être', () => {
+describe('the wellbeing library’s free offer', () => {
   const catalogue = parseSeededCatalogue();
-  // La bibliothèque au sens strict : ni les SOS, ni les jours de parcours, qui ont leurs
-  // propres règles d'accès.
+  // The library in the strict sense: neither the SOS sessions nor the course days, which have
+  // access rules of their own.
   const bibliothequeLibre = FREE_PROGRAM_SLUGS.filter(
     (slug) => !SOS_SLUGS.includes(slug as never) && !slug.startsWith('parcours-')
   );
 
-  it('dit la même chose que la migration', () => {
-    // Les deux listes sont écrites à la main, dans deux langages : c'est ce test qui les tient
-    // ensemble. Modifier l'une sans l'autre donnerait une application et une base en désaccord
+  it('says the same thing as the migration', () => {
+    // Both lists are written by hand, in two languages: this test is what holds them together.
+    // Changing one without the other would leave the app and the database disagreeing
     // sur qui a le droit d'ouvrir quoi.
     expect([...bibliothequeLibre].sort()).toEqual(parseFreeSlugsFromMigration().sort());
   });
 
   it('laisse les SOS gratuites, sans exception', () => {
-    // Mettre du contenu de détresse derrière un paywall ne se défend pas. Ce test est là pour
-    // que personne ne puisse le faire par inadvertance en réorganisant l'offre.
+    // Putting content for distress behind a paywall is not defensible. This test is here so
+    // nobody can do it by accident while reshuffling the offer.
     expect(SOS_SLUGS.every((slug) => isFreeProgram(slug))).toBe(true);
   });
 
-  it('ne nomme que des séances que l application sait jouer', () => {
-    // On se compare au contenu, pas à la base : une séance peut être écrite et déclarée
-    // gratuite avant d'être insérée, l'inverse serait une promesse d'accès sur du vide.
+  it('names only sessions the app knows how to play', () => {
+    // We compare against the content, not the database: a session can be written and declared
+    // free before it is inserted; the other way round would promise access to nothing.
     expect(FREE_PROGRAM_SLUGS.filter((slug) => !CONTENT_BY_SLUG[slug])).toEqual([]);
   });
 
-  it('ne répète aucune séance', () => {
+  it('repeats no session', () => {
     expect(new Set(FREE_PROGRAM_SLUGS).size).toBe(FREE_PROGRAM_SLUGS.length);
   });
 
-  it('compte 18 séances libres de bibliothèque, 4 SOS et 6 jours de parcours', () => {
+  it('counts 18 free library sessions, 4 SOS and 6 course days', () => {
     expect(bibliothequeLibre).toHaveLength(18);
     expect(FREE_PROGRAM_SLUGS).toHaveLength(28);
   });
@@ -51,10 +51,10 @@ describe('offre gratuite de la bibliothèque bien-être', () => {
     }
   });
 
-  it('reprend exactement la répartition que la durée produisait', () => {
-    // Preuve que le passage d'une règle calculée à une liste nommée n'a retiré l'accès à
-    // personne. Ceci est la règle historique de 0021_premium_catalog.sql, conservée ici comme
-    // témoin : on ne la rejoue plus en production.
+  it('reproduces exactly the split that duration used to produce', () => {
+    // Proof that moving from a computed rule to a named list took access away from nobody.
+    // This is the historical rule from 0021_premium_catalog.sql, kept here as a witness: it is
+    // no longer replayed in production.
     const parCategorie = new Map<string, typeof catalogue>();
     for (const program of catalogue.filter(
       (p) => p.category !== SOS_CATEGORY && p.category !== COURSE_CATEGORY
@@ -71,27 +71,27 @@ describe('offre gratuite de la bibliothèque bien-être', () => {
     expect([...bibliothequeLibre].sort()).toEqual([...attendu].sort());
   });
 
-  it('garde gratuite la séance mise en avant', () => {
+  it('keeps the featured session free', () => {
     expect(isFreeProgram('detachement-regard-autres')).toBe(true);
   });
 
-  it('réserve les séances les plus longues à Premium', () => {
+  it('reserves the longest sessions for Premium', () => {
     expect(isFreeProgram('meditation-scan-corporel')).toBe(false);
     expect(isFreeProgram('sommeil-respiration-endormissement')).toBe(false);
     expect(isFreeProgram('coherence-cardiaque')).toBe(false);
   });
 
-  it('ne connaît pas une séance inventée', () => {
+  it('does not know a made-up session', () => {
     expect(isFreeProgram('seance-qui-nexiste-pas')).toBe(false);
   });
 });
 
-describe('les séances SOS restent à part', () => {
+describe('the SOS sessions stay apart', () => {
   const catalogue = parseSeededCatalogue();
 
-  it('ne sont jamais recommandées spontanément', () => {
-    // Proposer une séance d'urgence à quelqu'un qui n'a rien demandé, c'est lui suggérer que
-    // ça ne va pas. Elles se déclenchent, elles ne se suggèrent pas.
+  it('are never recommended unprompted', () => {
+    // Offering an emergency session to somebody who did not ask is a way of suggesting
+    // something is wrong. They are reached for, not suggested.
     const programs = catalogue.map((p, i) => ({
       id: String(i),
       slug: p.slug,

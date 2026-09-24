@@ -8,7 +8,7 @@ import {
   type Coords,
 } from '../src/lib/location';
 
-// Module natif, inutilisable sous Node : seules les fonctions pures et le routage sont testés ici.
+// A native module, unusable under Node: only the pure functions and the routing are tested here.
 vi.mock('expo-location', () => ({}));
 
 const START: Coords = { latitude: 48.8566, longitude: 2.3522 };
@@ -23,15 +23,15 @@ function distanceMeters(a: Coords, b: Coords): number {
 }
 
 describe('generateLoopWaypoints', () => {
-  it('forme une boucle fermée : départ, trois coins, retour au départ', () => {
+  it('forms a closed loop: start, three corners, back to the start', () => {
     const points = generateLoopWaypoints(START, 30);
     expect(points).toHaveLength(5);
     expect(points[0]).toEqual(START);
     expect(points[4]).toEqual(START);
   });
 
-  it('dimensionne la boucle sur la durée, en tenant compte du détour des rues', () => {
-    // 30 min × 75 m/min = 2 250 m de marche ; 4 côtés, rues ≈ +35 % → côté d'environ 417 m.
+  it('sizes the loop to the duration, allowing for the detour of real streets', () => {
+    // 30 min × 75 m/min = 2,250 m of walking; 4 sides, streets ≈ +35% → a side of about 417 m.
     const points = generateLoopWaypoints(START, 30);
     expect(distanceMeters(points[0], points[1])).toBeCloseTo(2250 / (4 * 1.35), 0);
   });
@@ -80,7 +80,7 @@ describe('fetchWalkingRoute', () => {
     vi.unstubAllGlobals();
   });
 
-  it('interroge le profil piéton avec les coordonnées au format longitude,latitude', async () => {
+  it('queries the walking profile with coordinates as longitude,latitude', async () => {
     const fetchMock = vi.fn().mockResolvedValue({ ok: true, json: async () => OSRM_FIXTURE });
     vi.stubGlobal('fetch', fetchMock);
 
@@ -91,7 +91,7 @@ describe('fetchWalkingRoute', () => {
     expect(url).toContain('geometries=geojson');
   });
 
-  it("ne garde qu'un départ et une arrivée, et écarte les micro-segments", async () => {
+  it('keeps only one departure and one arrival, and drops the micro-segments', async () => {
     vi.stubGlobal('fetch', vi.fn().mockResolvedValue({ ok: true, json: async () => OSRM_FIXTURE }));
 
     const route = await fetchWalkingRoute([START, START]);
@@ -104,7 +104,7 @@ describe('fetchWalkingRoute', () => {
     ]);
   });
 
-  it('convertit la géométrie GeoJSON en coordonnées de carte', async () => {
+  it('converts the GeoJSON geometry into map coordinates', async () => {
     vi.stubGlobal('fetch', vi.fn().mockResolvedValue({ ok: true, json: async () => OSRM_FIXTURE }));
 
     const route = await fetchWalkingRoute([START, START]);
@@ -114,7 +114,7 @@ describe('fetchWalkingRoute', () => {
     expect(route.durationS).toBe(1850);
   });
 
-  it('échoue proprement quand aucun itinéraire piéton n’existe', async () => {
+  it('fails cleanly when no walking route exists', async () => {
     vi.stubGlobal(
       'fetch',
       vi.fn().mockResolvedValue({ ok: true, json: async () => ({ code: 'NoRoute', routes: [] }) })
@@ -141,7 +141,7 @@ describe('fetchLoopWithinDuration', () => {
     return distanceMeters(START, { latitude: lat, longitude: lon });
   }
 
-  it('accepte directement une boucle qui tient dans la durée', async () => {
+  it('accepts a loop that already fits the duration', async () => {
     const fetchMock = vi.fn().mockResolvedValue(routeWithDuration(1700));
     vi.stubGlobal('fetch', fetchMock);
 
@@ -151,8 +151,8 @@ describe('fetchLoopWithinDuration', () => {
     expect(fetchMock).toHaveBeenCalledTimes(1);
   });
 
-  it('rétrécit la boucle quand le parcours dépasse la durée de l’activité', async () => {
-    // 33 min pour une activité de 30 min : c'est le cas réellement observé à Paris.
+  it('shrinks the loop when the route runs past the activity’s duration', async () => {
+    // 33 min for a 30 min activity: the case actually observed in Paris.
     const fetchMock = vi
       .fn()
       .mockResolvedValueOnce(routeWithDuration(1980))
@@ -168,7 +168,7 @@ describe('fetchLoopWithinDuration', () => {
     );
   });
 
-  it('agrandit la boucle quand elle est nettement plus courte que prévu', async () => {
+  it('grows the loop when it comes out markedly shorter than intended', async () => {
     const fetchMock = vi
       .fn()
       .mockResolvedValueOnce(routeWithDuration(900))
@@ -183,7 +183,7 @@ describe('fetchLoopWithinDuration', () => {
     );
   });
 
-  it('ne rend jamais une boucle plus longue que la durée demandée', async () => {
+  it('never returns a loop longer than the duration asked for', async () => {
     const fetchMock = vi
       .fn()
       .mockResolvedValueOnce(routeWithDuration(2000))
@@ -198,7 +198,7 @@ describe('fetchLoopWithinDuration', () => {
     expect(fetchMock).toHaveBeenCalledTimes(4);
   });
 
-  it('échoue si aucune boucle ne tient dans la durée après tous les essais', async () => {
+  it('fails if no loop fits the duration after every attempt', async () => {
     vi.stubGlobal('fetch', vi.fn().mockResolvedValue(routeWithDuration(2500)));
 
     await expect(fetchLoopWithinDuration(START, 30, { minIntervalMs: 0 })).rejects.toBeInstanceOf(

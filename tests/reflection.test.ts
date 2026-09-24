@@ -8,8 +8,8 @@ import {
   promptsForCategory,
 } from '../src/features/wellbeing/reflection';
 
-describe('ressenti de fin de séance', () => {
-  it('propose cinq niveaux, de « beaucoup moins bien » à « beaucoup mieux »', () => {
+describe('the rating at the end of a session', () => {
+  it('offers five levels, from “much worse” to “much better”', () => {
     expect(MOOD_OPTIONS.map((m) => m.value)).toEqual([1, 2, 3, 4, 5]);
     expect(moodOption(4)?.label).toBe('A little better');
     expect(moodOption(1)?.label).toBe('Much worse');
@@ -17,7 +17,7 @@ describe('ressenti de fin de séance', () => {
     expect(moodOption(9)).toBeNull();
   });
 
-  it('fait la moyenne en ignorant les séances sans ressenti', () => {
+  it('averages while ignoring the sessions with no rating', () => {
     expect(averageMood([5, 4, null, 3])).toBe(4);
     expect(averageMood([4, 5])).toBe(4.5);
     expect(averageMood([])).toBeNull();
@@ -25,17 +25,17 @@ describe('ressenti de fin de séance', () => {
   });
 });
 
-describe('questions de réflexion', () => {
-  it('adapte les questions à la catégorie', () => {
+describe('the reflection questions', () => {
+  it('suits the questions to the category', () => {
     expect(promptsForCategory('Sommeil')[0]).toContain('letting go');
     expect(promptsForCategory('Respiration')).toHaveLength(2);
   });
 
-  it('retombe sur des questions générales pour une catégorie inconnue', () => {
+  it('falls back to general questions for an unknown category', () => {
     expect(promptsForCategory('Autre chose')).toEqual(promptsForCategory(undefined));
   });
 
-  it('ne garde que les réponses écrites, sans espaces inutiles', () => {
+  it('keeps only the answers that were written, without stray spaces', () => {
     expect(
       cleanReflections([
         { prompt: 'A', answer: '  du calme  ' },

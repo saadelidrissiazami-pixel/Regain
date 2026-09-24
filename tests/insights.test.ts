@@ -14,7 +14,7 @@ describe('indicateurs de suivi', () => {
     expect(dailyAverages([at('2026-09-18', 1), at('2026-09-18', 5), at('2026-09-19', 3)], ['2026-09-17', '2026-09-18', '2026-09-19'])).toEqual([null, 3, 3]);
   });
 
-  it('compare la semaine à la précédente', () => {
+  it('compares the week with the one before', () => {
     const { current, previous } = splitWeeks([at('2026-09-19', 4), at('2026-09-10', 2), at('2026-09-01', 5)], '2026-09-19');
     expect(current).toEqual([4]);
     expect(previous).toEqual([2]);

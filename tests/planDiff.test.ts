@@ -16,7 +16,7 @@ const targets = (calories: number): NutritionTargets => ({
 });
 
 const session = (minutes: number): WorkoutSession => ({
-  day_label: 'Séance 1',
+  day_label: 'Session 1',
   focus: 'Corps entier',
   duration_minutes: minutes,
   warmup: '5 min',
@@ -33,12 +33,12 @@ const day = (label: string, dishes: string[]): MealDay => ({
 const plan = (calories: number, dishes: string[], sessions = 3, shopping = 20) => ({
   targets: targets(calories),
   program: Array.from({ length: sessions }, () => session(45)),
-  meals: [day('Journée A', dishes)],
+  meals: [day('Day A', dishes)],
   shopping_list: Array.from({ length: shopping }, (_, i) => i),
 });
 
 describe('countNewDishes', () => {
-  it('compte les plats absents de la semaine précédente', () => {
+  it('counts the dishes that were not in last week', () => {
     expect(countNewDishes([day('A', ['Dahl', 'Omelette'])], [day('A', ['Dahl', 'Curry', 'Poke'])])).toBe(2);
     expect(countNewDishes(undefined, [day('A', ['Dahl'])])).toBe(1);
     expect(countNewDishes([day('A', ['Dahl'])], [day('A', ['Dahl'])])).toBe(0);
@@ -48,12 +48,12 @@ describe('countNewDishes', () => {
 describe('summarizeAdjustments', () => {
   const base = { previous: plan(2200, ['Dahl']), next: plan(2200, ['Dahl']), daysPerWeek: 3 };
 
-  it('allège la semaine après peu de séances ou une énergie basse', () => {
+  it('eases the week off after few sessions or low energy', () => {
     const [first] = summarizeAdjustments({ ...base, checkin: { sessions_done: 0, energy: 2 } });
     expect(first.label).toBe('An easier week');
   });
 
-  it('renforce après une semaine complète en forme', () => {
+  it('steps things up after a full week in good shape', () => {
     const [first] = summarizeAdjustments({ ...base, checkin: { sessions_done: 3, energy: 5 } });
     expect(first.label).toBe('A harder week');
   });
@@ -75,7 +75,7 @@ describe('summarizeAdjustments', () => {
     expect(labels).toContain('1 new dish');
   });
 
-  it('indique une cible inchangée et compte séances et courses', () => {
+  it('reports an unchanged target and counts sessions and shopping', () => {
     const summary = summarizeAdjustments({ ...base, next: plan(2200, ['Dahl'], 4, 25), checkin: { sessions_done: 2, energy: 3 } });
     const labels = summary.map((a) => a.label);
     expect(labels).toContain('Target unchanged: 2200 kcal a day');
@@ -84,7 +84,7 @@ describe('summarizeAdjustments', () => {
     expect(labels).toContain('Same dishes as last week');
   });
 
-  it('ne parle pas du poids sans nouvelle pesée, et le dit autrement', () => {
+  it('says nothing about weight without a new reading, and words it differently', () => {
     const summary = summarizeAdjustments({
       ...base,
       next: plan(2100, ['Dahl']),

@@ -1,10 +1,10 @@
-// Lit le catalogue bien-être directement dans les migrations SQL.
+// Reads the wellbeing catalogue straight out of the SQL migrations.
 //
-// Une séance vit dans trois endroits : un export dans content/<thème>/index.ts, une entrée dans
+// A session lives in three places: an export in content/<theme>/index.ts, an entry in
 // CONTENT_BY_SLUG, et une ligne insert dans une migration. Rien ne garantissait qu'ils parlent
-// des mêmes slugs, et une faute de frappe ne se voyait qu'à l'exécution, sous la forme d'un
-// « Séance introuvable ». Plutôt que de recopier le catalogue dans une constante de test qui
-// dérive à son tour, on le relit à la source.
+// the same slugs, and a typo only showed up at runtime, in the shape of a
+// “Session not found”. Rather than copy the catalogue into a test constant that drifts in its
+// own turn, we read it back at the source.
 
 import { readdirSync, readFileSync } from 'node:fs';
 import { join } from 'node:path';
@@ -14,14 +14,14 @@ const MIGRATIONS_DIR = fileURLToPath(new URL('../../supabase/migrations', import
 
 export type SeededProgram = { slug: string; category: string; duration_minutes: number };
 
-/** Découpe une ligne de valeurs SQL en respectant les chaînes entre apostrophes. */
+/** Splits a line of SQL values, respecting single-quoted strings. */
 function splitValues(tuple: string): string[] {
   return (tuple.match(/'(?:[^']|'')*'|[^,]+/g) ?? []).map((value) =>
     value.trim().replace(/^'|'$/g, '').replace(/''/g, "'")
   );
 }
 
-/** Le catalogue tel que les migrations le construisent, inserts et mises à jour compris. */
+/** The catalogue as the migrations build it, inserts and updates included. */
 export function parseSeededCatalogue(dir = MIGRATIONS_DIR): SeededProgram[] {
   const files = readdirSync(dir)
     .filter((name) => name.endsWith('.sql'))
@@ -46,14 +46,14 @@ export function parseSeededCatalogue(dir = MIGRATIONS_DIR): SeededProgram[] {
         rows.set(slug, {
           slug,
           category: values[categoryAt],
-          // 0013 a introduit la colonne avec un défaut de 3 minutes, puis corrigé les six
-          // séances antérieures une par une.
+          // 0013 introduced the column with a default of 3 minutes, then corrected the six
+          // earlier sessions one at a time.
           duration_minutes: durationAt >= 0 ? Number(values[durationAt]) : 3,
         });
       }
     }
 
-    // Une migration peut aussi retirer des séances : 0027 met les SOS et les parcours de côté
+    // A migration can also remove sessions: 0027 sets the SOS sessions and the courses aside
     // le temps que la 1.1 sorte. Sans en tenir compte, les tests raisonneraient sur une base
     // qui n'existe pas.
     const deletes = sql.matchAll(
@@ -78,7 +78,7 @@ export function parseSeededCatalogue(dir = MIGRATIONS_DIR): SeededProgram[] {
   return [...rows.values()];
 }
 
-/** Les slugs déclarés gratuits par 0023_explicit_premium_catalog.sql. */
+/** The slugs declared free by 0023_explicit_premium_catalog.sql. */
 export function parseFreeSlugsFromMigration(dir = MIGRATIONS_DIR): string[] {
   const sql = readFileSync(join(dir, '0023_explicit_premium_catalog.sql'), 'utf8');
   const array = sql.match(/array\s*\[([\s\S]*?)\]/i);
@@ -99,16 +99,16 @@ export type SeededActivity = {
 };
 
 /**
- * Découpe les tuples d'un `insert … values (…), (…)` en respectant les apostrophes doublées.
- * Une expression régulière suffisait pour les séances ; les activités contiennent des guillemets,
- * des apostrophes échappées et des `array[…]`, et une regex y laisserait des valeurs tronquées
- * sans prévenir.
+ * Splits the tuples of an `insert … values (…), (…)`, respecting doubled single quotes.
+ * A regular expression was enough for the sessions; the activities contain quotation marks,
+ * escaped apostrophes and `array[…]`, and a regex would leave values truncated there without
+ * any warning.
  */
 function splitTuples(sql: string): string[][] {
   const tuples: string[][] = [];
   let depth = 0;
-  // Les crochets comptent autant que les parenthèses : sans ça, la virgule de
-  // `array['plus_mouvement','plus_energie']` passe pour un séparateur de colonnes et décale
+  // Brackets count as much as parentheses: without that, the comma in
+  // `array['plus_mouvement','plus_energie']` looks like a column separator and shifts
   // silencieusement tout le reste de la ligne.
   let brackets = 0;
   let inString = false;
@@ -131,7 +131,7 @@ function splitTuples(sql: string): string[][] {
       continue;
     }
     // Commentaire SQL entre deux tuples. Sans ce saut, l'apostrophe de « -- Prendre l'air »
-    // ouvre une chaîne et avale la moitié du catalogue sans rien signaler.
+    // opens a string and swallows half the catalogue without saying a word.
     if (char === '-' && sql[i + 1] === '-' && depth === 0) {
       const newline = sql.indexOf('\n', i);
       if (newline === -1) break;
@@ -173,7 +173,7 @@ function splitTuples(sql: string): string[][] {
   return tuples;
 }
 
-/** Les activités proposées, telles que 0024_activities_first_action.sql les insère. */
+/** The activities offered, as 0024_activities_first_action.sql inserts them. */
 export function parseSeededActivities(dir = MIGRATIONS_DIR): SeededActivity[] {
   const sql = readFileSync(join(dir, '0024_activities_first_action.sql'), 'utf8');
   const body = sql.slice(sql.indexOf('values', sql.indexOf('insert into public.activities_catalog')));

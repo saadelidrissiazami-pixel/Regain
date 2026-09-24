@@ -23,7 +23,7 @@ function slot(overrides: Partial<AvailabilitySlot> & { time_slot: TimeSlot }): A
 
 function activity(overrides: Partial<CatalogActivity> & { id: string }): CatalogActivity {
   return {
-    title: `Activité ${overrides.id}`,
+    title: `Activity ${overrides.id}`,
     category: 'physique',
     duration_minutes: 30,
     energy_required: 'bas',
@@ -46,7 +46,7 @@ const baseParams = {
 };
 
 describe('generateWeeklyPlan', () => {
-  it('place une activité par créneau disponible', () => {
+  it('places one activity per available slot', () => {
     const plan = generateWeeklyPlan({
       ...baseParams,
       availability: [slot({ day_of_week: 0, time_slot: 'matin' }), slot({ day_of_week: 2, time_slot: 'soir' })],
@@ -57,7 +57,7 @@ describe('generateWeeklyPlan', () => {
     expect(plan.map((item) => item.date)).toEqual(['2026-09-14', '2026-09-16']);
   });
 
-  it('exclut les activités plus longues que le créneau', () => {
+  it('excludes the activities longer than the slot', () => {
     const plan = generateWeeklyPlan({
       ...baseParams,
       availability: [slot({ time_slot: 'matin', start_time: '09:00', end_time: '09:30' })],
@@ -67,7 +67,7 @@ describe('generateWeeklyPlan', () => {
     expect(plan).toHaveLength(0);
   });
 
-  it("respecte l'énergie disponible sur le créneau", () => {
+  it('respects the energy available in that slot', () => {
     const plan = generateWeeklyPlan({
       ...baseParams,
       energyBySlot: { matin: 'bas' },
@@ -89,7 +89,7 @@ describe('generateWeeklyPlan', () => {
     expect(plan).toHaveLength(0);
   });
 
-  it('privilégie les activités qui servent les objectifs de la personne', () => {
+  it('favours the activities that serve the person’s goals', () => {
     const plan = generateWeeklyPlan({
       ...baseParams,
       primaryGoals: ['mieux_dormir'],
@@ -100,7 +100,7 @@ describe('generateWeeklyPlan', () => {
     expect(plan[0].activity.id).toBe('ciblee');
   });
 
-  it('ne regénère pas un créneau déjà occupé par une activité réalisée', () => {
+  it('does not regenerate a slot already taken by a completed activity', () => {
     const kept = {
       date: '2026-09-14',
       timeSlot: 'matin' as const,
@@ -117,7 +117,7 @@ describe('generateWeeklyPlan', () => {
     expect(plan.map((item) => item.date)).toEqual(['2026-09-15']);
   });
 
-  it('évite de reproposer une activité déjà réalisée cette semaine', () => {
+  it('avoids offering again an activity already done this week', () => {
     const plan = generateWeeklyPlan({
       ...baseParams,
       availability: [slot({ day_of_week: 1, time_slot: 'matin' })],
@@ -128,7 +128,7 @@ describe('generateWeeklyPlan', () => {
     expect(plan[0].activity.id).toBe('autre');
   });
 
-  it('ignore les dates ponctuelles hors de la semaine demandée', () => {
+  it('ignores one-off dates outside the week asked for', () => {
     const plan = generateWeeklyPlan({
       ...baseParams,
       availability: [

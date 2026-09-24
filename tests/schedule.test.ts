@@ -22,22 +22,22 @@ function slot(overrides: Partial<AvailabilitySlot>): AvailabilitySlot {
 // 2026-09-14 est un lundi.
 const MONDAY = '2026-09-14';
 
-describe('heure de début des activités', () => {
-  it('reprend le début de la disponibilité récurrente du jour', () => {
+describe('the start time of activities', () => {
+  it('takes the start of that day’s recurring availability', () => {
     expect(resolveStartTime({ date: MONDAY, time_slot: 'soir' }, [slot({})])).toBe('18:30');
   });
 
-  it('ignore les disponibilités des autres jours ou créneaux', () => {
+  it('ignores availability on other days or in other slots', () => {
     const availability = [slot({ day_of_week: 1 }), slot({ time_slot: 'matin', start_time: '07:00:00' })];
     expect(resolveStartTime({ date: MONDAY, time_slot: 'soir' }, availability)).toBe('19:00');
   });
 
-  it('préfère une disponibilité ponctuelle à la récurrente, et tronque les secondes', () => {
+  it('prefers a one-off availability over the recurring one, and drops the seconds', () => {
     const availability = [slot({}), slot({ is_recurring: false, day_of_week: null, specific_date: MONDAY, start_time: '20:15:00' })];
     expect(resolveStartTime({ date: MONDAY, time_slot: 'soir' }, availability)).toBe('20:15');
   });
 
-  it("retombe sur l'heure par défaut du créneau sans disponibilité", () => {
+  it('falls back to the slot’s default time when there is no availability', () => {
     expect(resolveStartTime({ date: MONDAY, time_slot: 'matin' }, [])).toBe('09:00');
   });
 
@@ -50,14 +50,14 @@ describe('heure de début des activités', () => {
 describe('buildCalendarEvents', () => {
   const activity = { id: 'a1', title: 'Marche rapide', duration_minutes: 30, instructions: 'Rythme soutenu.' };
 
-  it("dure le temps de l'activité et renvoie vers l'app", () => {
+  it('lasts as long as the activity and links back to the app', () => {
     const [event] = buildCalendarEvents([{ date: MONDAY, time_slot: 'soir', status: 'propose', activities_catalog: activity }], [slot({})]);
     expect(event.title).toBe('Marche rapide');
     expect(event.endDate.getTime() - event.startDate.getTime()).toBe(30 * 60_000);
     expect(event.notes).toBe('Rythme soutenu.\n\nOuvrir dans Regain : regain://activity/a1');
   });
 
-  it('marque les activités déjà faites', () => {
+  it('marks the activities already done', () => {
     const [event] = buildCalendarEvents(
       [{ date: MONDAY, time_slot: 'soir', status: 'realise', activities_catalog: { ...activity, instructions: null } }],
       []

@@ -2,18 +2,18 @@ import { describe, expect, it } from 'vitest';
 
 import { ambienceLabel, initialAmbience, isAmbienceChoice } from '../src/features/wellbeing/ambience';
 
-describe("musique d'ambiance au début d'une séance", () => {
-  it('démarre seule en Sommeil et en Méditation, avec une ambiance adaptée', () => {
+describe('background music at the start of a session', () => {
+  it('starts on its own for Sleep and Meditation, with a fitting ambience', () => {
     expect(initialAmbience('Sommeil', null)).toBe('pluie');
     expect(initialAmbience('Méditation', null)).toBe('bol');
   });
 
-  it('reprend la dernière ambiance choisie là où la musique démarre seule', () => {
+  it('reuses the last ambience chosen where the music starts on its own', () => {
     expect(initialAmbience('Sommeil', 'vagues')).toBe('vagues');
     expect(initialAmbience('Méditation', 'nappe')).toBe('nappe');
   });
 
-  it("ne relance plus la musique une fois que la personne l'a coupée", () => {
+  it('does not start the music again once the person has turned it off', () => {
     expect(initialAmbience('Sommeil', 'off')).toBe('off');
   });
 
@@ -23,7 +23,7 @@ describe("musique d'ambiance au début d'une séance", () => {
     expect(initialAmbience('En public', 'pluie')).toBe('off');
   });
 
-  it('reconnaît les choix valides enregistrés', () => {
+  it('recognises the valid stored choices', () => {
     expect(isAmbienceChoice('bol')).toBe(true);
     expect(isAmbienceChoice('off')).toBe(true);
     expect(isAmbienceChoice('techno')).toBe(false);

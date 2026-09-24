@@ -24,19 +24,19 @@ const MONTHLY = pkg('MONTHLY', 4.99, '4,99 €', { pricePerMonthString: '4,99 �
 const ANNUAL = pkg('ANNUAL', 39.99, '39,99 €', { pricePerMonthString: '3,33 €' });
 
 describe('offres du paywall', () => {
-  it("met l'annuel en premier et le présélectionne", () => {
+  it('puts the yearly plan first and preselects it', () => {
     expect(sortPackages([MONTHLY, ANNUAL]).map((p) => p.packageType)).toEqual(['ANNUAL', 'MONTHLY']);
     expect(defaultPackage([MONTHLY, ANNUAL])).toBe(ANNUAL);
     expect(defaultPackage([])).toBeNull();
   });
 
-  it("calcule l'économie de l'annuel face à 12 mensualités", () => {
+  it('works out what the yearly plan saves against 12 monthly ones', () => {
     expect(annualSavingsPercent([MONTHLY, ANNUAL])).toBe(33);
     expect(annualSavingsPercent([ANNUAL])).toBeNull();
     expect(annualSavingsPercent([MONTHLY, pkg('ANNUAL', 59.88, '59,88 €')])).toBeNull();
   });
 
-  it('affiche prix, période, équivalent mensuel et badge', () => {
+  it('shows the price, the period, the monthly equivalent and the badge', () => {
     expect(describePackage(ANNUAL, 33)).toEqual({
       title: 'Yearly',
       price: '39,99 €',
@@ -50,7 +50,7 @@ describe('offres du paywall', () => {
     expect(monthly.badge).toBeNull();
   });
 
-  it("décrit l'essai gratuit et les prix de lancement en toutes lettres", () => {
+  it('spells out the free trial and the introductory prices', () => {
     expect(introOfferLabel({ price: 0, priceString: '0,00 €', cycles: 1, periodUnit: 'WEEK', periodNumberOfUnits: 1 })).toBe(
       '1 week free trial'
     );
@@ -70,7 +70,7 @@ describe('offres du paywall', () => {
 describe("essai gratuit", () => {
   const free = (unit: string, units: number) => ({ price: 0, priceString: '0,00 €', cycles: 1, periodUnit: unit, periodNumberOfUnits: units });
 
-  it("calcule sa durée en jours, et ignore les offres payantes", () => {
+  it('works out its length in days, and ignores the paid offers', () => {
     expect(freeTrialDays(free('WEEK', 1))).toBe(7);
     expect(freeTrialDays(free('DAY', 14))).toBe(14);
     expect(freeTrialDays({ ...free('MONTH', 1), price: 1.99 })).toBeNull();
@@ -85,7 +85,7 @@ describe("essai gratuit", () => {
     ]);
   });
 
-  it("prévient la veille sur un essai court, où deux jours d'avance tomberaient presque le jour de l'achat", () => {
+  it('warns the day before on a short trial, where two days’ notice would land almost on the day of purchase', () => {
     expect(trialTimeline(3, '49,99 €')).toEqual([
       { when: 'Today', what: 'All of Premium unlocks' },
       { when: 'Day 2', what: 'We tell you the trial is about to end' },
@@ -103,7 +103,7 @@ describe("essai gratuit", () => {
     const end = new Date('2026-09-24T10:00:00Z');
     const now = new Date('2026-09-21T10:00:00Z');
     expect(trialReminderDate(end, now, 3)?.toISOString()).toBe('2026-09-23T10:00:00.000Z');
-    // Sans la durée, elle se déduit du temps restant : même résultat pendant l'essai.
+    // Without the length, it is derived from the time left: the same result during the trial.
     expect(trialReminderDate(end, now)?.toISOString()).toBe('2026-09-23T10:00:00.000Z');
   });
 });

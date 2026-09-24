@@ -3,9 +3,9 @@ import { describe, expect, it } from 'vitest';
 import { CATEGORY_LABELS } from '../src/features/planning/types';
 import { parseSeededActivities } from './helpers/catalogue';
 
-// Le catalogue vit en base, écrit à la main dans une migration. Ces tests le relisent à la source
-// et vérifient ce qu'aucun type ne peut vérifier : qu'une activité se commence, qu'elle se
-// termine, et qu'elle reste assez petite pour un soir où l'on n'a envie de rien.
+// The catalogue lives in the database, written by hand in a migration. These tests read it back
+// at the source and check what no type can check: that an activity can be started, that it
+// ends, and that it stays small enough for an evening with no appetite for anything.
 
 const ENERGIES = ['bas', 'moyen', 'eleve'];
 const COSTS = ['gratuit', 'faible', 'modere'];
@@ -21,7 +21,7 @@ const TAGS = [
   'plus_energie',
 ];
 
-describe('catalogue d activités', () => {
+describe('the activity catalogue', () => {
   const activities = parseSeededActivities();
 
   it('se lit correctement depuis la migration', () => {
@@ -32,12 +32,12 @@ describe('catalogue d activités', () => {
   });
 
   it('dit toujours comment commencer', () => {
-    // C'est la raison d'être de la refonte : ne plus demander à quelqu'un de concevoir
-    // lui-même l'activité au moment où il manque d'élan.
+    // This is the whole reason for the rewrite: no longer asking somebody to design the
+    // activity themselves at the moment they have no momentum.
     expect(activities.filter((a) => !a.first_action || a.first_action.length < 20).map((a) => a.title)).toEqual([]);
   });
 
-  it('dit toujours quand s arrêter', () => {
+  it('always says when to stop', () => {
     expect(activities.filter((a) => !a.stop_rule || a.stop_rule.length < 8).map((a) => a.title)).toEqual([]);
   });
 
@@ -51,8 +51,8 @@ describe('catalogue d activités', () => {
     expect(courtes.length / activities.length).toBeGreaterThan(0.75);
   });
 
-  it('ne demande jamais une énergie élevée', () => {
-    // Le programme de musculation couvre déjà l'effort soutenu. Ici, on vise les soirs sans élan.
+  it('never asks for high energy', () => {
+    // The strength programme already covers sustained effort. This is for evenings with none.
     expect(activities.filter((a) => a.energy_required === 'eleve').map((a) => a.title)).toEqual([]);
   });
 
@@ -68,32 +68,32 @@ describe('catalogue d activités', () => {
   });
 
   it('reste parcimonieux sur les objectifs', () => {
-    // Une BD répond à « réduire les écrans ». Elle n'a pas à promettre aussi de la confiance
-    // en soi et de l'énergie : un catalogue qui promet tout ne recommande plus rien.
+    // A comic answers “cut down on screens”. It does not have to promise confidence and energy
+    // as well: a catalogue that promises everything recommends nothing.
     const bavardes = activities.filter((a) => a.tags.length === 0 || a.tags.length > 2);
     expect(bavardes.map((a) => [a.title, a.tags])).toEqual([]);
     expect(activities.flatMap((a) => a.tags).filter((tag) => !TAGS.includes(tag))).toEqual([]);
   });
 
-  it('couvre les neuf catégories', () => {
+  it('covers all nine categories', () => {
     const couvertes = new Set(activities.map((a) => a.category));
     expect([...couvertes].sort()).toEqual(Object.keys(CATEGORY_LABELS).sort());
   });
 
-  it('ne propose jamais deux fois le même titre', () => {
-    // Le titre porte l'index unique de la table : un doublon ferait échouer la migration.
+  it('never offers the same title twice', () => {
+    // The title carries the table's unique index: a duplicate would fail the migration.
     const titres = activities.map((a) => a.title);
     expect(titres.length).toBe(new Set(titres).size);
   });
 
-  it('laisse une porte de sortie sans dépense', () => {
+  it('leaves a way out that costs nothing', () => {
     const gratuites = activities.filter((a) => a.cost_level === 'gratuit');
     expect(gratuites.length / activities.length).toBeGreaterThan(0.9);
   });
 
   it('propose de quoi voir quelqu un sans rendez-vous', () => {
     // Le lien social exigeait jusqu'ici une personne disponible tout de suite. Quelques
-    // activités doivent tenir en un message parti, sans réponse attendue.
+    // activities have to be complete once a message is sent, with no reply expected.
     const sansRendezVous = activities.filter((a) => a.category === 'social' && a.duration_minutes <= 5);
     expect(sansRendezVous.length).toBeGreaterThanOrEqual(2);
   });

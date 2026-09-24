@@ -74,13 +74,13 @@ describe('lecture des textes libres', () => {
 });
 
 describe('buildWorkoutProgram', () => {
-  it('prévoit exactement une séance par jour d’entraînement choisi', () => {
+  it('plans exactly one session per training day chosen', () => {
     for (let days = 1; days <= 6; days++) {
       expect(buildWorkoutProgram({ ...BASE, days_per_week: days })).toHaveLength(days);
     }
   });
 
-  it('ne dépasse jamais le temps disponible, même en prise de masse sur 30 min', () => {
+  it('never exceeds the time available, even building mass in 30 min', () => {
     for (const minutes of [30, 45, 60, 90]) {
       for (const goals of [['prise_masse'], ['perte_poids'], ['endurance'], ['bien_etre']] as const) {
         const program = buildWorkoutProgram({ ...BASE, goals: [...goals], session_minutes: minutes, experience: 'confirme', equipment: 'salle' });
@@ -89,7 +89,7 @@ describe('buildWorkoutProgram', () => {
     }
   });
 
-  it("n'utilise que le matériel disponible et le niveau de la personne", () => {
+  it('uses only the equipment available and the person’s level', () => {
     const program = buildWorkoutProgram({ ...BASE, days_per_week: 6, session_minutes: 90 });
     for (const exercise of program.flatMap((s) => s.exercises)) {
       const def = exerciseDef(exercise.name);
@@ -98,7 +98,7 @@ describe('buildWorkoutProgram', () => {
     }
   });
 
-  it('retire les exercices qui sollicitent une articulation signalée', () => {
+  it('removes the exercises that load a joint that was reported', () => {
     const program = buildWorkoutProgram({
       ...BASE,
       experience: 'confirme',
@@ -112,7 +112,7 @@ describe('buildWorkoutProgram', () => {
     }
   });
 
-  it('allège le volume après une semaine difficile', () => {
+  it('eases the volume off after a hard week', () => {
     const profile: FitnessProfileInput = { ...BASE, goals: ['salle'], experience: 'intermediaire', session_minutes: 90 };
     const normal = buildWorkoutProgram(profile, { intensity: 0 });
     const light = buildWorkoutProgram(profile, { intensity: -1 });
@@ -121,12 +121,12 @@ describe('buildWorkoutProgram', () => {
 });
 
 describe('intensityFromCheckin', () => {
-  it('allège quand l’énergie est basse ou que moins de la moitié des séances a été faite', () => {
+  it('eases off when energy is low, or fewer than half the sessions were done', () => {
     expect(intensityFromCheckin({ sessions_done: 3, energy: 2 }, 3)).toBe(-1);
     expect(intensityFromCheckin({ sessions_done: 1, energy: 4 }, 4)).toBe(-1);
   });
 
-  it('fait progresser après une semaine complète en forme', () => {
+  it('progresses after a full week in good shape', () => {
     expect(intensityFromCheckin({ sessions_done: 3, energy: 4 }, 3)).toBe(1);
   });
 
@@ -136,11 +136,11 @@ describe('intensityFromCheckin', () => {
   });
 });
 
-describe('bibliothèque de recettes', () => {
+describe('the recipe library', () => {
   const mealTypes: MealType[] = ['petit_dejeuner', 'dejeuner', 'diner', 'collation'];
   const diets: Diet[] = ['omnivore', 'vegetarien', 'vegan', 'pescetarien', 'halal'];
 
-  it('propose au moins une recette par repas pour chaque régime', () => {
+  it('offers at least one recipe per meal for every diet', () => {
     for (const diet of diets) {
       for (const type of mealTypes) {
         expect(RECIPES.some((r) => r.mealType === type && isRecipeCompatible(r, diet, []))).toBe(true);
@@ -148,7 +148,7 @@ describe('bibliothèque de recettes', () => {
     }
   });
 
-  it('offre de la variété (3 recettes ou plus par repas) aux omnivores', () => {
+  it('offers variety (3 recipes or more per meal) to omnivores', () => {
     for (const type of mealTypes) {
       expect(RECIPES.filter((r) => r.mealType === type).length).toBeGreaterThanOrEqual(3);
     }
@@ -170,13 +170,13 @@ describe('buildMealPlan', () => {
     }
   });
 
-  it("n'utilise aucun produit animal pour un régime vegan", () => {
+  it('uses no animal product on a vegan diet', () => {
     const profile = { ...BASE, diet: 'vegan' as const };
     const { usedIngredientIds } = buildMealPlan(profile, targetsFor(profile));
     for (const id of usedIngredientIds) expect(INGREDIENTS[id].animal).toBeUndefined();
   });
 
-  it('exclut les allergènes signalés', () => {
+  it('excludes the allergens that were reported', () => {
     const profile = { ...BASE, allergies: 'lactose and peanuts' };
     const plan = buildMealPlan(profile, targetsFor(profile));
     for (const id of plan.usedIngredientIds) {
@@ -223,28 +223,28 @@ describe('formatQuantity', () => {
     expect(formatQuantity(137, INGREDIENTS.brocoli)).toBe('140 g');
   });
 
-  it('compte à la pièce ce qui s’achète à la pièce', () => {
+  it('counts by the piece whatever is bought by the piece', () => {
     expect(formatQuantity(360, INGREDIENTS.oeuf)).toBe('6');
     expect(formatQuantity(225, INGREDIENTS.avocat)).toBe('2');
   });
 });
 
 describe('generateFitnessPlan', () => {
-  it('est déterministe pour un même seed et varie d’une semaine à l’autre', () => {
+  it('is deterministic for a given seed and varies from week to week', () => {
     const targets = targetsFor(BASE);
     const a = generateFitnessPlan(BASE, targets, { seed: 1 });
     expect(generateFitnessPlan(BASE, targets, { seed: 1 })).toEqual(a);
     expect(generateFitnessPlan(BASE, targets, { seed: 2 }).meals).not.toEqual(a.meals);
   });
 
-  it('explique l’ajustement dans le mot du coach après un bilan', () => {
+  it('explains the adjustment in the coach’s note after a check-in', () => {
     const plan = generateFitnessPlan(BASE, targetsFor(BASE), { checkin: { sessions_done: 0, energy: 1 } });
     expect(plan.coach_notes).toContain('An easier week');
   });
 });
 
-describe('apport en protéines', () => {
-  it('privilégie les recettes les plus protéinées quand la cible protéique est élevée', () => {
+describe('protein intake', () => {
+  it('favours the highest-protein recipes when the protein target is high', () => {
     const profile: FitnessProfileInput = {
       ...BASE,
       sex: 'femme',
@@ -266,7 +266,7 @@ describe('apport en protéines', () => {
 });
 
 describe('affectsPlan', () => {
-  it('signale les changements qui rendent le plan affiché faux', () => {
+  it('flags the changes that make the plan on screen wrong', () => {
     expect(affectsPlan(BASE, { ...BASE, allergies: 'peanuts' })).toBe(true);
     expect(affectsPlan(BASE, { ...BASE, diet: 'vegetarien' })).toBe(true);
     expect(affectsPlan(BASE, { ...BASE, equipment: 'salle' })).toBe(true);
@@ -279,7 +279,7 @@ describe('affectsPlan', () => {
   it("ignore les colonnes que la base ajoute autour du profil", () => {
     // fetchFitnessProfile fait select('*') : le profil lu contient des colonnes que le
     // formulaire ne reconstruit pas. Les compter comme disparues rendait tout enregistrement
-    // « modifiant », et régénérait un programme que personne n'avait demandé à changer.
+    // “changed”, and regenerated a programme nobody had asked to change.
     const fromDatabase = {
       ...BASE,
       user_id: 'abc',
@@ -293,15 +293,15 @@ describe('affectsPlan', () => {
 
   it('ignore ce qui ne change pas le plan produit', () => {
     expect(affectsPlan(BASE, { ...BASE })).toBe(false);
-    // L'ordre des objectifs n'a aucun effet sur la génération.
+    // The order of the goals has no effect on the generation.
     const twoGoals: FitnessProfileInput = { ...BASE, goals: ['perte_poids', 'endurance'] };
     expect(affectsPlan(twoGoals, { ...twoGoals, goals: ['endurance', 'perte_poids'] })).toBe(false);
-    // Champs libres : un espace ou un champ vidé plutôt que laissé nul ne doit rien régénérer.
+    // Free-text fields: a space, or a field emptied rather than left null, must regenerate nothing.
     expect(affectsPlan({ ...BASE, allergies: 'peanuts' }, { ...BASE, allergies: ' peanuts ' })).toBe(false);
     expect(affectsPlan({ ...BASE, health_notes: null }, { ...BASE, health_notes: '  ' })).toBe(false);
   });
 
-  it("à graine égale, le plan est identique : corriger son profil ne rebat pas les cartes", () => {
+  it('with the same seed the plan is identical: correcting your profile does not reshuffle it', () => {
     const targets = targetsFor(BASE);
     const first = generateFitnessPlan(BASE, targets, { seed: 3 });
     const second = generateFitnessPlan(BASE, targets, { seed: 3 });

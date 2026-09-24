@@ -18,19 +18,19 @@ describe('computeBmr (Mifflin-St Jeor)', () => {
 });
 
 describe('strategyForGoals', () => {
-  it('déficit pour une perte de poids, surplus pour une prise de masse', () => {
+  it('a deficit for losing weight, a surplus for building mass', () => {
     expect(strategyForGoals(['perte_poids'])).toBe('deficit');
     expect(strategyForGoals(['prise_masse', 'salle'])).toBe('surplus');
   });
 
-  it("reste à l'équilibre quand les objectifs se contredisent ou sans objectif de poids", () => {
+  it('stays at maintenance when the goals conflict, or with no weight goal', () => {
     expect(strategyForGoals(['perte_poids', 'prise_masse'])).toBe('maintien');
     expect(strategyForGoals(['bien_etre'])).toBe('maintien');
   });
 });
 
 describe('computeNutritionTargets', () => {
-  it('plafonne le déficit à 500 kcal pour une perte de poids', () => {
+  it('caps the deficit at 500 kcal for losing weight', () => {
     const targets = computeNutritionTargets({
       sex: 'homme',
       age: 30,
@@ -49,7 +49,7 @@ describe('computeNutritionTargets', () => {
     expect(targets.carbsG).toBe(264);
   });
 
-  it('ne descend jamais sous le plancher de sécurité', () => {
+  it('never goes below the safety floor', () => {
     const targets = computeNutritionTargets({
       sex: 'femme',
       age: 22,
@@ -63,7 +63,7 @@ describe('computeNutritionTargets', () => {
     expect(targets.floorApplied).toBe(true);
   });
 
-  it('ne descend jamais sous le métabolisme de base, même au-dessus du plancher fixe', () => {
+  it('never goes below basal metabolic rate, even above the fixed floor', () => {
     const targets = computeNutritionTargets({
       sex: 'homme',
       age: 30,
@@ -76,7 +76,7 @@ describe('computeNutritionTargets', () => {
     expect(targets.calories).toBeGreaterThanOrEqual(targets.bmr);
   });
 
-  it('limite le surplus à +10 % (300 kcal max) pour une prise de masse', () => {
+  it('limits the surplus to +10% (300 kcal at most) for building mass', () => {
     const targets = computeNutritionTargets({
       sex: 'homme',
       age: 25,
@@ -91,7 +91,7 @@ describe('computeNutritionTargets', () => {
     expect(targets.proteinG).toBe(117);
   });
 
-  it("vise moins de protéines quand l'objectif n'est pas musculaire", () => {
+  it('aims for less protein when the goal is not about muscle', () => {
     const targets = computeNutritionTargets({
       sex: 'femme',
       age: 40,
@@ -105,7 +105,7 @@ describe('computeNutritionTargets', () => {
     expect(targets.proteinG).toBe(84);
   });
 
-  it('répartit toutes les calories entre les macros', () => {
+  it('splits every calorie between the macros', () => {
     const t = computeNutritionTargets({
       sex: 'femme',
       age: 35,
@@ -121,7 +121,7 @@ describe('computeNutritionTargets', () => {
 });
 
 describe('ageFromBirthYear', () => {
-  it("calcule l'âge à partir de l'année de naissance", () => {
+  it('works out the age from the year of birth', () => {
     expect(ageFromBirthYear(1996, new Date(2026, 8, 15))).toBe(30);
   });
 });

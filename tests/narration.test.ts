@@ -3,14 +3,14 @@ import { describe, expect, it } from 'vitest';
 import { blockAt, narratedDuration, speakEstimate, speakSecondsOf } from '../src/features/wellbeing/narration';
 import type { NarratedBlock } from '../src/features/wellbeing/types';
 
-// Trois blocs volontairement mesurés à la main : 10 + 5, 20 + 30, 15 + 10 = 90 secondes.
+// Three blocks deliberately measured by hand: 10 + 5, 20 + 30, 15 + 10 = 90 seconds.
 const BLOCKS: NarratedBlock[] = [
   { text: 'Installe-toi comme tu peux.', speakSeconds: 10, silenceSeconds: 5 },
   { text: 'Remarque le contact de ton corps.', speakSeconds: 20, silenceSeconds: 30 },
-  { text: 'La séance touche à sa fin.', speakSeconds: 15, silenceSeconds: 10 },
+  { text: 'The session is coming to an end.', speakSeconds: 15, silenceSeconds: 10 },
 ];
 
-describe('durée de parole', () => {
+describe('speaking time', () => {
   it('estime environ deux mots par seconde', () => {
     // 22 mots ≈ 10 s.
     const text = 'un deux trois quatre cinq six sept huit neuf dix onze douze treize quatorze quinze seize dix-sept dix-huit dix-neuf vingt vingt-et-un vingt-deux';
@@ -22,41 +22,41 @@ describe('durée de parole', () => {
     expect(speakEstimate('Respire doucement.')).toBe(4);
   });
 
-  it('rend zéro pour un texte vide', () => {
+  it('returns zero for empty text', () => {
     expect(speakEstimate('   ')).toBe(0);
   });
 
-  it('préfère la durée écrite à son estimation', () => {
+  it('prefers the written duration to its estimate', () => {
     expect(speakSecondsOf({ text: 'Respire.', speakSeconds: 25, silenceSeconds: 0 })).toBe(25);
     expect(speakSecondsOf({ text: 'Respire.', silenceSeconds: 0 })).toBe(4);
   });
 });
 
-describe('durée totale', () => {
+describe('total length', () => {
   it('additionne parole et silences', () => {
     expect(narratedDuration(BLOCKS)).toBe(90);
   });
 
-  it('ignore un silence négatif au lieu de raccourcir la séance', () => {
+  it('ignores a negative silence instead of shortening the session', () => {
     expect(narratedDuration([{ text: 'Respire.', speakSeconds: 10, silenceSeconds: -30 }])).toBe(10);
   });
 
-  it('vaut zéro sans bloc', () => {
+  it('is zero with no blocks', () => {
     expect(narratedDuration([])).toBe(0);
   });
 });
 
-describe('position dans la séance', () => {
+describe('position within the session', () => {
   it('commence par la voix du premier bloc', () => {
     expect(blockAt(BLOCKS, 0)).toEqual({ index: 0, phase: 'voice', remaining: 10 });
   });
 
-  it('passe au silence à la seconde exacte où la voix finit', () => {
+  it('moves to the silence at the exact second the voice finishes', () => {
     expect(blockAt(BLOCKS, 9)).toEqual({ index: 0, phase: 'voice', remaining: 1 });
     expect(blockAt(BLOCKS, 10)).toEqual({ index: 0, phase: 'silence', remaining: 5 });
   });
 
-  it('passe au bloc suivant à la seconde exacte où le silence finit', () => {
+  it('moves to the next block at the exact second the silence finishes', () => {
     expect(blockAt(BLOCKS, 14)).toEqual({ index: 0, phase: 'silence', remaining: 1 });
     expect(blockAt(BLOCKS, 15)).toEqual({ index: 1, phase: 'voice', remaining: 20 });
   });
@@ -65,25 +65,25 @@ describe('position dans la séance', () => {
     expect(blockAt(BLOCKS, 50)).toEqual({ index: 1, phase: 'silence', remaining: 15 });
   });
 
-  it('tient encore à la toute dernière seconde', () => {
+  it('still holds at the very last second', () => {
     expect(blockAt(BLOCKS, 89)).toEqual({ index: 2, phase: 'silence', remaining: 1 });
   });
 
   it('signale la fin en ne renvoyant plus rien', () => {
-    // C'est ce null qui termine la séance : le lecteur n'a pas d'autre compteur.
+    // That null is what ends the session: the player has no other counter.
     expect(blockAt(BLOCKS, 90)).toBeNull();
     expect(blockAt(BLOCKS, 1000)).toBeNull();
   });
 
-  it('traite un temps négatif comme le début', () => {
+  it('treats a negative time as the beginning', () => {
     expect(blockAt(BLOCKS, -5)).toEqual({ index: 0, phase: 'voice', remaining: 10 });
   });
 
-  it('ne renvoie rien pour une séance sans bloc', () => {
+  it('returns nothing for a session with no blocks', () => {
     expect(blockAt([], 0)).toBeNull();
   });
 
-  it('saute un bloc sans silence sans jamais s y arrêter', () => {
+  it('passes a block with no silence without ever stopping in it', () => {
     const sansSilence: NarratedBlock[] = [
       { text: 'Un.', speakSeconds: 5, silenceSeconds: 0 },
       { text: 'Deux.', speakSeconds: 5, silenceSeconds: 0 },
@@ -93,8 +93,8 @@ describe('position dans la séance', () => {
     expect(blockAt(sansSilence, 10)).toBeNull();
   });
 
-  it('parcourt toute la séance sans trou ni chevauchement', () => {
-    // Seconde par seconde : chaque instant appartient à exactement un bloc, et l'index ne
+  it('walks the whole session with no gap and no overlap', () => {
+    // Second by second: every instant belongs to exactly one block, and the index only
     // recule jamais.
     let precedent = -1;
     for (let t = 0; t < narratedDuration(BLOCKS); t += 1) {

@@ -2,7 +2,7 @@ import { describe, expect, it } from 'vitest';
 
 import { contrastRatio, PALETTES, themeVariables, toRgbTriplet, variableName } from '../src/theme/colors';
 
-describe('variables de thème', () => {
+describe('theme variables', () => {
   it('convertit les couleurs au format attendu par NativeWind', () => {
     expect(toRgbTriplet('#1F7F74')).toBe('31 127 116');
     expect(themeVariables(PALETTES.light)['--color-bg']).toBe('245 250 248');
@@ -15,12 +15,12 @@ describe('variables de thème', () => {
     expect(variableName('premiumInk')).toBe('--color-premium-ink');
   });
 
-  it('définit les mêmes variables en clair et en sombre', () => {
+  it('defines the same variables in light and in dark', () => {
     expect(Object.keys(themeVariables(PALETTES.dark)).sort()).toEqual(Object.keys(themeVariables(PALETTES.light)).sort());
   });
 });
 
-describe('lisibilité de chaque palette', () => {
+describe('the readability of each palette', () => {
   for (const [scheme, p] of Object.entries(PALETTES)) {
     it(`${scheme} : texte, texte secondaire et boutons restent lisibles`, () => {
       expect(contrastRatio(p.ink, p.bg)).toBeGreaterThanOrEqual(7);

@@ -4,11 +4,11 @@ import { CONTENT_BY_SLUG } from '../src/features/wellbeing/content';
 import { contentDuration } from '../src/features/wellbeing/narration';
 import { parseSeededCatalogue } from './helpers/catalogue';
 
-// Ajouter une séance demande trois gestes qui doivent s'accorder : écrire son contenu, l'inscrire
-// dans CONTENT_BY_SLUG, et l'insérer en base par une migration. Rien ne le vérifiait. Un slug mal
-// recopié passait le typage, passait la revue, et ne se manifestait qu'à l'ouverture de la séance.
+// Adding a session takes three steps that have to agree: writing its content, listing it in
+// CONTENT_BY_SLUG, and inserting it into the database by a migration. Nothing checked that. A
+// mistyped slug passed the types, passed review, and only showed up when the session was opened.
 
-describe('catalogue bien-être', () => {
+describe('the wellbeing catalogue', () => {
   const seeded = parseSeededCatalogue();
   const seededSlugs = seeded.map((program) => program.slug).sort();
   const contentSlugs = Object.keys(CONTENT_BY_SLUG).sort();
@@ -19,30 +19,30 @@ describe('catalogue bien-être', () => {
     expect(seeded.every((program) => program.category && program.duration_minutes > 0)).toBe(true);
   });
 
-  it('sait jouer toute séance présente en base', () => {
+  it('knows how to play every session in the database', () => {
     // C'est le sens qui fait mal. Une ligne en base sans texte dans l'application donne
-    // « Séance introuvable » à quelqu'un qui a cliqué dessus, et c'est exactement ce que le
-    // build 3 a vécu quand les SOS sont arrivées avant lui.
+    // “Session not found” to somebody who tapped on it, which is exactly what build 3 lived
+    // through when the SOS sessions arrived before it did.
     expect(seededSlugs.filter((slug) => !CONTENT_BY_SLUG[slug])).toEqual([]);
   });
 
-  it('tolère du texte en avance sur la base', () => {
+  it('tolerates text that runs ahead of the database', () => {
     // L'autre sens est sans danger : fetchPrograms ne renvoie que ce qu'il sait jouer, donc une
-    // séance écrite mais pas encore insérée reste simplement invisible. C'est ce qui permet
-    // d'écrire la 1.1 pendant que la 1.0 est en revue.
+    // a session written but not yet inserted simply stays invisible. That is what makes it
+    // possible to write 1.1 while 1.0 is in review.
     const enAvance = contentSlugs.filter((slug) => !seededSlugs.includes(slug));
     expect(enAvance.every((slug) => slug.startsWith('sos-') || slug.startsWith('parcours-'))).toBe(true);
   });
 
-  it('annonce la vraie durée des séances qui se déroulent seules', () => {
-    // La pastille « 5′ » de la liste vient de la base ; la durée réelle vient des blocs. Tant que
-    // les deux étaient indépendantes, la première était une promesse. Vingt secondes de marge,
-    // pas davantage : au-delà, c'est une autre séance qu'on annonce.
+  it('states the real length of the sessions that run on their own', () => {
+    // The “5′” badge in the list comes from the database; the real length comes from the blocks.
+    // While the two were independent, the first was a promise. Twenty seconds of margin, no
+    // more than that: beyond it, you are announcing a different session.
     const ecarts = seeded.flatMap((program) => {
       const content = CONTENT_BY_SLUG[program.slug];
       if (!content) return [];
       const reelle = contentDuration(content);
-      // `guided` et `grounding` avancent au rythme de la personne : leur durée reste indicative.
+      // `guided` and `grounding` move at the person's pace, so their length stays indicative.
       if (reelle === null) return [];
       const annoncee = program.duration_minutes * 60;
       return Math.abs(annoncee - reelle) > 20 ? [{ slug: program.slug, annoncee, reelle }] : [];
