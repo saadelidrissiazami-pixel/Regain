@@ -1,128 +1,136 @@
 # Regain
 
-App mobile de planification et bien-être (React Native + Expo). Répond en continu à : *« qu'est-ce qui serait une bonne activité pour moi maintenant ? »*
+A mobile planning and wellbeing app (React Native + Expo). It answers one question, over and over: *“what would be a good activity for me right now?”*
 
-## Démarrer en local
+The app is in English. What is stored is not: slugs, the status and level values Postgres checks, and the category keys that identify a theme all stay as they were, because they live in rows belonging to real people. The wording a person reads comes from the bundle — `src/features/wellbeing/catalogue.ts` and `src/features/activities/catalogue.ts` — so the language of the interface follows the installed build and can never disagree with it.
+
+## Running it locally
 
 ```bash
 npm install
-npm run ios      # ou: npm run android / npm run web
 ```
 
-L'app ne fonctionne pas tant que `.env` n'est pas configuré (voir ci-dessous) — elle a besoin de Supabase dès l'écran de connexion.
+```bash
+npm run ios
+```
 
-## Connecter Supabase (obligatoire)
+(or `npm run android` / `npm run web`)
 
-Ceci demande un compte que je ne peux pas créer à votre place :
+The app does not work until `.env` is configured (see below) — it needs Supabase from the sign-in screen onwards.
 
-1. Créez un projet sur [supabase.com](https://supabase.com) — choisissez la région **UE (Frankfurt)** pour la conformité RGPD.
-2. Dans *Project Settings → API*, copiez `Project URL` et `anon public key`.
-3. Copiez `.env.example` vers `.env` et renseignez ces deux valeurs :
+## Connecting Supabase (required)
+
+This needs an account that cannot be created for you:
+
+1. Create a project on [supabase.com](https://supabase.com) — choose the **EU (Frankfurt)** region for GDPR.
+2. In *Project Settings → API*, copy the `Project URL` and the `anon public key`.
+3. Copy `.env.example` to `.env` and fill in those two values:
    ```bash
    cp .env.example .env
    ```
-4. Appliquez, **dans l'ordre**, tous les fichiers de [`supabase/migrations/`](supabase/migrations) via le *SQL Editor* du dashboard Supabase (ou `supabase db push` si vous avez la CLI installée).
-5. Dans **Authentication → Sign In / Providers → Email**, désactivez *Confirm email* pour tester sans boîte mail (à réactiver avant la mise en production).
+4. Apply **in order** every file in [`supabase/migrations/`](supabase/migrations) through the Supabase dashboard's *SQL Editor* (or `supabase db push` if you have the CLI).
+5. Under **Authentication → Sign In / Providers → Email**, turn *Confirm email* off to test without a mailbox (turn it back on before going to production).
 
-## Abonnements Premium (optionnel)
+## Premium subscriptions (optional)
 
-Le paywall et la logique d'abonnement (RevenueCat) sont prêts : formules mensuelle et annuelle, essai gratuit, restauration, gestion de l'abonnement, mise à jour en direct du statut. Suivez **[docs/abonnements.md](docs/abonnements.md)** : on peut tout tester gratuitement avec le Test Store RevenueCat avant de créer les comptes Apple / Google.
+The paywall and the subscription logic (RevenueCat) are ready: monthly and yearly plans, a free trial, restoring, managing the subscription, and live status updates. Follow **[docs/abonnements.md](docs/abonnements.md)**: all of it can be tested for free with RevenueCat's Test Store before creating the Apple and Google accounts.
 
-Les achats intégrés nécessitent un **build de développement** — ils ne fonctionnent pas dans Expo Go ni dans l'aperçu web (Premium y reste débloqué pour tester).
+In-app purchases need a **development build** — they do not work in Expo Go or in the web preview (Premium stays unlocked there for testing).
 
-## Synchronisation calendrier
+## Calendar syncing
 
-*Profil → Calendrier* ajoute automatiquement chaque planning dans un calendrier « Regain » sur l'appareil (iCloud sur iPhone quand c'est possible), aux heures réelles de vos disponibilités, avec une alerte 15 min avant (sauf si les rappels Regain sont déjà actifs). Le bouton « Synchroniser avec mon calendrier » de l'onglet Planning le fait à la demande. Couper la synchro retire les activités à venir. Comme les achats, le calendrier n'est **pas accessible dans Expo Go** : il faut un build de développement.
+*Profile → Calendar* automatically adds each plan to a “Regain” calendar on the device (iCloud on iPhone where possible), at the real times you are free, with an alert 15 min beforehand (unless Regain's own reminders are already on). The “Sync with my calendar” button in the Plan tab does it on demand. Turning syncing off removes upcoming activities. Like purchases, the calendar is **not available in Expo Go**: a development build is required.
 
-## Coach IA conversationnel (optionnel — V2)
+## The conversational AI coach (optional — V2)
 
-Le chat ([app/(tabs)/coach.tsx](app/(tabs)/coach.tsx)) appelle une Edge Function Supabase ([supabase/functions/coach](supabase/functions/coach)) qui elle-même appelle l'API Anthropic — la clé API n'est jamais exposée dans l'app. Sans déploiement, l'écran affiche un message d'erreur clair au lieu de planter. Pour l'activer :
+The chat ([app/coach.tsx](app/coach.tsx)) calls a Supabase Edge Function ([supabase/functions/coach](supabase/functions/coach)), which in turn calls the Anthropic API — the API key is never exposed in the app. Without a deployment, the screen shows a clear error instead of crashing. To switch it on:
 
-1. Créez un compte sur [console.anthropic.com](https://console.anthropic.com) et générez une clé API.
-2. Installez la CLI Supabase si besoin : `npm install -g supabase`.
-3. `supabase login`, puis `supabase link --project-ref bbxmmqmrndgcmmsdrcjg`.
-4. `supabase secrets set ANTHROPIC_API_KEY=sk-ant-votre-clé`.
+1. Create an account on [console.anthropic.com](https://console.anthropic.com) and generate an API key.
+2. Install the Supabase CLI if you need to: `npm install -g supabase`.
+3. `supabase login`, then `supabase link --project-ref bbxmmqmrndgcmmsdrcjg`.
+4. `supabase secrets set ANTHROPIC_API_KEY=sk-ant-your-key`.
 5. `supabase functions deploy coach`.
 
-## Publier sur l'App Store
+## Publishing on the App Store
 
-Marche à suivre complète (compte Apple, encaissement, abonnements, variables, compilation,
-TestFlight, revue) : **[docs/deploiement-ios.md](docs/deploiement-ios.md)**.
-Textes de la fiche App Store : [docs/app-store.md](docs/app-store.md).
-Pages légales à publier : [docs/legal/](docs/legal).
+The full run-through (Apple account, banking, subscriptions, variables, building, TestFlight, review): **[docs/deploiement-ios.md](docs/deploiement-ios.md)**.
+The listing's text: [docs/app-store.md](docs/app-store.md).
+The legal pages to publish: [docs/legal/](docs/legal).
 
-Avant toute compilation, un contrôle refuse une build de production incomplète :
+Before any build, a check refuses an incomplete production build:
 
 ```bash
 npm run preflight -- production
 ```
 
-## Déploiement bêta (Phase 8)
+## Beta distribution (Phase 8)
 
-1. Créez un compte sur [expo.dev](https://expo.dev) si vous n'en avez pas, puis dans le projet : `npx eas-cli@latest login`.
-2. `npx eas-cli@latest init` pour relier ce projet à votre compte Expo (ajoute un `projectId` à `app.json`).
-3. `npx eas-cli@latest build --profile preview --platform ios` (nécessite un compte Apple Developer, 99$/an) ou `--platform android` (compte Google Play Console, 25$ une fois).
-4. Distribuez le build via TestFlight (iOS) ou le canal de test interne (Android).
+1. Create an account on [expo.dev](https://expo.dev) if you do not have one, then in the project: `npx eas-cli@latest login`.
+2. `npx eas-cli@latest init` to link this project to your Expo account (it adds a `projectId` to `app.json`).
+3. `npx eas-cli@latest build --profile preview --platform ios` (needs an Apple Developer account, $99/year) or `--platform android` (a Google Play Console account, $25 once).
+4. Distribute the build through TestFlight (iOS) or the internal test channel (Android).
 
-La configuration des profils de build est déjà prête dans [`eas.json`](eas.json). EAS Build ne lit pas `.env` : déclarez vos variables `EXPO_PUBLIC_*` sur expo.dev (voir [docs/abonnements.md](docs/abonnements.md#étape-4--variables-denvironnement-des-builds-eas)).
+The build profiles are already set up in [`eas.json`](eas.json). EAS Build does not read `.env`: declare your `EXPO_PUBLIC_*` variables on expo.dev (see [docs/abonnements.md](docs/abonnements.md)).
 
-## Structure du projet
+## Project layout
 
 ```
-app/                    Routes Expo Router (fichiers courts qui renvoient vers src/screens)
-  (tabs)/               Planning, Bien-être, Forme, Suivi, Profil
-  (auth)/               Connexion
-  onboarding/           Accueil en 4 étapes (prénom, objectifs, rythme, budget)
-  planning/             Semaine / mois, ajout d'une activité
-  fitness/              Programme, nutrition, lecteur d'entraînement, bilan, questionnaire
-  wellbeing/            Séance immersive, thèmes, recherche, journal
-  profile/ settings/    Mes objectifs, paramètres
-  availability/         Disponibilités
-  paywall/              Abonnement Premium
+app/                    Expo Router routes (short files that hand off to src/screens)
+  (tabs)/               Plan, Wellbeing, Fitness, Tracking, Profile
+  (auth)/               Sign in
+  onboarding/           Onboarding in 4 steps (first name, goals, rhythm, budget)
+  planning/             Week / month, adding an activity
+  fitness/              Programme, nutrition, workout player, check-in, questionnaire
+  wellbeing/            The immersive session, themes, search, journal
+  profile/ settings/    My goals, settings
+  availability/         When you are free
+  paywall/              Premium subscription
 src/
-  theme/                Design system : couleurs (clair / sombre), typo, espacements, rayons, ombres, images
+  theme/                The design system: colours (light / dark), type, spacing, radii, shadows, images
   components/ui/        Primitives (Screen, ScreenHeader, Card, Button, SegmentedControl, Sheet, Tag…)
-  components/cards/     Cartes métier (NowCard, WorkoutHeroCard, RecommendationHero, StatCard, MoodScale…)
-  components/feedback/  États vides, erreurs, squelettes de chargement, messages
-  screens/              Écrans complets, par domaine
-  hooks/                Données partagées entre écrans (usePlanning, useFitness, useWellbeing…)
-  features/             Logique pure et testée par domaine
-  lib/                  Supabase, calendrier, notifications, achats
+  components/cards/     Domain cards (NowCard, WorkoutHeroCard, RecommendationHero, StatCard, MoodScale…)
+  components/feedback/  Empty states, errors, loading skeletons, messages
+  screens/              Whole screens, by domain
+  hooks/                Data shared between screens (usePlanning, useFitness, useWellbeing…)
+  features/             Pure, tested logic, by domain
+  lib/                  Supabase, calendar, notifications, purchases
 supabase/
-  migrations/            Schéma SQL versionné (à exécuter dans l'ordre)
-  functions/coach/        Edge Function du coach IA (proxy sécurisé vers Anthropic)
-content/                 Bibliothèque bien-être statique (méditation, respiration, journaling...)
+  migrations/            The versioned SQL schema (run in order)
+  functions/coach/        The AI coach's Edge Function (a secure proxy to Anthropic)
+content/                 The static wellbeing library (meditation, breathing, journaling…)
 ```
 
 ## Design system
 
-- Couleurs : `src/theme/colors.ts` (palettes claire et sombre, contrastes vérifiés dans `tests/palettes.test.ts`).
-  Les classes Tailwind (`bg-surface`, `text-ink-2`…) lisent les mêmes variables ; `useTheme()` les donne en JS.
-- Typographie : SF Pro (police système) sur iOS, Inter sur Android et le web, via `<Text variant="…">`.
-- Réglage Clair / Sombre / Auto dans Profil → Paramètres.
-- Photos d'ambiance : `assets/images/` (JPEG compressés, générés dans un même style), déclarées dans
-  `src/theme/images.ts`. Une image non déclarée est remplacée par un dégradé sauge.
-- La migration `0022_coach_redesign.sql` ajoute le sommeil habituel, le créneau et les jours
-  d'entraînement, et le journal des séances de musculation. Tant qu'elle n'est pas appliquée,
-  ces informations restent simplement masquées.
+- Colours: `src/theme/colors.ts` (light and dark palettes, contrasts checked in `tests/palettes.test.ts`).
+  The Tailwind classes (`bg-surface`, `text-ink-2`…) read the same variables; `useTheme()` gives them in JS.
+- Type: SF Pro (the system font) on iOS, Inter on Android and the web, through `<Text variant="…">`.
+- A Light / Dark / Auto setting in Profile → Settings.
+- Mood photography: `assets/images/` (compressed JPEGs, generated in one style), declared in
+  `src/theme/images.ts`. An undeclared image falls back to a sage gradient.
+- Migration `0022_coach_redesign.sql` adds usual sleep, the training slot and the training days, plus
+  the log of strength sessions. Until it is applied, that information is simply hidden.
 
-## État d'avancement
+## Where the project stands
 
-Toutes les phases du MVP défini au départ sont implémentées et testées :
+Every phase of the original MVP is implemented and tested:
 
-- **Phase 0-1** — Fondations, comptes & onboarding
-- **Phase 2** — Calendrier interne (disponibilités récurrentes/ponctuelles)
-- **Phase 3** — Moteur de règles générant le planning hebdomadaire réel
-- **Phase 4** — Bibliothèque bien-être (respiration, méditation, journaling, confiance, sommeil, détachement en public)
-- **Phase 5** — Suivi connecté aux vraies activités réalisées (streaks, temps par catégorie)
-- **Phase 6** — Paywall Premium prêt (code) — nécessite vos comptes RevenueCat/App Store/Play Store
-- **Phase 7** — Rappels quotidiens, pull-to-refresh
-- **Phase 8** — Configuration EAS prête — nécessite votre compte Expo pour builder et distribuer
+- **Phases 0-1** — Foundations, accounts and onboarding
+- **Phase 2** — The internal calendar (recurring and one-off availability)
+- **Phase 3** — The rule engine that generates the real weekly plan
+- **Phase 4** — The wellbeing library (breathing, meditation, journaling, confidence, sleep, being in public)
+- **Phase 5** — Tracking wired to the activities actually done (streaks, time by category)
+- **Phase 6** — The Premium paywall, in code — needs your RevenueCat / App Store / Play Store accounts
+- **Phase 7** — Daily reminders, pull to refresh
+- **Phase 8** — The EAS configuration — needs your Expo account to build and distribute
 
-Fonctionnalités V2 (au-delà du MVP initial) :
+V2 features, beyond the original MVP:
 
-- **Personnalisation apprise** — le moteur de règles favorise progressivement les catégories que vous complétez le plus souvent
-- **Synchronisation calendrier** — export du planning vers le calendrier natif de l'appareil (iOS/Android)
-- **Coach IA conversationnel** — prêt (code) — nécessite votre compte Anthropic + déploiement de l'Edge Function
+- **Learned personalisation** — the rule engine gradually favours the categories you complete most
+- **Calendar syncing** — exporting the plan to the device's own calendar (iOS/Android)
+- **The conversational AI coach** — in code — needs your Anthropic account plus the Edge Function deployed
+- **Self-running narrated sessions** — 61 sessions whose stated duration is a calculation, not a promise
+- **Ten-day courses** — two of them, which teach a technique rather than offering isolated sessions
+- **SOS sessions** — four two-minute sessions, free by nature, for the moment things are bad
 
-Les étapes restantes dépendent uniquement de comptes externes que vous devez créer vous-même (voir sections ci-dessus).
+What is left depends only on external accounts you have to create yourself (see the sections above).
