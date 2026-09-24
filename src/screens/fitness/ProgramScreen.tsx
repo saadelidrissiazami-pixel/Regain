@@ -36,7 +36,7 @@ export default function ProgramScreen() {
   const doneThisWeek = new Set(fitness.logs.filter((l) => l.completed_at >= weekStartIso && l.plan_id === plan?.id).map((l) => l.session_index));
 
   const subtitle = plan
-    ? [fitness.weekNumber ? `Semaine ${fitness.weekNumber}` : null, `Phase : ${programPhase(plan.targets.strategy)}`].filter(Boolean).join(' · ')
+    ? [fitness.weekNumber ? `Week ${fitness.weekNumber}` : null, `Phase: ${programPhase(plan.targets.strategy)}`].filter(Boolean).join(' · ')
     : undefined;
 
   // Sessions done per week, over the last 4 weeks.
@@ -161,7 +161,7 @@ export default function ProgramScreen() {
 
               <Card style={{ marginTop: 16 }}>
                 <Text variant="label" style={{ marginBottom: 10 }}>
-                  Tes bilans
+                  Your check-ins
                 </Text>
                 {fitness.checkins.length === 0 ? (
                   <Text variant="bodySm" tone="ink2">

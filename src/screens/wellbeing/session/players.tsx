@@ -362,7 +362,7 @@ export function GroundingPlayer({
                     onPress={() => setAnswers((a) => ({ ...a, [step.key]: value }))}
                     accessibilityRole="radio"
                     accessibilityState={{ selected }}
-                    accessibilityLabel={`${value} sur 10`}
+                    accessibilityLabel={`${value} out of 10`}
                     style={{
                       width: 44,
                       height: 44,
@@ -449,7 +449,7 @@ export function PrepCountdown({ onDone, audioOn }: { onDone: () => void; audioOn
           {secondsLeft}
         </Text>
         <Text variant="caption" tone="ink2">
-          secondes
+          seconds
         </Text>
       </SessionRing>
       <View style={{ alignItems: 'center', gap: 6 }}>

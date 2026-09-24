@@ -229,7 +229,7 @@ function Player({ session, sessionIndex, planId }: { session: WorkoutSession; se
           Repos
         </Text>
         <View style={{ marginTop: 20 }}>
-          <ProgressRing progress={state.left / state.total} size={220} strokeWidth={12} animate={false} accessibilityLabel={`Repos, ${state.left} secondes restantes`}>
+          <ProgressRing progress={state.left / state.total} size={220} strokeWidth={12} animate={false} accessibilityLabel={`Rest, ${state.left} seconds left`}>
             <Text variant="display" tabular>
               {formatSeconds(state.left)}
             </Text>

@@ -18,7 +18,7 @@ export default function SosScreen() {
   return (
     <Screen>
       <ScreenHeader
-        overline="Deux minutes"
+        overline="Two minutes"
         title="Not okay right now"
         subtitle="One instruction at a time, eyes open. Nothing to prepare."
         onBack={() => goBack('/(tabs)/wellbeing')}
