@@ -77,6 +77,8 @@ export const FR: Record<string, string> = {
   'Tell Regain when you are free, and it suggests what to do, at the right time.': 'Dis à Regain quand tu es libre : il te propose ensuite quoi faire, au bon moment.',
   'Add my free times': 'Ajouter mes disponibilités',
   'Now': 'Maintenant',
+  'A word from your coach': 'Un mot de ton coach',
+  'Later this week': 'Plus tard cette semaine',
   'Up next': 'Ensuite',
   'How are you feeling right now?': 'Comment te sens-tu maintenant ?',
   'Everything is done for this week': 'Tout est fait pour cette semaine',
@@ -1048,6 +1050,11 @@ export const FR: Record<string, string> = {
   'Delete my account': 'Supprimer mon compte',
   'Sign out': 'Se déconnecter',
 
+  'Weekly check-in': 'Bilan hebdomadaire',
+  'Weekly check-in reminder': 'Rappel du bilan hebdomadaire',
+  'A reminder on Sunday evening, while your answers can still change the coming week.':
+    'Un rappel le dimanche soir, quand tes réponses peuvent encore changer la semaine qui vient.',
+
   // Paywall and subscription
   'Your routine is ready': 'Ta routine est prête',
   'The plan, the tracking and the journal stay free. Premium adds a fitness coach and the whole wellbeing library.':
@@ -1195,6 +1202,8 @@ export const FR: Record<string, string> = {
   'Before you scroll? Two minutes of breathing or stretching instead of a feed 🌱':
     'Avant de scroller ? Deux minutes de respiration ou d’étirements plutôt qu’un fil d’actu 🌱',
   'In {minutes} min: {title}': 'Dans {minutes} min : {title}',
+  'Five minutes on how the week went, and your coach adjusts the next one 📋':
+    'Cinq minutes sur ta semaine, et ton coach ajuste la suivante 📋',
   'Your free trial ends tomorrow. To avoid being charged, cancel from Profile → Settings → Manage my subscription.':
     'Ton essai gratuit se termine demain. Pour ne pas être débité·e, résilie depuis Profil → Réglages → Gérer mon abonnement.',
   'Your free trial ends in {count} days. To avoid being charged, cancel from Profile → Settings → Manage my subscription.':

@@ -8,11 +8,12 @@ import { View } from 'react-native';
 import { ActivityRow } from '../../components/cards/ActivityRow';
 import { MonthGrid } from '../../components/cards/MonthGrid';
 import { WeekSelector, type DayMarker } from '../../components/cards/WeekSelector';
-import { EmptyState, ErrorState, LoadingSkeleton } from '../../components/feedback';
-import { Appear, Button, Screen, ScreenHeader, SegmentedControl, Text } from '../../components/ui';
+import { EmptyState, ErrorState, errorMessage, InlineNotice, LoadingSkeleton } from '../../components/feedback';
+import { Appear, Button, Card, ListRow, Screen, ScreenHeader, SegmentedControl, Text } from '../../components/ui';
 import { relativeDayLabel } from '../../features/fitness/schedule';
 import { resolveStartTime } from '../../features/planning/schedule';
 import { usePlanning } from '../../hooks/usePlanning';
+import { calendarUnavailableReason } from '../../lib/deviceCalendar';
 import { formatDayLabel } from '../../lib/formatDate';
 import { fetchPlanRange, type PlannedActivityRow } from '../../lib/planning';
 import { fromLocalISODate, getDateForDayOfWeek, toLocalISODate } from '../../lib/week';
@@ -41,7 +42,7 @@ function groupByDay(items: PlannedActivityRow[], startOf: (item: PlannedActivity
 /** The full plan: the week (or the month) at a glance, every activity tickable. */
 export default function PlanningWeekScreen() {
   const planning = usePlanning();
-  const { today, weekStart, items, planQuery, userId } = planning;
+  const { today, weekStart, items, planQuery, userId, calendarSyncMutation } = planning;
   const [mode, setMode] = useState<Mode>('week');
   const [selected, setSelected] = useState(today);
   const [month, setMonth] = useState(() => {
@@ -152,6 +153,41 @@ export default function PlanningWeekScreen() {
       ) : (
         dayItems.map(renderGroup)
       )}
+
+      {/* Copying the week into the phone's calendar belongs with the week itself, not on the home
+          screen, which shows one activity at a time and never the thing being exported. */}
+      {items.length > 0 ? (
+        <View style={{ marginTop: 24 }}>
+          {calendarUnavailableReason ? (
+            <Text variant="caption" tone="ink2">
+              {calendarUnavailableReason}
+            </Text>
+          ) : (
+            <Card variant="flat" padding={4}>
+              <View style={{ paddingHorizontal: 12 }}>
+                <ListRow
+                  icon="sync-outline"
+                  title={calendarSyncMutation.isPending ? t('Syncing…') : t('Sync with my calendar')}
+                  onPress={() => calendarSyncMutation.mutate()}
+                  compact
+                  chevron={false}
+                />
+              </View>
+            </Card>
+          )}
+          {calendarSyncMutation.isError ? <InlineNotice tone="error" message={errorMessage(calendarSyncMutation.error)} /> : null}
+          {calendarSyncMutation.isSuccess ? (
+            <InlineNotice
+              tone="success"
+              message={
+                calendarSyncMutation.data > 1
+                  ? t('{count} activities added to the “Regain” calendar.', { count: calendarSyncMutation.data })
+                  : t('{count} activity added to the “Regain” calendar.', { count: calendarSyncMutation.data })
+              }
+            />
+          ) : null}
+        </View>
+      ) : null}
     </Screen>
   );
 }

@@ -57,7 +57,17 @@ export default function ActivityDetailScreen() {
             variant={done ? 'outline' : 'primary'}
             icon={done ? undefined : 'checkmark'}
             loading={planning.isToggling(occurrence)}
-            onPress={() => planning.toggle(occurrence)}
+            // Ticking something off finishes with it: the plan drops it and the screen goes back to
+            // the week, where the next thing is. Staying here left the activity on screen under an
+            // “Undo” button, which reads as though the tick had not taken. Undoing is still
+            // possible — from Tracking, where the activity now lives.
+            onPress={() =>
+              planning.toggleMutation.mutate(occurrence, {
+                onSuccess: () => {
+                  if (!done) goBack('/(tabs)/planning');
+                },
+              })
+            }
           />
         ) : undefined
       }

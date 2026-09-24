@@ -11,9 +11,10 @@ import { Text } from '../ui/Text';
 const LONG = 170;
 
 /** A word from the coach: short by default, expandable. */
-export function CoachCard({ message, title = 'A word from your coach' }: { message: string; title?: string }) {
+export function CoachCard({ message, title }: { message: string; title?: string }) {
   const theme = useTheme();
   const [open, setOpen] = useState(false);
+  const heading = title ?? t('A word from your coach');
   const long = message.length > LONG;
   return (
     <Card padding={16}>
@@ -33,7 +34,7 @@ export function CoachCard({ message, title = 'A word from your coach' }: { messa
           <Ionicons name="leaf" size={20} color={theme.primary700} />
         </View>
         <View style={{ flex: 1 }}>
-          <Text variant="label">{title}</Text>
+          <Text variant="label">{heading}</Text>
           <Text variant="bodySm" tone="ink2" style={{ marginTop: 4 }} numberOfLines={open ? undefined : 4}>
             {message}
           </Text>

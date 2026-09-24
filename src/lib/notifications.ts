@@ -7,6 +7,7 @@ import { t } from './i18n';
 import type { PlannedActivityRow } from './planning';
 
 const MORNING_NUDGE_ID = 'morning-nudge';
+const WEEKLY_CHECKIN_ID = 'weekly-checkin';
 const TRIAL_REMINDER_ID = 'trial-reminder';
 const ACTIVITY_PREFIX = 'activity-';
 const REMINDER_LEAD_MINUTES = 15;
@@ -56,6 +57,50 @@ export async function enableDailyReminder(): Promise<boolean> {
     trigger: { type: Notifications.SchedulableTriggerInputTypes.DAILY, hour: 8, minute: 0 },
   });
   return true;
+}
+
+export async function isWeeklyCheckinReminderEnabled(): Promise<boolean> {
+  if (!isSupported) return false;
+  const Notifications = await getNotifications();
+  const scheduled = await Notifications.getAllScheduledNotificationsAsync();
+  return scheduled.some((n) => n.identifier === WEEKLY_CHECKIN_ID);
+}
+
+/**
+ * The weekly check-in, once a week, Sunday evening.
+ *
+ * Sunday because the check-in is what adjusts the coming week's programme: asked on Sunday the
+ * answer still changes something, asked on Wednesday it arrives halfway through.
+ *
+ * `weekday` is 1-7 with Sunday as 1 — the iOS DateComponents numbering, not JavaScript's. The
+ * module validates the range and rejects 0, so a JS-style day silently becomes the wrong evening
+ * or throws.
+ */
+export async function enableWeeklyCheckinReminder(): Promise<boolean> {
+  if (!isSupported) return false;
+  const Notifications = await getNotifications();
+  configureHandler(Notifications);
+
+  const { status } = await Notifications.requestPermissionsAsync();
+  if (status !== 'granted') return false;
+
+  await Notifications.cancelScheduledNotificationAsync(WEEKLY_CHECKIN_ID).catch(() => {});
+  await Notifications.scheduleNotificationAsync({
+    identifier: WEEKLY_CHECKIN_ID,
+    content: {
+      title: 'Regain',
+      body: t('Five minutes on how the week went, and your coach adjusts the next one 📋'),
+      data: { route: '/fitness/checkin' },
+    },
+    trigger: { type: Notifications.SchedulableTriggerInputTypes.WEEKLY, weekday: 1, hour: 18, minute: 0 },
+  });
+  return true;
+}
+
+export async function disableWeeklyCheckinReminder() {
+  if (!isSupported) return;
+  const Notifications = await getNotifications();
+  await Notifications.cancelScheduledNotificationAsync(WEEKLY_CHECKIN_ID).catch(() => {});
 }
 
 export async function disableDailyReminder() {

@@ -7,7 +7,7 @@ import { CategoryTile } from '../../components/cards/CategoryTile';
 import { RecommendationHero } from '../../components/cards/RecommendationHero';
 import { WELLBEING_ORDER } from '../../components/cards/wellbeingThemes';
 import { ErrorState, LoadingSkeleton } from '../../components/feedback';
-import { Appear, IconButton, ListRow, Screen, ScreenHeader, SectionHeader, Text } from '../../components/ui';
+import { Appear, Card, IconButton, ListRow, Screen, ScreenHeader, SectionHeader, Text } from '../../components/ui';
 import { quoteOfTheDay } from '../../features/planning/quotes';
 import { moodOption } from '../../features/wellbeing/reflection';
 import { recommendWellbeing } from '../../features/wellbeing/recommend';
@@ -38,8 +38,8 @@ export default function WellbeingScreen() {
     isPremium: wellbeing.isPremium,
   });
 
-  // The SOS sessions are not a theme: you do not browse them, you reach for them. They have
-  // their own way in, at the top of the screen.
+  // The SOS sessions are not a theme: you do not browse them, you reach for them. They get their
+  // own card at the top of the screen, outlined so it is findable without being alarming.
   const sos = programs.filter((program) => program.category === SOS_CATEGORY);
   const byCategory = new Map<string, WellbeingProgram[]>();
   for (const program of programs.filter(
@@ -76,31 +76,43 @@ export default function WellbeingScreen() {
               library. Quiet when all is well, findable when it is not. */}
           {sos.length > 0 ? (
             <Appear index={0}>
-              <View style={{ marginBottom: 18 }}>
-                <ListRow
-                  icon="pulse-outline"
-                  title={t('Not okay right now')}
-                  subtitle={t('{count} two-minute sessions, right now', { count: sos.length })}
-                  onPress={() => router.push('/wellbeing/sos')}
-                />
-              </View>
+              <Card
+                variant="tinted"
+                padding={16}
+                onPress={() => router.push('/wellbeing/sos')}
+                style={{ marginBottom: 18, borderWidth: 1, borderColor: theme.primary600 }}
+                accessibilityLabel={`${t('Not okay right now')}. ${t('{count} two-minute sessions, right now', { count: sos.length })}`}
+              >
+                <View style={{ flexDirection: 'row', alignItems: 'center' }}>
+                  <View
+                    style={{
+                      width: 44,
+                      height: 44,
+                      borderRadius: 22,
+                      backgroundColor: theme.primary600,
+                      alignItems: 'center',
+                      justifyContent: 'center',
+                      marginRight: 14,
+                    }}
+                  >
+                    <Ionicons name="pulse" size={22} color={theme.onPrimary} />
+                  </View>
+                  <View style={{ flex: 1, paddingRight: 8 }}>
+                    <Text variant="section">{t('Not okay right now')}</Text>
+                    <Text variant="caption" tone="ink2" style={{ marginTop: 3 }}>
+                      {t('{count} two-minute sessions, right now', { count: sos.length })}
+                    </Text>
+                  </View>
+                  <Ionicons name="chevron-forward" size={20} color={theme.primary600} />
+                </View>
+              </Card>
             </Appear>
           ) : null}
 
-          {recommendations.length > 0 ? (
-            <Appear index={1}>
-              <RecommendationHero
-                items={recommendations}
-                width={heroWidth}
-                onStart={(item) => router.push(`/wellbeing/${item.program.slug}`)}
-              />
-            </Appear>
-          ) : null}
-
-          {/* After the recommendation, before the grid: a course teaches something, where a theme
-              only files things away. Progress reads at a glance. */}
-          <Appear index={2}>
-            <View style={{ marginTop: 28 }}>
+          {/* Courses come before anything recommended: a course teaches something and is worth
+              returning to, where a recommendation is a single session picked for right now. */}
+          <Appear index={1}>
+            <View style={{ marginTop: 4 }}>
               <SectionHeader title={t('Courses')} />
               {COURSES.map((course, index) => {
                 const progress = courseProgress(course, programs, wellbeing.completed);
@@ -118,7 +130,35 @@ export default function WellbeingScreen() {
             </View>
           </Appear>
 
+          {/* What you have already done, before what is merely suggested. */}
           <Appear index={2}>
+            <View style={{ marginTop: 24 }}>
+              <ListRow
+                icon="book-outline"
+                title={t('My journal')}
+                subtitle={
+                  lastEntry
+                    ? t('Last session: {title}', { title: lastEntry.program?.title ?? t('a session') }) + (lastMood ? ` · ${lastMood.label.toLowerCase()}` : '')
+                    : t('How you felt and what you answered, session after session.')
+                }
+                onPress={() => router.push('/wellbeing/journal')}
+              />
+            </View>
+          </Appear>
+
+          {recommendations.length > 0 ? (
+            <Appear index={3}>
+              <View style={{ marginTop: 24 }}>
+                <RecommendationHero
+                  items={recommendations}
+                  width={heroWidth}
+                  onStart={(item) => router.push(`/wellbeing/${item.program.slug}`)}
+                />
+              </View>
+            </Appear>
+          ) : null}
+
+          <Appear index={4}>
             <View style={{ marginTop: 28 }}>
               <SectionHeader
                 title={t('Browse by theme')}
@@ -140,28 +180,6 @@ export default function WellbeingScreen() {
                   );
                 })}
               </View>
-            </View>
-          </Appear>
-
-          <Appear index={3}>
-            <View style={{ marginTop: 20 }}>
-              <ListRow
-                icon="book-outline"
-                title={t('My journal')}
-                subtitle={
-                  lastEntry
-                    ? t('Last session: {title}', { title: lastEntry.program?.title ?? t('a session') }) + (lastMood ? ` · ${lastMood.label.toLowerCase()}` : '')
-                    : t('How you felt and what you answered, session after session.')
-                }
-                onPress={() => router.push('/wellbeing/journal')}
-                divider
-              />
-              <ListRow
-                icon="chatbubbles-outline"
-                title={t('Talk to my coach')}
-                subtitle={t('Stress, sleep, consistency')}
-                onPress={() => router.push('/coach?sujet=bien-etre')}
-              />
             </View>
           </Appear>
 
