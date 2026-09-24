@@ -130,6 +130,11 @@ ratings, the fitness coach (programme), the subscription screen.
 **The screenshots from 1.1 are in French and cannot be reused.** They have to be retaken on the
 English build.
 
+Four of the five are done and live in [`store/screenshots/ios-6.9/`](../store/screenshots/) — plan,
+a session under way, the programme and the journal. The subscription screen is still missing: the
+paywall shows a “RevenueCat test mode” badge whenever `__DEV__` is true and its prices come from the
+Test Store, so that one has to come from a TestFlight build.
+
 ## Notes for the review team
 
 ```
