@@ -21,7 +21,7 @@ import { relativeDayLabel } from '../../features/fitness/schedule';
 import { useAuthStore } from '../../store/authStore';
 import { activityReason } from './reason';
 
-/** Accueil : « Que dois-je faire maintenant ? » */
+/** Home: “What should I be doing now?” */
 export default function PlanningHomeScreen() {
   const planning = usePlanning();
   const commitments = useCommitments();

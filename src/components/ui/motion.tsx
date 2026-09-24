@@ -236,7 +236,7 @@ export function Wiggle({ children, active = true }: { children: ReactNode; activ
   return <Animated.View style={animatedStyle}>{children}</Animated.View>;
 }
 
-/** Secousse horizontale quand `trigger` change (erreur de saisie). */
+/** A horizontal shake when `trigger` changes (an invalid entry). */
 export function Shake({ trigger, children }: { trigger: unknown; children: ReactNode }) {
   const offset = useSharedValue(0);
   const first = useRef(true);

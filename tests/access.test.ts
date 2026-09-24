@@ -19,11 +19,11 @@ describe('the wellbeing library’s free offer', () => {
   it('says the same thing as the migration', () => {
     // Both lists are written by hand, in two languages: this test is what holds them together.
     // Changing one without the other would leave the app and the database disagreeing
-    // sur qui a le droit d'ouvrir quoi.
+    // about who is allowed to open what.
     expect([...bibliothequeLibre].sort()).toEqual(parseFreeSlugsFromMigration().sort());
   });
 
-  it('laisse les SOS gratuites, sans exception', () => {
+  it('leaves the SOS sessions free, without exception', () => {
     // Putting content for distress behind a paywall is not defensible. This test is here so
     // nobody can do it by accident while reshuffling the offer.
     expect(SOS_SLUGS.every((slug) => isFreeProgram(slug))).toBe(true);
@@ -44,7 +44,7 @@ describe('the wellbeing library’s free offer', () => {
     expect(FREE_PROGRAM_SLUGS).toHaveLength(28);
   });
 
-  it('ouvre les trois premiers jours de chaque parcours', () => {
+  it('opens the first three days of each course', () => {
     for (const parcours of ['parcours-meditation', 'parcours-sommeil']) {
       expect([1, 2, 3].every((day) => isFreeProgram(`${parcours}-j${day}`))).toBe(true);
       expect([4, 10].some((day) => isFreeProgram(`${parcours}-j${day}`))).toBe(false);
@@ -82,7 +82,7 @@ describe('the wellbeing library’s free offer', () => {
   });
 
   it('does not know a made-up session', () => {
-    expect(isFreeProgram('seance-qui-nexiste-pas')).toBe(false);
+    expect(isFreeProgram('a-session-that-does-not-exist')).toBe(false);
   });
 });
 

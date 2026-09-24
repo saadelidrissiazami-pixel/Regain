@@ -22,7 +22,7 @@ function decimalInRange(label: string, min: number, max: number) {
   return z.string().refine((v) => {
     const n = parseDecimal(v);
     return Number.isFinite(n) && n >= min && n <= max;
-  }, `${label} : entre ${min} et ${max}`);
+  }, `${label}: between ${min} and ${max}`);
 }
 
 const currentYear = new Date().getFullYear();

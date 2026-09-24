@@ -1,5 +1,5 @@
 // Regain's colours: pale sage by day, night green in dark mode. Each key becomes a
-// variable CSS (lue par les classes Tailwind) et reste accessible en JS via useTheme().
+// CSS variable (read by the Tailwind classes) and stays reachable from JS through useTheme().
 
 export type ColorScheme = 'light' | 'dark';
 
@@ -14,7 +14,7 @@ export type Palette = {
   ink2: string;
   /** Tertiary text, captions that are not essential. */
   ink3: string;
-  /** Bordure fine des cartes et champs. */
+  /** The thin border on cards and fields. */
   line: string;
   /** The divider between rows of a list. */
   divider: string;
@@ -35,7 +35,7 @@ export type Palette = {
   orange: string;
   red: string;
   purple: string;
-  /** Texte d'erreur, lisible sur fond clair. */
+  /** Error text, readable on a light ground. */
   danger: string;
   protein: string;
   carbs: string;
@@ -110,7 +110,7 @@ export const PALETTES: Record<ColorScheme, Palette> = {
   },
 };
 
-/** « #1F7F74 » → « 31 127 116 », le format attendu par rgb(var(--x) / <alpha-value>). */
+/** “#1F7F74” → “31 127 116”, the form rgb(var(--x) / <alpha-value>) expects. */
 export function toRgbTriplet(hex: string): string {
   const value = hex.replace('#', '');
   return [0, 2, 4].map((i) => parseInt(value.slice(i, i + 2), 16)).join(' ');
@@ -121,7 +121,7 @@ export function variableName(token: keyof Palette): string {
   return `--color-${token.replace(/([A-Z])/g, '-$1').replace(/(\d+)/, '-$1').toLowerCase()}`;
 }
 
-/** Variables CSS de la palette, pour vars() de NativeWind. */
+/** The palette as CSS variables, for NativeWind's vars(). */
 export function themeVariables(palette: Palette): Record<string, string> {
   return Object.fromEntries(
     (Object.keys(palette) as (keyof Palette)[]).map((token) => [variableName(token), toRgbTriplet(palette[token])])

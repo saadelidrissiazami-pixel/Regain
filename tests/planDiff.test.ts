@@ -58,7 +58,7 @@ describe('summarizeAdjustments', () => {
     expect(first.label).toBe('A harder week');
   });
 
-  it('annonce le changement de cible calorique et le poids', () => {
+  it('reports the change of calorie target and the weight', () => {
     const summary = summarizeAdjustments({
       previous: plan(2200, ['Dahl']),
       next: plan(2100, ['Curry']),

@@ -78,7 +78,7 @@ describe('generateWeeklyPlan', () => {
     expect(plan).toHaveLength(0);
   });
 
-  it('respecte le budget', () => {
+  it('respects the budget', () => {
     const plan = generateWeeklyPlan({
       ...baseParams,
       budgetLevel: 'gratuit',
@@ -104,7 +104,7 @@ describe('generateWeeklyPlan', () => {
     const kept = {
       date: '2026-09-14',
       timeSlot: 'matin' as const,
-      activity: activity({ id: 'deja-faite' }),
+      activity: activity({ id: 'already-done' }),
     };
 
     const plan = generateWeeklyPlan({
@@ -121,11 +121,11 @@ describe('generateWeeklyPlan', () => {
     const plan = generateWeeklyPlan({
       ...baseParams,
       availability: [slot({ day_of_week: 1, time_slot: 'matin' })],
-      catalog: [activity({ id: 'deja-faite' }), activity({ id: 'autre' })],
-      keptItems: [{ date: '2026-09-14', timeSlot: 'matin', activity: activity({ id: 'deja-faite' }) }],
+      catalog: [activity({ id: 'already-done' }), activity({ id: 'another' })],
+      keptItems: [{ date: '2026-09-14', timeSlot: 'matin', activity: activity({ id: 'already-done' }) }],
     });
 
-    expect(plan[0].activity.id).toBe('autre');
+    expect(plan[0].activity.id).toBe('another');
   });
 
   it('ignores one-off dates outside the week asked for', () => {

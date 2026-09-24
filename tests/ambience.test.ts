@@ -17,7 +17,7 @@ describe('background music at the start of a session', () => {
     expect(initialAmbience('Sommeil', 'off')).toBe('off');
   });
 
-  it('reste silencieuse ailleurs, et toujours en public', () => {
+  it('stays silent elsewhere, and always in public', () => {
     expect(initialAmbience('Respiration', null)).toBe('off');
     expect(initialAmbience('Respiration', 'pluie')).toBe('off');
     expect(initialAmbience('En public', 'pluie')).toBe('off');

@@ -14,7 +14,7 @@ export function ChoiceChip({
   label: string;
   selected: boolean;
   onPress: () => void;
-  /** false : choix unique (lu comme bouton radio). */
+  /** false means a single choice (read out as a radio button). */
   multiple?: boolean;
 }) {
   const theme = useTheme();

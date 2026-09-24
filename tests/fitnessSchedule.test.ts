@@ -10,7 +10,7 @@ import {
   uniqueExercises,
 } from '../src/features/fitness/schedule';
 
-// Semaine du lundi 14 au dimanche 20 septembre 2026 ; aujourd'hui = samedi 19.
+// The week of Monday 14 to Sunday 20 September 2026; today is Saturday the 19th.
 const WEEK = '2026-09-14';
 const at = (date: string, time = '18:30') => ({ completed_at: new Date(`${date}T${time}:00`).toISOString() });
 
@@ -42,12 +42,12 @@ describe('the next session', () => {
     expect(nextWorkout({ weekStart: WEEK, today: '2026-09-19', days: [0, 2], slot: 'matin', sessionsCount: 2, logsThisWeek: [] })?.date).toBe('2026-09-21');
   });
 
-  it('ne propose rien sans programme', () => {
+  it('offers nothing without a programme', () => {
     expect(nextWorkout({ weekStart: WEEK, today: '2026-09-19', days: [0], slot: null, sessionsCount: 0, logsThisWeek: [] })).toBeNull();
   });
 });
 
-describe('suivi de la semaine', () => {
+describe('tracking the week', () => {
   it('marks the planned days, the sessions done, and today', () => {
     const days = buildWeekTracker({ weekStart: WEEK, today: '2026-09-17', days: [0, 3], logs: [at('2026-09-14')] });
     expect(days).toHaveLength(7);

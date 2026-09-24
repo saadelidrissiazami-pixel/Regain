@@ -12,7 +12,7 @@ export const PRODUCT_IDS = {
 
 export const ANDROID_PACKAGE = 'com.saadelidrissiazami.regain';
 
-/** Pages de gestion des abonnements des stores, si RevenueCat ne fournit pas de lien direct. */
+/** The stores' own subscription management pages, when RevenueCat gives no direct link. */
 export const STORE_SUBSCRIPTIONS_URL = {
   ios: 'https://apps.apple.com/account/subscriptions',
   android: `https://play.google.com/store/account/subscriptions?package=${ANDROID_PACKAGE}`,

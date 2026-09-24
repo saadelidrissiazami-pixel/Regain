@@ -46,7 +46,7 @@ async function ensurePermission(Calendar: CalendarModule) {
 async function createRegainCalendar(Calendar: CalendarModule): Promise<ExpoCalendar> {
   if (Platform.OS === 'ios') {
     // The default calendar's account first (often iCloud), so the calendar
-    // Regain suive l'utilisateur sur ses autres appareils ; le compte local en secours
+    // Regain follows the user onto their other devices; the local account is the fallback
     // (some accounts, Exchange among them, refuse calendar creation).
     const sources = [
       Calendar.getDefaultCalendarSync().source,
@@ -131,7 +131,7 @@ export async function isCalendarAutoSyncEnabled(): Promise<boolean> {
   return (await AsyncStorage.getItem(AUTO_SYNC_KEY).catch(() => null)) === 'true';
 }
 
-/** Active la synchro automatique et envoie tout de suite la semaine en cours. */
+/** Turns automatic syncing on and sends the current week straight away. */
 export async function enableCalendarAutoSync(items: PlannedActivityRow[], availability: AvailabilitySlot[], weekStart: string) {
   const count = await syncWeekPlanToCalendar(items, availability, weekStart);
   await AsyncStorage.setItem(AUTO_SYNC_KEY, 'true');

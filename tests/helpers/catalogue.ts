@@ -1,7 +1,7 @@
 // Reads the wellbeing catalogue straight out of the SQL migrations.
 //
 // A session lives in three places: an export in content/<theme>/index.ts, an entry in
-// CONTENT_BY_SLUG, et une ligne insert dans une migration. Rien ne garantissait qu'ils parlent
+// CONTENT_BY_SLUG, and an insert line in a migration. Nothing guaranteed they were talking about
 // the same slugs, and a typo only showed up at runtime, in the shape of a
 // “Session not found”. Rather than copy the catalogue into a test constant that drifts in its
 // own turn, we read it back at the source.
@@ -54,8 +54,8 @@ export function parseSeededCatalogue(dir = MIGRATIONS_DIR): SeededProgram[] {
     }
 
     // A migration can also remove sessions: 0027 sets the SOS sessions and the courses aside
-    // le temps que la 1.1 sorte. Sans en tenir compte, les tests raisonneraient sur une base
-    // qui n'existe pas.
+    // until 1.1 ships. Without allowing for that, the tests would reason about a database
+    // that does not exist.
     const deletes = sql.matchAll(
       /delete\s+from\s+public\.wellbeing_programs\s+where\s+category\s+in\s*\(([^)]*)\)/gi
     );
@@ -82,7 +82,7 @@ export function parseSeededCatalogue(dir = MIGRATIONS_DIR): SeededProgram[] {
 export function parseFreeSlugsFromMigration(dir = MIGRATIONS_DIR): string[] {
   const sql = readFileSync(join(dir, '0023_explicit_premium_catalog.sql'), 'utf8');
   const array = sql.match(/array\s*\[([\s\S]*?)\]/i);
-  if (!array) throw new Error("0023_explicit_premium_catalog.sql ne contient pas de liste array[…]");
+  if (!array) throw new Error('0023_explicit_premium_catalog.sql contains no array[…] list');
   return (array[1].match(/'([^']+)'/g) ?? []).map((value) => value.replace(/'/g, ''));
 }
 
@@ -109,7 +109,7 @@ function splitTuples(sql: string): string[][] {
   let depth = 0;
   // Brackets count as much as parentheses: without that, the comma in
   // `array['plus_mouvement','plus_energie']` looks like a column separator and shifts
-  // silencieusement tout le reste de la ligne.
+  // every column after it, silently.
   let brackets = 0;
   let inString = false;
   let current = '';
@@ -130,7 +130,7 @@ function splitTuples(sql: string): string[][] {
       }
       continue;
     }
-    // Commentaire SQL entre deux tuples. Sans ce saut, l'apostrophe de « -- Prendre l'air »
+    // A SQL comment between two tuples. Without this skip, the apostrophe in “-- Prendre l'air”
     // opens a string and swallows half the catalogue without saying a word.
     if (char === '-' && sql[i + 1] === '-' && depth === 0) {
       const newline = sql.indexOf('\n', i);

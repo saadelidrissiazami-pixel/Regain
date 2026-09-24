@@ -32,7 +32,7 @@ describe('the reflection questions', () => {
   });
 
   it('falls back to general questions for an unknown category', () => {
-    expect(promptsForCategory('Autre chose')).toEqual(promptsForCategory(undefined));
+    expect(promptsForCategory('Something else')).toEqual(promptsForCategory(undefined));
   });
 
   it('keeps only the answers that were written, without stray spaces', () => {

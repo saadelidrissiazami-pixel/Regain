@@ -62,9 +62,9 @@ export async function exportUserData(userId: string): Promise<void> {
   await Sharing.shareAsync(file.uri, { mimeType: 'application/json', dialogTitle: 'Export my Regain data' });
 }
 
-// La suppression du compte d'authentification exige la service_role : elle passe donc par une
-// An Edge Function, which checks the caller's JWT and deletes only their own account.
-// Everything linked goes with it by cascade (profiles.id -> auth.users on delete cascade).
+// Deleting the auth account requires the service_role key, so it goes through an Edge Function,
+// which checks the caller's JWT and deletes only their own account. Everything linked goes with
+// it by cascade (profiles.id -> auth.users on delete cascade).
 export async function deleteAccount(): Promise<void> {
   const { error } = await supabase.functions.invoke('delete-account');
 

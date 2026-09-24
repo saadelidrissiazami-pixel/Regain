@@ -81,7 +81,7 @@ export function targetsForProfile(profile: FitnessProfileInput): NutritionTarget
  * `keepVariation` reuses the current plan's seed. Use it when regenerating because the profile
  * changed: the user gets **their** week back, corrected for what they have just declared,
  * instead of an entirely different programme and set of meals for having corrected their
- * taille. Le bilan hebdomadaire, lui, veut bien une nouvelle semaine : il ne passe rien.
+ * height. The weekly check-in, by contrast, does want a new week: it passes nothing.
  */
 export async function createFitnessPlan(
   userId: string,

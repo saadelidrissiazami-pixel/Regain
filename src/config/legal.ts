@@ -1,5 +1,5 @@
 // App Review guideline 3.1.2: every subscription screen must show the duration, the price, the
-// le renouvellement automatique, et des liens fonctionnels vers les CGU et la politique de
+// automatic renewal, and working links to the terms of use and the
 // privacy policy. Without those links, the submission is rejected.
 // To be set in .env before any App Store / Play Store submission.
 export const TERMS_URL = process.env.EXPO_PUBLIC_TERMS_URL ?? '';

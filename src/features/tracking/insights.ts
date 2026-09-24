@@ -7,7 +7,7 @@ export function average(values: number[]): number | null {
   return values.reduce((sum, v) => sum + v, 0) / values.length;
 }
 
-/** Moyenne par jour (dates ISO locales), null pour un jour sans mesure. */
+/** The average per day (local ISO dates), null for a day with no reading. */
 export function dailyAverages(samples: Sample[], days: string[]): (number | null)[] {
   return days.map((day) => average(samples.filter((s) => toLocalISODate(new Date(s.at)) === day).map((s) => s.value)));
 }

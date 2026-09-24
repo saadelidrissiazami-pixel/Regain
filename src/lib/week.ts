@@ -9,7 +9,7 @@ export function toLocalISODate(date: Date): string {
 }
 
 /** The inverse of toLocalISODate: midnight, local time, on the given day (new Date('YYYY-MM-DD')
- *  le lirait en UTC et pourrait tomber la veille). */
+ *  would read it as UTC and could land on the day before). */
 export function fromLocalISODate(iso: string): Date {
   const [year, month, day] = iso.split('-').map(Number);
   return new Date(year, month - 1, day);

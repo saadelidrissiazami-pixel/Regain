@@ -13,7 +13,7 @@ export type SelectOption<T extends string | number> = {
   label: string;
   /** Detail shown under the label (“3 to 5 sessions a week”). */
   hint?: string;
-  /** Titre de section dans la liste (« Matin », « Soir »…). */
+  /** A section title inside the list (“Morning”, “Evening”…). */
   group?: string;
 };
 

@@ -39,7 +39,7 @@ Deno.serve(async (req) => {
 
   if (error) {
     console.error('Account deletion failed', user.id, error.message);
-    return jsonResponse({ error: 'Suppression impossible pour le moment.' }, 500);
+    return jsonResponse({ error: 'Deletion is not possible right now.' }, 500);
   }
 
   return jsonResponse({ deleted: true }, 200);

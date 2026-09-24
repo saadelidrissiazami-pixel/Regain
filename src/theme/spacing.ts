@@ -14,5 +14,5 @@ export const spacing = {
   card: 18,
 } as const;
 
-/** Taille minimale d'une cible tactile (Apple HIG). */
+/** The minimum size of a touch target (Apple HIG). */
 export const MIN_TOUCH = 44;

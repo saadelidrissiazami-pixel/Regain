@@ -28,8 +28,8 @@ const dix = Array.from({ length: 10 }, (_, i) => day(MEDITATION.slug, i + 1));
 // An ordinary session, which must never end up inside a course.
 const horsParcours: WellbeingProgram = { ...day(MEDITATION.slug, 99), course_slug: null, course_day: null };
 
-describe('avancement d un parcours', () => {
-  it('range les jours dans l ordre, quel que soit celui de la base', () => {
+describe('a course’s progress', () => {
+  it('puts the days in order, whatever order the database gives them in', () => {
     const melange = [dix[4], dix[0], dix[9], dix[2]];
     expect(courseProgress(MEDITATION, melange, new Set()).days.map((d) => d.day)).toEqual([1, 3, 5, 10]);
   });
@@ -38,14 +38,14 @@ describe('avancement d un parcours', () => {
     expect(courseProgress(MEDITATION, [...dix, horsParcours], new Set()).days).toHaveLength(10);
   });
 
-  it('propose le jour 1 quand rien n est fait', () => {
+  it('offers day 1 when nothing has been done', () => {
     const progress = courseProgress(MEDITATION, dix, new Set());
     expect(progress.doneCount).toBe(0);
     expect(progress.nextDay?.day).toBe(1);
     expect(progress.complete).toBe(false);
   });
 
-  it('propose le premier jour non fait, pas le suivant du dernier fait', () => {
+  it('offers the first day not done, not the one after the last done', () => {
     // Somebody who skipped day 3 should be offered it again, not lose it.
     const progress = courseProgress(MEDITATION, dix, new Set(['decouvrir-meditation-1', 'decouvrir-meditation-2', 'decouvrir-meditation-4']));
     expect(progress.doneCount).toBe(3);
@@ -66,7 +66,7 @@ describe('avancement d un parcours', () => {
   });
 });
 
-describe('ce que le parcours annonce', () => {
+describe('what the course says about itself', () => {
   it('invites without counting when nothing has been started', () => {
     expect(courseStatusLabel(courseProgress(MEDITATION, dix, new Set()), MEDITATION)).toBe('10 days, at your own pace');
   });
@@ -82,7 +82,7 @@ describe('ce que le parcours annonce', () => {
   });
 });
 
-describe('les parcours et leur contenu', () => {
+describe('the courses and their content', () => {
   const prefixe = (course: string) => (course === 'mieux-dormir' ? 'parcours-sommeil-j' : 'parcours-meditation-j');
 
   it('have the ten days claimed, all of them written', () => {
@@ -92,7 +92,7 @@ describe('les parcours et leur contenu', () => {
     }
   });
 
-  it('se retrouvent par leur slug', () => {
+  it('are found by their slug', () => {
     expect(courseBySlug('decouvrir-meditation')?.title).toBe('Discovering meditation');
     expect(courseBySlug('parcours-inexistant')).toBeUndefined();
   });

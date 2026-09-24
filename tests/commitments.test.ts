@@ -68,7 +68,7 @@ describe('sessions inside the plan', () => {
     expect(seances.map((s) => s.href)).toEqual(['/fitness/workout/0', '/fitness/workout/1', '/fitness/workout/2']);
   });
 
-  it('ne propose rien sans programme', () => {
+  it('offers nothing without a programme', () => {
     expect(workoutCommitments({ tracker: tracker('2026-09-21'), program: [], slot: 'soir', today: '2026-09-21' })).toEqual([]);
   });
 
@@ -79,9 +79,9 @@ describe('sessions inside the plan', () => {
   });
 });
 
-describe('courses dans le planning', () => {
+describe('shopping inside the plan', () => {
   it('avoids the training days', () => {
-    // Lundi et mercredi sont pris : mardi est le premier jour libre.
+    // Monday and Wednesday are taken: Tuesday is the first free day.
     const courses = shoppingCommitment({ tracker: tracker('2026-09-21'), itemCount: 25, today: '2026-09-21' });
     expect(courses?.date).toBe('2026-09-22');
   });
@@ -96,11 +96,11 @@ describe('courses dans le planning', () => {
     expect(shoppingCommitment({ tracker: vendrediSeul, itemCount: 25, today: '2026-09-25' })?.date).toBe('2026-09-25');
   });
 
-  it('ne propose rien quand la liste est vide', () => {
+  it('offers nothing when the list is empty', () => {
     expect(shoppingCommitment({ tracker: tracker('2026-09-21'), itemCount: 0, today: '2026-09-21' })).toBeNull();
   });
 
-  it('ne propose rien quand la semaine est finie', () => {
+  it('offers nothing once the week is over', () => {
     expect(shoppingCommitment({ tracker: [], itemCount: 25, today: '2026-09-28' })).toBeNull();
   });
 
@@ -112,7 +112,7 @@ describe('courses dans le planning', () => {
 });
 
 describe('the whole week', () => {
-  it('range tout dans l ordre chronologique', () => {
+  it('puts everything in chronological order', () => {
     const tout = weekCommitments({
       tracker: tracker('2026-09-21'),
       program: PROGRAM,
@@ -128,7 +128,7 @@ describe('the whole week', () => {
     ]);
   });
 
-  it('ne donne rien quand il n y a ni programme ni liste', () => {
+  it('gives nothing when there is neither a programme nor a list', () => {
     expect(
       weekCommitments({ tracker: tracker('2026-09-21'), program: [], slot: null, shoppingItemCount: 0, today: '2026-09-21' })
     ).toEqual([]);

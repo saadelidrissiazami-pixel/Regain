@@ -23,7 +23,7 @@ function pkg(packageType: string, price: number, priceString: string, extra: Par
 const MONTHLY = pkg('MONTHLY', 4.99, '4,99 €', { pricePerMonthString: '4,99 €' });
 const ANNUAL = pkg('ANNUAL', 39.99, '39,99 €', { pricePerMonthString: '3,33 €' });
 
-describe('offres du paywall', () => {
+describe('the paywall’s plans', () => {
   it('puts the yearly plan first and preselects it', () => {
     expect(sortPackages([MONTHLY, ANNUAL]).map((p) => p.packageType)).toEqual(['ANNUAL', 'MONTHLY']);
     expect(defaultPackage([MONTHLY, ANNUAL])).toBe(ANNUAL);
@@ -77,7 +77,7 @@ describe("essai gratuit", () => {
     expect(freeTrialDays(null)).toBeNull();
   });
 
-  it("annonce le rappel et la date du premier paiement", () => {
+  it('states the reminder and the date of the first payment', () => {
     expect(trialTimeline(7, '49,99 €')).toEqual([
       { when: 'Today', what: 'All of Premium unlocks' },
       { when: 'Day 5', what: 'We tell you the trial is about to end' },
@@ -93,13 +93,13 @@ describe("essai gratuit", () => {
     ]);
   });
 
-  it("programme le rappel deux jours avant la fin, sauf s'il est trop tard", () => {
+  it('schedules the reminder two days before the end, unless it is already too late', () => {
     const end = new Date('2026-09-26T10:00:00Z');
     expect(trialReminderDate(end, new Date('2026-09-19T10:00:00Z'))?.toISOString()).toBe('2026-09-24T10:00:00.000Z');
     expect(trialReminderDate(end, new Date('2026-09-25T10:00:00Z'))).toBeNull();
   });
 
-  it('sur un essai de trois jours, programme le rappel la veille', () => {
+  it('on a three-day trial, schedules the reminder the day before', () => {
     const end = new Date('2026-09-24T10:00:00Z');
     const now = new Date('2026-09-21T10:00:00Z');
     expect(trialReminderDate(end, now, 3)?.toISOString()).toBe('2026-09-23T10:00:00.000Z');

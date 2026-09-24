@@ -78,7 +78,7 @@ export function computeNutritionTargets(input: NutritionInput): NutritionTargets
 
   const floor = Math.max(SEX_CALORIE_FLOOR[input.sex], bmr);
   const floorApplied = raw < floor;
-  // Le plancher est arrondi vers le haut : un arrondi au plus proche pourrait repasser dessous.
+  // The floor is rounded up: rounding to the nearest could slip back underneath it.
   const calories = Math.max(roundTo10(raw), Math.ceil(floor / 10) * 10);
 
   const buildsOrPreservesMuscle = input.goals.some((g) =>

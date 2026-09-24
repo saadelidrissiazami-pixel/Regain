@@ -1,7 +1,7 @@
 import type { EnergyLevel } from '../features/planning/catalog';
 import { supabase } from './supabase';
 
-// energy_checkins.energy_level est un entier 1-5 en base ; on y projette les 3 niveaux
+// energy_checkins.energy_level is an integer 1-5 in the database; the 3 levels used elsewhere
 // used elsewhere in the app (bas/moyen/eleve) to stay consistent with onboarding.
 const LEVEL_TO_INT: Record<EnergyLevel, number> = { bas: 1, moyen: 3, eleve: 5 };
 

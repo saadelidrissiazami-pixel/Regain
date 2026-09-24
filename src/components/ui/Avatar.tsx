@@ -4,7 +4,7 @@ import { useTheme } from '../../theme/ThemeProvider';
 import { font } from '../../theme/typography';
 import { Text } from './Text';
 
-/** Initiale sur fond sauge (ou photo si fournie). */
+/** An initial on a sage ground (or a photo, when one is given). */
 export function Avatar({ name, size = 44, source }: { name: string; size?: number; source?: ImageSourcePropType }) {
   const theme = useTheme();
   const initial = name.trim().charAt(0).toUpperCase() || '?';

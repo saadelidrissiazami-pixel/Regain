@@ -321,7 +321,7 @@ async function chat(anthropic: Anthropic, supabase: SupabaseClient, userId: stri
     plan ? `Current programme:\n${JSON.stringify(plan.program)}` : 'No programme yet: invite the person to build one in the app.',
   ].join('\n\n');
 
-  // L'historique doit commencer par un message utilisateur.
+  // The history has to begin with a user message.
   const ordered = (history ?? []).reverse();
   const firstUser = ordered.findIndex((m) => m.role === 'user');
   const past: Anthropic.Beta.BetaMessageParam[] = (firstUser === -1 ? [] : ordered.slice(firstUser)).map((m) => ({

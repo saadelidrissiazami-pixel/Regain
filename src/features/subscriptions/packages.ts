@@ -1,5 +1,5 @@
-// Mise en forme des offres RevenueCat pour le paywall. Types structurels (compatibles avec
-// PurchasesPackage) pour rester testable sans charger le module natif.
+// Formatting RevenueCat's offers for the paywall. Structural types (compatible with
+// PurchasesPackage) so it stays testable without loading the native module.
 
 export type IntroPriceLike = {
   price: number;

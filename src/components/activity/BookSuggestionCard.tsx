@@ -21,7 +21,7 @@ export function BookSuggestionCard({ primaryGoals }: { primaryGoals: string[] })
       </Text>
       <View style={{ marginTop: 12, borderRadius: 14, padding: 14, backgroundColor: theme.sage100 }}>
         <Text variant="bodySm" style={{ fontStyle: 'italic' }}>
-          « {book.keyIdea} »
+          “{book.keyIdea}”
         </Text>
       </View>
       <Text variant="caption" tone="ink3" style={{ marginTop: 8 }}>

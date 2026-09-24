@@ -40,7 +40,7 @@ import { useTheme } from '../../theme/ThemeProvider';
 type Tab = 'overview' | 'fitness' | 'wellbeing' | 'nutrition';
 const DAY_LETTERS = ['D', 'L', 'M', 'M', 'J', 'V', 'S'];
 
-/** Suivi : « Est-ce que je progresse ? » */
+/** Tracking: “Am I making progress?” */
 export default function TrackingScreen() {
   const theme = useTheme();
   const userId = useAuthStore((s) => s.session?.user.id);

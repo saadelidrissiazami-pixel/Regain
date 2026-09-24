@@ -96,7 +96,7 @@ Deno.serve(async (req) => {
   if ((await sentSince(new Date(now - 24 * 60 * 60 * 1000).toISOString())) >= MAX_MESSAGES_PER_DAY) {
     // A rolling window rather than a calendar day: the server does not know the user's time zone,
     // and “midnight” would hand them 40 messages in a row straddling two days.
-    // Le message dit donc 24 heures, et non « demain ».
+    // So the message says 24 hours, not “tomorrow”.
     return jsonResponse(
       { error: `You have used your ${MAX_MESSAGES_PER_DAY} messages for the last 24 hours.` },
       429

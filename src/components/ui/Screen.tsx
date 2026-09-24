@@ -36,7 +36,7 @@ export function Screen({
   footer?: ReactNode;
   /** A tab screen: the tab bar already handles the bottom inset. */
   inTabs?: boolean;
-  /** Formulaires : le contenu remonte au-dessus du clavier. */
+  /** For forms: the content lifts above the keyboard. */
   keyboard?: boolean;
   padded?: boolean;
   contentStyle?: StyleProp<ViewStyle>;

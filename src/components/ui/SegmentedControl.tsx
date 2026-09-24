@@ -19,7 +19,7 @@ export function SegmentedControl<T extends string | number>({
   options: { value: T; label: string }[];
   value: T;
   onChange: (value: T) => void;
-  /** Nom du groupe lu par VoiceOver. */
+  /** The group's name, as VoiceOver reads it. */
   label?: string;
   /** `primary` is a dark green pill (screen navigation), `surface` a white one (forms). */
   tone?: 'primary' | 'surface';
@@ -37,7 +37,7 @@ export function SegmentedControl<T extends string | number>({
   }, [index, segmentWidth, offset, reduceMotion]);
 
   const indicatorStyle = useAnimatedStyle(() => ({ transform: [{ translateX: offset.get() }] }));
-  // En sombre, une pastille « surface » se confondrait avec le fond de la carte : on la teinte.
+  // In dark mode a “surface” pill would blend into the card's ground, so it gets a tint.
   const selectedBg = tone === 'primary' ? theme.primary : theme.dark ? theme.sage300 : theme.surface;
   const selectedFg = tone === 'primary' ? theme.onPrimary : theme.ink;
 

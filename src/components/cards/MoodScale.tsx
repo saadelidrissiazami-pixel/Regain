@@ -6,7 +6,7 @@ import { useTheme } from '../../theme/ThemeProvider';
 import { haptic, Pop, PressableScale } from '../ui/motion';
 import { Text } from '../ui/Text';
 
-/** Visage au trait : la bouche passe de la moue (1) au grand sourire (5). */
+/** A line-drawn face: the mouth goes from a frown (1) to a broad smile (5). */
 function Face({ level, color, size = 30 }: { level: number; color: string; size?: number }) {
   // The curve of the mouth: negative is a frown, positive a smile.
   const curve = [-5, -2.5, 0, 3, 5.5][level - 1];

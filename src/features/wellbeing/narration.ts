@@ -31,7 +31,7 @@ export function narratedDuration(blocks: NarratedBlock[]): number {
 export type NarrationPosition = {
   index: number;
   phase: 'voice' | 'silence';
-  /** Secondes restantes dans la phase en cours. */
+  /** Seconds left in the current phase. */
   remaining: number;
 };
 
@@ -59,7 +59,7 @@ export function blockAt(blocks: NarratedBlock[], elapsed: number): NarrationPosi
 /**
  * A session's real length, when it can be computed.
  *
- * Renvoie `null` pour les formats qui avancent au rythme de la personne — `guided` et
+ * Returns `null` for the formats that move at the person's own pace — `guided` and
  * `grounding` — where the stated duration stays an estimate and cannot be checked.
  */
 export function contentDuration(content: ProgramContent): number | null {

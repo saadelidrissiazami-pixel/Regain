@@ -24,14 +24,14 @@ const TAGS = [
 describe('the activity catalogue', () => {
   const activities = parseSeededActivities();
 
-  it('se lit correctement depuis la migration', () => {
-    // Si ce test tombe seul, c'est le parseur qu'il faut corriger.
+  it('reads correctly out of the migration', () => {
+    // If this test fails on its own, it is the parser that needs fixing.
     expect(activities.length).toBeGreaterThan(30);
     expect(activities[0].title).toBe('Bouger sur une chanson');
     expect(activities[0].tags).toEqual(['plus_mouvement', 'plus_energie']);
   });
 
-  it('dit toujours comment commencer', () => {
+  it('always says how to start', () => {
     // This is the whole reason for the rewrite: no longer asking somebody to design the
     // activity themselves at the moment they have no momentum.
     expect(activities.filter((a) => !a.first_action || a.first_action.length < 20).map((a) => a.title)).toEqual([]);
@@ -41,12 +41,12 @@ describe('the activity catalogue', () => {
     expect(activities.filter((a) => !a.stop_rule || a.stop_rule.length < 8).map((a) => a.title)).toEqual([]);
   });
 
-  it('reste court : rien au-dessus d une demi-heure', () => {
+  it('stays short: nothing over half an hour', () => {
     const longues = activities.filter((a) => a.duration_minutes > 30).map((a) => [a.title, a.duration_minutes]);
     expect(longues).toEqual([]);
   });
 
-  it('propose surtout des formats de moins de dix minutes', () => {
+  it('mostly offers formats under ten minutes', () => {
     const courtes = activities.filter((a) => a.duration_minutes <= 10);
     expect(courtes.length / activities.length).toBeGreaterThan(0.75);
   });
@@ -56,7 +56,7 @@ describe('the activity catalogue', () => {
     expect(activities.filter((a) => a.energy_required === 'eleve').map((a) => a.title)).toEqual([]);
   });
 
-  it('n utilise que des valeurs que la base accepte', () => {
+  it('uses only values the database accepts', () => {
     const invalides = activities.filter(
       (a) =>
         !ENERGIES.includes(a.energy_required) ||
@@ -67,7 +67,7 @@ describe('the activity catalogue', () => {
     expect(invalides.map((a) => a.title)).toEqual([]);
   });
 
-  it('reste parcimonieux sur les objectifs', () => {
+  it('stays sparing with the goals it claims', () => {
     // A comic answers “cut down on screens”. It does not have to promise confidence and energy
     // as well: a catalogue that promises everything recommends nothing.
     const bavardes = activities.filter((a) => a.tags.length === 0 || a.tags.length > 2);
@@ -91,8 +91,8 @@ describe('the activity catalogue', () => {
     expect(gratuites.length / activities.length).toBeGreaterThan(0.9);
   });
 
-  it('propose de quoi voir quelqu un sans rendez-vous', () => {
-    // Le lien social exigeait jusqu'ici une personne disponible tout de suite. Quelques
+  it('offers a way to reach somebody without arranging anything', () => {
+    // Social contact used to require somebody free right then. A few of these
     // activities have to be complete once a message is sent, with no reply expected.
     const sansRendezVous = activities.filter((a) => a.category === 'social' && a.duration_minutes <= 5);
     expect(sansRendezVous.length).toBeGreaterThanOrEqual(2);

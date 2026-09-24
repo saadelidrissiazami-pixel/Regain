@@ -16,7 +16,7 @@ type IconName = ComponentProps<typeof Thumbnail>['icon'];
 
 /**
  * The activity to do now: the time, the what, the why, and one single action.
- * `footer` accueille le check-in « Comment te sens-tu maintenant ? ».
+ * `footer` holds the “How are you feeling right now?” check-in.
  */
 export function NowCard({
   label,

@@ -19,7 +19,7 @@ function slot(overrides: Partial<AvailabilitySlot>): AvailabilitySlot {
   };
 }
 
-// 2026-09-14 est un lundi.
+// 2026-09-14 is a Monday.
 const MONDAY = '2026-09-14';
 
 describe('the start time of activities', () => {
@@ -41,7 +41,7 @@ describe('the start time of activities', () => {
     expect(resolveStartTime({ date: MONDAY, time_slot: 'matin' }, [])).toBe('09:00');
   });
 
-  it('construit une date locale', () => {
+  it('builds a local date', () => {
     const start = activityStartDate({ date: MONDAY, time_slot: 'soir' }, [slot({})]);
     expect([start.getFullYear(), start.getMonth(), start.getDate(), start.getHours(), start.getMinutes()]).toEqual([2026, 8, 14, 18, 30]);
   });

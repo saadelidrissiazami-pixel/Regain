@@ -12,7 +12,7 @@ const INTER: Record<FontWeight, string> = {
 
 /**
  * SF Pro (the system font) on iOS, Inter elsewhere. On iOS the weight goes through fontWeight;
- * avec Inter, chaque graisse est une famille distincte.
+ * with Inter, each weight is a separate family.
  */
 export function font(weight: FontWeight = 400): TextStyle {
   if (Platform.OS === 'ios') return { fontFamily: 'System', fontWeight: String(weight) as TextStyle['fontWeight'] };
@@ -25,7 +25,7 @@ type Variant = {
   weight: FontWeight;
   letterSpacing?: number;
   uppercase?: boolean;
-  /** Plafond de Dynamic Type : les grands titres grossissent moins que le texte courant. */
+  /** A Dynamic Type ceiling: large titles grow less than running text does. */
   maxScale: number;
 };
 

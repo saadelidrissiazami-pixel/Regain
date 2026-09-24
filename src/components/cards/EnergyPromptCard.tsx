@@ -15,7 +15,7 @@ import { energyChoice, EnergySelector } from './EnergySelector';
 
 /**
  * “How is your energy today?” opens the check-in. Once answered, the card recalls the level
- * et, s'il est bas, propose une respiration courte.
+ * and, when it is low, offers a short breathing session.
  */
 export function EnergyPromptCard() {
   const theme = useTheme();

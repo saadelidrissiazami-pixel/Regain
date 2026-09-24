@@ -3,12 +3,12 @@ import { describe, expect, it } from 'vitest';
 import { contrastRatio, PALETTES, themeVariables, toRgbTriplet, variableName } from '../src/theme/colors';
 
 describe('theme variables', () => {
-  it('convertit les couleurs au format attendu par NativeWind', () => {
+  it('converts the colours into the form NativeWind expects', () => {
     expect(toRgbTriplet('#1F7F74')).toBe('31 127 116');
     expect(themeVariables(PALETTES.light)['--color-bg']).toBe('245 250 248');
   });
 
-  it('nomme les variables comme les classes Tailwind', () => {
+  it('names the variables the way the Tailwind classes do', () => {
     expect(variableName('primary600')).toBe('--color-primary-600');
     expect(variableName('ink2')).toBe('--color-ink-2');
     expect(variableName('onPrimary')).toBe('--color-on-primary');

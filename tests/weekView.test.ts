@@ -62,7 +62,7 @@ describe('buildWeekView', () => {
     ]);
   });
 
-  it('compte ce qui est fait sur toute la semaine', () => {
+  it('counts what is done across the whole week', () => {
     const view = buildWeekView(items, '2026-09-17');
     expect([view.doneCount, view.totalCount]).toEqual([1, 5]);
   });
@@ -72,9 +72,9 @@ describe('buildWeekView', () => {
   });
 });
 
-describe('phrase du coach', () => {
+describe('the coach’s line', () => {
   const base = { hasPlan: true, doneCount: 0, totalCount: 8, pendingToday: 1, hour: 15 };
-  it('encourage quand la semaine avance', () => {
+  it('encourages when the week is getting on', () => {
     expect(coachLine({ ...base, doneCount: 3 })).toBe('Keep going — you are doing well.');
   });
   it('says what is planned at the start of the week', () => {

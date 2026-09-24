@@ -5,21 +5,22 @@ import type { NarratedBlock } from '../src/features/wellbeing/types';
 
 // Three blocks deliberately measured by hand: 10 + 5, 20 + 30, 15 + 10 = 90 seconds.
 const BLOCKS: NarratedBlock[] = [
-  { text: 'Installe-toi comme tu peux.', speakSeconds: 10, silenceSeconds: 5 },
-  { text: 'Remarque le contact de ton corps.', speakSeconds: 20, silenceSeconds: 30 },
+  { text: 'Settle however you can.', speakSeconds: 10, silenceSeconds: 5 },
+  { text: 'Notice where your body makes contact.', speakSeconds: 20, silenceSeconds: 30 },
   { text: 'The session is coming to an end.', speakSeconds: 15, silenceSeconds: 10 },
 ];
 
 describe('speaking time', () => {
-  it('estime environ deux mots par seconde', () => {
-    // 22 mots ≈ 10 s.
-    const text = 'un deux trois quatre cinq six sept huit neuf dix onze douze treize quatorze quinze seize dix-sept dix-huit dix-neuf vingt vingt-et-un vingt-deux';
+  it('estimates about two words a second', () => {
+    // 22 words ≈ 10 s.
+    const text =
+      'one two three four five six seven eight nine ten eleven twelve thirteen fourteen fifteen sixteen seventeen eighteen nineteen twenty twenty-one twenty-two';
     expect(speakEstimate(text)).toBe(10);
   });
 
-  it('ne descend jamais sous quatre secondes', () => {
-    // Une phrase de trois mots lue en une seconde ne laisserait pas le temps de l'entendre.
-    expect(speakEstimate('Respire doucement.')).toBe(4);
+  it('never goes below four seconds', () => {
+    // A three-word sentence read in one second would leave no time to hear it.
+    expect(speakEstimate('Breathe gently.')).toBe(4);
   });
 
   it('returns zero for empty text', () => {
@@ -33,7 +34,7 @@ describe('speaking time', () => {
 });
 
 describe('total length', () => {
-  it('additionne parole et silences', () => {
+  it('adds up speech and silences', () => {
     expect(narratedDuration(BLOCKS)).toBe(90);
   });
 
@@ -47,7 +48,7 @@ describe('total length', () => {
 });
 
 describe('position within the session', () => {
-  it('commence par la voix du premier bloc', () => {
+  it('starts with the first block’s voice', () => {
     expect(blockAt(BLOCKS, 0)).toEqual({ index: 0, phase: 'voice', remaining: 10 });
   });
 
@@ -61,7 +62,7 @@ describe('position within the session', () => {
     expect(blockAt(BLOCKS, 15)).toEqual({ index: 1, phase: 'voice', remaining: 20 });
   });
 
-  it('trouve le bon bloc au milieu d un long silence', () => {
+  it('finds the right block in the middle of a long silence', () => {
     expect(blockAt(BLOCKS, 50)).toEqual({ index: 1, phase: 'silence', remaining: 15 });
   });
 
@@ -69,7 +70,7 @@ describe('position within the session', () => {
     expect(blockAt(BLOCKS, 89)).toEqual({ index: 2, phase: 'silence', remaining: 1 });
   });
 
-  it('signale la fin en ne renvoyant plus rien', () => {
+  it('signals the end by returning nothing at all', () => {
     // That null is what ends the session: the player has no other counter.
     expect(blockAt(BLOCKS, 90)).toBeNull();
     expect(blockAt(BLOCKS, 1000)).toBeNull();
@@ -95,7 +96,7 @@ describe('position within the session', () => {
 
   it('walks the whole session with no gap and no overlap', () => {
     // Second by second: every instant belongs to exactly one block, and the index only
-    // recule jamais.
+    // ever moves forward.
     let precedent = -1;
     for (let t = 0; t < narratedDuration(BLOCKS); t += 1) {
       const position = blockAt(BLOCKS, t);

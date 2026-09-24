@@ -51,7 +51,7 @@ function exerciseDef(name: string) {
   return def;
 }
 
-describe('lecture des textes libres', () => {
+describe('reading the free-text fields', () => {
   it('recognises the common allergies, whatever the case', () => {
     expect(parseAllergies('LACTOSE intolerant, allergic to nuts and to eggs')).toEqual(
       expect.arrayContaining(['lactose', 'fruits_a_coque', 'oeufs'])
@@ -130,7 +130,7 @@ describe('intensityFromCheckin', () => {
     expect(intensityFromCheckin({ sessions_done: 3, energy: 4 }, 3)).toBe(1);
   });
 
-  it('garde le rythme sinon, et sans bilan', () => {
+  it('keeps the rhythm otherwise, and with no check-in', () => {
     expect(intensityFromCheckin({ sessions_done: 2, energy: 3 }, 3)).toBe(0);
     expect(intensityFromCheckin(undefined, 3)).toBe(0);
   });
@@ -156,7 +156,7 @@ describe('the recipe library', () => {
 });
 
 describe('buildMealPlan', () => {
-  it('ajuste les portions pour rester proche de la cible calorique', () => {
+  it('scales the portions to stay close to the calorie target', () => {
     const profiles: FitnessProfileInput[] = [
       BASE,
       { ...BASE, sex: 'femme', birth_year: 2004, height_cm: 155, weight_kg: 45, activity_level: 'sedentaire' },
@@ -209,7 +209,7 @@ describe('buildMealPlan', () => {
     expect(all).not.toMatch(/\d+ g bananas/);
   });
 
-  it('construit une liste de courses pour toute la semaine', () => {
+  it('builds a shopping list for the whole week', () => {
     const plan = buildMealPlan(BASE, targetsFor(BASE));
     expect(plan.shoppingList.length).toBeGreaterThan(5);
     expect(new Set(plan.shoppingList.map((i) => i.item)).size).toBe(plan.shoppingList.length);
@@ -217,7 +217,7 @@ describe('buildMealPlan', () => {
 });
 
 describe('formatQuantity', () => {
-  it('convertit en kg / L et arrondit vers le haut', () => {
+  it('converts to kg / L and rounds up', () => {
     expect(formatQuantity(1250, INGREDIENTS.riz_basmati)).toBe('1.25 kg');
     expect(formatQuantity(1500, INGREDIENTS.lait_demi_ecreme)).toBe('1.5 L');
     expect(formatQuantity(137, INGREDIENTS.brocoli)).toBe('140 g');
@@ -276,9 +276,9 @@ describe('affectsPlan', () => {
     expect(affectsPlan(BASE, { ...BASE, goals: ['prise_masse'] })).toBe(true);
   });
 
-  it("ignore les colonnes que la base ajoute autour du profil", () => {
-    // fetchFitnessProfile fait select('*') : le profil lu contient des colonnes que le
-    // formulaire ne reconstruit pas. Les compter comme disparues rendait tout enregistrement
+  it('ignores the columns the database adds around the profile', () => {
+    // fetchFitnessProfile does select('*'), so the profile read back holds columns the form
+    // never rebuilds. Counting those as vanished made every save look
     // “changed”, and regenerated a programme nobody had asked to change.
     const fromDatabase = {
       ...BASE,
@@ -291,7 +291,7 @@ describe('affectsPlan', () => {
     expect(affectsPlan(fromDatabase, { ...BASE, diet: 'vegan' })).toBe(true);
   });
 
-  it('ignore ce qui ne change pas le plan produit', () => {
+  it('ignores what does not change the plan produced', () => {
     expect(affectsPlan(BASE, { ...BASE })).toBe(false);
     // The order of the goals has no effect on the generation.
     const twoGoals: FitnessProfileInput = { ...BASE, goals: ['perte_poids', 'endurance'] };

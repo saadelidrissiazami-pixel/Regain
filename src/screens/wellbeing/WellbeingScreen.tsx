@@ -178,7 +178,7 @@ export default function WellbeingScreen() {
           >
             <Ionicons name="chatbubble-ellipses-outline" size={18} color={theme.primary600} />
             <Text variant="caption" tone="ink2" style={{ flex: 1, fontStyle: 'italic' }}>
-              « {quoteOfTheDay(today)} »
+              “{quoteOfTheDay(today)}”
             </Text>
           </View>
         </>

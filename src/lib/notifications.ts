@@ -123,7 +123,7 @@ export async function scheduleTrialReminder(trialEnd: Date): Promise<boolean> {
   // How much notice depends on the trial's length, so it is read back off the date chosen rather
   // than stated as a fixed delay — otherwise a reminder sent the day before would say “in 2 days”.
   const daysLeft = Math.round((trialEnd.getTime() - date.getTime()) / 86_400_000);
-  const when = daysLeft <= 1 ? 'demain' : `dans ${daysLeft} jours`;
+  const when = daysLeft <= 1 ? 'tomorrow' : `in ${daysLeft} days`;
 
   await Notifications.cancelScheduledNotificationAsync(TRIAL_REMINDER_ID).catch(() => {});
   await Notifications.scheduleNotificationAsync({

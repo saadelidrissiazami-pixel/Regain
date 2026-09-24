@@ -1,4 +1,4 @@
-"""Ambiances calmes originales pour Regain, en boucles sans couture.
+"""Original calm ambiences for Regain, as seamless loops.
 
 Everything is synthesised here (no external samples): the files belong to the project.
 
@@ -66,12 +66,12 @@ def one_pole_lowpass(samples, cutoff: float, passes: int = 1):
                 y = (1 - a) * out[i] + a * y
                 if _warm == 1:
                     out[i] = y
-            # premier tour : on ne garde rien
+            # first pass: nothing is kept
     return out
 
 
 def nappe():
-    """Nappe douce : accord de la mineur 9 qui respire lentement."""
+    """Soft pad: an A minor 9 chord breathing slowly."""
     voices = [
         (110.00, 0.30, 2), (164.81, 0.22, 3), (220.00, 0.20, 4),
         (246.94, 0.10, 5), (261.63, 0.16, 3), (329.63, 0.12, 2),
@@ -150,7 +150,7 @@ def vagues():
     out = array("f", [0.0]) * total
     w = TAU * 10 / N
     for i in range(total):
-        swell = (1 - math.cos(w * i)) / 2  # 0 → 1 → 0 sur chaque vague
+        swell = (1 - math.cos(w * i)) / 2  # 0 → 1 → 0 across each wave
         env = 0.25 + 0.75 * swell ** 1.6
         out[i] = brown[i] * env + foam[i] * 0.35 * swell ** 3
     return loop_crossfade(one_pole_lowpass(out, 1400), fade)
@@ -162,7 +162,7 @@ def bol():
     base = 196.0  # sol grave
     partials = [(1.0, 1.0, 11.0), (2.76, 0.45, 7.0), (5.40, 0.22, 4.0), (8.93, 0.10, 2.0)]
     out = array("f", [0.0]) * N
-    # Bourdon : quinte grave qui respire, en cycles entiers sur la boucle
+    # The drone: a low fifth that breathes, in whole cycles over the loop
     for freq, amp in ((snap(98.0), 0.07), (snap(147.0), 0.04)):
         for i in range(N):
             out[i] += amp * (0.6 + 0.4 * math.sin(TAU * 3 * i / N)) * math.sin(TAU * freq * i / RATE)

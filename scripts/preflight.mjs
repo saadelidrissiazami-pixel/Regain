@@ -9,7 +9,7 @@
  */
 import { readFileSync } from 'node:fs';
 
-// En local, les variables sont dans .env ; sur les serveurs EAS, dans l'environnement.
+// Locally the variables live in .env; on the EAS servers, in the environment.
 // We remember which ones come from the file: `.env` is not sent to the build servers, so a key
 // that only exists there will never reach production and must not block anything.
 const fromDotEnv = new Set();
@@ -62,7 +62,7 @@ if (isProduction) {
 if (problems.length > 0) {
   console.error(`\n✖ Pre-build check (the “${profile}” profile):`);
   for (const problem of problems) console.error(`  · ${problem}`);
-  console.error('\nRenseignez ces variables sur expo.dev → projet → Environment variables, puis relancez.');
+  console.error('\nSet these on expo.dev → project → Environment variables, then run it again.');
   console.error('Details: docs/deploiement-ios.md\n');
   process.exit(1);
 }

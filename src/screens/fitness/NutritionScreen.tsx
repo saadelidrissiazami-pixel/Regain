@@ -146,7 +146,7 @@ export default function NutritionScreen() {
         <ErrorState onRetry={() => fitness.refetch()} />
       ) : !fitness.isPremium ? (
         // Without this case, a free account arriving here would read “build your programme”:
-        // une consigne qu'il ne peut pas suivre.
+        // an instruction they cannot follow.
         <EmptyState
           icon="cart-outline"
           title="Your meals and your shopping list"

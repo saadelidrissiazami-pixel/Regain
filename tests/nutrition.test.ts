@@ -8,11 +8,11 @@ import {
 } from '../src/features/fitness/nutrition';
 
 describe('computeBmr (Mifflin-St Jeor)', () => {
-  it('applique la formule homme', () => {
+  it('applies the male formula', () => {
     expect(computeBmr({ sex: 'homme', age: 30, heightCm: 180, weightKg: 80 })).toBe(1780);
   });
 
-  it('applique la formule femme', () => {
+  it('applies the female formula', () => {
     expect(computeBmr({ sex: 'femme', age: 22, heightCm: 155, weightKg: 45 })).toBeCloseTo(1147.75, 2);
   });
 });

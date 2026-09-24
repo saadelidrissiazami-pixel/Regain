@@ -13,21 +13,21 @@ describe('the wellbeing catalogue', () => {
   const seededSlugs = seeded.map((program) => program.slug).sort();
   const contentSlugs = Object.keys(CONTENT_BY_SLUG).sort();
 
-  it('lit bien les migrations', () => {
-    // Si ce test tombe seul, c'est le parseur qu'il faut corriger, pas le catalogue.
+  it('reads the migrations properly', () => {
+    // If this test fails on its own, it is the parser that needs fixing, not the catalogue.
     expect(seeded.length).toBeGreaterThan(0);
     expect(seeded.every((program) => program.category && program.duration_minutes > 0)).toBe(true);
   });
 
   it('knows how to play every session in the database', () => {
-    // C'est le sens qui fait mal. Une ligne en base sans texte dans l'application donne
+    // This is the direction that hurts. A row in the database with no text in the app gives
     // “Session not found” to somebody who tapped on it, which is exactly what build 3 lived
     // through when the SOS sessions arrived before it did.
     expect(seededSlugs.filter((slug) => !CONTENT_BY_SLUG[slug])).toEqual([]);
   });
 
   it('tolerates text that runs ahead of the database', () => {
-    // L'autre sens est sans danger : fetchPrograms ne renvoie que ce qu'il sait jouer, donc une
+    // The other direction is harmless: fetchPrograms only returns what it can play, so
     // a session written but not yet inserted simply stays invisible. That is what makes it
     // possible to write 1.1 while 1.0 is in review.
     const enAvance = contentSlugs.filter((slug) => !seededSlugs.includes(slug));

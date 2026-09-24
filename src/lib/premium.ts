@@ -15,7 +15,7 @@ export function usePremium() {
   // unlocked in development so the paid features can be tested.
   // As soon as a key is present in a build (the Test Store included), the real entitlement is what
   // counts; a production build never grants access without a subscription.
-  // EXPO_PUBLIC_SIMULATE_FREE=1 : voir l'app comme un utilisateur gratuit (cadenas, paywall).
+  // EXPO_PUBLIC_SIMULATE_FREE=1: see the app as a free user does (padlocks, paywall).
   if (__DEV__ && process.env.EXPO_PUBLIC_SIMULATE_FREE === '1') {
     return { isPremium: false, isLoading: false, isPurchasesConfigured, isDevUnlock: false };
   }
