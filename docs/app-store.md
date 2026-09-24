@@ -1,145 +1,175 @@
-# Fiche App Store de Regain
+# Regain's App Store listing
 
-Textes prêts à coller dans App Store Connect. Les limites de caractères d'Apple sont respectées.
+Text ready to paste into App Store Connect. Apple's character limits are respected.
 
-## Identité
+> **The listing's language changed with 1.2.** The app is now in English, and
+> [eas.json](../eas.json) submits with `"language": "en-US"`. App Store Connect keeps the app's
+> **primary language** as a separate setting on the app record itself: it has to be switched to
+> English there, or the English listing will sit underneath a French primary. The French text of
+> this file is in the history, at the 1.1 tag, if a French localisation is ever added back.
 
-| Champ | Valeur | Limite |
+## Identity
+
+| Field | Value | Limit |
 |---|---|---|
-| Nom | `Regain — Routine & Bien-être` | 30 |
-| Sous-titre | `Routine, bien-être et forme` | 30 |
-| Catégorie principale | Santé et forme | — |
-| Catégorie secondaire | Style de vie | — |
-| Classification | 4+ | — |
-| Identifiant de lot | `com.saadelidrissiazami.regain` | — |
-| Identifiant Apple de l'app | `6814269226` | — |
+| Name | `Regain — Routine & Wellbeing` | 30 |
+| Subtitle | `Routine, wellbeing, fitness` | 30 |
+| Primary category | Health & Fitness | — |
+| Secondary category | Lifestyle | — |
+| Age rating | 4+ | — |
+| Bundle identifier | `com.saadelidrissiazami.regain` | — |
+| Apple ID for the app | `6814269226` | — |
 
-> « Regain » seul était déjà déposé par une autre app : le titre de la fiche doit être unique sur
-> tout l'App Store. Sous l'icône, l'app reste **Regain** (`name` dans [app.json](../app.json)),
-> et c'est aussi le nom affiché dans les réglages d'abonnement Apple.
+> “Regain” on its own was already taken by another app: a listing's name has to be unique across
+> the whole App Store. Under the icon the app stays **Regain** (`name` in
+> [app.json](../app.json)), and that is also the name shown in Apple's subscription settings.
 
-## Abonnements créés
+## Subscriptions already created
 
-| Produit | Identifiant | Prix | Offre | Identifiant Apple |
+| Product | Identifier | Price | Offer | Apple ID |
 |---|---|---|---|---|
-| Annuel | `regain_premium_annual` | 49,99 € | 3 jours offerts, sans date de fin | `6814269327` |
-| Mensuel | `regain_premium_monthly` | 9,99 € | aucune | `6814271015` |
+| Yearly | `regain_premium_annual` | €49.99 | 3 days free, no end date | `6814269327` |
+| Monthly | `regain_premium_monthly` | €9.99 | none | `6814271015` |
 
-Groupe **Regain Premium** (`22400015`), affiché « Regain » dans les réglages Apple. Les prix des
-174 autres pays ont été calculés par Apple à partir du prix français. Les deux produits sont en
-« Finaliser avant soumission » : ils partiront avec la première version de l'app, et chacun
-attend une capture de l'écran d'abonnement pour la revue.
+Group **Regain Premium** (`22400015`), shown as “Regain” in Apple's settings. Prices for the other
+174 countries were worked out by Apple from the euro price. Both products are set to “Submit with
+the app”: they go out with the first version, and each one needs a screenshot of the subscription
+screen for review.
 
-## Texte promotionnel (modifiable sans nouvelle version, 170 caractères)
+The display names of the two products and of the group live in App Store Connect, not in this
+repository — if they were entered in French, they need changing there too.
+
+## Promotional text (editable without a new version, 170 characters)
 
 ```
-Un planning réaliste, des séances guidées et un coach forme. Regain part de votre énergie du
-moment, pas d'un idéal.
+A realistic weekly plan, guided sessions and a fitness coach. Regain starts from the energy you
+have today, not from an ideal.
 ```
 
 ## Description
 
 ```
-Regain vous aide à reconstruire une routine qui tient, sans culpabilité.
+Regain helps you rebuild a routine that holds, without the guilt.
 
-VOTRE SEMAINE, À VOTRE RYTHME
-Dites à Regain quand vous êtes libre et comment vous vous sentez. Il place des activités dans vos
-disponibilités, à la bonne heure, selon votre énergie du moment. Une activité à la fois, jamais une
-liste écrasante.
+YOUR WEEK, AT YOUR PACE
+Tell Regain when you are free and how you feel. It places activities into the time you have, at the
+right hour, around the energy you actually have today. One activity at a time, never an
+overwhelming list.
 
-DES SÉANCES DE BIEN-ÊTRE GUIDÉES
-Respiration, méditation, journaling, confiance en soi, sommeil, et des séances discrètes à faire
-en public. De une à neuf minutes. Guidage vocal en option, musiques d'ambiance composées pour
-l'app, et un décompte de dix secondes pour vous installer.
+GUIDED WELLBEING SESSIONS
+Breathing, meditation, journaling, confidence, sleep, and quiet sessions you can do in public. One
+to nine minutes. Optional voice guidance, background music written for the app, and a ten-second
+countdown to settle in.
 
-UN JOURNAL QUI VOUS REGARDE AVANCER
-À la fin de chaque séance, notez comment vous vous sentez et répondez à deux questions adaptées à
-la séance. Tout se relit dans votre journal, et votre suivi montre l'évolution de vos ressentis.
+A JOURNAL THAT WATCHES YOU GET ON
+At the end of each session, note how you feel and answer two questions written for that session.
+It all reads back in your journal, and your tracking shows how your ratings move over time.
 
-VOTRE COACH FORME (PREMIUM)
-Un programme de musculation à votre niveau et avec votre matériel, des menus calés sur vos besoins
-caloriques, une liste de courses prête, et un bilan hebdomadaire qui allège ou renforce la semaine
-suivante. Vos allergies et vos gênes articulaires sont respectées.
+YOUR FITNESS COACH (PREMIUM)
+A strength programme at your level and with your equipment, meals matched to your calorie needs, a
+shopping list ready to go, and a weekly check-in that eases off or steps up the week after. Your
+allergies and any joint trouble are respected.
 
-GRATUIT, VRAIMENT
-Le planning, le suivi, le journal et dix-huit séances de bien-être restent gratuits, sans limite
-de durée.
+FREE, GENUINELY
+The plan, the tracking, the journal and eighteen wellbeing sessions stay free, with no time limit.
 
 REGAIN PREMIUM
-49,99 €/an avec 3 jours d'essai gratuit, ou 9,99 €/mois. L'abonnement se renouvelle
-automatiquement sauf résiliation au moins 24 h avant la fin de la période. Résiliable à tout
-moment depuis les réglages de votre compte App Store.
+€49.99/year with a 3-day free trial, or €9.99/month. The subscription renews automatically unless
+it is cancelled at least 24 hours before the end of the period. Cancel any time from your App Store
+account settings.
 
-Regain ne pose pas de diagnostic et ne remplace pas l'avis d'un professionnel de santé.
+Regain does not diagnose anything and is no substitute for a health professional.
 ```
 
-## Mots-clés (100 caractères, séparés par des virgules, sans espace)
+## Keywords (100 characters, comma-separated, no spaces)
 
 ```
-routine,habitudes,bien-être,méditation,respiration,sommeil,musculation,planning,énergie,journal
+routine,habits,wellbeing,meditation,breathing,sleep,strength,planner,energy,journal,anxiety,burnout
 ```
 
-## Adresses
+## Addresses
 
-| Champ | Valeur |
+| Field | Value |
 |---|---|
-| URL d'assistance | `https://saadelidrissiazami-pixel.github.io/Regain/` |
-| URL marketing | facultative |
-| Politique de confidentialité | `https://saadelidrissiazami-pixel.github.io/Regain/legal/politique-de-confidentialite` |
+| Support URL | `https://saadelidrissiazami-pixel.github.io/Regain/` |
+| Marketing URL | optional |
+| Privacy policy | `https://saadelidrissiazami-pixel.github.io/Regain/legal/privacy-policy` |
 
-## Captures d'écran
+The English legal pages are new ([privacy-policy.md](legal/privacy-policy.md),
+[terms-of-use.md](legal/terms-of-use.md)); the French ones stay published for the versions already
+installed. The two links the subscription screen shows come from EAS environment variables, so they
+have to be repointed for `production` and `preview`:
 
-Obligatoire : iPhone 6,9 pouces (1320 × 2868). Les autres tailles sont déduites par Apple.
-À prendre sur un compte de démonstration, jamais sur ton compte personnel :
+```bash
+npx eas-cli@latest env:create --name EXPO_PUBLIC_PRIVACY_URL --value https://saadelidrissiazami-pixel.github.io/Regain/legal/privacy-policy --environment production --environment preview --visibility plaintext --force
+```
+
+```bash
+npx eas-cli@latest env:create --name EXPO_PUBLIC_TERMS_URL --value https://saadelidrissiazami-pixel.github.io/Regain/legal/terms-of-use --environment production --environment preview --visibility plaintext --force
+```
+
+Without that, the paywall keeps linking to the French pages — which still works, but an English
+listing pointing at a French policy is worth avoiding.
+
+## Screenshots
+
+Required: iPhone 6.9 inch (1320 × 2868). Apple derives the other sizes.
+Take them on a demo account, never on your personal one:
 
 ```bash
 xcrun simctl boot "iPhone 18 Pro Max"
+```
+
+```bash
 xcrun simctl io booted screenshot ~/Desktop/regain-1.png
 ```
 
-Ordre conseillé : Planning (carte « À suivre »), séance de bien-être en cours, journal et
-ressentis, coach forme (programme), écran d'abonnement.
+Suggested order: Plan (the “Up next” card), a wellbeing session under way, the journal and its
+ratings, the fitness coach (programme), the subscription screen.
 
-## Notes pour l'équipe de revue
+**The screenshots from 1.1 are in French and cannot be reused.** They have to be retaken on the
+English build.
+
+## Notes for the review team
 
 ```
-Compte de démonstration :
-  e-mail : saadelidrissiazami+demo@gmail.com
-  mot de passe : [celui choisi au moment du remplissage — jamais écrit ici]
+Demo account:
+  email: saadelidrissiazami+demo@gmail.com
+  password: [the one chosen when filling this in — never written here]
 
-Ce compte contient déjà des disponibilités, un planning, des séances terminées et un programme
-forme, pour que tout soit visible immédiatement.
+This account already has free times, a plan, finished sessions and a fitness programme, so
+everything is visible straight away.
 
-Abonnement : l'onglet « Forme » et les séances marquées d'un cadenas ouvrent l'écran d'abonnement
-(essai gratuit de 3 jours, puis 49,99 €/an, ou 9,99 €/mois). Le bouton « Restaurer mes achats »
-est sur ce même écran, et « Gérer mon abonnement » dans l'onglet Profil.
+Subscription: the “Fitness” tab and any session marked with a padlock open the subscription screen
+(3-day free trial, then €49.99/year, or €9.99/month). “Restore purchases” is on that same screen,
+and “Manage my subscription” is in the Profile tab.
 
-Suppression du compte : onglet Profil → « Supprimer mon compte ». L'effacement est immédiat.
+Deleting the account: Profile tab → “My data” → “Delete permanently”. Erasure is immediate.
 
-Localisation : demandée uniquement si l'utilisateur ouvre une activité de marche, pour tracer un
-itinéraire. Elle n'est pas enregistrée.
+Location: only asked for if the user opens a walking activity, in order to draw a route. It is not
+stored.
 ```
 
-## Questionnaire « Confidentialité de l'app »
+## The “App Privacy” questionnaire
 
-| Donnée | Collectée | Liée à l'identité | Suivi publicitaire | Usage |
+| Data | Collected | Linked to identity | Used for tracking | Purpose |
 |---|---|---|---|---|
-| Adresse e-mail | oui | oui | non | Fonctionnement de l'app |
-| Santé et forme (poids, taille, objectifs, allergies, remarques de santé) | oui | oui | non | Fonctionnement de l'app |
-| Contenus créés (notes, ressentis, réponses, messages au coach) | oui | oui | non | Fonctionnement de l'app |
-| Identifiant utilisateur | oui | oui | non | Fonctionnement de l'app |
-| Achats | oui | oui | non | Fonctionnement de l'app |
-| Position précise | oui | non | non | Fonctionnement de l'app |
-| Données d'usage, contacts, photos, historique de navigation | non | — | — | — |
+| Email address | yes | yes | no | App functionality |
+| Health & fitness (weight, height, goals, allergies, health notes) | yes | yes | no | App functionality |
+| User content (notes, ratings, answers, messages to the coach) | yes | yes | no | App functionality |
+| User ID | yes | yes | no | App functionality |
+| Purchases | yes | yes | no | App functionality |
+| Precise location | yes | no | no | App functionality |
+| Usage data, contacts, photos, browsing history | no | — | — | — |
 
-Réponses aux autres questions : aucune publicité, aucune analyse tierce, aucun suivi entre apps
-(donc pas de demande de suivi App Tracking Transparency).
+Answers to the other questions: no advertising, no third-party analytics, no tracking across apps
+(so no App Tracking Transparency prompt).
 
-Les messages écrits au coach Premium sont envoyés à **Anthropic** pour produire la réponse : à
-déclarer comme sous-traitant, et mentionné dans la politique de confidentialité. Le reste de
-l'app — planning, séances, programme, menus, courses — est calculé sur l'appareil, sans IA.
+Messages written to the Premium coach are sent to **Anthropic** to produce the reply: to be
+declared as a processor, and mentioned in the privacy policy. The rest of the app — the plan, the
+sessions, the programme, the meals, the shopping — is computed on the device, with no AI.
 
-## Conformité à l'export
+## Export compliance
 
-Déjà déclaré dans `app.json` (`usesNonExemptEncryption: false`) : l'app n'utilise que le
-chiffrement standard d'iOS et HTTPS. Apple ne posera plus la question à chaque envoi.
+Already declared in `app.json` (`usesNonExemptEncryption: false`): the app uses only iOS's standard
+encryption and HTTPS. Apple will not ask again on each submission.

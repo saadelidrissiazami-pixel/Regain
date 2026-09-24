@@ -4,15 +4,18 @@ title: Regain
 
 # Regain
 
-Application mobile de planification et de bien-être : un planning réaliste, des séances guidées
-et un coach forme.
+A mobile planning and wellbeing app: a realistic weekly plan, guided sessions and a fitness coach.
 
-## Informations légales
+## Legal
 
-- [Politique de confidentialité](legal/politique-de-confidentialite)
-- [Conditions d'utilisation](legal/conditions-utilisation)
+- [Privacy policy](legal/privacy-policy)
+- [Terms of use](legal/terms-of-use)
+
+The French pages remain available for earlier versions of the app:
+[politique de confidentialité](legal/politique-de-confidentialite),
+[conditions d'utilisation](legal/conditions-utilisation).
 
 ## Contact
 
-Une question, une demande sur vos données, un problème dans l'app :
+A question, a request about your data, a problem in the app:
 [saadelidrissiazami@gmail.com](mailto:saadelidrissiazami@gmail.com)
