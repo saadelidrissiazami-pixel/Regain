@@ -38,7 +38,8 @@ import { useAuthStore } from '../../store/authStore';
 import { useTheme } from '../../theme/ThemeProvider';
 
 type Tab = 'overview' | 'fitness' | 'wellbeing' | 'nutrition';
-const DAY_LETTERS = ['D', 'L', 'M', 'M', 'J', 'V', 'S'];
+// Indexed by Date.getDay(), so Sunday comes first.
+const DAY_LETTERS = ['S', 'M', 'T', 'W', 'T', 'F', 'S'];
 
 /** Tracking: “Am I making progress?” */
 export default function TrackingScreen() {

@@ -6,7 +6,7 @@ import { useTheme } from '../../theme/ThemeProvider';
 import { Card } from '../ui/Card';
 import { Text } from '../ui/Text';
 
-const SHORT = ['Lun', 'Mar', 'Mer', 'Jeu', 'Ven', 'Sam', 'Dim'];
+const SHORT = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'];
 const LONG = ['lundi', 'mardi', 'mercredi', 'jeudi', 'vendredi', 'samedi', 'dimanche'];
 
 /** The week's sessions: one circle per day, ticked once the session is done. */

@@ -7,7 +7,7 @@ import { PressableScale } from '../ui/motion';
 import { Text } from '../ui/Text';
 import type { DayMarker } from './WeekSelector';
 
-const HEADERS = ['L', 'M', 'M', 'J', 'V', 'S', 'D'];
+const HEADERS = ['M', 'T', 'W', 'T', 'F', 'S', 'S'];
 const MONTH_FORMATTER = new Intl.DateTimeFormat('fr-FR', { month: 'long', year: 'numeric' });
 
 /** The dates shown for a month (whole weeks, Monday to Sunday). */

@@ -5,7 +5,7 @@ import { useTheme } from '../../theme/ThemeProvider';
 import { PressableScale } from '../ui/motion';
 import { Text } from '../ui/Text';
 
-const SHORT_DAYS = ['Lun', 'Mar', 'Mer', 'Jeu', 'Ven', 'Sam', 'Dim'];
+const SHORT_DAYS = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'];
 const LONG_DAYS = ['lundi', 'mardi', 'mercredi', 'jeudi', 'vendredi', 'samedi', 'dimanche'];
 
 export type DayMarker = { count: number; done: number };
