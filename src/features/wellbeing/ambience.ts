@@ -1,3 +1,4 @@
+import { t } from '../../lib/i18n';
 // Background music for sessions: four original loops (assets/audio), written for Regain and so
 // free of any licence. When they start: automatically for Sleep and Meditation, never for
 // “In public” (a surprise sound on a crowded train), and by choice everywhere else.
@@ -6,10 +7,10 @@ export type AmbienceId = 'nappe' | 'pluie' | 'vagues' | 'bol';
 export type AmbienceChoice = AmbienceId | 'off';
 
 export const AMBIENCES: { id: AmbienceId; label: string; description: string }[] = [
-  { id: 'nappe', label: 'Soft pad', description: 'A chord that breathes slowly' },
-  { id: 'pluie', label: 'Light rain', description: 'A curtain of fine rain' },
-  { id: 'vagues', label: 'Waves', description: 'A slow swell, one wave every ten seconds' },
-  { id: 'bol', label: 'Singing bowl', description: 'One resonance every sixteen seconds' },
+  { id: 'nappe', label: t('Soft pad'), description: t('A chord that breathes slowly') },
+  { id: 'pluie', label: t('Light rain'), description: t('A curtain of fine rain') },
+  { id: 'vagues', label: t('Waves'), description: t('A slow swell, one wave every ten seconds') },
+  { id: 'bol', label: t('Singing bowl'), description: t('One resonance every sixteen seconds') },
 ];
 
 /** Categories where the music starts on its own, with the ambience offered by default. */

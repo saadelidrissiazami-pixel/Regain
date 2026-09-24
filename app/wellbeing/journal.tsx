@@ -11,6 +11,7 @@ import { formatDateTimeLabel } from '../../src/lib/formatDate';
 import { fetchWellbeingJournal, type JournalEntry } from '../../src/lib/wellbeing';
 import { useAuthStore } from '../../src/store/authStore';
 import { useTheme } from '../../src/theme/ThemeProvider';
+import { locale, t } from '../../src/lib/i18n';
 
 function EntryCard({ entry }: { entry: JournalEntry }) {
   const theme = useTheme();
@@ -19,7 +20,7 @@ function EntryCard({ entry }: { entry: JournalEntry }) {
     <Card style={{ marginBottom: 12 }}>
       <View style={{ flexDirection: 'row', alignItems: 'flex-start' }}>
         <View style={{ flex: 1, paddingRight: 12 }}>
-          <Text variant="label">{entry.program?.title ?? 'Session'}</Text>
+          <Text variant="label">{entry.program?.title ?? t('Session')}</Text>
           <Text variant="caption" tone="ink2" style={{ marginTop: 2 }}>
             {formatDateTimeLabel(entry.completed_at)}
           </Text>
@@ -63,17 +64,17 @@ export default function WellbeingJournalScreen() {
 
   return (
     <Screen refreshing={journalQuery.isRefetching} onRefresh={() => journalQuery.refetch()}>
-      <ScreenHeader overline="Wellbeing" title="My journal" subtitle="How you felt and what you wrote, session after session." onBack={() => goBack('/(tabs)/wellbeing')} />
+      <ScreenHeader overline={t('Wellbeing')} title={t('My journal')} subtitle={t('How you felt and what you wrote, session after session.')} onBack={() => goBack('/(tabs)/wellbeing')} />
       {journalQuery.isLoading ? (
         <LoadingSkeleton preset="list" />
       ) : journalQuery.isError ? (
-        <ErrorState title="Your journal could not be loaded" onRetry={() => journalQuery.refetch()} />
+        <ErrorState title={t('Your journal could not be loaded')} onRetry={() => journalQuery.refetch()} />
       ) : entries.length === 0 ? (
         <EmptyState
           icon="book-outline"
-          title="Nothing to read back yet"
-          body="At the end of each session you note how it felt and answer two questions. It all ends up here."
-          actionLabel="Pick a session"
+          title={t('Nothing to read back yet')}
+          body={t('At the end of each session you note how it felt and answer two questions. It all ends up here.')}
+          actionLabel={t('Pick a session')}
           onAction={() => router.navigate('/(tabs)/wellbeing')}
         />
       ) : (
@@ -84,11 +85,11 @@ export default function WellbeingJournalScreen() {
                 <Text variant="headline">{averageEmoji ?? '🌱'}</Text>
                 <View style={{ flex: 1 }}>
                   <Text variant="label">
-                    {entries.length} session{entries.length > 1 ? 's' : ''} finished
+                    {entries.length > 1 ? t('{count} sessions finished', { count: entries.length }) : t('{count} session finished', { count: entries.length })}
                   </Text>
                   <Text variant="caption" tone="ink2">
-                    {average === null ? 'Nothing noted yet.' : `Average feeling: ${average} out of 5`}
-                    {written > 0 ? ` · ${written} in your own words` : ''}
+                    {average === null ? t('Nothing noted yet.') : t('Average feeling: {average} out of 5', { average: average.toLocaleString(locale) })}
+                    {written > 0 ? t(' · {count} in your own words', { count: written }) : ''}
                   </Text>
                 </View>
               </View>

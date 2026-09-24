@@ -7,6 +7,7 @@ import { Card, Screen, ScreenHeader, Text } from '../../src/components/ui';
 import { SOS_CATEGORY, SOS_SLUGS, SOS_URGENCE } from '../../src/features/wellbeing/sos';
 import { useWellbeing } from '../../src/hooks/useWellbeing';
 import { goBack } from '../../src/lib/navigation';
+import { t } from '../../src/lib/i18n';
 
 /** The four emergency sessions, in order, with nothing else to choose. */
 export default function SosScreen() {
@@ -18,9 +19,9 @@ export default function SosScreen() {
   return (
     <Screen>
       <ScreenHeader
-        overline="Two minutes"
-        title="Not okay right now"
-        subtitle="One instruction at a time, eyes open. Nothing to prepare."
+        overline={t('Two minutes')}
+        title={t('Not okay right now')}
+        subtitle={t('One instruction at a time, eyes open. Nothing to prepare.')}
         onBack={() => goBack('/(tabs)/wellbeing')}
       />
 

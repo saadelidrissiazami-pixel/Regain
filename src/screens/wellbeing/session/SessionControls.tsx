@@ -5,6 +5,7 @@ import { useWindowDimensions, View } from 'react-native';
 import { haptic, PressableScale, ProgressRing, Text } from '../../../components/ui';
 import { useTheme } from '../../../theme/ThemeProvider';
 import { formatClock } from './useSessionClock';
+import { t } from '../../../lib/i18n';
 
 /** The large session ring, with the timer (or the player's content) at its centre. */
 export function SessionRing({
@@ -30,7 +31,7 @@ export function SessionRing({
         animate={false}
         trackColor={theme.dark ? theme.sage200 : 'rgba(255,255,255,0.7)'}
         color={theme.primary600}
-        accessibilityLabel={elapsed !== undefined && total !== undefined ? `${formatClock(elapsed)} of ${formatClock(total)}` : 'Session progress'}
+        accessibilityLabel={elapsed !== undefined && total !== undefined ? `${formatClock(elapsed)} of ${formatClock(total)}` : t('Session progress')}
       >
         {children ?? (
           <>
@@ -57,7 +58,7 @@ function SeekButton({ direction, onPress }: { direction: -1 | 1; onPress: () => 
       }}
       feedback={null}
       accessibilityRole="button"
-      accessibilityLabel={direction < 0 ? 'Back 15 seconds' : 'Forward 15 seconds'}
+      accessibilityLabel={direction < 0 ? t('Back 15 seconds') : t('Forward 15 seconds')}
       style={{ width: 56, height: 56, alignItems: 'center', justifyContent: 'center' }}
     >
       <Ionicons name={direction < 0 ? 'refresh' : 'refresh'} size={30} color={theme.ink} style={direction < 0 ? { transform: [{ scaleX: -1 }] } : undefined} />
@@ -86,7 +87,7 @@ export function SessionControls({
         onPress={onToggle}
         feedback="medium"
         accessibilityRole="button"
-        accessibilityLabel={running ? 'Pause' : 'Resume'}
+        accessibilityLabel={running ? t('Pause') : t('Resume')}
         style={{ width: 68, height: 68, borderRadius: 34, backgroundColor: theme.primary, alignItems: 'center', justifyContent: 'center' }}
       >
         <Ionicons name={running ? 'pause' : 'play'} size={28} color={theme.onPrimary} style={running ? undefined : { marginLeft: 3 }} />

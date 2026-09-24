@@ -18,6 +18,7 @@ import { useEnergyToday } from '../../hooks/useEnergyToday';
 import { useWellbeing } from '../../hooks/useWellbeing';
 import { useToday } from '../../lib/useCurrentDate';
 import { useTheme } from '../../theme/ThemeProvider';
+import { t } from '../../lib/i18n';
 
 /** Wellbeing: “What might help me right now?” */
 export default function WellbeingScreen() {
@@ -59,16 +60,16 @@ export default function WellbeingScreen() {
   return (
     <Screen inTabs refreshing={wellbeing.isRefetching} onRefresh={() => wellbeing.refetch()}>
       <ScreenHeader
-        overline="Take a moment"
-        title="Wellbeing"
-        subtitle="A calmer mind, a fuller life."
-        right={<IconButton icon="search" label="Search sessions" onPress={() => router.push('/wellbeing/search')} />}
+        overline={t('Take a moment')}
+        title={t('Wellbeing')}
+        subtitle={t('A calmer mind, a fuller life.')}
+        right={<IconButton icon="search" label={t('Search sessions')} onPress={() => router.push('/wellbeing/search')} />}
       />
 
       {programsQuery.isLoading ? (
         <LoadingSkeleton preset="hero" />
       ) : programsQuery.isError ? (
-        <ErrorState title="The library could not be loaded" onRetry={() => programsQuery.refetch()} retrying={programsQuery.isFetching} />
+        <ErrorState title={t('The library could not be loaded')} onRetry={() => programsQuery.refetch()} retrying={programsQuery.isFetching} />
       ) : (
         <>
           {/* Before anything else: when things are bad right now, nobody should have to browse a
@@ -78,8 +79,8 @@ export default function WellbeingScreen() {
               <View style={{ marginBottom: 18 }}>
                 <ListRow
                   icon="pulse-outline"
-                  title="Not okay right now"
-                  subtitle={`${sos.length} two-minute sessions, right now`}
+                  title={t('Not okay right now')}
+                  subtitle={t('{count} two-minute sessions, right now', { count: sos.length })}
                   onPress={() => router.push('/wellbeing/sos')}
                 />
               </View>
@@ -100,7 +101,7 @@ export default function WellbeingScreen() {
               only files things away. Progress reads at a glance. */}
           <Appear index={2}>
             <View style={{ marginTop: 28 }}>
-              <SectionHeader title="Courses" />
+              <SectionHeader title={t('Courses')} />
               {COURSES.map((course, index) => {
                 const progress = courseProgress(course, programs, wellbeing.completed);
                 return (
@@ -120,8 +121,8 @@ export default function WellbeingScreen() {
           <Appear index={2}>
             <View style={{ marginTop: 28 }}>
               <SectionHeader
-                title="Browse by theme"
-                actionLabel="See all"
+                title={t('Browse by theme')}
+                actionLabel={t('See all')}
                 onAction={() => router.push('/wellbeing/search')}
               />
               <View style={{ flexDirection: 'row', flexWrap: 'wrap', gap: 10 }}>
@@ -146,19 +147,19 @@ export default function WellbeingScreen() {
             <View style={{ marginTop: 20 }}>
               <ListRow
                 icon="book-outline"
-                title="My journal"
+                title={t('My journal')}
                 subtitle={
                   lastEntry
-                    ? `Last session: ${lastEntry.program?.title ?? 'a session'}${lastMood ? ` · ${lastMood.label.toLowerCase()}` : ''}`
-                    : 'How you felt and what you answered, session after session.'
+                    ? t('Last session: {title}', { title: lastEntry.program?.title ?? t('a session') }) + (lastMood ? ` · ${lastMood.label.toLowerCase()}` : '')
+                    : t('How you felt and what you answered, session after session.')
                 }
                 onPress={() => router.push('/wellbeing/journal')}
                 divider
               />
               <ListRow
                 icon="chatbubbles-outline"
-                title="Talk to my coach"
-                subtitle="Stress, sleep, consistency"
+                title={t('Talk to my coach')}
+                subtitle={t('Stress, sleep, consistency')}
                 onPress={() => router.push('/coach?sujet=bien-etre')}
               />
             </View>
@@ -185,7 +186,7 @@ export default function WellbeingScreen() {
       )}
 
       <Text variant="caption" tone="ink3" style={{ marginTop: 24 }}>
-        Regain does not diagnose anything and is not a substitute for care from a health professional.
+        {t('Regain does not diagnose anything and is not a substitute for care from a health professional.')}
       </Text>
     </Screen>
   );

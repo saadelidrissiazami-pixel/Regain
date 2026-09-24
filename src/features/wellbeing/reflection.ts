@@ -1,3 +1,4 @@
+import { t } from '../../lib/i18n';
 export type MoodOption = { value: number; emoji: string; label: string };
 
 /** How the session left you, compared with before: 1 = much worse … 5 = much better. */
@@ -16,34 +17,34 @@ export function moodOption(value: number | null | undefined): MoodOption | null 
 // Keyed by the stored `category`, which is an internal key rather than something to read.
 const PROMPTS_BY_CATEGORY: Record<string, string[]> = {
   Respiration: [
-    'What changed in your body during the session?',
-    'Where can you still feel tension?',
+    t('What changed in your body during the session?'),
+    t('Where can you still feel tension?'),
   ],
   Méditation: [
-    'Which thoughts came back the most?',
-    'What did you manage to let pass?',
+    t('Which thoughts came back the most?'),
+    t('What did you manage to let pass?'),
   ],
   Journaling: [
-    'What is taking up the most room in your mind today?',
-    'What small thing was good today?',
+    t('What is taking up the most room in your mind today?'),
+    t('What small thing was good today?'),
   ],
   'Confiance en soi': [
-    'What harsh thing did you say to yourself, and what would you say to a friend in the same spot?',
-    'What are you pleased with today, however small?',
+    t('What harsh thing did you say to yourself, and what would you say to a friend in the same spot?'),
+    t('What are you pleased with today, however small?'),
   ],
   Sommeil: [
-    'What is stopping you letting go tonight?',
-    'What can safely wait until tomorrow?',
+    t('What is stopping you letting go tonight?'),
+    t('What can safely wait until tomorrow?'),
   ],
   'En public': [
-    'What did you notice around you, rather than about yourself?',
-    'What turned out easier than you expected?',
+    t('What did you notice around you, rather than about yourself?'),
+    t('What turned out easier than you expected?'),
   ],
 };
 
 const DEFAULT_PROMPTS = [
-  'How are you feeling, right now?',
-  'What are you taking away from this session?',
+  t('How are you feeling, right now?'),
+  t('What are you taking away from this session?'),
 ];
 
 export function promptsForCategory(category: string | undefined): string[] {

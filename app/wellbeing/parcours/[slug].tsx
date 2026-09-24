@@ -7,6 +7,7 @@ import { Button, Card, ProgressRing, Screen, ScreenHeader, Text } from '../../..
 import { courseBySlug, courseProgress } from '../../../src/features/wellbeing/courses';
 import { useWellbeing } from '../../../src/hooks/useWellbeing';
 import { goBack } from '../../../src/lib/navigation';
+import { t } from '../../../src/lib/i18n';
 
 /** One course: its days, what is done, and where to pick up. */
 export default function CourseScreen() {
@@ -19,9 +20,9 @@ export default function CourseScreen() {
       <Screen>
         <EmptyState
           icon="search-outline"
-          title="Course not found"
-          body="You will find the courses in the Wellbeing tab."
-          actionLabel="Go back"
+          title={t('Course not found')}
+          body={t('You will find the courses in the Wellbeing tab.')}
+          actionLabel={t('Go back')}
           onAction={() => goBack('/(tabs)/wellbeing')}
         />
       </Screen>
@@ -33,7 +34,7 @@ export default function CourseScreen() {
   return (
     <Screen>
       <ScreenHeader
-        overline="Course"
+        overline={t('Course')}
         title={course.title}
         subtitle={course.subtitle}
         onBack={() => goBack('/(tabs)/wellbeing')}
@@ -60,7 +61,7 @@ export default function CourseScreen() {
       {/* Pick up, never start over: a three-week gap must not cost more than a one-day gap. */}
       {progress.nextDay ? (
         <Button
-          label={progress.doneCount === 0 ? 'Start day 1' : `Pick up at day ${progress.nextDay.day}`}
+          label={progress.doneCount === 0 ? t('Start day 1') : t('Pick up at day {day}', { day: progress.nextDay.day })}
           icon="play"
           onPress={() => router.push(wellbeing.hrefFor(progress.nextDay!.program))}
           style={{ marginBottom: 24 }}

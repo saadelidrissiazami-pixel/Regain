@@ -2,6 +2,7 @@ import { COURSE_CATEGORY } from './courses';
 import { SOS_CATEGORY } from './sos';
 import type { EnergyLevel } from '../planning/catalog';
 import type { WellbeingProgram } from './types';
+import { t } from '../../lib/i18n';
 
 export type WellbeingRecommendation = { program: WellbeingProgram; reason: string };
 
@@ -38,24 +39,24 @@ export function recommendWellbeing({ programs, completedIds, hour, energy, isPre
       const add = (weight: number, text: string) => reasons.push({ weight, text });
       const c = program.category;
 
-      if (c === 'Sommeil' && lateNight) add(3, 'To set up a calmer night.');
-      else if (c === 'Sommeil' && evening) add(1.5, 'To wind down gently at the end of the day.');
-      if (c === 'Méditation' && evening) add(1, 'To let go of the day’s tension.');
-      if (c === 'Respiration' && morning) add(1, 'To start the day well.');
-      if (c === 'Journaling' && morning) add(0.8, 'To put your thoughts down before you begin.');
+      if (c === 'Sommeil' && lateNight) add(3, t('To set up a calmer night.'));
+      else if (c === 'Sommeil' && evening) add(1.5, t('To wind down gently at the end of the day.'));
+      if (c === 'Méditation' && evening) add(1, t('To let go of the day’s tension.'));
+      if (c === 'Respiration' && morning) add(1, t('To start the day well.'));
+      if (c === 'Journaling' && morning) add(0.8, t('To put your thoughts down before you begin.'));
 
       if (energy === 'bas') {
-        if (c === 'Respiration') add(3, 'When energy is short, a few breaths help you get going.');
-        if (c === 'Méditation') add(1.2, 'A gentle pause, with no effort required.');
+        if (c === 'Respiration') add(3, t('When energy is short, a few breaths help you get going.'));
+        if (c === 'Méditation') add(1.2, t('A gentle pause, with no effort required.'));
       } else if (energy === 'eleve') {
-        if (c === 'Confiance en soi') add(2, 'Your energy is high — a good moment to work on your confidence.');
-        if (c === 'En public') add(1.5, 'Your energy is high — a good moment to stretch your comfort zone.');
+        if (c === 'Confiance en soi') add(2, t('Your energy is high — a good moment to work on your confidence.'));
+        if (c === 'En public') add(1.5, t('Your energy is high — a good moment to stretch your comfort zone.'));
       } else if (energy === 'moyen') {
-        if (c === 'Méditation') add(1, 'To settle yourself, at your own pace.');
-        if (c === 'Journaling') add(1, 'To take stock, quietly.');
+        if (c === 'Méditation') add(1, t('To settle yourself, at your own pace.'));
+        if (c === 'Journaling') add(1, t('To take stock, quietly.'));
       }
 
-      if (!completedIds.has(program.id)) add(1.5, 'A session you have not tried yet.');
+      if (!completedIds.has(program.id)) add(1.5, t('A session you have not tried yet.'));
       // On low energy, prefer the shorter sessions.
       if (energy === 'bas') add(Math.max(0, 1 - program.duration_minutes / 20), '');
 
@@ -65,7 +66,7 @@ export function recommendWellbeing({ programs, completedIds, hour, energy, isPre
         program,
         score,
         weight: best?.weight ?? 0,
-        reason: best?.text ?? 'A moment for yourself, at your own pace.',
+        reason: best?.text ?? t('A moment for yourself, at your own pace.'),
       };
     })
     .sort(

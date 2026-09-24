@@ -6,6 +6,7 @@ import { errorMessage, InlineNotice } from '../../../components/feedback';
 import { Appear, Button, Field, Screen, ScreenHeader, Text } from '../../../components/ui';
 import { cleanReflections, promptsForCategory, type Reflection } from '../../../features/wellbeing/reflection';
 import type { SessionReview as Review } from '../../../lib/wellbeing';
+import { t } from '../../../lib/i18n';
 
 /** After the session: a rating on 5 levels, open questions, a note. All of it optional. */
 export function SessionReview({
@@ -32,12 +33,12 @@ export function SessionReview({
   const submit = () => onSubmit({ mood, reflections: cleanReflections(reflections), note });
 
   return (
-    <Screen keyboard footer={<Button label="Save" loading={saving} onPress={submit} />}>
+    <Screen keyboard footer={<Button label={t('Save')} loading={saving} onPress={submit} />}>
       <ScreenHeader
-        title="How do you feel?"
-        subtitle="After this session"
+        title={t('How do you feel?')}
+        subtitle={t('After this session')}
         onBack={() => (saving ? undefined : onSkip())}
-        backLabel="Close without rating"
+        backLabel={t('Close without rating')}
       />
       <Appear>
         <MoodScale value={mood} onChange={setMood} />
@@ -51,24 +52,24 @@ export function SessionReview({
               value={answers[i]}
               onChangeText={(text) => setAnswers((current) => current.map((a, j) => (i === j ? text : a)))}
               multiline
-              placeholder="Your answer… (optional)"
+              placeholder={t('Your answer… (optional)')}
             />
           </Appear>
         ))}
         <Appear index={prompts.length + 1}>
           <Field
-            label="A note? (optional)"
+            label={t('A note? (optional)')}
             value={note}
             onChangeText={setNote}
             multiline
-            placeholder="e.g. calmer, less on edge…"
-            hint="Your answers stay private — you read them back in your journal."
+            placeholder={t('e.g. calmer, less on edge…')}
+            hint={t('Your answers stay private — you read them back in your journal.')}
           />
         </Appear>
       </View>
       {error ? <InlineNotice tone="error" message={errorMessage(error)} /> : null}
       <Text variant="caption" tone="ink3" style={{ marginTop: 4 }}>
-        How you felt feeds your tracking and the sessions you get offered.
+        {t('How you felt feeds your tracking and the sessions you get offered.')}
       </Text>
     </Screen>
   );

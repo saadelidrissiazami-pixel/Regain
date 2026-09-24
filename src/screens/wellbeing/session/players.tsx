@@ -10,6 +10,7 @@ import { speakGently as speak } from '../../../lib/voice';
 import { useTheme } from '../../../theme/ThemeProvider';
 import { SessionControls, SessionRing } from './SessionControls';
 import { useSessionClock } from './useSessionClock';
+import { t } from '../../../lib/i18n';
 
 function stopSpeech() {
   try {
@@ -26,7 +27,7 @@ function Dots({ count, index }: { count: number; index: number }) {
     <View
       style={{ flexDirection: 'row', justifyContent: 'center', gap: 6, marginVertical: 14 }}
       accessible
-      accessibilityLabel={`Step ${index + 1} of ${count}`}
+      accessibilityLabel={t('Step {step} of {count}', { step: index + 1, count })}
     >
       {Array.from({ length: count }, (_, i) => (
         <View key={i} style={{ width: i === index ? 16 : 6, height: 6, borderRadius: 3, backgroundColor: i === index ? theme.primary600 : theme.sage300 }} />
@@ -235,7 +236,7 @@ export function BreathingPlayer({
         key={stage}
         blocks={stage === 'intro' ? intro! : outro!}
         audioOn={audioOn}
-        skipLabel={stage === 'intro' ? 'Start now' : 'Finish'}
+        skipLabel={stage === 'intro' ? t('Start now') : t('Finish')}
         onFinish={() => (stage === 'intro' ? dispatch('start') : onDone())}
       />
     );
@@ -245,13 +246,13 @@ export function BreathingPlayer({
     return (
       <View style={{ alignItems: 'center', gap: 12, paddingTop: 20 }}>
         <Text variant="title" center>
-          Nicely done
+          {t('Nicely done')}
         </Text>
         <Text variant="body" tone="ink2" center>
-          You took that moment for yourself.
+          {t('You took that moment for yourself.')}
         </Text>
         <View style={{ alignSelf: 'stretch', marginTop: 16 }}>
-          <Button label="Finish" onPress={onDone} />
+          <Button label={t('Finish')} onPress={onDone} />
         </View>
       </View>
     );
@@ -327,7 +328,7 @@ export function GroundingPlayer({
       const { before, after } = answers;
       onDone(
         before !== undefined && after !== undefined
-          ? `Discomfort: ${before}/10 before the session, ${after}/10 after.`
+          ? t('Discomfort: {before}/10 before the session, {after}/10 after.', { before, after })
           : undefined
       );
     } else {
@@ -362,7 +363,7 @@ export function GroundingPlayer({
                     onPress={() => setAnswers((a) => ({ ...a, [step.key]: value }))}
                     accessibilityRole="radio"
                     accessibilityState={{ selected }}
-                    accessibilityLabel={`${value} out of 10`}
+                    accessibilityLabel={t('{value} out of 10', { value })}
                     style={{
                       width: 44,
                       height: 44,
@@ -383,10 +384,10 @@ export function GroundingPlayer({
             </View>
             <View style={{ flexDirection: 'row', justifyContent: 'space-between', marginTop: 8 }}>
               <Text variant="caption" tone="ink2">
-                At ease
+                {t('At ease')}
               </Text>
               <Text variant="caption" tone="ink2">
-                Very uncomfortable
+                {t('Very uncomfortable')}
               </Text>
             </View>
           </View>
@@ -397,7 +398,7 @@ export function GroundingPlayer({
             <Pressable
               onPress={() => setBreathCount((c) => Math.min(c + 1, step.count))}
               accessibilityRole="button"
-              accessibilityLabel={`Count a breath, ${breathCount} of ${step.count}`}
+              accessibilityLabel={t('Count a breath, {done} of {count}', { done: breathCount, count: step.count })}
               style={{ width: 120, height: 120, borderRadius: 60, backgroundColor: theme.sage100, alignItems: 'center', justifyContent: 'center' }}
             >
               <Text variant="metric" tabular tone="accent">
@@ -405,7 +406,7 @@ export function GroundingPlayer({
               </Text>
             </Pressable>
             <Text variant="caption" tone="ink2" style={{ marginTop: 10 }}>
-              Tap with each breath
+              {t('Tap with each breath')}
             </Text>
           </View>
         ) : null}
@@ -416,7 +417,7 @@ export function GroundingPlayer({
         {step.kind === 'confirm' ? (
           <Button label={step.buttonLabel} onPress={goNext} />
         ) : canContinue ? (
-          <Button label={isLast ? 'Finish' : 'Next'} variant={isLast ? 'primary' : 'secondary'} onPress={goNext} />
+          <Button label={isLast ? t('Finish') : t('Next')} variant={isLast ? 'primary' : 'secondary'} onPress={goNext} />
         ) : null}
       </View>
     </View>
@@ -430,7 +431,7 @@ export function PrepCountdown({ onDone, audioOn }: { onDone: () => void; audioOn
   const [secondsLeft, setSecondsLeft] = useState(PREP_SECONDS);
 
   useEffect(() => {
-    if (audioOn) speak('Make yourself comfortable. The session begins in a few seconds.');
+    if (audioOn) speak(t('Make yourself comfortable. The session begins in a few seconds.'));
   }, [audioOn]);
 
   useEffect(() => {
@@ -454,13 +455,13 @@ export function PrepCountdown({ onDone, audioOn }: { onDone: () => void; audioOn
       </SessionRing>
       <View style={{ alignItems: 'center', gap: 6 }}>
         <Text variant="section" center>
-          Make yourself comfortable
+          {t('Make yourself comfortable')}
         </Text>
         <Text variant="bodySm" tone="ink2" center>
-          The session starts in a moment.
+          {t('The session starts in a moment.')}
         </Text>
       </View>
-      <Button label="Start now" variant="ghost" fullWidth={false} align="center" onPress={onDone} />
+      <Button label={t('Start now')} variant="ghost" fullWidth={false} align="center" onPress={onDone} />
     </View>
   );
 }

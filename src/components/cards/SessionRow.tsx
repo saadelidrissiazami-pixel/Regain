@@ -2,6 +2,7 @@ import { Ionicons } from '@expo/vector-icons';
 import { View } from 'react-native';
 
 import { sessionTitle } from '../../features/fitness/schedule';
+import { t } from '../../lib/i18n';
 import type { WorkoutSession } from '../../features/fitness/types';
 import { imageForWorkout } from '../../theme/images';
 import { useTheme } from '../../theme/ThemeProvider';
@@ -33,7 +34,7 @@ export function SessionRow({ session, onPress, done }: { session: WorkoutSession
             <View style={{ flexDirection: 'row', alignItems: 'center', gap: 4, marginTop: 4 }}>
               <Ionicons name="checkmark-circle" size={14} color={theme.primary600} />
               <Text variant="caption" tone="accent">
-                Done this week
+                {t('Done this week')}
               </Text>
             </View>
           ) : null}

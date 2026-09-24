@@ -7,15 +7,16 @@ import { EmptyState, ErrorState, LoadingSkeleton } from '../../components/feedba
 import { Appear, Screen, ScreenHeader } from '../../components/ui';
 import { themeLabel } from '../../features/wellbeing/catalogue';
 import { useWellbeing } from '../../hooks/useWellbeing';
+import { t } from '../../lib/i18n';
 
 // Keyed by the stored `category`, which is an internal key rather than something to read.
 const SUBTITLES: Record<string, string> = {
-  Respiration: 'A few minutes to let the pressure off.',
-  Méditation: 'Coming back to the present, at your own pace.',
-  Journaling: 'Putting your thoughts down to see them more clearly.',
-  'Confiance en soi': 'Speaking to yourself more kindly.',
-  Sommeil: 'Slowing down to sleep better.',
-  'En public': 'Quiet exercises, wherever you happen to be.',
+  Respiration: t('A few minutes to let the pressure off.'),
+  Méditation: t('Coming back to the present, at your own pace.'),
+  Journaling: t('Putting your thoughts down to see them more clearly.'),
+  'Confiance en soi': t('Speaking to yourself more kindly.'),
+  Sommeil: t('Slowing down to sleep better.'),
+  'En public': t('Quiet exercises, wherever you happen to be.'),
 };
 
 /** Every session in one theme, shortest first. */
@@ -27,7 +28,7 @@ export default function WellbeingCategoryScreen() {
   return (
     <Screen>
       <ScreenHeader
-        title={name ? themeLabel(name) : 'Sessions'}
+        title={name ? themeLabel(name) : t('Sessions')}
         subtitle={SUBTITLES[name ?? ''] ?? `${programs.length} sessions`}
         onBack={() => goBack('/(tabs)/wellbeing')}
       />
@@ -36,7 +37,7 @@ export default function WellbeingCategoryScreen() {
       ) : wellbeing.programsQuery.isError ? (
         <ErrorState onRetry={() => wellbeing.programsQuery.refetch()} />
       ) : programs.length === 0 ? (
-        <EmptyState title="No sessions in this theme yet" />
+        <EmptyState title={t('No sessions in this theme yet')} />
       ) : (
         programs.map((program, i) => (
           <Appear key={program.id} index={i}>

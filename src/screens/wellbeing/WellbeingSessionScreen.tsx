@@ -26,6 +26,7 @@ import { IMAGES } from '../../theme/images';
 import { useTheme } from '../../theme/ThemeProvider';
 import { BreathingPlayer, GroundingPlayer, NarratedPlayer, PrepCountdown } from './session/players';
 import { SessionReview } from './session/SessionReview';
+import { t } from '../../lib/i18n';
 
 function stopSpeech() {
   try {
@@ -132,9 +133,9 @@ export default function WellbeingSessionScreen() {
       <Screen>
         <EmptyState
           icon="search-outline"
-          title="Session not found"
-          body="It may no longer be available. You will find every session under Wellbeing."
-          actionLabel="Go back"
+          title={t('Session not found')}
+          body={t('It may no longer be available. You will find every session under Wellbeing.')}
+          actionLabel={t('Go back')}
           onAction={() => goBack('/(tabs)/wellbeing')}
         />
       </Screen>
@@ -146,11 +147,11 @@ export default function WellbeingSessionScreen() {
       <Screen>
         <EmptyState
           icon="lock-closed-outline"
-          title="A Premium session"
-          body="This session is part of the full library, which comes with Regain Premium."
-          actionLabel="See what Premium adds"
+          title={t('A Premium session')}
+          body={t('This session is part of the full library, which comes with Regain Premium.')}
+          actionLabel={t('See what Premium adds')}
           onAction={() => router.replace('/paywall?source=locked')}
-          secondaryLabel="Go back"
+          secondaryLabel={t('Go back')}
           onSecondary={() => goBack('/(tabs)/wellbeing')}
         />
       </Screen>
@@ -184,10 +185,10 @@ export default function WellbeingSessionScreen() {
     // A quiet ending: nothing flashes, nothing congratulates, and the only thing to do is
     // leave. If the person fell asleep, the screen will ask nothing of them when they wake.
     return (
-      <Screen footer={<Button label="Close" variant="ghost" onPress={() => goBack('/(tabs)/wellbeing')} />}>
+      <Screen footer={<Button label={t('Close')} variant="ghost" onPress={() => goBack('/(tabs)/wellbeing')} />}>
         <View style={{ alignItems: 'center', paddingTop: 120 }}>
           <Text variant="body" tone="ink2" center>
-            That is the end. There is nothing left to do.
+            {t('That is the end. There is nothing left to do.')}
           </Text>
         </View>
       </Screen>
@@ -199,8 +200,8 @@ export default function WellbeingSessionScreen() {
       <Screen
         footer={
           <View style={{ gap: 8 }}>
-            <Button label="Back to Wellbeing" onPress={() => goBack('/(tabs)/wellbeing')} />
-            <Button label="Read my journal" variant="ghost" onPress={() => router.replace('/wellbeing/journal')} />
+            <Button label={t('Back to Wellbeing')} onPress={() => goBack('/(tabs)/wellbeing')} />
+            <Button label={t('Read my journal')} variant="ghost" onPress={() => router.replace('/wellbeing/journal')} />
           </View>
         }
       >
@@ -211,10 +212,10 @@ export default function WellbeingSessionScreen() {
             </View>
           </Animated.View>
           <Text variant="title" center style={{ marginTop: 24 }}>
-            Session complete
+            {t('Session complete')}
           </Text>
           <Text variant="body" tone="ink2" center style={{ marginTop: 8 }}>
-            Thank you for taking that time. Your answers are waiting in your journal.
+            {t('Thank you for taking that time. Your answers are waiting in your journal.')}
           </Text>
         </View>
       </Screen>
@@ -242,7 +243,7 @@ export default function WellbeingSessionScreen() {
       <View style={{ paddingTop: insets.top + 4, paddingHorizontal: 12, flexDirection: 'row', alignItems: 'center' }}>
         <IconButton
           icon="close"
-          label="Close the session"
+          label={t('Close the session')}
           onPress={() => {
             stopSpeech();
             goBack('/(tabs)/wellbeing');
@@ -256,7 +257,7 @@ export default function WellbeingSessionScreen() {
             <Tag label={themeLabel(program.category)} color={categoryColor} suffix={`${program.duration_minutes} min`} />
           </View>
         </View>
-        <IconButton icon="ellipsis-horizontal" label="Session options" onPress={() => setMenuOpen(true)} />
+        <IconButton icon="ellipsis-horizontal" label={t('Session options')} onPress={() => setMenuOpen(true)} />
       </View>
 
       <ScrollView
@@ -266,13 +267,13 @@ export default function WellbeingSessionScreen() {
       >
         {audioOn || playingLabel ? (
           <View style={{ alignSelf: 'center', marginBottom: 16, flexDirection: 'row', gap: 8 }}>
-            {audioOn ? <Pill icon="volume-high-outline" label="Voice guidance" tone="onImage" /> : null}
+            {audioOn ? <Pill icon="volume-high-outline" label={t('Voice guidance')} tone="onImage" /> : null}
             {playingLabel ? (
               <PressableScale
                 onPress={() => setMenuOpen(true)}
                 feedback="selection"
                 accessibilityRole="button"
-                accessibilityLabel={`Music: ${playingLabel}. Change the ambience`}
+                accessibilityLabel={t('Music: {ambience}. Change the ambience', { ambience: playingLabel })}
               >
                 <Pill icon="musical-notes-outline" label={playingLabel} tone="onImage" />
               </PressableScale>
@@ -309,12 +310,12 @@ export default function WellbeingSessionScreen() {
         </Text>
       </ScrollView>
 
-      <Sheet visible={menuOpen} title="Session options" onClose={() => setMenuOpen(false)} scroll={false}>
+      <Sheet visible={menuOpen} title={t('Session options')} onClose={() => setMenuOpen(false)} scroll={false}>
         <View style={{ paddingHorizontal: 20 }}>
           <ListRow
             icon={audioOn ? 'volume-high-outline' : 'volume-mute-outline'}
-            title="Voice guidance"
-            subtitle="A voice reads the instructions"
+            title={t('Voice guidance')}
+            subtitle={t('A voice reads the instructions')}
             chevron={false}
             divider
             right={
@@ -326,22 +327,22 @@ export default function WellbeingSessionScreen() {
                 }}
                 trackColor={{ false: theme.line, true: theme.primary600 }}
                 thumbColor="#FFFFFF"
-                accessibilityLabel="Voice guidance"
+                accessibilityLabel={t('Voice guidance')}
               />
             }
           />
           <ListRow
             icon="musical-notes-outline"
-            title="Background music"
+            title={t('Background music')}
             subtitle={
               playingLabel
                 ? AMBIENCES.find((a) => a.id === ambience)?.description
-                : 'Quiet music to help you let go'
+                : t('Quiet music to help you let go')
             }
             chevron={false}
           />
           <View style={{ flexDirection: 'row', flexWrap: 'wrap', gap: 8, paddingBottom: 14, paddingLeft: 4 }}>
-            <ChoiceChip label="None" selected={ambience === 'off'} multiple={false} onPress={() => chooseAmbience('off')} />
+            <ChoiceChip label={t('None')} selected={ambience === 'off'} multiple={false} onPress={() => chooseAmbience('off')} />
             {AMBIENCES.map((option) => (
               <ChoiceChip
                 key={option.id}
@@ -354,7 +355,7 @@ export default function WellbeingSessionScreen() {
           </View>
           <ListRow
             icon="refresh-outline"
-            title="Start the session again"
+            title={t('Start the session again')}
             onPress={() => {
               stopSpeech();
               setMenuOpen(false);

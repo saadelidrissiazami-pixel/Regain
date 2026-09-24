@@ -1,3 +1,4 @@
+import { t } from '../../lib/i18n';
 // The SOS sessions are a theme apart: they are not filed in the grid, they are never
 // “recommended”, and they are never locked.
 
@@ -25,4 +26,4 @@ export const SOS_SLUGS = [
 // country the reader is in, and a wrong number in this particular sentence is worse than no
 // number at all.
 export const SOS_URGENCE =
-  'Chest pain, real difficulty breathing or feeling faint can need urgent help. Call your local emergency number.';
+  t('Chest pain, real difficulty breathing or feeling faint can need urgent help. Call your local emergency number.');

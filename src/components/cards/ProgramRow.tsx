@@ -6,6 +6,7 @@ import type { WellbeingProgram } from '../../features/wellbeing/types';
 import { useTheme } from '../../theme/ThemeProvider';
 import { Card } from '../ui/Card';
 import { Text } from '../ui/Text';
+import { t } from '../../lib/i18n';
 
 /** One session from the library: duration, title, and its state (done, Premium only). */
 export function ProgramRow({
@@ -51,7 +52,7 @@ export function ProgramRow({
           </Text>
           <Text variant="caption" tone="ink2" style={{ marginTop: 2 }}>
             {showCategory ? `${themeLabel(program.category)} · ` : ''}
-            {program.duration_minutes} min{done ? ' · done' : ''}
+            {program.duration_minutes} min{done ? t(' · done') : ''}
           </Text>
         </View>
         {locked ? (

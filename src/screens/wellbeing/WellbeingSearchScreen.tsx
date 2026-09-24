@@ -12,6 +12,7 @@ import { themeLabel } from '../../features/wellbeing/catalogue';
 import { ChoiceChip, Screen, ScreenHeader, Text, TextInput } from '../../components/ui';
 import { useWellbeing } from '../../hooks/useWellbeing';
 import { useTheme } from '../../theme/ThemeProvider';
+import { t } from '../../lib/i18n';
 
 /** Every session, with a search box and a filter by theme. */
 export default function WellbeingSearchScreen() {
@@ -31,7 +32,7 @@ export default function WellbeingSearchScreen() {
 
   return (
     <Screen keyboard>
-      <ScreenHeader title="All sessions" onBack={() => goBack('/(tabs)/wellbeing')} />
+      <ScreenHeader title={t('All sessions')} onBack={() => goBack('/(tabs)/wellbeing')} />
       <View
         style={{
           flexDirection: 'row',
@@ -49,14 +50,14 @@ export default function WellbeingSearchScreen() {
         <TextInput
           value={search}
           onChangeText={setSearch}
-          placeholder="Breathing, sleep, confidence…"
-          accessibilityLabel="Search sessions"
+          placeholder={t('Breathing, sleep, confidence…')}
+          accessibilityLabel={t('Search sessions')}
           returnKeyType="search"
           style={{ flex: 1, marginLeft: 8, paddingVertical: 12 }}
         />
       </View>
       <ScrollView horizontal showsHorizontalScrollIndicator={false} style={{ marginHorizontal: -20, marginBottom: 16 }} contentContainerStyle={{ paddingHorizontal: 20, gap: 8 }}>
-        <ChoiceChip label="All" selected={category === null} multiple={false} onPress={() => setCategory(null)} />
+        <ChoiceChip label={t('All')} selected={category === null} multiple={false} onPress={() => setCategory(null)} />
         {categories.map((c) => (
           <ChoiceChip key={c} label={themeLabel(c)} selected={category === c} multiple={false} onPress={() => setCategory(c)} />
         ))}
@@ -68,7 +69,7 @@ export default function WellbeingSearchScreen() {
         <ErrorState onRetry={() => wellbeing.programsQuery.refetch()} />
       ) : results.length === 0 ? (
         <Text variant="bodySm" tone="ink2">
-          Nothing matches. Try another word.
+          {t('Nothing matches. Try another word.')}
         </Text>
       ) : (
         results.map((program) => (

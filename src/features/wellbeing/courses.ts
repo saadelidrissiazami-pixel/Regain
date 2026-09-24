@@ -9,6 +9,7 @@
 // sure nobody ever comes back.
 
 import type { WellbeingProgram } from './types';
+import { t } from '../../lib/i18n';
 
 /** The category the database uses for course days. */
 export const COURSE_CATEGORY = 'Parcours';
@@ -25,18 +26,18 @@ export type Course = {
 export const COURSES: Course[] = [
   {
     slug: 'decouvrir-meditation',
-    title: 'Discovering meditation',
-    subtitle: '10 days, 2 to 6 minutes',
+    title: t('Discovering meditation'),
+    subtitle: t('10 days, 2 to 6 minutes'),
     promise:
-      'We start from something concrete and work towards a choice of your own. The real skill is not staying focused: it is noticing that you have wandered off, and coming back.',
+      t('We start from something concrete and work towards a choice of your own. The real skill is not staying focused: it is noticing that you have wandered off, and coming back.'),
     dayCount: 10,
   },
   {
     slug: 'mieux-dormir',
-    title: 'Sleeping better',
-    subtitle: '10 days, 3 to 7 minutes',
+    title: t('Sleeping better'),
+    subtitle: t('10 days, 3 to 7 minutes'),
     promise:
-      'You learn to take the effort out of going to bed. None of these days promises sleep: checking whether sleep is coming is precisely what keeps it away.',
+      t('You learn to take the effort out of going to bed. None of these days promises sleep: checking whether sleep is coming is precisely what keeps it away.'),
     dayCount: 10,
   },
 ];
@@ -85,8 +86,8 @@ export function courseProgress(
 
 /** “Day 4 of 10”, or the invitation to begin. */
 export function courseStatusLabel(progress: CourseProgress, course: Course): string {
-  if (progress.days.length === 0) return 'Coming soon';
-  if (progress.complete) return `Finished · ${course.dayCount} days`;
-  if (progress.doneCount === 0) return `${course.dayCount} days, at your own pace`;
-  return `Day ${progress.nextDay?.day ?? progress.doneCount + 1} of ${course.dayCount}`;
+  if (progress.days.length === 0) return t('Coming soon');
+  if (progress.complete) return t('Finished · {count} days', { count: course.dayCount });
+  if (progress.doneCount === 0) return t('{count} days, at your own pace', { count: course.dayCount });
+  return t('Day {day} of {count}', { day: progress.nextDay?.day ?? progress.doneCount + 1, count: course.dayCount });
 }
