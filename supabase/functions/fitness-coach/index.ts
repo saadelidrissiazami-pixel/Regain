@@ -162,8 +162,8 @@ ${SAFETY_RULES}
 function describeProfile(p: Profile): string {
   const age = new Date().getFullYear() - p.birth_year;
   return [
-    `Objectifs : ${p.goals.join(', ')}`,
-    `Sexe : ${p.sex} · ${age} ans · ${p.height_cm} cm · ${p.weight_kg} kg`,
+    `Goals: ${p.goals.join(', ')}`,
+    `Sex: ${p.sex} · ${age} years · ${p.height_cm} cm · ${p.weight_kg} kg`,
     `Everyday activity: ${p.activity_level}`,
     `Strength-training experience: ${p.experience}`,
     `Equipment available: ${p.equipment}`,

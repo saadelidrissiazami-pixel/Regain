@@ -30,8 +30,19 @@ Rules:
 - Short, concrete answers (3-5 sentences at most, unless more detail is asked for).
 - Draw on the real context provided (goals, plan, mood) rather than generalities.
 - You are not a health professional and you do not diagnose anything. If the person mentions serious distress, gently encourage them to talk to a professional.
-- You may suggest adjusting the plan, but you cannot change it yourself for now.
-- Write in English.`;
+- You may suggest adjusting the plan, but you cannot change it yourself for now.`;
+
+// The app tells us which language it speaks. 1.1 is a French build and sends nothing at all, so
+// “no language” has to keep meaning French: otherwise deploying this would switch every installed
+// French app's coach to English, including the build Apple is reviewing.
+const LANGUAGE_RULES: Record<string, string> = {
+  en: '- Write in English.',
+  fr: '- Réponds en français.',
+};
+
+function systemPromptFor(language: unknown): string {
+  return `${SYSTEM_PROMPT}\n${LANGUAGE_RULES[String(language)] ?? LANGUAGE_RULES.fr}`;
+}
 
 function jsonResponse(body: unknown, status: number) {
   return new Response(JSON.stringify(body), {
@@ -66,14 +77,15 @@ Deno.serve(async (req) => {
 
   let message: unknown;
   let subject: unknown;
+  let language: unknown;
   try {
-    ({ message, subject } = await req.json());
+    ({ message, subject, language } = await req.json());
   } catch {
     return jsonResponse({ error: 'Invalid request' }, 400);
   }
 
   if (typeof message !== 'string' || message.trim().length === 0) {
-    return jsonResponse({ error: 'Message manquant' }, 400);
+    return jsonResponse({ error: 'Message missing' }, 400);
   }
   if (message.length > MAX_MESSAGE_LENGTH) {
     return jsonResponse({ error: `That message is too long (${MAX_MESSAGE_LENGTH} characters maximum).` }, 400);
@@ -129,7 +141,7 @@ Deno.serve(async (req) => {
     body: JSON.stringify({
       model: 'claude-sonnet-5',
       max_tokens: 400,
-      system: [SYSTEM_PROMPT, SUBJECTS[String(subject)], context].filter(Boolean).join('\n\n'),
+      system: [systemPromptFor(language), SUBJECTS[String(subject)], context].filter(Boolean).join('\n\n'),
       messages: [
         ...conversation.map((m) => ({ role: m.role, content: m.content })),
         { role: 'user', content: message },

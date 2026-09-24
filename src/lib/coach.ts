@@ -23,7 +23,9 @@ export type CoachSubject = 'forme' | 'bien-etre';
 
 export async function sendCoachMessage(message: string, subject?: CoachSubject): Promise<string> {
   const { data, error } = await supabase.functions.invoke<{ reply?: string }>('coach', {
-    body: { message, subject },
+    // This build is in English and says so. Older French builds send nothing, and the function
+    // keeps answering them in French — which is why it can be deployed before 1.2 ships.
+    body: { message, subject, language: 'en' },
   });
 
   // invoke() returns an error for any non-2xx status: a server fault, a spent quota and an

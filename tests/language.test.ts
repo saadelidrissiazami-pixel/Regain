@@ -13,13 +13,20 @@ import { describe, expect, it } from 'vitest';
 // bilan”, and reading every extracted label missed `sur 2:00`, since `sur` is also an English
 // word. Only the simulator found that last one. A test is cheaper than another simulator pass.
 
-const ROOTS = ['src', 'app'];
+const ROOTS = ['src', 'app', 'supabase/functions'];
 
 /** Keyed by a stored French value, so the French in it is the key and not the wording. */
 const FILES_WITH_DELIBERATE_FRENCH = ['src/features/activities/catalogue.ts'];
 
 /** Values the database stores, which the app translates for display but must send back as-is. */
 const STORED_VALUES = new Set(['Parcours', 'Confiance en soi', 'Méditation', 'Respiration', 'Sommeil']);
+
+/**
+ * French the coach Edge Function is *supposed* to contain: it still answers 1.1, which is a French
+ * build and cannot say which language it wants. Everything else in that function is English, which
+ * is how `Message manquant` sat there unnoticed until this test started reading it.
+ */
+const DELIBERATE_FRENCH = new Set(['- Réponds en français.']);
 
 function sourceFiles(dir: string): string[] {
   return readdirSync(dir).flatMap((entry) => {
@@ -88,7 +95,7 @@ describe('the app speaks English', () => {
     const offenders: string[] = [];
     for (const path of FILES) {
       for (const value of readableStrings(readFileSync(path, 'utf8'))) {
-        if (isIdentifier(value) || STORED_VALUES.has(value)) continue;
+        if (isIdentifier(value) || STORED_VALUES.has(value) || DELIBERATE_FRENCH.has(value)) continue;
         const words = value.toLowerCase().match(/[a-zà-ÿ']+/g) ?? [];
         // A single hit is enough: every word in the list above is one no English sentence in this
         // app has a reason to contain, so finding one at all means the string was never translated.
