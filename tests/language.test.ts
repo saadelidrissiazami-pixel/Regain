@@ -100,7 +100,8 @@ describe('the app speaks English', () => {
     for (const path of FILES) {
       for (const value of readableStrings(readFileSync(path, 'utf8'))) {
         if (isIdentifier(value) || STORED_VALUES.has(value) || DELIBERATE_FRENCH.has(value)) continue;
-        const words = value.toLowerCase().match(/[a-zà-ÿ']+/g) ?? [];
+        // Apostrophes split words, so “aujourd'hui” is read as “aujourd” and caught.
+        const words = value.toLowerCase().match(/[a-zà-ÿ]+/g) ?? [];
         // A single hit is enough: every word in the list above is one no English sentence in this
         // app has a reason to contain, so finding one at all means the string was never translated.
         const french = words.filter((word) => FRENCH.has(normalise(word)));

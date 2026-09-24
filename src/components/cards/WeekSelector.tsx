@@ -40,7 +40,7 @@ export function WeekSelector({
             feedback="selection"
             accessibilityRole="tab"
             accessibilityState={{ selected: isSelected }}
-            accessibilityLabel={`${LONG_DAYS[i]} ${dayNumber}${isToday ? ", aujourd'hui" : ''}${
+            accessibilityLabel={`${LONG_DAYS[i]} ${dayNumber}${isToday ? ', today' : ''}${
               marker?.count ? `, ${marker.count} activit${marker.count > 1 ? 'ies' : 'y'}` : ''
             }`}
             wrapperStyle={{ flex: 1 }}

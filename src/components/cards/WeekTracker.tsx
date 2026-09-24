@@ -24,7 +24,7 @@ export function WeekTracker({ days }: { days: WeekTrackerDay[] }) {
               key={day.date}
               style={{ flex: 1, alignItems: 'center' }}
               accessible
-              accessibilityLabel={`${LONG[day.dayIndex]}${day.isToday ? ", aujourd'hui" : ''} : ${
+              accessibilityLabel={`${LONG[day.dayIndex]}${day.isToday ? ', today' : ''} : ${
                 day.done ? 'session done' : day.isTraining ? 'session planned' : 'rest'
               }`}
             >
