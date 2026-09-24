@@ -11,7 +11,7 @@ export function BookSuggestionCard({ primaryGoals }: { primaryGoals: string[] })
   return (
     <Card style={{ marginBottom: 16 }}>
       <Text variant="overline" tone="ink2">
-        📖 Suggestion de lecture
+        📖 A book to read
       </Text>
       <Text variant="cardTitle" style={{ marginTop: 8 }}>
         {book.title}

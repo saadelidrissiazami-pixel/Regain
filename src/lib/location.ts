@@ -41,7 +41,7 @@ export async function reverseGeocode({ latitude, longitude }: Coords): Promise<P
 }
 
 // The Wikipedia REST API — a free public service, no key.
-export async function fetchWikipediaSummary(title: string, lang = 'fr'): Promise<WikiSummary | null> {
+export async function fetchWikipediaSummary(title: string, lang = 'en'): Promise<WikiSummary | null> {
   try {
     const url = `https://${lang}.wikipedia.org/api/rest_v1/page/summary/${encodeURIComponent(title)}`;
     const response = await fetch(url, { headers: { Accept: 'application/json' } });

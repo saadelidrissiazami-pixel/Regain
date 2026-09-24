@@ -89,7 +89,7 @@ describe('the app speaks English', () => {
       'matin', 'soir', 'midi', 'nuit', 'dernier', 'derniere', 'premier', 'premiere',
       'prochain', 'prochaine', 'nouveau', 'nouvelle', 'ancienne', 'bilan', 'impossible',
       'glucides', 'lipides', 'proteines', 'poids', 'taille', 'niveau', 'corps', 'entier',
-      'plusieurs', 'possibles', 'suivant', 'precedent', 'ferme',
+      'plusieurs', 'possibles', 'suivant', 'precedent', 'ferme', 'cours', 'lecture',
     ]);
 
     const offenders: string[] = [];

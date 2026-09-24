@@ -54,7 +54,7 @@ export default function PlanningHomeScreen() {
     const start = startOf(item);
     if (item.date === today) {
       const countdown = formatCountdown(minutesUntil(item.date, start, now));
-      return [start, countdown ?? 'en cours'].join(' · ');
+      return [start, countdown ?? 'in progress'].join(' · ');
     }
     return `${relativeDayLabel(item.date, today, formatDayLabel)} · ${start}`;
   };
