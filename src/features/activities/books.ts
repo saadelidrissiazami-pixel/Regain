@@ -1,6 +1,6 @@
-// Sélection de classiques du domaine public (auteurs et œuvres réels), choisis pour leur lien
-// avec les thématiques de l'app. "keyIdea" est une idée clé reformulée par nos soins — pas une
-// citation exacte tirée d'une traduction précise — pour rester honnête sur ce qui est cité.
+// A selection of public-domain classics (real authors, real works), chosen for what they have
+// to do with the app's themes. "keyIdea" is a key idea put in our own words — not an exact quote
+// from any particular translation — so that nothing is passed off as a citation it is not.
 export type BookRecommendation = {
   title: string;
   author: string;
@@ -11,47 +11,47 @@ export type BookRecommendation = {
 
 export const BOOK_RECOMMENDATIONS: BookRecommendation[] = [
   {
-    title: 'Pensées pour moi-même',
-    author: 'Marc Aurèle',
-    year: 'vers 180 apr. J.-C.',
+    title: 'Meditations',
+    author: 'Marcus Aurelius',
+    year: 'c. 180 AD',
     keyIdea:
-      "Vous ne contrôlez pas ce qui vous arrive, seulement la façon dont vous y répondez — c'est là que se loge toute votre liberté.",
+      'You do not control what happens to you, only how you answer it — and that is where all your freedom sits.',
     tags: ['gerer_stress', 'confiance_en_soi'],
   },
   {
-    title: 'Manuel',
-    author: 'Épictète',
-    year: 'vers 125 apr. J.-C.',
+    title: 'The Enchiridion',
+    author: 'Epictetus',
+    year: 'c. 125 AD',
     keyIdea:
-      "Certaines choses dépendent de nous, d'autres non. La tranquillité commence quand on cesse de confondre les deux.",
+      'Some things are up to us and some are not. Calm begins when you stop confusing the two.',
     tags: ['gerer_stress', 'routine_stable'],
   },
   {
-    title: 'Lettres à Lucilius',
-    author: 'Sénèque',
-    year: 'vers 65 apr. J.-C.',
-    keyIdea: "Nous souffrons plus souvent en imagination qu'en réalité — la plupart de nos craintes n'arrivent jamais.",
+    title: 'Letters from a Stoic',
+    author: 'Seneca',
+    year: 'c. 65 AD',
+    keyIdea: 'We suffer more often in imagination than in reality — most of what we fear never arrives.',
     tags: ['gerer_stress', 'mieux_dormir'],
   },
   {
-    title: 'Walden ou la Vie dans les bois',
+    title: 'Walden',
     author: 'Henry David Thoreau',
     year: '1854',
-    keyIdea: "Simplifier sa vie, c'est se donner enfin le temps de la regarder vraiment.",
+    keyIdea: 'Simplifying your life is how you finally give yourself the time to look at it.',
     tags: ['reduire_ecrans', 'routine_stable'],
   },
   {
-    title: 'Tao Te King',
-    author: 'Lao Tseu',
-    year: 'vers 4e siècle av. J.-C.',
-    keyIdea: "La souplesse l'emporte souvent sur la rigidité, comme l'eau qui use la pierre sans jamais forcer.",
+    title: 'Tao Te Ching',
+    author: 'Laozi',
+    year: 'c. 4th century BC',
+    keyIdea: 'Yielding often beats rigidity, the way water wears down stone without ever forcing it.',
     tags: ['gerer_stress', 'plus_energie'],
   },
   {
-    title: 'Essais',
+    title: 'Essays',
     author: 'Michel de Montaigne',
     year: '1580',
-    keyIdea: "Se connaître soi-même est la première étape pour choisir qui laisser entrer dans sa vie.",
+    keyIdea: 'Knowing yourself is the first step towards choosing who to let into your life.',
     tags: ['plus_social', 'confiance_en_soi'],
   },
 ];

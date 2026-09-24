@@ -114,7 +114,7 @@ export default function GoalsScreen() {
                 {slot.label}
               </Text>
               <SegmentedControl<EnergyLevel>
-                label={`Énergie : ${slot.label}`}
+                label={`Energy: ${slot.label}`}
                 tone="surface"
                 value={values.energyBySlot[slot.key]}
                 onChange={(level) => set('energyBySlot', { ...values.energyBySlot, [slot.key]: level })}

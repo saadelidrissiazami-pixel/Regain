@@ -254,7 +254,7 @@ export default function TrackingScreen() {
       icon="barbell-outline"
       title="Track your strength sessions"
       body="Session and weight tracking are part of the Premium fitness coach."
-      actionLabel="Découvrir Premium"
+      actionLabel="See what Premium adds"
       onAction={() => router.push('/paywall?source=locked')}
     />
   ) : !fitness.profile ? (
@@ -318,7 +318,7 @@ export default function TrackingScreen() {
       icon="cart-outline"
       title="Your meals and your shopping list"
       body="With Premium: days of meals matched to what you need, and the shopping list that goes with them, already sorted by aisle. No more “what are we eating tonight?”."
-      actionLabel="Découvrir Premium"
+      actionLabel="See what Premium adds"
       onAction={() => router.push('/paywall?source=locked')}
     />
   ) : !fitness.targets ? (

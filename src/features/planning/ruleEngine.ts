@@ -32,7 +32,7 @@ export function generateWeeklyPlan(params: {
   budgetLevel: BudgetLevel;
   weekStart: string;
   categoryAffinity?: CategoryAffinity;
-  /** Activités déjà réalisées cette semaine : leur créneau est occupé et ne doit pas être regénéré. */
+  /** Activities already done this week: their slot is taken and must not be regenerated. */
   keptItems?: GeneratedItem[];
 }): GeneratedItem[] {
   const {
@@ -85,8 +85,8 @@ export function generateWeeklyPlan(params: {
       const tagScore = activity.tags.filter((t) => primaryGoals.includes(t)).length * 2;
       const varietyBonus = -(categoryCounts[activity.category] ?? 0);
       const repeatPenalty = usedActivityIds.has(activity.id) ? -3 : 0;
-      // Catégories que l'utilisateur termine souvent -> légèrement favorisées ; celles
-      // souvent sautées -> légèrement défavorisées, sans jamais les exclure.
+      // Categories the user often finishes are nudged up; the ones often skipped are nudged
+      // down, without ever being excluded.
       const affinityBonus = ((categoryAffinity[activity.category] ?? 0.5) - 0.5) * 4;
       const score = tagScore + varietyBonus + repeatPenalty + affinityBonus + Math.random() * 0.3;
       if (score > bestScore) {

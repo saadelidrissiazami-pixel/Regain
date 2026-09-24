@@ -97,10 +97,10 @@ describe('fetchWalkingRoute', () => {
     const route = await fetchWalkingRoute([START, START]);
 
     expect(route.steps.map((s) => s.instruction)).toEqual([
-      'Partez sur Rue de Rivoli',
-      'Tournez à droite sur Rue du Louvre',
-      'Continuez tout droit sur Quai du Louvre',
-      'Vous êtes de retour à votre point de départ',
+      'Set off onto Rue de Rivoli',
+      'Turn right onto Rue du Louvre',
+      'Carry straight on onto Quai du Louvre',
+      'You are back where you started',
     ]);
   });
 
@@ -120,7 +120,7 @@ describe('fetchWalkingRoute', () => {
       vi.fn().mockResolvedValue({ ok: true, json: async () => ({ code: 'NoRoute', routes: [] }) })
     );
 
-    await expect(fetchWalkingRoute([START, START])).rejects.toThrow('Itinéraire introuvable');
+    await expect(fetchWalkingRoute([START, START])).rejects.toThrow('No route found');
   });
 });
 

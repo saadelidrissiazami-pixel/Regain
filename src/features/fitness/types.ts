@@ -19,8 +19,8 @@ export type FitnessProfileInput = {
 
 export type FitnessProfile = FitnessProfileInput & { user_id: string };
 
-// Forme du programme renvoyé par l'agent (Edge Function fitness-coach) : toute évolution
-// doit être répercutée dans le schéma zod de la fonction.
+// The shape of the programme the agent returns (the fitness-coach Edge Function): any change
+// here has to be mirrored in that function's zod schema.
 export type Exercise = {
   name: string;
   sets: number;

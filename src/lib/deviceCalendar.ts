@@ -9,8 +9,8 @@ import type { PlannedActivityRow } from './planning';
 import { isExpoGo, isWeb } from './runtime';
 import { fromLocalISODate, getDateForDayOfWeek } from './week';
 
-// SDK 57 : les anciennes fonctions (getCalendarsAsync, createEventAsync...) importées depuis
-// « expo-calendar » lèvent une erreur à l'exécution. On utilise la nouvelle API objet.
+// SDK 57: the old functions (getCalendarsAsync, createEventAsync…) imported from “expo-calendar”
+// throw at runtime. We use the new object API instead.
 type CalendarModule = typeof import('expo-calendar');
 
 const CALENDAR_TITLE = 'Regain';
@@ -18,13 +18,13 @@ const CALENDAR_COLOR = '#FF6B57';
 const CALENDAR_ID_KEY = 'regain.calendar.id';
 const AUTO_SYNC_KEY = 'regain.calendar.autoSync';
 const ALARM_MINUTES_BEFORE = 15;
-/** Horizon nettoyé quand l'utilisateur désactive la synchronisation. */
+/** How far ahead we clean up when the user turns syncing off. */
 const CLEAR_HORIZON_DAYS = 60;
 
 export const calendarUnavailableReason: string | null = isWeb
   ? "La synchronisation avec le calendrier se fait depuis l'app mobile."
   : isExpoGo
-    ? "Expo Go n'a pas accès au calendrier : la synchronisation fonctionnera dans l'app installée (build de développement ou version publiée)."
+    ? 'Expo Go has no calendar access: syncing will work in the installed app (a development build or a published release).'
     : null;
 
 export const isCalendarSupported = calendarUnavailableReason === null;
@@ -35,19 +35,19 @@ async function getCalendarModule(): Promise<CalendarModule> {
 }
 
 async function ensurePermission(Calendar: CalendarModule) {
-  // Accès complet (pas « écriture seule ») : il faut pouvoir créer le calendrier Regain et
-  // relire ses événements pour les remplacer.
+  // Full access, not write-only: we need to create the Regain calendar and read its events back
+  // in order to replace them.
   const { status } = await Calendar.requestCalendarPermissions();
   if (status !== 'granted') {
-    throw new Error("Autorisez l'accès au calendrier pour Regain dans les réglages de l'appareil.");
+    throw new Error('Allow calendar access for Regain in your device settings.');
   }
 }
 
 async function createRegainCalendar(Calendar: CalendarModule): Promise<ExpoCalendar> {
   if (Platform.OS === 'ios') {
-    // Le compte du calendrier par défaut (souvent iCloud) d'abord, pour que le calendrier
+    // The default calendar's account first (often iCloud), so the calendar
     // Regain suive l'utilisateur sur ses autres appareils ; le compte local en secours
-    // (certains comptes, comme Exchange, refusent la création de calendriers).
+    // (some accounts, Exchange among them, refuse calendar creation).
     const sources = [
       Calendar.getDefaultCalendarSync().source,
       ...Calendar.getSourcesSync().filter((s) => s.type === Calendar.SourceType.LOCAL),
@@ -81,8 +81,8 @@ async function createRegainCalendar(Calendar: CalendarModule): Promise<ExpoCalen
   });
 }
 
-/** Retrouve le calendrier Regain par son identifiant mémorisé (un calendrier personnel du même
- *  nom n'est jamais touché), sinon le crée. */
+/** Finds the Regain calendar by the identifier we remembered (a personal calendar of the same
+ *  name is never touched), and creates it otherwise. */
 async function getRegainCalendar(Calendar: CalendarModule, { create }: { create: boolean }): Promise<ExpoCalendar | null> {
   const savedId = await AsyncStorage.getItem(CALENDAR_ID_KEY).catch(() => null);
   if (savedId) {
@@ -90,7 +90,7 @@ async function getRegainCalendar(Calendar: CalendarModule, { create }: { create:
       const calendar = await Calendar.ExpoCalendar.get(savedId);
       if (calendar.allowsModifications) return calendar;
     } catch {
-      // Calendrier supprimé depuis l'app Calendrier : on en recrée un.
+      // The calendar was deleted from the Calendar app: make a new one.
     }
   }
   if (!create) return null;
@@ -100,7 +100,7 @@ async function getRegainCalendar(Calendar: CalendarModule, { create }: { create:
   return calendar;
 }
 
-/** Remplace les événements Regain de la semaine par le planning actuel. */
+/** Replaces the week's Regain events with the current plan. */
 export async function syncWeekPlanToCalendar(
   items: PlannedActivityRow[],
   availability: AvailabilitySlot[],
@@ -113,7 +113,7 @@ export async function syncWeekPlanToCalendar(
   const existing = await calendar.listEvents(fromLocalISODate(weekStart), fromLocalISODate(getDateForDayOfWeek(weekStart, 7)));
   await Promise.all(existing.map((event) => event.delete().catch(() => {})));
 
-  // Les rappels Regain préviennent déjà 15 min avant : pas de double alerte.
+  // Regain's own reminders already fire 15 min ahead: no double alert.
   const alarms = (await areRemindersEnabled())
     ? []
     : [{ relativeOffset: -ALARM_MINUTES_BEFORE, method: Calendar.AlarmMethod.ALERT }];
@@ -138,7 +138,7 @@ export async function enableCalendarAutoSync(items: PlannedActivityRow[], availa
   return count;
 }
 
-/** Coupe la synchro et retire du calendrier les activités à venir (le passé reste). */
+/** Turns syncing off and removes upcoming activities from the calendar (the past stays). */
 export async function disableCalendarAutoSync() {
   await AsyncStorage.removeItem(AUTO_SYNC_KEY).catch(() => {});
   if (!isCalendarSupported) return;
@@ -154,7 +154,7 @@ export async function disableCalendarAutoSync() {
   await Promise.all(upcoming.map((event) => event.delete().catch(() => {})));
 }
 
-/** Appelé après chaque génération du planning ; ne fait rien si la synchro est coupée. */
+/** Called after each plan generation; does nothing when syncing is off. */
 export async function autoSyncWeekPlan(items: PlannedActivityRow[], availability: AvailabilitySlot[], weekStart: string) {
   if (!(await isCalendarAutoSyncEnabled())) return;
   await syncWeekPlanToCalendar(items, availability, weekStart);

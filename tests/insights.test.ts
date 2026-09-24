@@ -23,8 +23,8 @@ describe('indicateurs de suivi', () => {
   });
 
   it('traduit les moyennes en mots', () => {
-    expect(energyLabel(4.2).label).toBe('Bonne');
-    expect(energyLabel(1.5).label).toBe('Basse');
+    expect(energyLabel(4.2).label).toBe('Good');
+    expect(energyLabel(1.5).label).toBe('Low');
     expect(moodLabel(4)).toBe('Positive');
   });
 });

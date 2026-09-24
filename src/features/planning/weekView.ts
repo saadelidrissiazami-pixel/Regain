@@ -1,13 +1,13 @@
 type DatedItem = { date: string; status: string };
 
-/** Salutation selon le moment de la journée, calée sur les créneaux du planning. */
+/** A greeting for the time of day, lined up with the plan's own slots. */
 export function greetingFor(hour: number): string {
-  if (hour >= 5 && hour < 12) return 'Bonjour';
-  if (hour >= 12 && hour < 18) return 'Bon après-midi';
-  return 'Bonsoir';
+  if (hour >= 5 && hour < 12) return 'Good morning';
+  if (hour >= 12 && hour < 18) return 'Good afternoon';
+  return 'Good evening';
 }
 
-/** Minutes entre maintenant et une heure « HH:MM » du jour donné (négatif si c'est passé). */
+/** Minutes between now and an “HH:MM” time on the given day (negative once it has passed). */
 export function minutesUntil(date: string, startTime: string, now: Date): number {
   const [year, month, day] = date.split('-').map(Number);
   const [hours, minutes] = startTime.split(':').map(Number);
@@ -15,31 +15,31 @@ export function minutesUntil(date: string, startTime: string, now: Date): number
   return Math.round((start.getTime() - now.getTime()) / 60_000);
 }
 
-/** Vrai quand l'activité est terminée à l'heure qu'il est (début + durée dépassés). */
+/** True once the activity is over by the clock (start plus duration has passed). */
 export function isOver(date: string, startTime: string, durationMinutes: number, now: Date): boolean {
   return minutesUntil(date, startTime, now) + durationMinutes <= 0;
 }
 
-/** « dans 25 min », « dans 1 h 48 », « dans 3 h » ; null si l'heure est passée. */
+/** “in 25 min”, “in 1h 48”, “in 3h”; null once the time has passed. */
 export function formatCountdown(minutes: number): string | null {
   if (minutes <= 0) return null;
-  if (minutes < 60) return `dans ${minutes} min`;
+  if (minutes < 60) return `in ${minutes} min`;
   const hours = Math.floor(minutes / 60);
   const rest = minutes % 60;
-  return rest === 0 ? `dans ${hours} h` : `dans ${hours} h ${String(rest).padStart(2, '0')}`;
+  return rest === 0 ? `in ${hours}h` : `in ${hours}h ${String(rest).padStart(2, '0')}`;
 }
 
-/** Sous-titre de l'en-tête : ce qu'il reste à faire aujourd'hui. */
+/** The header's subtitle: what is left to do today. */
 export function todaySubtitle(pendingToday: number, hour: number): string {
-  if (pendingToday === 0) return "Rien de prévu d'ici la fin de la journée";
-  const until = hour >= 18 ? 'ce soir' : "aujourd'hui";
-  return `${pendingToday} activité${pendingToday > 1 ? 's' : ''} ${until}`;
+  if (pendingToday === 0) return 'Nothing planned before the day is out';
+  const until = hour >= 18 ? 'this evening' : 'today';
+  return `${pendingToday} activit${pendingToday > 1 ? 'ies' : 'y'} ${until}`;
 }
 
 export type WeekView<T extends DatedItem> = {
-  /** Jours à partir d'aujourd'hui, avec leurs activités encore à faire. */
+  /** Days from today onwards, with the activities still to do. */
   upcomingDays: { date: string; items: T[] }[];
-  /** Activités non faites des jours déjà passés : rangées à part pour ne pas encombrer. */
+  /** Activities left undone on days already gone: kept apart so they do not clutter. */
   pastPending: T[];
   doneCount: number;
   totalCount: number;
@@ -57,7 +57,7 @@ export function buildWeekView<T extends DatedItem>(items: T[], today: string): W
   };
 }
 
-/** Phrase de coach sous la salutation : ce qui compte maintenant, sans pression. */
+/** The coach's line under the greeting: what matters now, without pressure. */
 export function coachLine({
   hasPlan,
   doneCount,
@@ -71,9 +71,9 @@ export function coachLine({
   pendingToday: number;
   hour: number;
 }): string {
-  if (!hasPlan) return 'Ta semaine reste à construire, on s’en occupe ensemble.';
-  if (totalCount > 0 && doneCount === totalCount) return 'Semaine bouclée. Prends le temps d’en profiter.';
-  if (pendingToday === 0) return hour >= 18 ? 'Plus rien de prévu ce soir. Profite de ta soirée.' : "Plus rien de prévu aujourd'hui.";
-  if (doneCount > 0) return 'On continue, tu fais du super travail.';
-  return "Voici ce qui est prévu aujourd'hui.";
+  if (!hasPlan) return 'Your week is still to be built — we will do it together.';
+  if (totalCount > 0 && doneCount === totalCount) return 'Week complete. Take the time to enjoy it.';
+  if (pendingToday === 0) return hour >= 18 ? 'Nothing else planned tonight. Enjoy your evening.' : 'Nothing else planned today.';
+  if (doneCount > 0) return 'Keep going — you are doing well.';
+  return 'Here is what is planned for today.';
 }

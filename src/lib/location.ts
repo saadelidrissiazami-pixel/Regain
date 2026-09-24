@@ -19,17 +19,17 @@ export class LocationPermissionDeniedError extends Error {}
 export async function requestAndGetLocation(): Promise<Coords> {
   const { status } = await Location.requestForegroundPermissionsAsync();
   if (status !== 'granted') {
-    throw new LocationPermissionDeniedError("Permission de localisation refusée");
+    throw new LocationPermissionDeniedError('Location permission refused');
   }
   const position = await Location.getCurrentPositionAsync({ accuracy: Location.Accuracy.Balanced });
   return { latitude: position.coords.latitude, longitude: position.coords.longitude };
 }
 
-// Nominatim (OpenStreetMap) — service public gratuit, sans clé, respecte la limite de 1 req/s.
+// Nominatim (OpenStreetMap) — a free public service, no key, kept to its 1 req/s limit.
 export async function reverseGeocode({ latitude, longitude }: Coords): Promise<PlaceInfo> {
   const url = `https://nominatim.openstreetmap.org/reverse?format=jsonv2&lat=${latitude}&lon=${longitude}&zoom=16&addressdetails=1`;
   const response = await fetch(url, { headers: { Accept: 'application/json' } });
-  if (!response.ok) throw new Error('Géocodage indisponible');
+  if (!response.ok) throw new Error('Geocoding unavailable');
   const data = await response.json();
   const address = data.address ?? {};
   return {
@@ -40,7 +40,7 @@ export async function reverseGeocode({ latitude, longitude }: Coords): Promise<P
   };
 }
 
-// Wikipédia REST — service public gratuit, sans clé.
+// The Wikipedia REST API — a free public service, no key.
 export async function fetchWikipediaSummary(title: string, lang = 'fr'): Promise<WikiSummary | null> {
   try {
     const url = `https://${lang}.wikipedia.org/api/rest_v1/page/summary/${encodeURIComponent(title)}`;
@@ -79,18 +79,18 @@ function destinationPoint({ latitude, longitude }: Coords, bearingDeg: number, d
 export type WalkingLeg = { instruction: string; distanceM: number; point: Coords };
 
 const COMPASS_LABELS: { bearing: number; label: string }[] = [
-  { bearing: 0, label: 'plein nord' },
-  { bearing: 90, label: 'plein est' },
-  { bearing: 180, label: 'plein sud' },
-  { bearing: 270, label: 'plein ouest' },
+  { bearing: 0, label: 'due north' },
+  { bearing: 90, label: 'due east' },
+  { bearing: 180, label: 'due south' },
+  { bearing: 270, label: 'due west' },
 ];
 
-// Pas de clé d'API de navigation disponible : on génère une boucle géométrique (carré)
-// centrée sur la position de l'utilisateur, dimensionnée pour durer ~ le temps de l'activité.
+// With no routing API key available, we build a geometric loop (a square) centred on the user's
+// position, sized to last about as long as the activity.
 export function generateWalkingLoop(start: Coords, totalMinutes: number): WalkingLeg[] {
   const totalDistanceM = totalMinutes * WALKING_SPEED_M_PER_MIN;
-  // Boucle de secours, sans routage : les rues réelles la rallongeront, donc on la dimensionne
-  // avec le même coefficient de détour pour ne pas dépasser la durée de l'activité.
+  // The fallback loop, with no routing: real streets will lengthen it, so it is sized with the
+  // same detour factor to stay inside the activity's duration.
   const legDistanceM = Math.max(100, totalDistanceM / (4 * STREET_DETOUR_FACTOR));
 
   let current = start;
@@ -103,10 +103,10 @@ export function generateWalkingLoop(start: Coords, totalMinutes: number): Walkin
     legs.push({
       instruction:
         i === 0
-          ? `Partez vers ${compass.label} pendant environ ${Math.round(legDistanceM / WALKING_SPEED_M_PER_MIN)} min.`
+          ? `Head ${compass.label} for about ${Math.round(legDistanceM / WALKING_SPEED_M_PER_MIN)} min.`
           : i === 3
-            ? `Revenez vers votre point de départ (${compass.label}).`
-            : `Tournez et continuez vers ${compass.label} pendant environ ${Math.round(legDistanceM / WALKING_SPEED_M_PER_MIN)} min.`,
+            ? `Head back towards where you started (${compass.label}).`
+            : `Turn and carry on ${compass.label} for about ${Math.round(legDistanceM / WALKING_SPEED_M_PER_MIN)} min.`,
       distanceM: legDistanceM,
       point: next,
     });
@@ -116,9 +116,9 @@ export function generateWalkingLoop(start: Coords, totalMinutes: number): Walkin
   return legs;
 }
 
-// Les rues allongent un trajet d'environ 35 % par rapport au carré tracé à vol d'oiseau
-// (mesuré à Paris). Ce n'est qu'un point de départ : fetchLoopWithinDuration corrige ensuite
-// l'écart réel, qui varie selon le quartier.
+// Streets lengthen a route by roughly 35% against the square drawn as the crow flies (measured
+// in Paris). That is only a starting point: fetchLoopWithinDuration then corrects the real gap,
+// which varies from one neighbourhood to the next.
 const STREET_DETOUR_FACTOR = 1.35;
 
 function initialSideM(totalMinutes: number): number {
@@ -140,24 +140,24 @@ function loopWaypoints(start: Coords, sideM: number, firstBearing: number): Coor
   return points;
 }
 
-/** Points de passage d'une boucle (départ → 3 coins → départ), à router ensuite sur les rues. */
+/** The waypoints of a loop (start → 3 corners → start), to be routed onto streets afterwards. */
 export function generateLoopWaypoints(start: Coords, totalMinutes: number, firstBearing = randomBearing()): Coords[] {
   return loopWaypoints(start, initialSideM(totalMinutes), firstBearing);
 }
 
-// Fourchette acceptée : jamais plus long que l'activité, et pas beaucoup plus court non plus.
+// The accepted range: never longer than the activity, and not much shorter either.
 const MIN_DURATION_RATIO = 0.8;
 const AIM_DURATION_RATIO = 0.92;
 const MAX_ROUTE_ATTEMPTS = 4;
-// Politique d'usage du serveur FOSSGIS : une requête par seconde au maximum.
+// The FOSSGIS server's usage policy: one request per second at most.
 const ROUTING_MIN_INTERVAL_MS = 1100;
 
 export class RouteTooLongError extends Error {}
 
 /**
- * Boucle routée sur les rues dont la durée de marche ne dépasse jamais `totalMinutes`.
- * Les rues rallongent le trajet de façon imprévisible : on route, on mesure la durée réelle,
- * puis on rétrécit (ou agrandit) la boucle proportionnellement et on recommence.
+ * A loop routed onto real streets whose walking time never exceeds `totalMinutes`.
+ * Streets lengthen a route unpredictably, so we route it, measure the real duration, then shrink
+ * (or grow) the loop in proportion and try again.
  */
 export async function fetchLoopWithinDuration(
   start: Coords,
@@ -181,7 +181,7 @@ export async function fetchLoopWithinDuration(
   }
 
   if (bestWithinTarget) return bestWithinTarget;
-  throw new RouteTooLongError('Aucune boucle assez courte trouvée autour de cette position');
+  throw new RouteTooLongError('No loop short enough was found around this position');
 }
 
 export type RouteStep = { instruction: string; distanceM: number };
@@ -209,34 +209,34 @@ type OsrmResponse = {
   }[];
 };
 
-// Serveur OSRM piéton de FOSSGIS (données OpenStreetMap) : gratuit et sans clé, mais limité à
-// 1 requête/s et à un usage modéré. À remplacer par un service dédié (instance OSRM/Valhalla
-// auto-hébergée, ou fournisseur payant) avant un lancement public. L'attribution OpenStreetMap
-// et un lien de signalement d'erreur sont obligatoires là où l'itinéraire est affiché.
+// FOSSGIS's walking OSRM server (OpenStreetMap data): free and keyless, but capped at 1 req/s
+// and at modest use. To be replaced by a dedicated service (a self-hosted OSRM/Valhalla instance,
+// or a paid provider) before any public launch. OpenStreetMap attribution and a link for
+// reporting an error are mandatory wherever the route is shown.
 const OSRM_FOOT_URL = 'https://routing.openstreetmap.de/routed-foot/route/v1/foot';
 
 const DIRECTION_LABELS: Record<string, string> = {
-  left: 'à gauche',
-  right: 'à droite',
-  'slight left': 'légèrement à gauche',
-  'slight right': 'légèrement à droite',
-  'sharp left': 'franchement à gauche',
-  'sharp right': 'franchement à droite',
-  straight: 'tout droit',
+  left: 'left',
+  right: 'right',
+  'slight left': 'slightly left',
+  'slight right': 'slightly right',
+  'sharp left': 'sharp left',
+  'sharp right': 'sharp right',
+  straight: 'straight on',
 };
 
 function describeStep(step: OsrmStep): string {
   const { type, modifier } = step.maneuver;
-  const street = step.name ? ` sur ${step.name}` : '';
+  const street = step.name ? ` onto ${step.name}` : '';
 
-  if (type === 'depart') return `Partez${street}`;
-  if (type === 'arrive') return 'Vous êtes de retour à votre point de départ';
-  if (modifier === 'uturn') return `Faites demi-tour${street}`;
-  if (type === 'roundabout' || type === 'rotary') return `Prenez le rond-point${street}`;
+  if (type === 'depart') return `Set off${street}`;
+  if (type === 'arrive') return 'You are back where you started';
+  if (modifier === 'uturn') return `Turn around${street}`;
+  if (type === 'roundabout' || type === 'rotary') return `Take the roundabout${street}`;
 
   const direction = modifier ? DIRECTION_LABELS[modifier] : undefined;
-  if (!direction || direction === 'tout droit') return `Continuez tout droit${street}`;
-  return `Tournez ${direction}${street}`;
+  if (!direction || direction === 'straight on') return `Carry straight on${street}`;
+  return `Turn ${direction}${street}`;
 }
 
 const MIN_STEP_METERS = 15;
@@ -244,16 +244,16 @@ const MIN_STEP_METERS = 15;
 export async function fetchWalkingRoute(waypoints: Coords[]): Promise<WalkingRoute> {
   const coordinates = waypoints.map((p) => `${p.longitude.toFixed(6)},${p.latitude.toFixed(6)}`).join(';');
   const response = await fetch(`${OSRM_FOOT_URL}/${coordinates}?overview=full&geometries=geojson&steps=true`, {
-    headers: { Accept: 'application/json', 'User-Agent': 'Regain/1.0 (application mobile bien-etre)' },
+    headers: { Accept: 'application/json', 'User-Agent': 'Regain/1.0 (wellbeing mobile app)' },
   });
-  if (!response.ok) throw new Error('Itinéraire indisponible');
+  if (!response.ok) throw new Error('Route unavailable');
 
   const data: OsrmResponse = await response.json();
   const route = data.routes?.[0];
-  if (data.code !== 'Ok' || !route) throw new Error('Itinéraire introuvable');
+  if (data.code !== 'Ok' || !route) throw new Error('No route found');
 
-  // Chaque étape intermédiaire de la boucle renvoie son propre « départ / arrivée » : on ne garde
-  // que le tout premier départ et la toute dernière arrivée, et on écarte les micro-segments.
+  // Every intermediate leg of the loop reports its own “depart / arrive”, so we keep only the
+  // very first departure and the very last arrival, and drop the micro-segments.
   const steps: RouteStep[] = [];
   route.legs.forEach((leg, legIndex) => {
     const isFirstLeg = legIndex === 0;

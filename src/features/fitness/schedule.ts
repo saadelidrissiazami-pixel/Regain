@@ -68,14 +68,14 @@ export function buildWeekTracker({
 export type NextWorkout = {
   sessionIndex: number;
   date: string;
-  /** « 19:00 », ou null si l'utilisateur n'a pas indiqué quand il s'entraîne. */
+  /** “19:00”, or null when the user has not said when they train. */
   startTime: string | null;
   isToday: boolean;
 };
 
 /**
- * Prochaine séance : la suivante dans l'ordre du programme (selon les séances déjà faites cette
- * semaine), au prochain jour d'entraînement où rien n'a encore été fait.
+ * The next session: the next one in programme order (going by what has been done this week), on
+ * the next training day where nothing has been done yet.
  */
 export function nextWorkout({
   weekStart,
@@ -107,16 +107,16 @@ export function nextWorkout({
 }
 
 const PHASES: Record<NutritionTargets['strategy'], string> = {
-  surplus: 'Prise de masse',
-  deficit: 'Perte progressive',
-  maintien: 'Équilibre',
+  surplus: 'Building mass',
+  deficit: 'Gradual loss',
+  maintien: 'Maintenance',
 };
 
 export function programPhase(strategy: NutritionTargets['strategy']): string {
   return PHASES[strategy];
 }
 
-/** Le programme en cours a été allégé par le dernier bilan (une série de moins par exercice). */
+/** The current programme was eased off by the last check-in (one set fewer per exercise). */
 export function isDeloadWeek(
   plan: Pick<FitnessPlan, 'created_at'> | null | undefined,
   lastCheckin: Pick<FitnessCheckin, 'created_at' | 'sessions_done' | 'energy'> | null | undefined,
@@ -135,7 +135,7 @@ export type ExerciseSummary = {
   sessions: string[];
 };
 
-/** Tous les exercices du programme, une fois chacun, avec les séances où ils apparaissent. */
+/** Every exercise in the programme, once each, with the sessions it appears in. */
 export function uniqueExercises(program: WorkoutSession[]): ExerciseSummary[] {
   const byName = new Map<string, ExerciseSummary>();
   for (const session of program) {
@@ -151,11 +151,11 @@ export function uniqueExercises(program: WorkoutSession[]): ExerciseSummary[] {
   return [...byName.values()];
 }
 
-/** Libellé relatif d'une date : « Aujourd'hui », « Demain », sinon « Lundi 21 sept. ». */
+/** A relative label for a date: “Today”, “Tomorrow”, otherwise “Monday, Sep 21”. */
 export function relativeDayLabel(date: string, today: string, format: (date: string) => string): string {
-  if (date === today) return "Aujourd'hui";
+  if (date === today) return 'Today';
   const tomorrow = fromLocalISODate(today);
   tomorrow.setDate(tomorrow.getDate() + 1);
-  if (date === toLocalISODate(tomorrow)) return 'Demain';
+  if (date === toLocalISODate(tomorrow)) return 'Tomorrow';
   return format(date);
 }

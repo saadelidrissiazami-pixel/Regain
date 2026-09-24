@@ -49,7 +49,7 @@ export async function enableDailyReminder(): Promise<boolean> {
     identifier: MORNING_NUDGE_ID,
     content: {
       title: 'Regain',
-      body: 'Avant de scroller ? Deux minutes de respiration ou d’étirement plutôt qu’un réseau social 🌱',
+      body: 'Before you scroll? Two minutes of breathing or stretching instead of a feed 🌱',
       data: { route: '/(tabs)/wellbeing' },
     },
     trigger: { type: Notifications.SchedulableTriggerInputTypes.DAILY, hour: 8, minute: 0 },
@@ -75,8 +75,8 @@ export async function cancelActivityReminders() {
   );
 }
 
-// N'affecte que le planning courant : appelé après chaque génération, seulement si les
-// rappels sont déjà activés (on ne redemande jamais la permission ici).
+// Only touches the current plan: called after each generation, and only when reminders are
+// already on (permission is never asked for again here).
 export async function scheduleActivityReminders(items: PlannedActivityRow[], availability: AvailabilitySlot[] = []) {
   if (!isSupported) return;
   if (!(await areRemindersEnabled())) return;
@@ -106,9 +106,9 @@ export async function scheduleActivityReminders(items: PlannedActivityRow[], ava
 }
 
 /**
- * Prévient avant la fin de l'essai Premium, pour que personne ne découvre un débit annuel par
- * surprise. L'avance dépend de la longueur de l'essai (voir `trialReminderDaysBefore`).
- * Identifiant fixe : un seul rappel, remplacé s'il existe déjà.
+ * Warns before the Premium trial ends, so nobody discovers a yearly charge by surprise. How much
+ * notice depends on the trial's length (see `trialReminderDaysBefore`).
+ * A fixed identifier: one reminder only, replaced if it already exists.
  */
 export async function scheduleTrialReminder(trialEnd: Date): Promise<boolean> {
   if (!isSupported) return false;
@@ -120,8 +120,8 @@ export async function scheduleTrialReminder(trialEnd: Date): Promise<boolean> {
   const { status } = await Notifications.requestPermissionsAsync();
   if (status !== 'granted') return false;
 
-  // L'avance dépend de la longueur de l'essai : on la relit sur la date retenue plutôt que
-  // d'annoncer un délai fixe, sous peine d'écrire « dans 2 jours » un rappel envoyé la veille.
+  // How much notice depends on the trial's length, so it is read back off the date chosen rather
+  // than stated as a fixed delay — otherwise a reminder sent the day before would say “in 2 days”.
   const daysLeft = Math.round((trialEnd.getTime() - date.getTime()) / 86_400_000);
   const when = daysLeft <= 1 ? 'demain' : `dans ${daysLeft} jours`;
 
@@ -130,7 +130,7 @@ export async function scheduleTrialReminder(trialEnd: Date): Promise<boolean> {
     identifier: TRIAL_REMINDER_ID,
     content: {
       title: 'Regain Premium',
-      body: `Votre essai gratuit se termine ${when}. Pour ne pas être débité, annulez depuis Profil → Paramètres → Gérer mon abonnement.`,
+      body: `Your free trial ends ${when}. To avoid being charged, cancel from Profile → Settings → Manage my subscription.`,
       data: { route: '/(tabs)/profile' },
     },
     trigger: { type: Notifications.SchedulableTriggerInputTypes.DATE, date },

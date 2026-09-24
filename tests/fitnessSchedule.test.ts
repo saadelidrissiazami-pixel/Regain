@@ -59,8 +59,8 @@ describe('suivi de la semaine', () => {
 
 describe('programme', () => {
   it('nomme la phase selon la stratégie nutritionnelle', () => {
-    expect(programPhase('surplus')).toBe('Prise de masse');
-    expect(programPhase('deficit')).toBe('Perte progressive');
+    expect(programPhase('surplus')).toBe('Building mass');
+    expect(programPhase('deficit')).toBe('Gradual loss');
   });
 
   it('raccourcit le titre de séance', () => {

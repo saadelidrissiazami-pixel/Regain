@@ -1,13 +1,13 @@
 import type { AvailabilitySlot, TimeSlot } from '../availability/types';
 import { fromLocalISODate } from '../../lib/week';
 
-/** Heure utilisée quand aucune disponibilité ne précise le début du créneau. */
+/** The time used when no availability says when the slot starts. */
 export const DEFAULT_SLOT_START: Record<TimeSlot, string> = { matin: '09:00', apres_midi: '14:00', soir: '19:00' };
 
 type ScheduledItem = { date: string; time_slot: TimeSlot };
 
-/** Heure de début réelle d'une activité : celle de la disponibilité qui a servi à la placer
- *  (une disponibilité ponctuelle prime sur une récurrente), sinon l'heure par défaut du créneau. */
+/** An activity's real start time: the one from the availability that placed it (a one-off beats
+ *  a recurring one), otherwise the slot's default time. */
 export function resolveStartTime(item: ScheduledItem, availability: AvailabilitySlot[]): string {
   const dayOfWeek = (fromLocalISODate(item.date).getDay() + 6) % 7; // 0 = lundi, comme day_of_week
   const matching = availability.filter(

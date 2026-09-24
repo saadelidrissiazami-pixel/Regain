@@ -7,8 +7,8 @@ import { isExpoGo, isWeb } from './runtime';
 
 const IOS_KEY = process.env.EXPO_PUBLIC_REVENUECAT_IOS_KEY;
 const ANDROID_KEY = process.env.EXPO_PUBLIC_REVENUECAT_ANDROID_KEY;
-// Clé « Test Store » RevenueCat : achats simulés, sans compte App Store / Play Console.
-// Une app envoyée en revue avec cette clé est rejetée : elle n'est lue qu'en développement.
+// A RevenueCat “Test Store” key: simulated purchases, with no App Store / Play Console account.
+// An app submitted for review with this key is rejected, so it is only read in development.
 const TEST_STORE_KEY = process.env.EXPO_PUBLIC_REVENUECAT_TEST_STORE_KEY;
 
 const API_KEY = __DEV__ && TEST_STORE_KEY ? TEST_STORE_KEY : Platform.OS === 'ios' ? IOS_KEY : ANDROID_KEY;
@@ -16,18 +16,18 @@ const API_KEY = __DEV__ && TEST_STORE_KEY ? TEST_STORE_KEY : Platform.OS === 'io
 export const purchasesUnavailableReason: string | null = isWeb
   ? "Les abonnements se souscrivent depuis l'app mobile."
   : isExpoGo
-    ? "Les achats intégrés ne fonctionnent pas dans Expo Go : testez-les dans un build de développement (voir docs/abonnements.md)."
+    ? 'In-app purchases do not work in Expo Go: test them in a development build (see docs/abonnements.md).'
     : !API_KEY
       ? __DEV__
-        ? 'Les abonnements ne sont pas encore configurés : clé RevenueCat manquante (voir docs/abonnements.md).'
-        : 'Les abonnements ne sont pas disponibles pour le moment. Réessaie dans quelques instants.'
+        ? 'Subscriptions are not configured yet: the RevenueCat key is missing (see docs/abonnements.md).'
+        : 'Subscriptions are unavailable at the moment. Try again in a few moments.'
       : null;
 
 export const isPurchasesConfigured = purchasesUnavailableReason === null;
 export const isUsingTestStore = isPurchasesConfigured && __DEV__ && !!TEST_STORE_KEY;
 
-// Identifiant RevenueCat actuellement actif. Sans ce suivi, un second compte connecté sur le
-// même appareil hériterait de l'appUserID — et donc des droits Premium — du compte précédent.
+// The RevenueCat identity currently in use. Without tracking it, a second account signed in on
+// the same device would inherit the previous account's appUserID — and so its Premium access.
 let configuredUserId: string | null = null;
 
 async function getPurchases() {
@@ -39,14 +39,14 @@ export function hasPremium(info: CustomerInfo): boolean {
   return info.entitlements.active[PREMIUM_ENTITLEMENT_ID] !== undefined;
 }
 
-/** Fin de l'essai gratuit en cours ; null hors période d'essai. */
+/** When the current free trial ends; null outside a trial. */
 export function trialEndsAt(info: CustomerInfo): Date | null {
   const premium = info.entitlements.active[PREMIUM_ENTITLEMENT_ID];
   if (!premium || premium.periodType?.toUpperCase() !== 'TRIAL' || !premium.expirationDate) return null;
   return new Date(premium.expirationDate);
 }
 
-/** Programme le rappel « votre essai se termine » si l'utilisateur est en période d'essai. */
+/** Schedules the “your trial is ending” reminder when the user is inside a trial. */
 function remindIfTrial(info: CustomerInfo) {
   const end = trialEndsAt(info);
   if (end) scheduleTrialReminder(end).catch(() => {});
@@ -71,7 +71,7 @@ export async function logOutPurchases() {
   configuredUserId = null;
 }
 
-/** Prévient à chaque changement d'abonnement (achat, renouvellement, expiration, remboursement). */
+/** Fires on every subscription change (purchase, renewal, expiry, refund). */
 export function onPremiumChange(listener: (premium: boolean) => void): () => void {
   if (!isPurchasesConfigured) return () => {};
   let active = true;
@@ -99,8 +99,9 @@ export async function fetchOfferings() {
   return offerings.current;
 }
 
-/** « not-activated » : paiement accepté mais droit « premium » absent — produit non rattaché
- *  à l'entitlement dans RevenueCat, ou achat en attente (validation parentale, paiement différé). */
+/** “not-activated”: the payment went through but the “premium” entitlement is missing — either
+ *  the product is not attached to the entitlement in RevenueCat, or the purchase is pending
+ *  (parental approval, deferred payment). */
 export type PurchaseOutcome = 'premium' | 'cancelled' | 'not-activated';
 
 export async function purchasePackage(pkg: PurchasesPackage): Promise<PurchaseOutcome> {
@@ -116,7 +117,7 @@ export async function purchasePackage(pkg: PurchasesPackage): Promise<PurchaseOu
   }
 }
 
-/** Renvoie true si un abonnement Premium actif a été retrouvé pour ce compte store. */
+/** True when an active Premium subscription was found for this store account. */
 export async function restorePurchases(): Promise<boolean> {
   const Purchases = await getPurchases();
   return hasPremium(await Purchases.restorePurchases());
@@ -134,7 +135,7 @@ export async function isPremium(): Promise<boolean> {
   return hasPremium(await Purchases.getCustomerInfo());
 }
 
-/** Lien de gestion / résiliation de l'abonnement (celui du store d'achat si RevenueCat le connaît). */
+/** Where to manage or cancel the subscription (the purchasing store's own link when RevenueCat knows it). */
 export async function getManagementUrl(): Promise<string> {
   const fallback = Platform.OS === 'android' ? STORE_SUBSCRIPTIONS_URL.android : STORE_SUBSCRIPTIONS_URL.ios;
   if (!isPurchasesConfigured) return fallback;

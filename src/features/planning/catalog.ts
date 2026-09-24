@@ -21,9 +21,9 @@ export type CatalogActivity = {
   instructions: string | null;
   tags: string[];
   steps: ActivityStep[];
-  /** Ce qu'on fait dans les deux premières minutes, et qui suffit déjà à avoir commencé. */
+  /** What you do in the first two minutes, which is already enough to have started. */
   first_action: string | null;
-  /** Ce qui dit que c'est fini, pour qu'une activité ne s'étire pas sans fin. */
+  /** What says it is over, so an activity does not stretch on without end. */
   stop_rule: string | null;
 };
 

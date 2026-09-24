@@ -38,12 +38,12 @@ describe('offres du paywall', () => {
 
   it('affiche prix, période, équivalent mensuel et badge', () => {
     expect(describePackage(ANNUAL, 33)).toEqual({
-      title: 'Annuel',
+      title: 'Yearly',
       price: '39,99 €',
-      period: 'par an',
-      perMonth: 'soit 3,33 € / mois',
+      period: 'per year',
+      perMonth: 'that is 3,33 € / month',
       intro: null,
-      badge: '−33 %',
+      badge: '−33%',
     });
     const monthly = describePackage(MONTHLY, 33);
     expect(monthly.perMonth).toBeNull();
@@ -52,16 +52,16 @@ describe('offres du paywall', () => {
 
   it("décrit l'essai gratuit et les prix de lancement en toutes lettres", () => {
     expect(introOfferLabel({ price: 0, priceString: '0,00 €', cycles: 1, periodUnit: 'WEEK', periodNumberOfUnits: 1 })).toBe(
-      "1 semaine d'essai gratuit"
+      '1 week free trial'
     );
     expect(introOfferLabel({ price: 0, priceString: '0,00 €', cycles: 1, periodUnit: 'DAY', periodNumberOfUnits: 7 })).toBe(
-      "7 jours d'essai gratuit"
+      '7 days free trial'
     );
     expect(introOfferLabel({ price: 1.99, priceString: '1,99 €', cycles: 3, periodUnit: 'MONTH', periodNumberOfUnits: 1 })).toBe(
-      '1,99 € par mois pendant 3 mois'
+      '1,99 € per month for 3 months'
     );
     expect(introOfferLabel({ price: 9.99, priceString: '9,99 €', cycles: 1, periodUnit: 'MONTH', periodNumberOfUnits: 6 })).toBe(
-      '9,99 € pour 6 mois'
+      '9,99 € for 6 months'
     );
     expect(introOfferLabel(null)).toBeNull();
   });
@@ -79,17 +79,17 @@ describe("essai gratuit", () => {
 
   it("annonce le rappel et la date du premier paiement", () => {
     expect(trialTimeline(7, '49,99 €')).toEqual([
-      { when: "Aujourd'hui", what: 'Tout Premium est débloqué' },
-      { when: 'Jour 5', what: "On vous prévient que l'essai se termine" },
-      { when: 'Jour 7', what: 'Premier paiement de 49,99 €, sauf si vous annulez avant' },
+      { when: 'Today', what: 'All of Premium unlocks' },
+      { when: 'Day 5', what: 'We tell you the trial is about to end' },
+      { when: 'Day 7', what: 'First payment of 49,99 €, unless you cancel before then' },
     ]);
   });
 
   it("prévient la veille sur un essai court, où deux jours d'avance tomberaient presque le jour de l'achat", () => {
     expect(trialTimeline(3, '49,99 €')).toEqual([
-      { when: "Aujourd'hui", what: 'Tout Premium est débloqué' },
-      { when: 'Jour 2', what: "On vous prévient que l'essai se termine" },
-      { when: 'Jour 3', what: 'Premier paiement de 49,99 €, sauf si vous annulez avant' },
+      { when: 'Today', what: 'All of Premium unlocks' },
+      { when: 'Day 2', what: 'We tell you the trial is about to end' },
+      { when: 'Day 3', what: 'First payment of 49,99 €, unless you cancel before then' },
     ]);
   });
 

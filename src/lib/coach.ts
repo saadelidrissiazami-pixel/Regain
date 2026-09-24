@@ -18,7 +18,7 @@ export async function fetchCoachHistory(userId: string): Promise<CoachMessage[]>
   return data;
 }
 
-/** Espace d'où part la conversation : oriente le coach, sans transmettre de donnée de santé. */
+/** Where the conversation starts from: it steers the coach, and carries no health data. */
 export type CoachSubject = 'forme' | 'bien-etre';
 
 export async function sendCoachMessage(message: string, subject?: CoachSubject): Promise<string> {
@@ -26,18 +26,18 @@ export async function sendCoachMessage(message: string, subject?: CoachSubject):
     body: { message, subject },
   });
 
-  // invoke() renvoie une error pour tout statut non-2xx : une panne serveur, un quota atteint
-  // ou une fonction non déployée arrivent tous ici. On lit le message réel de la fonction
-  // plutôt que de supposer qu'elle n'est pas configurée.
+  // invoke() returns an error for any non-2xx status: a server fault, a spent quota and an
+  // undeployed function all arrive here. We read the function's real message rather than assume
+  // it has not been configured.
   if (error) {
     const response = (error as { context?: Response }).context;
     if (response?.status === 404) {
-      throw new Error("Le coach IA n'est pas encore déployé côté serveur.");
+      throw new Error('The AI coach is not deployed on the server yet.');
     }
     const body = await response?.json().catch(() => null);
-    throw new Error(body?.error ?? 'Le coach est momentanément indisponible. Réessayez dans un instant.');
+    throw new Error(body?.error ?? 'The coach is unavailable for the moment. Try again shortly.');
   }
 
-  if (!data?.reply) throw new Error("Le coach n'a pas renvoyé de réponse.");
+  if (!data?.reply) throw new Error('The coach did not send anything back.');
   return data.reply;
 }

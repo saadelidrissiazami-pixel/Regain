@@ -54,7 +54,7 @@ export function computeBmr({ sex, age, heightCm, weightKg }: Omit<NutritionInput
 export function strategyForGoals(goals: FitnessGoal[]): NutritionStrategy {
   const wantsLoss = goals.includes('perte_poids');
   const wantsGain = goals.includes('prise_masse');
-  // Objectifs contradictoires : on reste à l'équilibre (recomposition) plutôt que de trancher.
+  // Contradictory goals: stay at maintenance (recomposition) rather than pick a side.
   if (wantsLoss && !wantsGain) return 'deficit';
   if (wantsGain && !wantsLoss) return 'surplus';
   return 'maintien';

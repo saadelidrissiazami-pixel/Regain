@@ -4,11 +4,11 @@ import { buildWeekView, coachLine, formatCountdown, greetingFor, isOver, minutes
 
 describe('greetingFor', () => {
   it('suit les moments de la journée', () => {
-    expect(greetingFor(8)).toBe('Bonjour');
-    expect(greetingFor(12)).toBe('Bon après-midi');
-    expect(greetingFor(17)).toBe('Bon après-midi');
-    expect(greetingFor(18)).toBe('Bonsoir');
-    expect(greetingFor(2)).toBe('Bonsoir');
+    expect(greetingFor(8)).toBe('Good morning');
+    expect(greetingFor(12)).toBe('Good afternoon');
+    expect(greetingFor(17)).toBe('Good afternoon');
+    expect(greetingFor(18)).toBe('Good evening');
+    expect(greetingFor(2)).toBe('Good evening');
   });
 });
 
@@ -22,10 +22,10 @@ describe('compte à rebours', () => {
   });
 
   it('écrit le délai en clair', () => {
-    expect(formatCountdown(25)).toBe('dans 25 min');
-    expect(formatCountdown(108)).toBe('dans 1 h 48');
-    expect(formatCountdown(180)).toBe('dans 3 h');
-    expect(formatCountdown(65)).toBe('dans 1 h 05');
+    expect(formatCountdown(25)).toBe('in 25 min');
+    expect(formatCountdown(108)).toBe('in 1h 48');
+    expect(formatCountdown(180)).toBe('in 3h');
+    expect(formatCountdown(65)).toBe('in 1h 05');
     expect(formatCountdown(0)).toBeNull();
     expect(formatCountdown(-10)).toBeNull();
   });
@@ -38,9 +38,9 @@ describe('compte à rebours', () => {
   });
 
   it("résume ce qu'il reste aujourd'hui", () => {
-    expect(todaySubtitle(2, 15)).toBe("2 activités aujourd'hui");
-    expect(todaySubtitle(1, 20)).toBe('1 activité ce soir');
-    expect(todaySubtitle(0, 10)).toBe("Rien de prévu d'ici la fin de la journée");
+    expect(todaySubtitle(2, 15)).toBe('2 activities today');
+    expect(todaySubtitle(1, 20)).toBe('1 activity this evening');
+    expect(todaySubtitle(0, 10)).toBe('Nothing planned before the day is out');
   });
 });
 
@@ -75,15 +75,15 @@ describe('buildWeekView', () => {
 describe('phrase du coach', () => {
   const base = { hasPlan: true, doneCount: 0, totalCount: 8, pendingToday: 1, hour: 15 };
   it('encourage quand la semaine avance', () => {
-    expect(coachLine({ ...base, doneCount: 3 })).toBe('On continue, tu fais du super travail.');
+    expect(coachLine({ ...base, doneCount: 3 })).toBe('Keep going — you are doing well.');
   });
   it('dit ce qui est prévu en début de semaine', () => {
-    expect(coachLine(base)).toBe("Voici ce qui est prévu aujourd'hui.");
+    expect(coachLine(base)).toBe('Here is what is planned for today.');
   });
   it('félicite quand tout est fait', () => {
-    expect(coachLine({ ...base, doneCount: 8 })).toContain('bouclée');
+    expect(coachLine({ ...base, doneCount: 8 })).toContain('Week complete');
   });
   it('invite à construire la semaine sans planning', () => {
-    expect(coachLine({ ...base, hasPlan: false })).toContain('construire');
+    expect(coachLine({ ...base, hasPlan: false })).toContain('still to be built');
   });
 });
