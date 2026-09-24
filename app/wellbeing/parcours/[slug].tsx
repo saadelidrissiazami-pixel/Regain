@@ -73,7 +73,7 @@ export default function CourseScreen() {
       {progress.days.map((day) => (
         <View key={day.program.id} style={{ flexDirection: 'row', alignItems: 'center', gap: 12 }}>
           <Text variant="caption" tone="ink3" tabular style={{ width: 46 }}>
-            Day {day.day}
+            {t('Day {number}', { number: day.day })}
           </Text>
           <View style={{ flex: 1 }}>
             <ProgramRow
@@ -88,8 +88,7 @@ export default function CourseScreen() {
 
       {progress.complete ? (
         <Text variant="bodySm" tone="ink2" style={{ marginTop: 20 }}>
-          You have done all {course.dayCount} days. Nothing stops you doing one again when it
-          would help — that is what they are for.
+          {t('You have done all {count} days. Nothing stops you doing one again when it would help — that is what they are for.', { count: course.dayCount })}
         </Text>
       ) : null}
     </Screen>

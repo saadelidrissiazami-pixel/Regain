@@ -121,7 +121,7 @@ export function EnergyPromptCard() {
             <Card variant="tinted" padding={14} style={{ marginTop: 14 }}>
               <Text variant="label">{suggestion.program.title}</Text>
               <Text variant="caption" tone="ink2" style={{ marginTop: 2 }}>
-                {themeLabel(suggestion.program.category)} · {suggestion.program.duration_minutes} min
+                {themeLabel(suggestion.program.category)} · {t('{minutes} min', { minutes: suggestion.program.duration_minutes })}
               </Text>
               <Text variant="caption" tone="ink2" style={{ marginTop: 8 }}>
                 {suggestion.reason}

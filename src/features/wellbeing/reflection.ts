@@ -3,11 +3,11 @@ export type MoodOption = { value: number; emoji: string; label: string };
 
 /** How the session left you, compared with before: 1 = much worse … 5 = much better. */
 export const MOOD_OPTIONS: MoodOption[] = [
-  { value: 1, emoji: '😣', label: 'Much worse' },
-  { value: 2, emoji: '😕', label: 'A little worse' },
-  { value: 3, emoji: '😐', label: 'The same' },
-  { value: 4, emoji: '🙂', label: 'A little better' },
-  { value: 5, emoji: '😊', label: 'Much better' },
+  { value: 1, emoji: '😣', label: t('Much worse') },
+  { value: 2, emoji: '😕', label: t('A little worse') },
+  { value: 3, emoji: '😐', label: t('The same') },
+  { value: 4, emoji: '🙂', label: t('A little better') },
+  { value: 5, emoji: '😊', label: t('Much better') },
 ];
 
 export function moodOption(value: number | null | undefined): MoodOption | null {

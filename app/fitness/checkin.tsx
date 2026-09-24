@@ -11,13 +11,14 @@ import { summarizeAdjustments, type PlanAdjustment } from '../../src/features/fi
 import type { FitnessPlan } from '../../src/features/fitness/types';
 import { createCheckin, createFitnessPlan, fetchFitnessProfile, fetchLatestFitnessPlan, updateFitnessWeight } from '../../src/lib/fitness';
 import { useAuthStore } from '../../src/store/authStore';
+import { locale, t } from '../../src/lib/i18n';
 
 const ENERGY_LEVELS = [
-  { value: 1, label: 'Running on empty', hint: 'Nothing left in the tank' },
-  { value: 2, label: 'Tired', hint: 'The sessions were hard' },
-  { value: 3, label: 'Okay', hint: 'No better or worse than usual' },
-  { value: 4, label: 'Good', hint: 'A good week' },
-  { value: 5, label: 'Great', hint: 'Ready for more' },
+  { value: 1, label: t('Running on empty'), hint: t('Nothing left in the tank') },
+  { value: 2, label: t('Tired'), hint: t('The sessions were hard') },
+  { value: 3, label: t('Okay'), hint: t('No better or worse than usual') },
+  { value: 4, label: t('Good'), hint: t('A good week') },
+  { value: 5, label: t('Great'), hint: t('Ready for more') },
 ];
 
 export default function FitnessCheckinScreen() {
@@ -39,13 +40,13 @@ export default function FitnessCheckinScreen() {
 
   const submitMutation = useMutation({
     mutationFn: async (): Promise<{ plan: FitnessPlan; adjustments: PlanAdjustment[] }> => {
-      if (!userId || !profile) throw new Error('Fitness profile not found.');
+      if (!userId || !profile) throw new Error(t('Fitness profile not found.'));
       if (sessionsDone === null || energy === null) {
-        throw new Error('Tell us how many sessions you did and how your energy was.');
+        throw new Error(t('Tell us how many sessions you did and how your energy was.'));
       }
       const weight = weightText.trim() ? Number(weightText.trim().replace(',', '.')) : null;
       if (weight !== null && (!Number.isFinite(weight) || weight < 35 || weight > 250)) {
-        throw new Error('Weight: between 35 and 250 kg.');
+        throw new Error(t('Weight: between 35 and 250 kg.'));
       }
 
       await createCheckin(userId, {
@@ -92,9 +93,9 @@ export default function FitnessCheckinScreen() {
   // After sending: what the check-in changed, before going back to the programme.
   if (result) {
     return (
-      <Screen footer={<Button label="See my programme" onPress={() => goBack('/(tabs)/fitness')} />}>
+      <Screen footer={<Button label={t('See my programme')} onPress={() => goBack('/(tabs)/fitness')} />}>
         <Appear>
-          <ScreenHeader title="Check-in saved" subtitle="Your programme, your meals and your shopping list have just been adapted." />
+          <ScreenHeader title={t('Check-in saved')} subtitle={t('Your programme, your meals and your shopping list have just been adapted.')} />
         </Appear>
         <Card>
           <AdjustmentsList adjustments={result.adjustments} />
@@ -117,7 +118,7 @@ export default function FitnessCheckinScreen() {
         <View>
           {submitMutation.isError ? <InlineNotice tone="error" message={errorMessage(submitMutation.error)} /> : null}
           <Button
-            label={submitMutation.isPending ? 'Adjusting your programme…' : 'Send my check-in'}
+            label={submitMutation.isPending ? t('Adjusting your programme…') : t('Send my check-in')}
             loading={submitMutation.isPending}
             disabled={!profile}
             onPress={() => submitMutation.mutate()}
@@ -127,49 +128,49 @@ export default function FitnessCheckinScreen() {
       }
     >
       <ScreenHeader
-        overline="Your fitness coach"
-        title="This week’s check-in"
-        subtitle="A few honest answers, and your coach adjusts the week ahead. A busy week happens."
+        overline={t('Your fitness coach')}
+        title={t('This week’s check-in')}
+        subtitle={t('A few honest answers, and your coach adjusts the week ahead. A busy week happens.')}
         onBack={() => goBack('/(tabs)/fitness')}
       />
 
       {profileQuery.isLoading ? <LoadingSkeleton preset="list" /> : null}
 
       <Text variant="label" style={{ marginBottom: 8 }}>
-        Sessions done
+        {t('Sessions done')}
       </Text>
       <SegmentedControl
-        label="Sessions done"
+        label={t('Sessions done')}
         tone="surface"
         value={sessionsDone ?? -1}
         onChange={setSessionsDone}
         options={Array.from({ length: plannedSessions + 1 }, (_, n) => ({ value: n, label: String(n) }))}
       />
       <Text variant="caption" tone="ink2" style={{ marginTop: 6, marginBottom: 20 }}>
-        Out of {plannedSessions} planned. Zero is an answer too.
+        {t('Out of {planned} planned. Zero is an answer too.', { planned: plannedSessions })}
       </Text>
 
       <Select
-        label="Your energy this week"
-        title="How did you hold up?"
-        placeholder="Choose"
+        label={t('Your energy this week')}
+        title={t('How did you hold up?')}
+        placeholder={t('Choose')}
         value={energy}
         options={ENERGY_LEVELS}
         onChange={setEnergy}
       />
 
       <Field
-        label="Current weight (optional)"
-        placeholder={profile ? `Last weight: ${profile.weight_kg} kg` : 'Weight (kg)'}
+        label={t('Current weight (optional)')}
+        placeholder={profile ? t('Last weight: {weight} kg', { weight: profile.weight_kg.toLocaleString(locale) }) : t('Weight (kg)')}
         keyboardType="decimal-pad"
         value={weightText}
         onChangeText={setWeightText}
       />
 
       <Field
-        label="A word for your coach (optional)"
+        label={t('A word for your coach (optional)')}
         multiline
-        placeholder="What was easy, what was hard, an ache, something you fancy…"
+        placeholder={t('What was easy, what was hard, an ache, something you fancy…')}
         value={note}
         onChangeText={setNote}
       />

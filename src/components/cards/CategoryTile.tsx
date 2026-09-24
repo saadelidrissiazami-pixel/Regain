@@ -7,6 +7,7 @@ import { useTheme } from '../../theme/ThemeProvider';
 import { Card } from '../ui/Card';
 import { Text } from '../ui/Text';
 import { wellbeingTheme } from './wellbeingThemes';
+import { t } from '../../lib/i18n';
 
 type IconName = ComponentProps<typeof Ionicons>['name'];
 
@@ -23,14 +24,20 @@ export function CategoryTile({
   onPress: () => void;
 }) {
   const theme = useTheme();
-  const t = wellbeingTheme(category);
+  const look = wellbeingTheme(category);
   const label = themeLabel(category);
   return (
     <Card
       padding={12}
       radius={18}
       onPress={onPress}
-      accessibilityLabel={`${label}, ${count} session${count > 1 ? 's' : ''}${done ? `, ${done} done` : ''}`}
+      accessibilityLabel={[
+        label,
+        count > 1 ? t('{count} sessions', { count }) : t('{count} session', { count }),
+        done ? t('{count} done', { count: done }) : null,
+      ]
+        .filter(Boolean)
+        .join(', ')}
       style={{ alignItems: 'center', minHeight: 116, justifyContent: 'center' }}
     >
       <View
@@ -38,19 +45,19 @@ export function CategoryTile({
           width: 44,
           height: 44,
           borderRadius: 22,
-          backgroundColor: t.tint(theme),
+          backgroundColor: look.tint(theme),
           alignItems: 'center',
           justifyContent: 'center',
           marginBottom: 8,
         }}
       >
-        <Ionicons name={t.icon as IconName} size={22} color={t.color(theme)} />
+        <Ionicons name={look.icon as IconName} size={22} color={look.color(theme)} />
       </View>
       <Text variant="caption" center numberOfLines={2} style={{ fontWeight: '700', color: theme.ink }}>
         {label}
       </Text>
       <Text variant="caption" tone="ink2" center style={{ fontSize: 12 }}>
-        {count} session{count > 1 ? 's' : ''}
+        {count > 1 ? t('{count} sessions', { count }) : t('{count} session', { count })}
       </Text>
     </Card>
   );

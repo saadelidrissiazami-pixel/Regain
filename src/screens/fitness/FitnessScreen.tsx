@@ -14,6 +14,7 @@ import { relativeDayLabel } from '../../features/fitness/schedule';
 import { useFitness } from '../../hooks/useFitness';
 import { createFitnessPlan } from '../../lib/fitness';
 import { formatDateTimeLabel, formatDayLabel } from '../../lib/formatDate';
+import { midSentence, t } from '../../lib/i18n';
 
 /** Fitness: “What is my next session?” */
 export default function FitnessScreen() {
@@ -45,26 +46,26 @@ export default function FitnessScreen() {
   const header = (
     <>
       <ScreenHeader
-        overline="Your coach"
-        title="Fitness"
-        subtitle="A stronger body, a calmer mind."
+        overline={t('Your coach')}
+        title={t('Fitness')}
+        subtitle={t('A stronger body, a calmer mind.')}
         right={
           fitness.isPremium && profile ? (
-            <IconButton icon="settings-outline" label="My fitness profile" onPress={() => router.push('/fitness/questionnaire')} />
+            <IconButton icon="settings-outline" label={t('My fitness profile')} onPress={() => router.push('/fitness/questionnaire')} />
           ) : undefined
         }
       />
       {plan ? (
         <View style={{ marginBottom: 18 }}>
           <SegmentedControl
-            label="Fitness"
+            label={t('Fitness')}
             value="overview"
             onChange={(value) => {
               if (value === 'program') router.push('/fitness/program');
             }}
             options={[
-              { value: 'overview', label: 'Overview' },
-              { value: 'program', label: 'Programme' },
+              { value: 'overview', label: t('Overview') },
+              { value: 'program', label: t('Programme') },
             ]}
           />
         </View>
@@ -79,22 +80,22 @@ export default function FitnessScreen() {
     body = (
       <EmptyState
         icon="barbell-outline"
-        title="A fitness coach of your own"
-        body="A strength programme built for you, meals and a shopping list matched to your calories, and a weekly check-in that adjusts all of it."
-        actionLabel="See what Premium adds"
+        title={t('A fitness coach of your own')}
+        body={t('A strength programme built for you, meals and a shopping list matched to your calories, and a weekly check-in that adjusts all of it.')}
+        actionLabel={t('See what Premium adds')}
         onAction={() => router.push('/paywall?source=locked')}
       />
     );
   } else if (fitness.isError) {
     // Without this state, a network fault would look like having no profile.
-    body = <ErrorState title="Your fitness area could not be loaded" onRetry={() => fitness.refetch()} retrying={fitness.isRefetching} />;
+    body = <ErrorState title={t('Your fitness area could not be loaded')} onRetry={() => fitness.refetch()} retrying={fitness.isRefetching} />;
   } else if (!profile) {
     body = (
       <EmptyState
         icon="chatbubbles-outline"
-        title="Let us get to know you"
-        body="A few questions about your goals, your level and your habits, and your coach builds a programme around them."
-        actionLabel="Start the questionnaire"
+        title={t('Let us get to know you')}
+        body={t('A few questions about your goals, your level and your habits, and your coach builds a programme around them.')}
+        actionLabel={t('Start the questionnaire')}
         onAction={() => router.push('/fitness/questionnaire')}
       />
     );
@@ -103,20 +104,20 @@ export default function FitnessScreen() {
       <>
         <EmptyState
           icon="sparkles-outline"
-          title="Your programme is waiting"
+          title={t('Your programme is waiting')}
           body={
             generateMutation.isPending
-              ? 'Preparing your sessions, your meals and your shopping list…'
-              : 'Sessions, meals and a shopping list, matched to your profile.'
+              ? t('Preparing your sessions, your meals and your shopping list…')
+              : t('Sessions, meals and a shopping list, matched to your profile.')
           }
-          actionLabel="Build my programme"
+          actionLabel={t('Build my programme')}
           onAction={() => generateMutation.mutate()}
           actionLoading={generateMutation.isPending}
         />
         {generateMutation.isError ? <InlineNotice tone="error" message={errorMessage(generateMutation.error)} /> : null}
         {fitness.targets ? (
           <View style={{ marginTop: 28 }}>
-            <SectionHeader title="Your goals" actionLabel="Edit" onAction={() => router.push('/fitness/questionnaire')} />
+            <SectionHeader title={t('Your goals')} actionLabel={t('Edit')} onAction={() => router.push('/fitness/questionnaire')} />
             <TargetsCard targets={fitness.targets} />
           </View>
         ) : null}
@@ -139,21 +140,21 @@ export default function FitnessScreen() {
         </Appear>
         {!fitness.schedule.training_slot ? (
           <Text variant="caption" tone="ink2" style={{ marginTop: 10 }}>
-            Set your training times in your fitness profile to see when each session falls.
+            {t('Set your training times in your fitness profile to see when each session falls.')}
           </Text>
         ) : null}
 
         {fitness.adjustments && fitness.lastCheckin ? (
           <Appear index={2}>
             <Card variant="tinted" style={{ marginTop: 16 }}>
-              <Text variant="label">Your programme has been adapted</Text>
+              <Text variant="label">{t('Your programme has been adapted')}</Text>
               <Text variant="caption" tone="ink2" style={{ marginTop: 2, marginBottom: 12 }}>
-                After your check-in on {formatDateTimeLabel(fitness.lastCheckin.created_at)}
+                {t('After your check-in on {date}', { date: midSentence(formatDateTimeLabel(fitness.lastCheckin.created_at)) })}
               </Text>
               <AdjustmentsList adjustments={showAllAdjustments ? fitness.adjustments : fitness.adjustments.slice(0, 2)} />
               {fitness.adjustments.length > 2 ? (
                 <TextLink
-                  label={showAllAdjustments ? 'Show less' : `See all ${fitness.adjustments.length} changes`}
+                  label={showAllAdjustments ? t('Show less') : t('See all {count} changes', { count: fitness.adjustments.length })}
                   icon={showAllAdjustments ? 'chevron-up' : 'chevron-down'}
                   onPress={() => setShowAllAdjustments((v) => !v)}
                 />
@@ -165,7 +166,7 @@ export default function FitnessScreen() {
         {fitness.targets ? (
           <Appear index={3}>
             <View style={{ marginTop: 28 }}>
-              <SectionHeader title="Your goals" actionLabel="Edit" onAction={() => router.push('/fitness/questionnaire')} />
+              <SectionHeader title={t('Your goals')} actionLabel={t('Edit')} onAction={() => router.push('/fitness/questionnaire')} />
               <TargetsCard targets={fitness.targets} />
             </View>
           </Appear>
@@ -181,7 +182,7 @@ export default function FitnessScreen() {
 
         <Appear index={5}>
           <View style={{ marginTop: 28 }}>
-            <SectionHeader title="Your sessions this week" actionLabel="See all" onAction={() => router.push('/fitness/program')} />
+            <SectionHeader title={t('Your sessions this week')} actionLabel={t('See all')} onAction={() => router.push('/fitness/program')} />
             <WeekTracker days={fitness.tracker} />
           </View>
         </Appear>
@@ -190,26 +191,26 @@ export default function FitnessScreen() {
           <View style={{ marginTop: 20 }}>
             <ListRow
               icon="restaurant-outline"
-              title="Nutrition this week"
-              subtitle={`${plan.meals.length} sample days and your shopping list`}
+              title={t('Nutrition this week')}
+              subtitle={t('{count} sample days and your shopping list', { count: plan.meals.length })}
               onPress={() => router.push('/fitness/nutrition')}
               divider
             />
             <ListRow
               icon="clipboard-outline"
-              title="Do my weekly check-in"
+              title={t('Do my weekly check-in')}
               subtitle={
                 fitness.lastCheckin
-                  ? `Last check-in: ${formatDateTimeLabel(fitness.lastCheckin.created_at)}`
-                  : 'Your coach then adjusts your programme'
+                  ? t('Last check-in: {date}', { date: midSentence(formatDateTimeLabel(fitness.lastCheckin.created_at)) })
+                  : t('Your coach then adjusts your programme')
               }
               onPress={() => router.push('/fitness/checkin')}
               divider
             />
             <ListRow
               icon="chatbubbles-outline"
-              title="Ask my coach a question"
-              subtitle="Sessions, meals, recovery"
+              title={t('Ask my coach a question')}
+              subtitle={t('Sessions, meals, recovery')}
               onPress={() => router.push('/coach?sujet=forme')}
             />
           </View>
@@ -224,13 +225,12 @@ export default function FitnessScreen() {
       {recalcule === '1' ? (
         <InlineNotice
           tone="success"
-          message="Your programme, your meals and your shopping list have been recalculated from your new profile."
+          message={t('Your programme, your meals and your shopping list have been recalculated from your new profile.')}
         />
       ) : null}
       {body}
       <Text variant="caption" tone="ink3" style={{ marginTop: 28 }}>
-        Regain is not a substitute for a doctor or a dietitian. If you have a health condition, an
-        injury or are pregnant, speak to a professional before you start.
+        {t('Regain is not a substitute for a doctor or a dietitian. If you have a health condition, an injury or are pregnant, speak to a professional before you start.')}
       </Text>
     </Screen>
   );

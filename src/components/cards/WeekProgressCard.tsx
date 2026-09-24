@@ -36,7 +36,7 @@ export function WeekProgressCard({ done, total, onPress }: { done: number; total
           <Text variant="label">{t('Your progress this week')}</Text>
           <View style={{ flexDirection: 'row', alignItems: 'center', marginTop: 8, gap: 10 }}>
             <Text variant="caption" tone="ink2" tabular>
-              {done} of {total} activit{total > 1 ? 'ies' : 'y'}
+              {total > 1 ? t('{done} of {total} activities', { done, total }) : t('{done} of {total} activity', { done, total })}
             </Text>
             <View style={{ flex: 1 }}>
               <ProgressBar progress={ratio} height={6} />

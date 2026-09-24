@@ -13,6 +13,7 @@ import type { MealDay, ShoppingItem } from '../../features/fitness/types';
 import { useFitness } from '../../hooks/useFitness';
 import { IMAGES } from '../../theme/images';
 import { useTheme } from '../../theme/ThemeProvider';
+import { t } from '../../lib/i18n';
 
 function MealDayCard({ day, defaultOpen }: { day: MealDay; defaultOpen: boolean }) {
   const theme = useTheme();
@@ -27,7 +28,7 @@ function MealDayCard({ day, defaultOpen }: { day: MealDay; defaultOpen: boolean 
         }}
         accessibilityRole="button"
         accessibilityState={{ expanded: open }}
-        accessibilityLabel={`${day.day_label}, ${day.total_calories} kilocalories, ${day.meals.length} meals`}
+        accessibilityLabel={t('{day}, {calories} kilocalories, {count} meals', { day: day.day_label, calories: day.total_calories, count: day.meals.length })}
         style={{ flexDirection: 'row', alignItems: 'center', minHeight: 64, paddingHorizontal: 16, paddingVertical: 12 }}
       >
         <View style={{ flex: 1, paddingRight: 12 }}>
@@ -35,7 +36,7 @@ function MealDayCard({ day, defaultOpen }: { day: MealDay; defaultOpen: boolean 
             {day.day_label} · {day.total_calories} kcal
           </Text>
           <Text variant="caption" tone="ink2" style={{ marginTop: 2 }}>
-            {day.meals.length} meals · {protein} g protein
+            {t('{count} meals · {protein} g protein', { count: day.meals.length, protein })}
           </Text>
         </View>
         <Chevron open={open}>
@@ -49,7 +50,7 @@ function MealDayCard({ day, defaultOpen }: { day: MealDay; defaultOpen: boolean 
               <View key={j} style={{ paddingVertical: 8, borderTopWidth: 1, borderTopColor: theme.divider }}>
                 <Text variant="label">{meal.name}</Text>
                 <Text variant="caption" tone="ink2" style={{ marginTop: 2 }}>
-                  {meal.calories} kcal · {meal.protein_g} g protein
+                  {t('{calories} kcal · {protein} g protein', { calories: meal.calories, protein: meal.protein_g })}
                 </Text>
                 <Text variant="caption" tone="ink2" style={{ marginTop: 4 }}>
                   {meal.description}
@@ -81,7 +82,7 @@ function ShoppingList({ items }: { items: ShoppingItem[] }) {
   return (
     <Card>
       <Text variant="caption" tone="ink2" style={{ marginBottom: 8 }}>
-        {checked.size} of {items.length} in the basket
+        {t('{done} of {count} in the basket', { done: checked.size, count: items.length })}
       </Text>
       {categories.map((category) => (
         <View key={category} style={{ marginBottom: 12 }}>
@@ -139,7 +140,7 @@ export default function NutritionScreen() {
 
   return (
     <Screen>
-      <ScreenHeader title="Nutrition" subtitle="Your meals and your shopping for the week" onBack={() => goBack('/(tabs)/fitness')} />
+      <ScreenHeader title={t('Nutrition')} subtitle={t('Your meals and your shopping for the week')} onBack={() => goBack('/(tabs)/fitness')} />
       {fitness.isLoading ? (
         <LoadingSkeleton preset="list" />
       ) : fitness.isError ? (
@@ -149,13 +150,13 @@ export default function NutritionScreen() {
         // an instruction they cannot follow.
         <EmptyState
           icon="cart-outline"
-          title="Your meals and your shopping list"
-          body="With Premium: days of meals matched to what you need, and the shopping list that goes with them, already sorted by aisle. Tick items off as you shop, and know what to cook that evening."
-          actionLabel="See what Premium adds"
+          title={t('Your meals and your shopping list')}
+          body={t('With Premium: days of meals matched to what you need, and the shopping list that goes with them, already sorted by aisle. Tick items off as you shop, and know what to cook that evening.')}
+          actionLabel={t('See what Premium adds')}
           onAction={() => router.push('/paywall?source=locked')}
         />
       ) : !plan ? (
-        <EmptyState icon="restaurant-outline" title="No meals yet" body="Build your programme from the Fitness tab." />
+        <EmptyState icon="restaurant-outline" title={t('No meals yet')} body={t('Build your programme from the Fitness tab.')} />
       ) : (
         <>
           <View style={{ marginBottom: 24 }}>
@@ -163,17 +164,17 @@ export default function NutritionScreen() {
           </View>
           {fitness.targets ? (
             <View style={{ marginBottom: 24 }}>
-              <SectionHeader title="Today’s targets" />
+              <SectionHeader title={t('Today’s targets')} />
               <TargetsCard targets={fitness.targets} />
             </View>
           ) : null}
           <SegmentedControl
-            label="Nutrition"
+            label={t('Nutrition')}
             value={tab}
             onChange={setTab}
             options={[
-              { value: 'meals', label: 'Sample days' },
-              { value: 'shopping', label: 'Shopping list' },
+              { value: 'meals', label: t('Sample days') },
+              { value: 'shopping', label: t('Shopping list') },
             ]}
           />
           <View style={{ height: 16 }} />

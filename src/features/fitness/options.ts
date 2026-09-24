@@ -1,41 +1,42 @@
+import { t } from '../../lib/i18n';
 export const FITNESS_GOALS = [
-  { value: 'bien_etre', label: 'General wellbeing' },
-  { value: 'perte_poids', label: 'Lose weight' },
-  { value: 'salle', label: 'Get to the gym regularly' },
-  { value: 'prise_masse', label: 'Build muscle' },
-  { value: 'tonifier', label: 'Tone up' },
-  { value: 'endurance', label: 'Improve my endurance' },
+  { value: 'bien_etre', label: t('General wellbeing') },
+  { value: 'perte_poids', label: t('Lose weight') },
+  { value: 'salle', label: t('Get to the gym regularly') },
+  { value: 'prise_masse', label: t('Build muscle') },
+  { value: 'tonifier', label: t('Tone up') },
+  { value: 'endurance', label: t('Improve my endurance') },
 ] as const;
 
 export const SEX_OPTIONS = [
-  { value: 'femme', label: 'Female' },
-  { value: 'homme', label: 'Male' },
+  { value: 'femme', label: t('Female') },
+  { value: 'homme', label: t('Male') },
 ] as const;
 
 export const ACTIVITY_LEVELS = [
-  { value: 'sedentaire', label: 'Sedentary', hint: 'Desk work, not much walking' },
-  { value: 'leger', label: 'Lightly active', hint: '1 to 3 sessions a week' },
-  { value: 'modere', label: 'Moderately active', hint: '3 to 5 sessions a week' },
-  { value: 'actif', label: 'Very active', hint: '6 to 7 sessions, or a physical job' },
+  { value: 'sedentaire', label: t('Sedentary'), hint: t('Desk work, not much walking') },
+  { value: 'leger', label: t('Lightly active'), hint: t('1 to 3 sessions a week') },
+  { value: 'modere', label: t('Moderately active'), hint: t('3 to 5 sessions a week') },
+  { value: 'actif', label: t('Very active'), hint: t('6 to 7 sessions, or a physical job') },
 ] as const;
 
 export const EXPERIENCE_LEVELS = [
-  { value: 'debutant', label: 'Beginner' },
-  { value: 'intermediaire', label: 'Intermediate' },
-  { value: 'confirme', label: 'Advanced' },
+  { value: 'debutant', label: t('Beginner') },
+  { value: 'intermediaire', label: t('Intermediate') },
+  { value: 'confirme', label: t('Advanced') },
 ] as const;
 
 export const EQUIPMENT_OPTIONS = [
-  { value: 'salle', label: 'A gym' },
-  { value: 'halteres_maison', label: 'Dumbbells at home' },
-  { value: 'poids_du_corps', label: 'Bodyweight only' },
+  { value: 'salle', label: t('A gym') },
+  { value: 'halteres_maison', label: t('Dumbbells at home') },
+  { value: 'poids_du_corps', label: t('Bodyweight only') },
 ] as const;
 
 export const DIET_OPTIONS = [
   { value: 'omnivore', label: 'Omnivore' },
-  { value: 'vegetarien', label: 'Vegetarian' },
+  { value: 'vegetarien', label: t('Vegetarian') },
   { value: 'vegan', label: 'Vegan' },
-  { value: 'pescetarien', label: 'Pescatarian' },
+  { value: 'pescetarien', label: t('Pescatarian') },
   { value: 'halal', label: 'Halal' },
 ] as const;
 

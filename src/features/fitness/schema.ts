@@ -9,6 +9,7 @@ import {
   SEX_OPTIONS,
 } from './options';
 import type { FitnessProfile, FitnessProfileInput } from './types';
+import { t } from '../../lib/i18n';
 
 function enumOf<T extends readonly { value: string }[]>(options: T) {
   return z.enum(options.map((o) => o.value) as [T[number]['value'], ...T[number]['value'][]]);
@@ -22,29 +23,29 @@ function decimalInRange(label: string, min: number, max: number) {
   return z.string().refine((v) => {
     const n = parseDecimal(v);
     return Number.isFinite(n) && n >= min && n <= max;
-  }, `${label}: between ${min} and ${max}`);
+  }, t('{field}: between {min} and {max}', { field: label, min, max }));
 }
 
 const currentYear = new Date().getFullYear();
 
 export const fitnessQuestionnaireSchema = z.object({
-  goals: z.array(enumOf(FITNESS_GOALS)).min(1, 'Pick at least one goal'),
+  goals: z.array(enumOf(FITNESS_GOALS)).min(1, t('Pick at least one goal')),
   sex: enumOf(SEX_OPTIONS),
   // Adults only: calorie and strength plans are not suitable for minors.
   birthYear: z.string().refine((v) => {
     const year = Number(v.trim());
     return Number.isInteger(year) && year >= currentYear - 90 && year <= currentYear - 18;
-  }, 'The fitness coach is for adults only (18 and over): enter a valid year of birth'),
-  heightCm: decimalInRange('Height (cm)', 120, 230),
-  weightKg: decimalInRange('Weight (kg)', 35, 250),
+  }, t('The fitness coach is for adults only (18 and over): enter a valid year of birth')),
+  heightCm: decimalInRange(t('Height (cm)'), 120, 230),
+  weightKg: decimalInRange(t('Weight (kg)'), 35, 250),
   activityLevel: enumOf(ACTIVITY_LEVELS),
   experience: enumOf(EXPERIENCE_LEVELS),
   equipment: enumOf(EQUIPMENT_OPTIONS),
   daysPerWeek: z.number().int().min(1).max(6),
   sessionMinutes: z.number().int().min(20).max(120),
   diet: enumOf(DIET_OPTIONS),
-  allergies: z.string().max(300, '300 characters maximum'),
-  healthNotes: z.string().max(500, '500 characters maximum'),
+  allergies: z.string().max(300, t('300 characters maximum')),
+  healthNotes: z.string().max(500, t('500 characters maximum')),
 });
 
 export type FitnessQuestionnaireValues = z.infer<typeof fitnessQuestionnaireSchema>;

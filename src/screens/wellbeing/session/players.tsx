@@ -275,7 +275,7 @@ export function BreathingPlayer({
           {secondsLeft}
         </Text>
         <Text variant="caption" tone="ink2">
-          Cycle {cycle + 1} / {cycles}
+          {t('Cycle {number} / {count}', { number: cycle + 1, count: cycles })}
         </Text>
       </SessionRing>
       <Text variant="section" center accessibilityLiveRegion="polite">
@@ -450,7 +450,7 @@ export function PrepCountdown({ onDone, audioOn }: { onDone: () => void; audioOn
           {secondsLeft}
         </Text>
         <Text variant="caption" tone="ink2">
-          seconds
+          {t('seconds')}
         </Text>
       </SessionRing>
       <View style={{ alignItems: 'center', gap: 6 }}>

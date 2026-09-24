@@ -25,8 +25,8 @@ export function WeekTracker({ days }: { days: WeekTrackerDay[] }) {
               key={day.date}
               style={{ flex: 1, alignItems: 'center' }}
               accessible
-              accessibilityLabel={`${LONG[day.dayIndex]}${day.isToday ? ", aujourd'hui" : ''} : ${
-                day.done ? t('session done') : day.isTraining ? t('session planned') : 'rest'
+              accessibilityLabel={`${[LONG[day.dayIndex], day.isToday ? t('today') : null].filter(Boolean).join(', ')}: ${
+                day.done ? t('session done') : day.isTraining ? t('session planned') : t('rest')
               }`}
             >
               <Text

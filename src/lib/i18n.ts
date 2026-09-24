@@ -33,3 +33,8 @@ export function t(english: string, vars?: Record<string, string | number>): stri
 export function decimal(n: number, digits = 1): string {
   return n.toLocaleString(locale, { minimumFractionDigits: digits, maximumFractionDigits: digits });
 }
+
+/** A formatted date placed inside a sentence: French writes weekdays and months in lower case. */
+export function midSentence(label: string): string {
+  return lang === 'fr' ? label.toLowerCase() : label;
+}

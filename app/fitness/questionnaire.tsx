@@ -37,18 +37,19 @@ import {
   type TrainingSchedule,
 } from '../../src/lib/fitness';
 import { useAuthStore } from '../../src/store/authStore';
+import { t } from '../../src/lib/i18n';
 
-const DAYS_OPTIONS = [1, 2, 3, 4, 5, 6].map((days) => ({ value: days, label: `${days} session${days > 1 ? 's' : ''} per week` }));
+const DAYS_OPTIONS = [1, 2, 3, 4, 5, 6].map((days) => ({ value: days, label: days > 1 ? t('{count} sessions per week', { count: days }) : t('{count} session per week', { count: days }) }));
 const SESSION_MINUTES_OPTIONS = [30, 45, 60, 75, 90].map((minutes) => ({
   value: minutes,
   label: `${minutes} minutes`,
-  hint: minutes <= 30 ? 'Short, efficient sessions' : minutes >= 75 ? 'Long sessions, warm-up included' : undefined,
+  hint: minutes <= 30 ? t('Short, efficient sessions') : minutes >= 75 ? t('Long sessions, warm-up included') : undefined,
 }));
-const WEEK_DAYS = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'];
+const WEEK_DAYS = [t('Mon'), t('Tue'), t('Wed'), t('Thu'), t('Fri'), t('Sat'), t('Sun')];
 const SLOTS: { value: TimeSlot; label: string }[] = [
-  { value: 'matin', label: 'Morning' },
-  { value: 'apres_midi', label: 'Afternoon' },
-  { value: 'soir', label: 'Evening' },
+  { value: 'matin', label: t('Morning') },
+  { value: 'apres_midi', label: t('Afternoon') },
+  { value: 'soir', label: t('Evening') },
 ];
 
 function Section({ title, hint, children }: { title: string; hint?: string; children: ReactNode }) {
@@ -133,28 +134,28 @@ function QuestionnaireForm({
   return (
     <Screen
       keyboard
-      footer={<Button label="Save" loading={saveMutation.isPending} onPress={handleSubmit((values) => saveMutation.mutate(values))} />}
+      footer={<Button label={t('Save')} loading={saveMutation.isPending} onPress={handleSubmit((values) => saveMutation.mutate(values))} />}
     >
-      <ScreenHeader overline="Your fitness coach" title="Your profile" subtitle="So the programme is genuinely built for you." onBack={() => goBack('/(tabs)/fitness')} />
+      <ScreenHeader overline={t('Your fitness coach')} title={t('Your profile')} subtitle={t('So the programme is genuinely built for you.')} onBack={() => goBack('/(tabs)/fitness')} />
 
-      <Section title="Your goals">
+      <Section title={t('Your goals')}>
         <Controller
           control={control}
           name="goals"
           render={({ field: { value, onChange } }) => (
-            <SelectMulti label="Goals" title="What are you after?" placeholder="Pick one or more goals" values={value} options={[...FITNESS_GOALS]} onChange={onChange} />
+            <SelectMulti label={t('Goals')} title={t('What are you after?')} placeholder={t('Pick one or more goals')} values={value} options={[...FITNESS_GOALS]} onChange={onChange} />
           )}
         />
         <FieldError message={errors.goals?.message} />
       </Section>
 
-      <Section title="You" hint="Sex, age, height and weight are used only to work out your calorie needs.">
+      <Section title={t('You')} hint={t('Sex, age, height and weight are used only to work out your calorie needs.')}>
         <Controller
           control={control}
           name="sex"
           render={({ field: { value, onChange } }) => (
             <View style={{ marginBottom: 16 }}>
-              <SegmentedControl label="Sex" tone="surface" value={value} onChange={onChange} options={[...SEX_OPTIONS]} />
+              <SegmentedControl label={t('Sex')} tone="surface" value={value} onChange={onChange} options={[...SEX_OPTIONS]} />
             </View>
           )}
         />
@@ -162,7 +163,7 @@ function QuestionnaireForm({
           control={control}
           name="birthYear"
           render={({ field: { value, onChange } }) => (
-            <Field label="Year of birth" placeholder="e.g. 1990" keyboardType="number-pad" maxLength={4} value={value} onChangeText={onChange} error={errors.birthYear?.message} />
+            <Field label={t('Year of birth')} placeholder={t('e.g. 1990')} keyboardType="number-pad" maxLength={4} value={value} onChangeText={onChange} error={errors.birthYear?.message} />
           )}
         />
         <View style={{ flexDirection: 'row', gap: 12 }}>
@@ -171,7 +172,7 @@ function QuestionnaireForm({
               control={control}
               name="heightCm"
               render={({ field: { value, onChange } }) => (
-                <Field label="Height (cm)" placeholder="170" keyboardType="number-pad" value={value} onChangeText={onChange} error={errors.heightCm?.message} />
+                <Field label={t('Height (cm)')} placeholder="170" keyboardType="number-pad" value={value} onChangeText={onChange} error={errors.heightCm?.message} />
               )}
             />
           </View>
@@ -180,7 +181,7 @@ function QuestionnaireForm({
               control={control}
               name="weightKg"
               render={({ field: { value, onChange } }) => (
-                <Field label="Weight (kg)" placeholder="65" keyboardType="decimal-pad" value={value} onChangeText={onChange} error={errors.weightKg?.message} />
+                <Field label={t('Weight (kg)')} placeholder="65" keyboardType="decimal-pad" value={value} onChangeText={onChange} error={errors.weightKg?.message} />
               )}
             />
           </View>
@@ -189,21 +190,21 @@ function QuestionnaireForm({
           control={control}
           name="activityLevel"
           render={({ field: { value, onChange } }) => (
-            <Select label="Everyday activity" title="Your everyday activity" value={value} options={[...ACTIVITY_LEVELS]} onChange={onChange} />
+            <Select label={t('Everyday activity')} title={t('Your everyday activity')} value={value} options={[...ACTIVITY_LEVELS]} onChange={onChange} />
           )}
         />
       </Section>
 
-      <Section title="Your training">
+      <Section title={t('Your training')}>
         <Text variant="label" style={{ marginBottom: 8 }}>
-          Strength-training level
+          {t('Strength-training level')}
         </Text>
         <Controller
           control={control}
           name="experience"
           render={({ field: { value, onChange } }) => (
             <View style={{ marginBottom: 16 }}>
-              <SegmentedControl label="Level" tone="surface" value={value} onChange={onChange} options={[...EXPERIENCE_LEVELS]} />
+              <SegmentedControl label={t('Level')} tone="surface" value={value} onChange={onChange} options={[...EXPERIENCE_LEVELS]} />
             </View>
           )}
         />
@@ -211,27 +212,27 @@ function QuestionnaireForm({
           control={control}
           name="equipment"
           render={({ field: { value, onChange } }) => (
-            <Select label="Equipment" title="What do you train with?" value={value} options={[...EQUIPMENT_OPTIONS]} onChange={onChange} />
+            <Select label={t('Equipment')} title={t('What do you train with?')} value={value} options={[...EQUIPMENT_OPTIONS]} onChange={onChange} />
           )}
         />
         <Controller
           control={control}
           name="daysPerWeek"
           render={({ field: { value, onChange } }) => (
-            <Select label="Sessions per week" title="How many sessions a week?" value={value} options={DAYS_OPTIONS} onChange={onChange} />
+            <Select label={t('Sessions per week')} title={t('How many sessions a week?')} value={value} options={DAYS_OPTIONS} onChange={onChange} />
           )}
         />
         <Controller
           control={control}
           name="sessionMinutes"
           render={({ field: { value, onChange } }) => (
-            <Select label="Session length" title="How long per session?" value={value} options={SESSION_MINUTES_OPTIONS} onChange={onChange} />
+            <Select label={t('Session length')} title={t('How long per session?')} value={value} options={SESSION_MINUTES_OPTIONS} onChange={onChange} />
           )}
         />
       </Section>
 
-      <Section title="When do you train?" hint="So the right session is offered at the right time.">
-        <SegmentedControl label="Time of day" tone="surface" value={slot} onChange={setSlot} options={SLOTS} />
+      <Section title={t('When do you train?')} hint={t('So the right session is offered at the right time.')}>
+        <SegmentedControl label={t('Time of day')} tone="surface" value={slot} onChange={setSlot} options={SLOTS} />
         <View style={{ flexDirection: 'row', flexWrap: 'wrap', gap: 8, marginTop: 14 }}>
           {WEEK_DAYS.map((label, day) => (
             <ChoiceChip key={label} label={label} selected={days.includes(day)} onPress={() => toggleDay(day)} />
@@ -239,41 +240,45 @@ function QuestionnaireForm({
         </View>
         <Text variant="caption" tone={days.length === daysPerWeek ? 'ink2' : 'danger'} style={{ marginTop: 8 }}>
           {days.length === daysPerWeek
-            ? `${days.length} day${days.length > 1 ? 's' : ''} chosen.`
-            : `Choose ${daysPerWeek} day${daysPerWeek > 1 ? 's' : ''} (${days.length} so far).`}
+            ? days.length > 1
+              ? t('{count} days chosen.', { count: days.length })
+              : t('{count} day chosen.', { count: days.length })
+            : daysPerWeek > 1
+              ? t('Choose {count} days ({chosen} so far).', { count: daysPerWeek, chosen: days.length })
+              : t('Choose {count} day ({chosen} so far).', { count: daysPerWeek, chosen: days.length })}
         </Text>
       </Section>
 
-      <Section title="How you eat">
+      <Section title={t('How you eat')}>
         <Controller
           control={control}
           name="diet"
           render={({ field: { value, onChange } }) => (
-            <Select label="Diet" title="How you eat" value={value} options={[...DIET_OPTIONS]} onChange={onChange} />
+            <Select label={t('Diet')} title={t('How you eat')} value={value} options={[...DIET_OPTIONS]} onChange={onChange} />
           )}
         />
         <Controller
           control={control}
           name="allergies"
           render={({ field: { value, onChange } }) => (
-            <Field label="Allergies or intolerances (optional)" placeholder="e.g. peanuts, lactose" value={value} onChangeText={onChange} error={errors.allergies?.message} />
+            <Field label={t('Allergies or intolerances (optional)')} placeholder={t('e.g. peanuts, lactose')} value={value} onChangeText={onChange} error={errors.allergies?.message} />
           )}
         />
       </Section>
 
-      <Section title="Health">
+      <Section title={t('Health')}>
         <Controller
           control={control}
           name="healthNotes"
           render={({ field: { value, onChange } }) => (
             <Field
-              label="Anything we should know? (optional)"
+              label={t('Anything we should know? (optional)')}
               multiline
-              placeholder="An injury, a pain, medication, pregnancy… so your coach can adapt the programme"
+              placeholder={t('An injury, a pain, medication, pregnancy… so your coach can adapt the programme')}
               value={value}
               onChangeText={onChange}
               error={errors.healthNotes?.message}
-              hint="Your coach is not a health professional. For anything medical, ask your doctor before you start."
+              hint={t('Your coach is not a health professional. For anything medical, ask your doctor before you start.')}
             />
           )}
         />
@@ -292,7 +297,7 @@ export default function FitnessQuestionnaireScreen() {
   if (!userId || profileQuery.isLoading || scheduleQuery.isLoading) {
     return (
       <Screen>
-        <ScreenHeader title="Your profile" onBack={() => goBack('/(tabs)/fitness')} />
+        <ScreenHeader title={t('Your profile')} onBack={() => goBack('/(tabs)/fitness')} />
         <LoadingSkeleton preset="list" />
       </Screen>
     );

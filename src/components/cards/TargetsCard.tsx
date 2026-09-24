@@ -5,11 +5,12 @@ import { useTheme } from '../../theme/ThemeProvider';
 import { Card } from '../ui/Card';
 import { useAnimatedNumber } from '../ui/motion';
 import { Text } from '../ui/Text';
+import { t } from '../../lib/i18n';
 
 export const STRATEGY_LABELS: Record<NutritionTargets['strategy'], string> = {
-  deficit: 'Slight deficit — gradual loss',
-  surplus: 'Slight surplus — building mass',
-  maintien: 'Balanced — maintaining',
+  deficit: t('Slight deficit — gradual loss'),
+  surplus: t('Slight surplus — building mass'),
+  maintien: t('Balanced — maintaining'),
 };
 
 function CountUp({ value, suffix = '' }: { value: number; suffix?: string }) {
@@ -44,20 +45,20 @@ export function TargetsCard({ targets }: { targets: NutritionTargets }) {
   const theme = useTheme();
   return (
     <Card padding={18}>
-      <Text variant="metric" tabular accessibilityLabel={`${targets.calories} kilocalories per day`}>
+      <Text variant="metric" tabular accessibilityLabel={t('{calories} kilocalories per day', { calories: targets.calories })}>
         <CountUp value={targets.calories} suffix=" kcal" />
       </Text>
       <Text variant="caption" tone="ink2" style={{ marginTop: 2 }}>
         {STRATEGY_LABELS[targets.strategy]}
       </Text>
       <View style={{ flexDirection: 'row', gap: 8, marginTop: 14 }}>
-        <MacroCard value={targets.proteinG} label="Protein" background={theme.protein} />
-        <MacroCard value={targets.carbsG} label="Carbs" background={theme.carbs} />
-        <MacroCard value={targets.fatG} label="Fat" background={theme.fat} />
+        <MacroCard value={targets.proteinG} label={t('Protein')} background={theme.protein} />
+        <MacroCard value={targets.carbsG} label={t('Carbs')} background={theme.carbs} />
+        <MacroCard value={targets.fatG} label={t('Fat')} background={theme.fat} />
       </View>
       {targets.floorApplied ? (
         <Text variant="caption" tone="ink2" style={{ marginTop: 10 }}>
-          Raised to the safe floor: we never go below your basal metabolic rate.
+          {t('Raised to the safe floor: we never go below your basal metabolic rate.')}
         </Text>
       ) : null}
     </Card>

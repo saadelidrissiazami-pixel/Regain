@@ -306,7 +306,7 @@ export default function WellbeingSessionScreen() {
           )}
         </View>
         <Text variant="caption" tone="ink2" center style={{ marginTop: 28, fontStyle: 'italic' }}>
-          “Take the time to be here.”
+          {t('“Take the time to be here.”')}
         </Text>
       </ScrollView>
 

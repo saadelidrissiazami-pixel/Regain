@@ -250,9 +250,11 @@ export default function PlanningHomeScreen() {
           {calendarSyncMutation.isSuccess ? (
             <InlineNotice
               tone="success"
-              message={`${calendarSyncMutation.data} activit${
-                calendarSyncMutation.data > 1 ? 'ies' : 'y'
-              } added to the “Regain” calendar.`}
+              message={
+                calendarSyncMutation.data > 1
+                  ? t('{count} activities added to the “Regain” calendar.', { count: calendarSyncMutation.data })
+                  : t('{count} activity added to the “Regain” calendar.', { count: calendarSyncMutation.data })
+              }
             />
           ) : null}
           {hasPlan && generateMutation.isError ? <InlineNotice tone="error" message={errorMessage(generateMutation.error)} /> : null}

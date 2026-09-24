@@ -41,9 +41,13 @@ export function WeekSelector({
             feedback="selection"
             accessibilityRole="tab"
             accessibilityState={{ selected: isSelected }}
-            accessibilityLabel={`${LONG_DAYS[i]} ${dayNumber}${isToday ? ', today' : ''}${
-              marker?.count ? `, ${marker.count} activit${marker.count > 1 ? 'ies' : 'y'}` : ''
-            }`}
+            accessibilityLabel={[
+              `${LONG_DAYS[i]} ${dayNumber}`,
+              isToday ? t('today') : null,
+              marker?.count ? (marker.count > 1 ? t('{count} activities', { count: marker.count }) : t('{count} activity', { count: marker.count })) : null,
+            ]
+              .filter(Boolean)
+              .join(', ')}
             wrapperStyle={{ flex: 1 }}
             style={{
               alignItems: 'center',

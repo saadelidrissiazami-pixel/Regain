@@ -5,6 +5,7 @@ import { View } from 'react-native';
 import { useTheme } from '../../theme/ThemeProvider';
 import { Card } from '../ui/Card';
 import { Text } from '../ui/Text';
+import { t } from '../../lib/i18n';
 
 type IconName = ComponentProps<typeof Ionicons>['name'];
 
@@ -14,7 +15,7 @@ export function Delta({ value }: { value: number }) {
   const up = value >= 0;
   return (
     <View
-      accessibilityLabel={`${up ? 'Up' : 'Down'} ${Math.abs(value)}% on last week`}
+      accessibilityLabel={up ? t('Up {percent}% on last week', { percent: Math.abs(value) }) : t('Down {percent}% on last week', { percent: Math.abs(value) })}
       style={{ flexDirection: 'row', alignItems: 'center', gap: 2, paddingHorizontal: 6, paddingVertical: 2, borderRadius: 999, backgroundColor: theme.sage100 }}
     >
       <Ionicons name={up ? 'arrow-up' : 'arrow-down'} size={11} color={up ? theme.primary600 : theme.ink2} />

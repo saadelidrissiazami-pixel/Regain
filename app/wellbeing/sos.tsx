@@ -46,8 +46,7 @@ export default function SosScreen() {
       </View>
 
       <Text variant="caption" tone="ink3" style={{ marginTop: 24 }}>
-        These sessions are not a substitute for a professional. If these moments keep coming back,
-        talking to a doctor usually changes more than any exercise will.
+        {t('These sessions are not a substitute for a professional. If these moments keep coming back, talking to a doctor usually changes more than any exercise will.')}
       </Text>
     </Screen>
   );

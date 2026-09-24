@@ -108,9 +108,9 @@ export function nextWorkout({
 }
 
 const PHASES: Record<NutritionTargets['strategy'], string> = {
-  surplus: 'Building mass',
-  deficit: 'Gradual loss',
-  maintien: 'Maintenance',
+  surplus: t('Building mass'),
+  deficit: t('Gradual loss'),
+  maintien: t('Maintenance'),
 };
 
 export function programPhase(strategy: NutritionTargets['strategy']): string {

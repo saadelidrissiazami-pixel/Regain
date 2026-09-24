@@ -49,7 +49,7 @@ function Slide({ item, width, onStart }: { item: WellbeingRecommendation; width:
               {themeLabel(item.program.category)}
             </Text>
             <Text variant="caption" tone="ink2">
-              · {item.program.duration_minutes} min
+              · {t('{minutes} min', { minutes: item.program.duration_minutes })}
             </Text>
           </View>
           <Text variant="caption" tone="ink2" style={{ marginTop: 10 }} numberOfLines={3}>

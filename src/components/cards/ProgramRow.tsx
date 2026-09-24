@@ -28,7 +28,14 @@ export function ProgramRow({
       padding={12}
       onPress={onPress}
       style={{ marginBottom: 10 }}
-      accessibilityLabel={`${program.title}, ${program.duration_minutes} minutes${done ? ', already done' : ''}${locked ? ', Premium only' : ''}`}
+      accessibilityLabel={[
+        program.title,
+        t('{minutes} minutes', { minutes: program.duration_minutes }),
+        done ? t('already done') : null,
+        locked ? t('Premium only') : null,
+      ]
+        .filter(Boolean)
+        .join(', ')}
     >
       <View style={{ flexDirection: 'row', alignItems: 'center' }}>
         <View
@@ -52,7 +59,8 @@ export function ProgramRow({
           </Text>
           <Text variant="caption" tone="ink2" style={{ marginTop: 2 }}>
             {showCategory ? `${themeLabel(program.category)} · ` : ''}
-            {program.duration_minutes} min{done ? t(' · done') : ''}
+            {t('{minutes} min', { minutes: program.duration_minutes })}
+            {done ? t(' · done') : ''}
           </Text>
         </View>
         {locked ? (

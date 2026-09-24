@@ -11,17 +11,18 @@ import { Appear, Card, IconButton, ProgressBar, Screen, ScreenHeader, SegmentedC
 import { programPhase, uniqueExercises } from '../../features/fitness/schedule';
 import { useFitness } from '../../hooks/useFitness';
 import { formatDateTimeLabel } from '../../lib/formatDate';
-import { fromLocalISODate, toLocalISODate } from '../../lib/week';
+import { fromLocalISODate } from '../../lib/week';
 import { useTheme } from '../../theme/ThemeProvider';
+import { locale, t } from '../../lib/i18n';
 
 type Tab = 'sessions' | 'exercises' | 'progress';
 
 function tipsFor({ deload, strategy }: { deload: boolean; strategy: string | undefined }): string[] {
   return [
-    'Protect the quality of your sleep',
-    'Drink enough water',
-    deload ? 'Keep the weights comfortable this week' : strategy === 'surplus' ? 'Add weight gradually' : 'Get the technique right before the load',
-    'Listen to how your body feels',
+    t('Protect the quality of your sleep'),
+    t('Drink enough water'),
+    deload ? t('Keep the weights comfortable this week') : strategy === 'surplus' ? t('Add weight gradually') : t('Get the technique right before the load'),
+    t('Listen to how your body feels'),
   ];
 }
 
@@ -36,7 +37,12 @@ export default function ProgramScreen() {
   const doneThisWeek = new Set(fitness.logs.filter((l) => l.completed_at >= weekStartIso && l.plan_id === plan?.id).map((l) => l.session_index));
 
   const subtitle = plan
-    ? [fitness.weekNumber ? `Week ${fitness.weekNumber}` : null, `Phase: ${programPhase(plan.targets.strategy)}`].filter(Boolean).join(' · ')
+    ? [
+        fitness.weekNumber ? t('Week {number}', { number: fitness.weekNumber }) : null,
+        t('Phase: {phase}', { phase: programPhase(plan.targets.strategy) }),
+      ]
+        .filter(Boolean)
+        .join(' · ')
     : undefined;
 
   // Sessions done per week, over the last 4 weeks.
@@ -46,17 +52,17 @@ export default function ProgramScreen() {
     const end = new Date(start);
     end.setDate(end.getDate() + 7);
     const count = fitness.logs.filter((l) => l.completed_at >= start.toISOString() && l.completed_at < end.toISOString()).length;
-    return { label: i === 3 ? 'This week' : `Wk of ${toLocalISODate(start).slice(5, 7)}/${toLocalISODate(start).slice(8)}`, count };
+    return { label: i === 3 ? t('This week') : t('Wk of {date}', { date: new Intl.DateTimeFormat(locale, { day: 'numeric', month: 'numeric' }).format(start) }), count };
   });
   const target = profile?.days_per_week ?? 3;
 
   return (
     <Screen refreshing={fitness.isRefetching} onRefresh={() => fitness.refetch()}>
       <ScreenHeader
-        title="My programme"
+        title={t('My programme')}
         subtitle={subtitle}
         onBack={() => goBack('/(tabs)/fitness')}
-        right={<IconButton icon="settings-outline" label="My fitness profile" onPress={() => router.push('/fitness/questionnaire')} />}
+        right={<IconButton icon="settings-outline" label={t('My fitness profile')} onPress={() => router.push('/fitness/questionnaire')} />}
       />
 
       {fitness.isLoading ? (
@@ -66,21 +72,21 @@ export default function ProgramScreen() {
       ) : !plan ? (
         <EmptyState
           icon="barbell-outline"
-          title="No programme yet"
-          body="Build your programme from the Fitness tab."
-          actionLabel="Back to Fitness"
+          title={t('No programme yet')}
+          body={t('Build your programme from the Fitness tab.')}
+          actionLabel={t('Back to Fitness')}
           onAction={() => goBack('/(tabs)/fitness')}
         />
       ) : (
         <>
           <SegmentedControl
-            label="My programme"
+            label={t('My programme')}
             value={tab}
             onChange={setTab}
             options={[
-              { value: 'sessions', label: 'Sessions' },
-              { value: 'exercises', label: 'Exercises' },
-              { value: 'progress', label: 'Progression' },
+              { value: 'sessions', label: t('Sessions') },
+              { value: 'exercises', label: t('Exercises') },
+              { value: 'progress', label: t('Progression') },
             ]}
           />
           <View style={{ height: 18 }} />
@@ -98,9 +104,9 @@ export default function ProgramScreen() {
                   <View style={{ flexDirection: 'row', alignItems: 'flex-start', gap: 12 }}>
                     <Ionicons name="barbell" size={22} color={theme.primary700} />
                     <View style={{ flex: 1 }}>
-                      <Text variant="label">An easier week</Text>
+                      <Text variant="label">{t('An easier week')}</Text>
                       <Text variant="caption" tone="ink2" style={{ marginTop: 3 }}>
-                        One set fewer per exercise, to recover without guilt.
+                        {t('One set fewer per exercise, to recover without guilt.')}
                       </Text>
                     </View>
                   </View>
@@ -110,7 +116,7 @@ export default function ProgramScreen() {
               <Card style={{ marginTop: 16 }}>
                 <View style={{ flexDirection: 'row', alignItems: 'center', gap: 8, marginBottom: 12 }}>
                   <Ionicons name="bulb-outline" size={20} color={theme.yellow} />
-                  <Text variant="label">This week’s pointers</Text>
+                  <Text variant="label">{t('This week’s pointers')}</Text>
                 </View>
                 {tipsFor({ deload: fitness.deload, strategy: plan.targets.strategy }).map((tip) => (
                   <View key={tip} style={{ flexDirection: 'row', alignItems: 'center', gap: 10, paddingVertical: 6 }}>
@@ -128,7 +134,7 @@ export default function ProgramScreen() {
                 <Card padding={16} style={{ marginBottom: 10 }}>
                   <Text variant="label">{exercise.name}</Text>
                   <Text variant="caption" tone="ink2" style={{ marginTop: 3 }}>
-                    {exercise.sets} sets × {exercise.reps} · {exercise.rest_seconds} s rest · {exercise.sessions.join(', ')}
+                    {t('{sets} sets × {reps} · {rest} s rest · {sessions}', { sets: exercise.sets, reps: exercise.reps, rest: exercise.rest_seconds, sessions: exercise.sessions.join(', ') })}
                   </Text>
                   {exercise.tip ? (
                     <Text variant="caption" tone="ink2" style={{ marginTop: 8 }}>
@@ -142,7 +148,7 @@ export default function ProgramScreen() {
             <>
               <Card>
                 <Text variant="label" style={{ marginBottom: 14 }}>
-                  Sessions done per week
+                  {t('Sessions done per week')}
                 </Text>
                 {weeks.map((week) => (
                   <View key={week.label} style={{ marginBottom: 12 }}>
@@ -161,11 +167,11 @@ export default function ProgramScreen() {
 
               <Card style={{ marginTop: 16 }}>
                 <Text variant="label" style={{ marginBottom: 10 }}>
-                  Your check-ins
+                  {t('Your check-ins')}
                 </Text>
                 {fitness.checkins.length === 0 ? (
                   <Text variant="bodySm" tone="ink2">
-                    Do your first check-in at the end of the week, and your weight and energy will show up here.
+                    {t('Do your first check-in at the end of the week, and your weight and energy will show up here.')}
                   </Text>
                 ) : (
                   fitness.checkins.map((checkin) => (
@@ -177,8 +183,10 @@ export default function ProgramScreen() {
                         {formatDateTimeLabel(checkin.created_at)}
                       </Text>
                       <Text variant="caption" tabular>
-                        {checkin.weight_kg ? `${checkin.weight_kg} kg · ` : ''}
-                        {checkin.sessions_done} session{checkin.sessions_done > 1 ? 's' : ''} · energy {checkin.energy}/5
+                        {checkin.weight_kg ? `${checkin.weight_kg.toLocaleString(locale)} kg · ` : ''}
+                        {checkin.sessions_done > 1
+                          ? t('{count} sessions · energy {energy}/5', { count: checkin.sessions_done, energy: checkin.energy })
+                          : t('{count} session · energy {energy}/5', { count: checkin.sessions_done, energy: checkin.energy })}
                       </Text>
                     </View>
                   ))

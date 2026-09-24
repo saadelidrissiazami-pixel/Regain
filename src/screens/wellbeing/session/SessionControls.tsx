@@ -39,7 +39,7 @@ export function SessionRing({
               {formatClock(elapsed ?? 0)}
             </Text>
             <Text variant="caption" tone="ink2" tabular>
-              of {formatClock(total ?? 0)}
+              {t('of {total}', { total: formatClock(total ?? 0) })}
             </Text>
           </>
         )}
