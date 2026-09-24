@@ -49,7 +49,7 @@ export function MonthGrid({
   return (
     <View>
       <View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', marginBottom: 8 }}>
-        <IconButton icon="chevron-back" label="Mois précédent" onPress={onPrev} size={20} />
+        <IconButton icon="chevron-back" label="Previous month" onPress={onPrev} size={20} />
         <Text variant="cardTitle" accessibilityRole="header" style={{ textTransform: 'capitalize' }}>
           {label}
         </Text>
@@ -73,7 +73,7 @@ export function MonthGrid({
                 accessibilityRole="button"
                 accessibilityState={{ selected: date === selected }}
                 accessibilityLabel={`${new Date(date + 'T00:00:00').toLocaleDateString('fr-FR', { weekday: 'long', day: 'numeric', month: 'long' })}${
-                  markers[date]?.count ? `, ${markers[date]!.count} activité${markers[date]!.count > 1 ? 's' : ''}` : ''
+                  markers[date]?.count ? `, ${markers[date]!.count} activity${markers[date]!.count > 1 ? 'ies' : ''}` : ''
                 }`}
                 wrapperStyle={{ flex: 1 }}
                 style={{ alignItems: 'center', paddingVertical: 4 }}

@@ -5,18 +5,20 @@ import { goBack } from '../../lib/navigation';
 import { ProgramRow } from '../../components/cards/ProgramRow';
 import { EmptyState, ErrorState, LoadingSkeleton } from '../../components/feedback';
 import { Appear, Screen, ScreenHeader } from '../../components/ui';
+import { themeLabel } from '../../features/wellbeing/catalogue';
 import { useWellbeing } from '../../hooks/useWellbeing';
 
+// Keyed by the stored `category`, which is an internal key rather than something to read.
 const SUBTITLES: Record<string, string> = {
-  Respiration: 'Quelques minutes pour relâcher la pression.',
-  Méditation: 'Revenir au moment présent, à ton rythme.',
-  Journaling: 'Poser tes pensées pour y voir plus clair.',
-  'Confiance en soi': 'Te parler avec plus de bienveillance.',
-  Sommeil: 'Ralentir pour mieux dormir.',
-  'En public': 'Des exercices discrets, où que tu sois.',
+  Respiration: 'A few minutes to let the pressure off.',
+  Méditation: 'Coming back to the present, at your own pace.',
+  Journaling: 'Putting your thoughts down to see them more clearly.',
+  'Confiance en soi': 'Speaking to yourself more kindly.',
+  Sommeil: 'Slowing down to sleep better.',
+  'En public': 'Quiet exercises, wherever you happen to be.',
 };
 
-/** Toutes les séances d'un thème, de la plus courte à la plus longue. */
+/** Every session in one theme, shortest first. */
 export default function WellbeingCategoryScreen() {
   const { name } = useLocalSearchParams<{ name: string }>();
   const wellbeing = useWellbeing();
@@ -24,13 +26,17 @@ export default function WellbeingCategoryScreen() {
 
   return (
     <Screen>
-      <ScreenHeader title={name ?? 'Séances'} subtitle={SUBTITLES[name ?? ''] ?? `${programs.length} séances`} onBack={() => goBack('/(tabs)/wellbeing')} />
+      <ScreenHeader
+        title={name ? themeLabel(name) : 'Sessions'}
+        subtitle={SUBTITLES[name ?? ''] ?? `${programs.length} sessions`}
+        onBack={() => goBack('/(tabs)/wellbeing')}
+      />
       {wellbeing.programsQuery.isLoading ? (
         <LoadingSkeleton preset="list" />
       ) : wellbeing.programsQuery.isError ? (
         <ErrorState onRetry={() => wellbeing.programsQuery.refetch()} />
       ) : programs.length === 0 ? (
-        <EmptyState title="Aucune séance dans ce thème pour l'instant" />
+        <EmptyState title="No sessions in this theme yet" />
       ) : (
         programs.map((program, i) => (
           <Appear key={program.id} index={i}>

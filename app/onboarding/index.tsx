@@ -14,10 +14,10 @@ import { useOnboardingForm } from '../../src/screens/profile/useOnboardingForm';
 import { useAuthStore } from '../../src/store/authStore';
 
 const STEPS: { title: string; subtitle: string; fields: (keyof OnboardingFormValues)[] }[] = [
-  { title: 'Bienvenue sur Regain 🌱', subtitle: 'Comment veux-tu qu’on t’appelle ?', fields: ['firstName'] },
-  { title: 'Qu’est-ce qui compte pour toi ?', subtitle: 'Ton coach choisit tes activités en fonction.', fields: ['primaryGoals'] },
-  { title: 'Ton rythme', subtitle: 'Pour placer chaque activité au bon moment.', fields: ['sleepMinutes', 'energyBySlot'] },
-  { title: 'Ton budget', subtitle: 'Pour des idées qui te conviennent vraiment.', fields: ['budgetLevel'] },
+  { title: 'Welcome to Regain 🌱', subtitle: 'What should we call you?', fields: ['firstName'] },
+  { title: 'What matters to you?', subtitle: 'Your coach picks your activities around this.', fields: ['primaryGoals'] },
+  { title: 'Your rhythm', subtitle: 'So each activity lands at the right time.', fields: ['sleepMinutes', 'energyBySlot'] },
+  { title: 'Your budget', subtitle: 'So the ideas actually suit you.', fields: ['budgetLevel'] },
 ];
 
 /** Accueil en 4 étapes courtes : une question par écran. */
@@ -32,7 +32,7 @@ export default function OnboardingScreen() {
 
   const mutation = useMutation({
     mutationFn: () => {
-      if (!userId) throw new Error('Session introuvable. Reconnecte-toi puis réessaie.');
+      if (!userId) throw new Error('No session found. Sign in again, then try once more.');
       return completeOnboarding(userId, values);
     },
     onSuccess: async () => {
@@ -53,14 +53,14 @@ export default function OnboardingScreen() {
       footer={
         <View style={{ gap: 4 }}>
           {mutation.isError ? <InlineNotice tone="error" message={errorMessage(mutation.error)} /> : null}
-          <Button label={isLast ? 'Commencer' : 'Continuer'} iconRight={isLast ? undefined : 'arrow-forward'} loading={mutation.isPending} onPress={next} />
-          {step > 0 ? <Button label="Retour" variant="ghost" onPress={() => setStep((s) => s - 1)} /> : null}
+          <Button label={isLast ? 'Get started' : 'Continue'} iconRight={isLast ? undefined : 'arrow-forward'} loading={mutation.isPending} onPress={next} />
+          {step > 0 ? <Button label="Back" variant="ghost" onPress={() => setStep((s) => s - 1)} /> : null}
         </View>
       }
     >
       <View style={{ marginBottom: 28 }}>
         <Text variant="caption" tone="ink2" style={{ marginBottom: 8 }}>
-          Étape {step + 1} sur {STEPS.length}
+          Step {step + 1} of {STEPS.length}
         </Text>
         <ProgressBar progress={(step + 1) / STEPS.length} height={6} />
       </View>
@@ -70,7 +70,7 @@ export default function OnboardingScreen() {
 
         {step === 0 ? (
           <Field
-            label="Ton prénom"
+            label="Your first name"
             value={values.firstName}
             onChangeText={(text) => set('firstName', text)}
             placeholder="Ex. : Camille"
@@ -88,11 +88,11 @@ export default function OnboardingScreen() {
           <>
             <SelectMulti
               label="Tes objectifs"
-              title="Qu’est-ce qui compte pour toi ?"
+              title="What matters to you?"
               values={values.primaryGoals}
               options={[...GOAL_OPTIONS]}
               onChange={(goals) => set('primaryGoals', goals)}
-              placeholder="Choisir un ou plusieurs objectifs"
+              placeholder="Pick one or more goals"
             />
             {errors.primaryGoals ? (
               <Text variant="caption" tone="danger">
@@ -104,9 +104,9 @@ export default function OnboardingScreen() {
 
         {step === 2 ? (
           <>
-            <Select label="Combien d’heures dors-tu d’habitude ?" value={values.sleepMinutes} options={SLEEP_OPTIONS} onChange={(m) => set('sleepMinutes', m)} />
+            <Select label="How many hours do you usually sleep?" value={values.sleepMinutes} options={SLEEP_OPTIONS} onChange={(m) => set('sleepMinutes', m)} />
             <Text variant="label" style={{ marginTop: 16, marginBottom: 4 }}>
-              Ton énergie habituelle
+              Your usual energy
             </Text>
             {ENERGY_SLOTS.map((slot) => (
               <View key={slot.key} style={{ marginTop: 10 }}>
@@ -114,7 +114,7 @@ export default function OnboardingScreen() {
                   {slot.label}
                 </Text>
                 <SegmentedControl<EnergyLevel>
-                  label={`Énergie : ${slot.label}`}
+                  label={`Energy: ${slot.label}`}
                   tone="surface"
                   value={values.energyBySlot[slot.key]}
                   onChange={(level) => set('energyBySlot', { ...values.energyBySlot, [slot.key]: level })}

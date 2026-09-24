@@ -28,7 +28,7 @@ describe("musique d'ambiance au début d'une séance", () => {
     expect(isAmbienceChoice('off')).toBe(true);
     expect(isAmbienceChoice('techno')).toBe(false);
     expect(isAmbienceChoice(null)).toBe(false);
-    expect(ambienceLabel('pluie')).toBe('Pluie légère');
+    expect(ambienceLabel('pluie')).toBe('Light rain');
     expect(ambienceLabel('off')).toBeNull();
   });
 });

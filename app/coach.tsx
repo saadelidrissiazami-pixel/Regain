@@ -13,8 +13,8 @@ import { useAuthStore } from '../src/store/authStore';
 import { useTheme } from '../src/theme/ThemeProvider';
 
 const OPENING: Record<CoachSubject, string> = {
-  forme: 'Une question sur ta séance, tes repas ou ta récupération ? Écris-la comme tu la dirais.',
-  'bien-etre': 'Dis-moi comment tu te sens, ou ce qui bloque en ce moment. Sans jugement.',
+  forme: 'A question about your session, your meals or your recovery? Write it the way you would say it.',
+  'bien-etre': 'Tell me how you are feeling, or what is in the way right now. No judgement.',
 };
 
 function Bubble({ message }: { message: Pick<CoachMessage, 'role' | 'content'> }) {
@@ -83,12 +83,12 @@ export default function CoachScreen() {
   if (!premiumLoading && !isPremium) {
     return (
       <View style={{ flex: 1, backgroundColor: theme.bg, paddingHorizontal: 20, paddingTop: 60 }}>
-        <ScreenHeader title="Ton coach" subtitle="Poser une question, à tout moment" onBack={() => goBack(subject === 'forme' ? '/(tabs)/fitness' : '/(tabs)/wellbeing')} />
+        <ScreenHeader title="Your coach" subtitle="Ask a question, any time" onBack={() => goBack(subject === 'forme' ? '/(tabs)/fitness' : '/(tabs)/wellbeing')} />
         <EmptyState
           icon="chatbubbles-outline"
-          title="Ton coach fait partie de Premium"
-          body="Pose tes questions sur tes séances, tes repas ou ton énergie, et reçois une réponse qui tient compte de tes objectifs."
-          actionLabel="Découvrir Premium"
+          title="Your coach is part of Premium"
+          body="Ask about your sessions, your meals or your energy, and get an answer that takes your goals into account."
+          actionLabel="See what Premium adds"
           onAction={() => router.push('/paywall?source=locked')}
         />
       </View>
@@ -102,7 +102,7 @@ export default function CoachScreen() {
       keyboardVerticalOffset={0}
     >
       <View style={{ paddingHorizontal: 20, paddingTop: 60 }}>
-        <ScreenHeader title="Ton coach" subtitle="Poser une question, à tout moment" onBack={() => goBack(subject === 'forme' ? '/(tabs)/fitness' : '/(tabs)/wellbeing')} />
+        <ScreenHeader title="Your coach" subtitle="Ask a question, any time" onBack={() => goBack(subject === 'forme' ? '/(tabs)/fitness' : '/(tabs)/wellbeing')} />
       </View>
 
       <ScrollView
@@ -129,9 +129,9 @@ export default function CoachScreen() {
           </View>
         ) : null}
 
-        {/* Quota atteint, panne ou fonction non déployée arrivent ici avec leur vrai message. */}
+        {/* A spent quota, an outage or an undeployed function all arrive here with their real message. */}
         {sendMutation.isError ? <InlineNotice tone="error" message={(sendMutation.error as Error).message} /> : null}
-        {historyQuery.isError ? <InlineNotice tone="error" message="L'historique n'a pas pu être chargé." /> : null}
+        {historyQuery.isError ? <InlineNotice tone="error" message="Your history could not be loaded." /> : null}
       </ScrollView>
 
       <View
@@ -149,14 +149,14 @@ export default function CoachScreen() {
       >
         <TextInput
           style={{ flex: 1 }}
-          placeholder="Écris à ton coach…"
+          placeholder="Write to your coach…"
           value={input}
           onChangeText={setInput}
           onSubmitEditing={send}
           returnKeyType="send"
           multiline
         />
-        {/* `send` ne fait rien tant que le champ est vide : l'opacité le dit à l'œil. */}
+        {/* `send` does nothing while the field is empty: the opacity says so at a glance. */}
         <View style={{ opacity: sendMutation.isPending || input.trim().length === 0 ? 0.4 : 1 }}>
           <IconButton icon="arrow-up" label="Envoyer" variant="primary" onPress={send} />
         </View>

@@ -18,10 +18,10 @@ type Tab = 'sessions' | 'exercises' | 'progress';
 
 function tipsFor({ deload, strategy }: { deload: boolean; strategy: string | undefined }): string[] {
   return [
-    'Privilégie une bonne qualité de sommeil',
+    'Protect the quality of your sleep',
     'Hydrate-toi suffisamment',
-    deload ? 'Garde des charges confortables cette semaine' : strategy === 'surplus' ? 'Augmente les charges progressivement' : 'Soigne la technique avant la charge',
-    'Écoute tes sensations',
+    deload ? 'Keep the weights comfortable this week' : strategy === 'surplus' ? 'Add weight gradually' : 'Get the technique right before the load',
+    'Listen to how your body feels',
   ];
 }
 
@@ -46,7 +46,7 @@ export default function ProgramScreen() {
     const end = new Date(start);
     end.setDate(end.getDate() + 7);
     const count = fitness.logs.filter((l) => l.completed_at >= start.toISOString() && l.completed_at < end.toISOString()).length;
-    return { label: i === 3 ? 'Cette semaine' : `Sem. du ${toLocalISODate(start).slice(8)}/${toLocalISODate(start).slice(5, 7)}`, count };
+    return { label: i === 3 ? 'This week' : `Wk of ${toLocalISODate(start).slice(5, 7)}/${toLocalISODate(start).slice(8)}`, count };
   });
   const target = profile?.days_per_week ?? 3;
 
@@ -66,9 +66,9 @@ export default function ProgramScreen() {
       ) : !plan ? (
         <EmptyState
           icon="barbell-outline"
-          title="Pas encore de programme"
-          body="Génère ton programme depuis l'onglet Forme."
-          actionLabel="Retour à Forme"
+          title="No programme yet"
+          body="Build your programme from the Fitness tab."
+          actionLabel="Back to Fitness"
           onAction={() => goBack('/(tabs)/fitness')}
         />
       ) : (
@@ -78,7 +78,7 @@ export default function ProgramScreen() {
             value={tab}
             onChange={setTab}
             options={[
-              { value: 'sessions', label: 'Séances' },
+              { value: 'sessions', label: 'Sessions' },
               { value: 'exercises', label: 'Exercices' },
               { value: 'progress', label: 'Progression' },
             ]}
@@ -98,9 +98,9 @@ export default function ProgramScreen() {
                   <View style={{ flexDirection: 'row', alignItems: 'flex-start', gap: 12 }}>
                     <Ionicons name="barbell" size={22} color={theme.primary700} />
                     <View style={{ flex: 1 }}>
-                      <Text variant="label">Semaine allégée</Text>
+                      <Text variant="label">An easier week</Text>
                       <Text variant="caption" tone="ink2" style={{ marginTop: 3 }}>
-                        Une série de moins par exercice, pour récupérer sans culpabiliser.
+                        One set fewer per exercise, to recover without guilt.
                       </Text>
                     </View>
                   </View>
@@ -110,7 +110,7 @@ export default function ProgramScreen() {
               <Card style={{ marginTop: 16 }}>
                 <View style={{ flexDirection: 'row', alignItems: 'center', gap: 8, marginBottom: 12 }}>
                   <Ionicons name="bulb-outline" size={20} color={theme.yellow} />
-                  <Text variant="label">Conseils de la semaine</Text>
+                  <Text variant="label">This week’s pointers</Text>
                 </View>
                 {tipsFor({ deload: fitness.deload, strategy: plan.targets.strategy }).map((tip) => (
                   <View key={tip} style={{ flexDirection: 'row', alignItems: 'center', gap: 10, paddingVertical: 6 }}>
@@ -128,7 +128,7 @@ export default function ProgramScreen() {
                 <Card padding={16} style={{ marginBottom: 10 }}>
                   <Text variant="label">{exercise.name}</Text>
                   <Text variant="caption" tone="ink2" style={{ marginTop: 3 }}>
-                    {exercise.sets} séries × {exercise.reps} · repos {exercise.rest_seconds} s · {exercise.sessions.join(', ')}
+                    {exercise.sets} sets × {exercise.reps} · {exercise.rest_seconds} s rest · {exercise.sessions.join(', ')}
                   </Text>
                   {exercise.tip ? (
                     <Text variant="caption" tone="ink2" style={{ marginTop: 8 }}>
@@ -142,7 +142,7 @@ export default function ProgramScreen() {
             <>
               <Card>
                 <Text variant="label" style={{ marginBottom: 14 }}>
-                  Séances faites par semaine
+                  Sessions done per week
                 </Text>
                 {weeks.map((week) => (
                   <View key={week.label} style={{ marginBottom: 12 }}>
@@ -165,7 +165,7 @@ export default function ProgramScreen() {
                 </Text>
                 {fitness.checkins.length === 0 ? (
                   <Text variant="bodySm" tone="ink2">
-                    Fais ton premier bilan en fin de semaine : ton poids et ton énergie apparaîtront ici.
+                    Do your first check-in at the end of the week, and your weight and energy will show up here.
                   </Text>
                 ) : (
                   fitness.checkins.map((checkin) => (
@@ -178,7 +178,7 @@ export default function ProgramScreen() {
                       </Text>
                       <Text variant="caption" tabular>
                         {checkin.weight_kg ? `${String(checkin.weight_kg).replace('.', ',')} kg · ` : ''}
-                        {checkin.sessions_done} séance{checkin.sessions_done > 1 ? 's' : ''} · énergie {checkin.energy}/5
+                        {checkin.sessions_done} session{checkin.sessions_done > 1 ? 's' : ''} · energy {checkin.energy}/5
                       </Text>
                     </View>
                   ))

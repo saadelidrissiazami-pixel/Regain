@@ -38,17 +38,17 @@ import {
 } from '../../src/lib/fitness';
 import { useAuthStore } from '../../src/store/authStore';
 
-const DAYS_OPTIONS = [1, 2, 3, 4, 5, 6].map((days) => ({ value: days, label: `${days} séance${days > 1 ? 's' : ''} par semaine` }));
+const DAYS_OPTIONS = [1, 2, 3, 4, 5, 6].map((days) => ({ value: days, label: `${days} session${days > 1 ? 's' : ''} per week` }));
 const SESSION_MINUTES_OPTIONS = [30, 45, 60, 75, 90].map((minutes) => ({
   value: minutes,
   label: `${minutes} minutes`,
-  hint: minutes <= 30 ? 'Séances courtes et efficaces' : minutes >= 75 ? 'Séances longues, échauffement compris' : undefined,
+  hint: minutes <= 30 ? 'Short, efficient sessions' : minutes >= 75 ? 'Long sessions, warm-up included' : undefined,
 }));
-const WEEK_DAYS = ['Lun', 'Mar', 'Mer', 'Jeu', 'Ven', 'Sam', 'Dim'];
+const WEEK_DAYS = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'];
 const SLOTS: { value: TimeSlot; label: string }[] = [
-  { value: 'matin', label: 'Matin' },
-  { value: 'apres_midi', label: 'Après-midi' },
-  { value: 'soir', label: 'Soir' },
+  { value: 'matin', label: 'Morning' },
+  { value: 'apres_midi', label: 'Afternoon' },
+  { value: 'soir', label: 'Evening' },
 ];
 
 function Section({ title, hint, children }: { title: string; hint?: string; children: ReactNode }) {
@@ -133,22 +133,22 @@ function QuestionnaireForm({
   return (
     <Screen
       keyboard
-      footer={<Button label="Enregistrer" loading={saveMutation.isPending} onPress={handleSubmit((values) => saveMutation.mutate(values))} />}
+      footer={<Button label="Save" loading={saveMutation.isPending} onPress={handleSubmit((values) => saveMutation.mutate(values))} />}
     >
-      <ScreenHeader overline="Ton coach forme" title="Ton profil" subtitle="Pour un programme vraiment fait pour toi." onBack={() => goBack('/(tabs)/fitness')} />
+      <ScreenHeader overline="Your fitness coach" title="Your profile" subtitle="So the programme is genuinely built for you." onBack={() => goBack('/(tabs)/fitness')} />
 
       <Section title="Tes objectifs">
         <Controller
           control={control}
           name="goals"
           render={({ field: { value, onChange } }) => (
-            <SelectMulti label="Objectifs" title="Que cherches-tu ?" placeholder="Choisir un ou plusieurs objectifs" values={value} options={[...FITNESS_GOALS]} onChange={onChange} />
+            <SelectMulti label="Goals" title="What are you after?" placeholder="Pick one or more goals" values={value} options={[...FITNESS_GOALS]} onChange={onChange} />
           )}
         />
         <FieldError message={errors.goals?.message} />
       </Section>
 
-      <Section title="Toi" hint="Sexe, âge, taille et poids servent uniquement au calcul de tes besoins caloriques.">
+      <Section title="You" hint="Sex, age, height and weight are used only to work out your calorie needs.">
         <Controller
           control={control}
           name="sex"
@@ -162,7 +162,7 @@ function QuestionnaireForm({
           control={control}
           name="birthYear"
           render={({ field: { value, onChange } }) => (
-            <Field label="Année de naissance" placeholder="Ex. : 1990" keyboardType="number-pad" maxLength={4} value={value} onChangeText={onChange} error={errors.birthYear?.message} />
+            <Field label="Year of birth" placeholder="e.g. 1990" keyboardType="number-pad" maxLength={4} value={value} onChangeText={onChange} error={errors.birthYear?.message} />
           )}
         />
         <View style={{ flexDirection: 'row', gap: 12 }}>
@@ -189,12 +189,12 @@ function QuestionnaireForm({
           control={control}
           name="activityLevel"
           render={({ field: { value, onChange } }) => (
-            <Select label="Activité au quotidien" title="Ton activité au quotidien" value={value} options={[...ACTIVITY_LEVELS]} onChange={onChange} />
+            <Select label="Everyday activity" title="Your everyday activity" value={value} options={[...ACTIVITY_LEVELS]} onChange={onChange} />
           )}
         />
       </Section>
 
-      <Section title="Ton entraînement">
+      <Section title="Your training">
         <Text variant="label" style={{ marginBottom: 8 }}>
           Niveau en musculation
         </Text>
@@ -211,27 +211,27 @@ function QuestionnaireForm({
           control={control}
           name="equipment"
           render={({ field: { value, onChange } }) => (
-            <Select label="Matériel" title="Avec quoi t'entraînes-tu ?" value={value} options={[...EQUIPMENT_OPTIONS]} onChange={onChange} />
+            <Select label="Equipment" title="What do you train with?" value={value} options={[...EQUIPMENT_OPTIONS]} onChange={onChange} />
           )}
         />
         <Controller
           control={control}
           name="daysPerWeek"
           render={({ field: { value, onChange } }) => (
-            <Select label="Séances par semaine" title="Combien de séances par semaine ?" value={value} options={DAYS_OPTIONS} onChange={onChange} />
+            <Select label="Sessions per week" title="How many sessions a week?" value={value} options={DAYS_OPTIONS} onChange={onChange} />
           )}
         />
         <Controller
           control={control}
           name="sessionMinutes"
           render={({ field: { value, onChange } }) => (
-            <Select label="Durée d'une séance" title="Combien de temps par séance ?" value={value} options={SESSION_MINUTES_OPTIONS} onChange={onChange} />
+            <Select label="Session length" title="How long per session?" value={value} options={SESSION_MINUTES_OPTIONS} onChange={onChange} />
           )}
         />
       </Section>
 
-      <Section title="Quand t'entraînes-tu ?" hint="Pour te proposer la bonne séance, au bon moment.">
-        <SegmentedControl label="Moment de la journée" tone="surface" value={slot} onChange={setSlot} options={SLOTS} />
+      <Section title="When do you train?" hint="So the right session is offered at the right time.">
+        <SegmentedControl label="Time of day" tone="surface" value={slot} onChange={setSlot} options={SLOTS} />
         <View style={{ flexDirection: 'row', flexWrap: 'wrap', gap: 8, marginTop: 14 }}>
           {WEEK_DAYS.map((label, day) => (
             <ChoiceChip key={label} label={label} selected={days.includes(day)} onPress={() => toggleDay(day)} />
@@ -239,8 +239,8 @@ function QuestionnaireForm({
         </View>
         <Text variant="caption" tone={days.length === daysPerWeek ? 'ink2' : 'danger'} style={{ marginTop: 8 }}>
           {days.length === daysPerWeek
-            ? `${days.length} jour${days.length > 1 ? 's' : ''} choisi${days.length > 1 ? 's' : ''}.`
-            : `Choisis ${daysPerWeek} jour${daysPerWeek > 1 ? 's' : ''} (${days.length} pour l'instant).`}
+            ? `${days.length} day${days.length > 1 ? 's' : ''} chosen.`
+            : `Choose ${daysPerWeek} day${daysPerWeek > 1 ? 's' : ''} (${days.length} so far).`}
         </Text>
       </Section>
 
@@ -249,31 +249,31 @@ function QuestionnaireForm({
           control={control}
           name="diet"
           render={({ field: { value, onChange } }) => (
-            <Select label="Régime alimentaire" title="Ton alimentation" value={value} options={[...DIET_OPTIONS]} onChange={onChange} />
+            <Select label="Diet" title="How you eat" value={value} options={[...DIET_OPTIONS]} onChange={onChange} />
           )}
         />
         <Controller
           control={control}
           name="allergies"
           render={({ field: { value, onChange } }) => (
-            <Field label="Allergies ou intolérances (facultatif)" placeholder="Ex. : arachides, lactose" value={value} onChangeText={onChange} error={errors.allergies?.message} />
+            <Field label="Allergies or intolerances (optional)" placeholder="e.g. peanuts, lactose" value={value} onChangeText={onChange} error={errors.allergies?.message} />
           )}
         />
       </Section>
 
-      <Section title="Santé">
+      <Section title="Health">
         <Controller
           control={control}
           name="healthNotes"
           render={({ field: { value, onChange } }) => (
             <Field
-              label="Quelque chose à signaler ? (facultatif)"
+              label="Anything we should know? (optional)"
               multiline
-              placeholder="Blessure, douleur, traitement, grossesse… pour que ton coach adapte le programme"
+              placeholder="An injury, a pain, medication, pregnancy… so your coach can adapt the programme"
               value={value}
               onChangeText={onChange}
               error={errors.healthNotes?.message}
-              hint="Ton coach n'est pas un professionnel de santé : en cas de problème médical, demande l'avis de ton médecin avant de commencer."
+              hint="Your coach is not a health professional. For anything medical, ask your doctor before you start."
             />
           )}
         />

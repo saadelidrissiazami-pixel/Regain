@@ -15,7 +15,7 @@ export function WeekProgressCard({ done, total, onPress }: { done: number; total
     <Card
       padding={16}
       onPress={onPress}
-      accessibilityLabel={`Ta progression cette semaine : ${done} sur ${total} activités, ${percent} %`}
+      accessibilityLabel={`Your progress this week: ${done} of ${total} activities, ${percent}%`}
     >
       <View style={{ flexDirection: 'row', alignItems: 'center' }}>
         <View
@@ -32,10 +32,10 @@ export function WeekProgressCard({ done, total, onPress }: { done: number; total
           <Ionicons name="calendar-outline" size={20} color={theme.primary600} />
         </View>
         <View style={{ flex: 1 }}>
-          <Text variant="label">Ta progression cette semaine</Text>
+          <Text variant="label">Your progress this week</Text>
           <View style={{ flexDirection: 'row', alignItems: 'center', marginTop: 8, gap: 10 }}>
             <Text variant="caption" tone="ink2" tabular>
-              {done} sur {total} activité{total > 1 ? 's' : ''}
+              {done} of {total} activit{total > 1 ? 'ies' : 'y'}
             </Text>
             <View style={{ flex: 1 }}>
               <ProgressBar progress={ratio} height={6} />

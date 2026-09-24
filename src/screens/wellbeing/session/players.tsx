@@ -26,7 +26,7 @@ function Dots({ count, index }: { count: number; index: number }) {
     <View
       style={{ flexDirection: 'row', justifyContent: 'center', gap: 6, marginVertical: 14 }}
       accessible
-      accessibilityLabel={`Étape ${index + 1} sur ${count}`}
+      accessibilityLabel={`Step ${index + 1} of ${count}`}
     >
       {Array.from({ length: count }, (_, i) => (
         <View key={i} style={{ width: i === index ? 16 : 6, height: 6, borderRadius: 3, backgroundColor: i === index ? theme.primary600 : theme.sage300 }} />
@@ -97,7 +97,7 @@ function NarratedSequence({
 
   return (
     <>
-      {/* Le texte reste affiché pendant le silence : un écran qui se vide ressemble à une panne. */}
+      {/* The text stays on screen through the silence: a screen that empties looks like a fault. */}
       <Animated.View key={position.index} entering={FadeIn.duration(400)} style={{ minHeight: 96, justifyContent: 'center' }}>
         <Text variant="bodyStrong" center style={{ fontSize: 18, lineHeight: 27 }} accessibilityLiveRegion="polite">
           {blocks[position.index].text}
@@ -235,7 +235,7 @@ export function BreathingPlayer({
         key={stage}
         blocks={stage === 'intro' ? intro! : outro!}
         audioOn={audioOn}
-        skipLabel={stage === 'intro' ? 'Commencer maintenant' : 'Terminer'}
+        skipLabel={stage === 'intro' ? 'Start now' : 'Finish'}
         onFinish={() => (stage === 'intro' ? dispatch('start') : onDone())}
       />
     );
@@ -245,13 +245,13 @@ export function BreathingPlayer({
     return (
       <View style={{ alignItems: 'center', gap: 12, paddingTop: 20 }}>
         <Text variant="title" center>
-          Bien joué
+          Nicely done
         </Text>
         <Text variant="body" tone="ink2" center>
-          Tu as pris ce moment pour toi.
+          You took that moment for yourself.
         </Text>
         <View style={{ alignSelf: 'stretch', marginTop: 16 }}>
-          <Button label="Terminer" onPress={onDone} />
+          <Button label="Finish" onPress={onDone} />
         </View>
       </View>
     );
@@ -327,7 +327,7 @@ export function GroundingPlayer({
       const { before, after } = answers;
       onDone(
         before !== undefined && after !== undefined
-          ? `Niveau de gêne ressenti : ${before}/10 avant la séance, ${after}/10 après.`
+          ? `Discomfort: ${before}/10 before the session, ${after}/10 after.`
           : undefined
       );
     } else {
@@ -383,10 +383,10 @@ export function GroundingPlayer({
             </View>
             <View style={{ flexDirection: 'row', justifyContent: 'space-between', marginTop: 8 }}>
               <Text variant="caption" tone="ink2">
-                À l&apos;aise
+                At ease
               </Text>
               <Text variant="caption" tone="ink2">
-                Très mal à l&apos;aise
+                Very uncomfortable
               </Text>
             </View>
           </View>
@@ -397,7 +397,7 @@ export function GroundingPlayer({
             <Pressable
               onPress={() => setBreathCount((c) => Math.min(c + 1, step.count))}
               accessibilityRole="button"
-              accessibilityLabel={`Compter une respiration, ${breathCount} sur ${step.count}`}
+              accessibilityLabel={`Count a breath, ${breathCount} of ${step.count}`}
               style={{ width: 120, height: 120, borderRadius: 60, backgroundColor: theme.sage100, alignItems: 'center', justifyContent: 'center' }}
             >
               <Text variant="metric" tabular tone="accent">
@@ -405,7 +405,7 @@ export function GroundingPlayer({
               </Text>
             </Pressable>
             <Text variant="caption" tone="ink2" style={{ marginTop: 10 }}>
-              Appuie à chaque respiration
+              Tap with each breath
             </Text>
           </View>
         ) : null}
@@ -416,7 +416,7 @@ export function GroundingPlayer({
         {step.kind === 'confirm' ? (
           <Button label={step.buttonLabel} onPress={goNext} />
         ) : canContinue ? (
-          <Button label={isLast ? 'Terminer' : 'Suivant'} variant={isLast ? 'primary' : 'secondary'} onPress={goNext} />
+          <Button label={isLast ? 'Finish' : 'Next'} variant={isLast ? 'primary' : 'secondary'} onPress={goNext} />
         ) : null}
       </View>
     </View>
@@ -425,12 +425,12 @@ export function GroundingPlayer({
 
 const PREP_SECONDS = 10;
 
-/** Dix secondes pour s'installer avant que la séance ne démarre. */
+/** Ten seconds to settle in before the session starts. */
 export function PrepCountdown({ onDone, audioOn }: { onDone: () => void; audioOn: boolean }) {
   const [secondsLeft, setSecondsLeft] = useState(PREP_SECONDS);
 
   useEffect(() => {
-    if (audioOn) speak('Installe-toi confortablement. La séance commence dans quelques secondes.');
+    if (audioOn) speak('Make yourself comfortable. The session begins in a few seconds.');
   }, [audioOn]);
 
   useEffect(() => {
@@ -454,13 +454,13 @@ export function PrepCountdown({ onDone, audioOn }: { onDone: () => void; audioOn
       </SessionRing>
       <View style={{ alignItems: 'center', gap: 6 }}>
         <Text variant="section" center>
-          Installe-toi confortablement
+          Make yourself comfortable
         </Text>
         <Text variant="bodySm" tone="ink2" center>
-          La séance démarre dans un instant.
+          The session starts in a moment.
         </Text>
       </View>
-      <Button label="Commencer maintenant" variant="ghost" fullWidth={false} align="center" onPress={onDone} />
+      <Button label="Start now" variant="ghost" fullWidth={false} align="center" onPress={onDone} />
     </View>
   );
 }

@@ -7,10 +7,10 @@ export function activityReason(activity: CatalogActivity, prefs: UserPreferences
   if (!prefs) return null;
   const fit = computeActivityFit(activity, prefs);
   if (fit.matchedGoalLabels.length > 0) {
-    return `Choisie pour ton objectif « ${fit.matchedGoalLabels[0].toLowerCase()} ».`;
+    return `Chosen for your goal: ${fit.matchedGoalLabels[0].toLowerCase()}.`;
   }
   if (fit.goodEnergySlotLabels.length > 0 && fit.goodEnergySlotLabels.length < 3) {
-    return `Adaptée à ton énergie habituelle le ${fit.goodEnergySlotLabels[0].toLowerCase()}.`;
+    return `Suits your usual energy in the ${fit.goodEnergySlotLabels[0].toLowerCase()}.`;
   }
   return null;
 }

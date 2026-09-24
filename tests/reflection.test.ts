@@ -11,8 +11,8 @@ import {
 describe('ressenti de fin de séance', () => {
   it('propose cinq niveaux, de « beaucoup moins bien » à « beaucoup mieux »', () => {
     expect(MOOD_OPTIONS.map((m) => m.value)).toEqual([1, 2, 3, 4, 5]);
-    expect(moodOption(4)?.label).toBe('Un peu mieux');
-    expect(moodOption(1)?.label).toBe('Beaucoup moins bien');
+    expect(moodOption(4)?.label).toBe('A little better');
+    expect(moodOption(1)?.label).toBe('Much worse');
     expect(moodOption(null)).toBeNull();
     expect(moodOption(9)).toBeNull();
   });
@@ -27,7 +27,7 @@ describe('ressenti de fin de séance', () => {
 
 describe('questions de réflexion', () => {
   it('adapte les questions à la catégorie', () => {
-    expect(promptsForCategory('Sommeil')[0]).toContain('lâcher prise');
+    expect(promptsForCategory('Sommeil')[0]).toContain('letting go');
     expect(promptsForCategory('Respiration')).toHaveLength(2);
   });
 

@@ -41,7 +41,7 @@ export function RouteMap({ path, start }: { path: Coords[]; start: Coords }) {
         <Circle cx={startPoint.x} cy={startPoint.y} r={7} fill={theme.orange} stroke="#FFFFFF" strokeWidth={2} />
       </Svg>
       <Text variant="caption" tone="ink2" style={{ paddingHorizontal: 12, paddingBottom: 8 }}>
-        Aperçu du tracé — la carte interactive s&apos;affiche sur l&apos;application mobile.
+        Route preview — the interactive map appears in the mobile app.
       </Text>
     </View>
   );

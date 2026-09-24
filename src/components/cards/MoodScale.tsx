@@ -25,7 +25,7 @@ function Face({ level, color, size = 30 }: { level: number; color: string; size?
 export function MoodScale({ value, onChange }: { value: number | null; onChange: (value: number) => void }) {
   const theme = useTheme();
   return (
-    <View accessibilityRole="radiogroup" accessibilityLabel="Comment te sens-tu après cette séance ?" style={{ flexDirection: 'row', gap: 4 }}>
+    <View accessibilityRole="radiogroup" accessibilityLabel="How do you feel after this session?" style={{ flexDirection: 'row', gap: 4 }}>
       {MOOD_OPTIONS.map((option) => {
         const selected = value === option.value;
         return (

@@ -14,7 +14,7 @@ export function Delta({ value }: { value: number }) {
   const up = value >= 0;
   return (
     <View
-      accessibilityLabel={`${up ? 'En hausse' : 'En baisse'} de ${Math.abs(value)} % par rapport à la semaine précédente`}
+      accessibilityLabel={`${up ? 'Up' : 'Down'} ${Math.abs(value)}% on last week`}
       style={{ flexDirection: 'row', alignItems: 'center', gap: 2, paddingHorizontal: 6, paddingVertical: 2, borderRadius: 999, backgroundColor: theme.sage100 }}
     >
       <Ionicons name={up ? 'arrow-up' : 'arrow-down'} size={11} color={up ? theme.primary600 : theme.ink2} />

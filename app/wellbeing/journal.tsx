@@ -19,7 +19,7 @@ function EntryCard({ entry }: { entry: JournalEntry }) {
     <Card style={{ marginBottom: 12 }}>
       <View style={{ flexDirection: 'row', alignItems: 'flex-start' }}>
         <View style={{ flex: 1, paddingRight: 12 }}>
-          <Text variant="label">{entry.program?.title ?? 'Séance'}</Text>
+          <Text variant="label">{entry.program?.title ?? 'Session'}</Text>
           <Text variant="caption" tone="ink2" style={{ marginTop: 2 }}>
             {formatDateTimeLabel(entry.completed_at)}
           </Text>
@@ -63,7 +63,7 @@ export default function WellbeingJournalScreen() {
 
   return (
     <Screen refreshing={journalQuery.isRefetching} onRefresh={() => journalQuery.refetch()}>
-      <ScreenHeader overline="Bien-être" title="Mon journal" subtitle="Tes ressentis et tes mots, séance après séance." onBack={() => goBack('/(tabs)/wellbeing')} />
+      <ScreenHeader overline="Wellbeing" title="My journal" subtitle="How you felt and what you wrote, session after session." onBack={() => goBack('/(tabs)/wellbeing')} />
       {journalQuery.isLoading ? (
         <LoadingSkeleton preset="list" />
       ) : journalQuery.isError ? (
@@ -71,9 +71,9 @@ export default function WellbeingJournalScreen() {
       ) : entries.length === 0 ? (
         <EmptyState
           icon="book-outline"
-          title="Rien à relire pour l'instant"
-          body="À la fin de chaque séance, tu notes ton ressenti et tu réponds à deux questions. Tout se retrouve ici."
-          actionLabel="Choisir une séance"
+          title="Nothing to read back yet"
+          body="At the end of each session you note how it felt and answer two questions. It all ends up here."
+          actionLabel="Pick a session"
           onAction={() => router.navigate('/(tabs)/wellbeing')}
         />
       ) : (
@@ -84,11 +84,11 @@ export default function WellbeingJournalScreen() {
                 <Text variant="headline">{averageEmoji ?? '🌱'}</Text>
                 <View style={{ flex: 1 }}>
                   <Text variant="label">
-                    {entries.length} séance{entries.length > 1 ? 's' : ''} terminée{entries.length > 1 ? 's' : ''}
+                    {entries.length} session{entries.length > 1 ? 's' : ''} finished
                   </Text>
                   <Text variant="caption" tone="ink2">
-                    {average === null ? 'Aucun ressenti noté pour le moment.' : `Ressenti moyen : ${String(average).replace('.', ',')} sur 5`}
-                    {written > 0 ? ` · ${written} avec tes mots` : ''}
+                    {average === null ? 'Nothing noted yet.' : `Average feeling: ${average} out of 5`}
+                    {written > 0 ? ` · ${written} in your own words` : ''}
                   </Text>
                 </View>
               </View>

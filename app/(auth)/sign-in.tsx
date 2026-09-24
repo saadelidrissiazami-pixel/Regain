@@ -13,24 +13,24 @@ import { supabase } from '../../src/lib/supabase';
 import { useTheme } from '../../src/theme/ThemeProvider';
 
 const schema = z.object({
-  email: z.string().email('Adresse e-mail invalide'),
-  password: z.string().min(6, '6 caractères minimum'),
+  email: z.string().email('That email address does not look right'),
+  password: z.string().min(6, '6 characters minimum'),
 });
 
 type FormValues = z.infer<typeof schema>;
 
-// Supabase renvoie ses erreurs en anglais. On traduit celles que l'on rencontre vraiment, et on
-// laisse passer le message d'origine pour les autres : un texte anglais reste plus utile qu'un
-// « une erreur est survenue » qui cache la cause.
+// Supabase phrases its errors for developers. We rewrite the ones actually encountered and let
+// the original through for the rest: the real message stays more useful than a
+// “something went wrong” that hides the cause.
 function authErrorMessage(error: { message: string }): string {
   const message = error.message.toLowerCase();
-  if (message.includes('invalid login credentials')) return 'E-mail ou mot de passe incorrect.';
+  if (message.includes('invalid login credentials')) return 'That email or password is not right.';
   if (message.includes('email not confirmed')) {
-    return "Ce compte n'est pas encore confirmé. Ouvre le lien envoyé par e-mail, puis reviens te connecter.";
+    return 'This account is not confirmed yet. Open the link we emailed you, then come back and sign in.';
   }
-  if (message.includes('user already registered')) return 'Un compte existe déjà avec cette adresse. Connecte-toi.';
+  if (message.includes('user already registered')) return 'An account already exists for this address. Sign in instead.';
   if (message.includes('email rate limit exceeded')) {
-    return 'Trop de tentatives sur cette adresse. Réessaie dans quelques minutes.';
+    return 'Too many attempts on this address. Try again in a few minutes.';
   }
   return error.message;
 }
@@ -61,14 +61,13 @@ export default function SignInScreen() {
     }
     haptic.success();
     if (data.session) {
-      // La redirection vers l'onboarding ou le planning est ensuite gérée par app/index.tsx.
+      // app/index.tsx then decides between onboarding and the plan.
       router.replace('/');
       return;
     }
-    // Pas de session à l'inscription : le projet exige la confirmation par e-mail. Autant nommer
-    // l'adresse, parce que la faute de frappe est l'explication la plus fréquente d'un mail
-    // « jamais reçu ».
-    setInfo(`Compte créé. Ouvre le lien de confirmation envoyé à ${values.email}, puis connecte-toi.`);
+    // No session on sign-up: this project requires email confirmation. Naming the address is
+    // worth it, because a typo is the most common explanation for a message that “never arrived”.
+    setInfo(`Account created. Open the confirmation link sent to ${values.email}, then sign in.`);
   };
 
   return (
@@ -90,10 +89,10 @@ export default function SignInScreen() {
       </Animated.View>
       <Appear index={1} key={mode}>
         <Text variant="title" accessibilityRole="header">
-          {mode === 'sign-in' ? 'Content de te revoir' : 'Bienvenue sur Regain'}
+          {mode === 'sign-in' ? 'Good to see you again' : 'Welcome to Regain'}
         </Text>
         <Text variant="body" tone="ink2" style={{ marginTop: 6, marginBottom: 28 }}>
-          {mode === 'sign-in' ? 'Connecte-toi pour retrouver ta semaine.' : 'Crée ton compte pour commencer.'}
+          {mode === 'sign-in' ? 'Sign in to pick your week back up.' : 'Create your account to get started.'}
         </Text>
       </Appear>
 
@@ -104,8 +103,8 @@ export default function SignInScreen() {
             name="email"
             render={({ field: { onChange, onBlur, value } }) => (
               <Field
-                label="Adresse e-mail"
-                placeholder="toi@exemple.fr"
+                label="Email address"
+                placeholder="you@example.com"
                 autoCapitalize="none"
                 autoComplete="email"
                 textContentType="emailAddress"
@@ -122,8 +121,8 @@ export default function SignInScreen() {
             name="password"
             render={({ field: { onChange, onBlur, value } }) => (
               <Field
-                label="Mot de passe"
-                placeholder="6 caractères minimum"
+                label="Password"
+                placeholder="6 characters minimum"
                 secureTextEntry
                 autoComplete={mode === 'sign-in' ? 'current-password' : 'new-password'}
                 textContentType={mode === 'sign-in' ? 'password' : 'newPassword'}
@@ -143,9 +142,9 @@ export default function SignInScreen() {
 
       <Appear index={3}>
         <View style={{ marginTop: 16 }}>
-          <Button label={mode === 'sign-in' ? 'Se connecter' : "S'inscrire"} loading={submitting} onPress={handleSubmit(onSubmit)} />
+          <Button label={mode === 'sign-in' ? 'Sign in' : 'Sign up'} loading={submitting} onPress={handleSubmit(onSubmit)} />
           <Button
-            label={mode === 'sign-in' ? 'Pas encore de compte ? Inscris-toi' : 'Déjà un compte ? Connecte-toi'}
+            label={mode === 'sign-in' ? 'No account yet? Sign up' : 'Already have an account? Sign in'}
             variant="ghost"
             onPress={() => {
               haptic.selection();

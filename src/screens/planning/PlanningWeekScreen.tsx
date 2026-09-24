@@ -95,10 +95,10 @@ export default function PlanningWeekScreen() {
       refreshing={planning.refreshing}
       onRefresh={planning.refresh}
       footer={
-        <Button label="Ajouter une activité" icon="add" onPress={() => router.push({ pathname: '/planning/add', params: { date: selected } })} />
+        <Button label="Add an activity" icon="add" onPress={() => router.push({ pathname: '/planning/add', params: { date: selected } })} />
       }
     >
-      <ScreenHeader title="Planning" subtitle="Ta semaine en un coup d'œil" onBack={() => goBack('/(tabs)/planning')} />
+      <ScreenHeader title="Plan" subtitle="Your week at a glance" onBack={() => goBack('/(tabs)/planning')} />
 
       <SegmentedControl
         label="Affichage"
@@ -135,16 +135,16 @@ export default function PlanningWeekScreen() {
         items.length === 0 ? (
           <EmptyState
             icon="calendar-outline"
-            title="Aucune activité cette semaine"
-            body="Prépare ta semaine depuis l'accueil, ou ajoute une activité toi-même."
+            title="Nothing planned this week"
+            body="Prepare your week from the home screen, or add an activity yourself."
           />
         ) : weekGroups.length === 0 ? (
-          <EmptyState icon="moon-outline" title="Rien de prévu à partir de ce jour" body="Choisis un autre jour, ou ajoute une activité." />
+          <EmptyState icon="moon-outline" title="Nothing planned from this day on" body="Pick another day, or add an activity." />
         ) : (
           weekGroups.map(renderGroup)
         )
       ) : dayItems.length === 0 ? (
-        <EmptyState bare icon="sunny-outline" title={`Rien de prévu le ${formatDayLabel(selected).toLowerCase()}`} />
+        <EmptyState bare icon="sunny-outline" title={`Nothing planned on ${formatDayLabel(selected)}`} />
       ) : (
         dayItems.map(renderGroup)
       )}

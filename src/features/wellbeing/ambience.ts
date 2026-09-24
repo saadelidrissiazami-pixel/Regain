@@ -1,18 +1,18 @@
-// Musiques d'ambiance des séances : quatre boucles originales (assets/audio), composées pour
-// Regain et donc libres de droit. Règles de lancement : automatique en Sommeil et Méditation,
-// jamais en « En public » (un son surprise dans les transports), au choix ailleurs.
+// Background music for sessions: four original loops (assets/audio), written for Regain and so
+// free of any licence. When they start: automatically for Sleep and Meditation, never for
+// “In public” (a surprise sound on a crowded train), and by choice everywhere else.
 
 export type AmbienceId = 'nappe' | 'pluie' | 'vagues' | 'bol';
 export type AmbienceChoice = AmbienceId | 'off';
 
 export const AMBIENCES: { id: AmbienceId; label: string; description: string }[] = [
-  { id: 'nappe', label: 'Nappe douce', description: 'Un accord qui respire lentement' },
-  { id: 'pluie', label: 'Pluie légère', description: 'Un rideau de pluie fine' },
-  { id: 'vagues', label: 'Vagues', description: 'Une houle lente, une vague toutes les dix secondes' },
-  { id: 'bol', label: 'Bol chantant', description: 'Une résonance toutes les seize secondes' },
+  { id: 'nappe', label: 'Soft pad', description: 'A chord that breathes slowly' },
+  { id: 'pluie', label: 'Light rain', description: 'A curtain of fine rain' },
+  { id: 'vagues', label: 'Waves', description: 'A slow swell, one wave every ten seconds' },
+  { id: 'bol', label: 'Singing bowl', description: 'One resonance every sixteen seconds' },
 ];
 
-/** Catégories où la musique démarre d'elle-même, avec l'ambiance proposée par défaut. */
+/** Categories where the music starts on its own, with the ambience offered by default. */
 const AUTO_START: Record<string, AmbienceId> = {
   Sommeil: 'pluie',
   Méditation: 'bol',
@@ -20,7 +20,7 @@ const AUTO_START: Record<string, AmbienceId> = {
 
 const NEVER_AUTO = new Set(['En public']);
 
-/** Volume de base, et volume abaissé pendant que la voix guide. */
+/** The normal volume, and the lowered volume while the voice is speaking. */
 export const AMBIENCE_VOLUME = 0.35;
 export const AMBIENCE_DUCKED_VOLUME = 0.12;
 
@@ -29,9 +29,9 @@ export function ambienceLabel(choice: AmbienceChoice): string | null {
 }
 
 /**
- * Ambiance au début d'une séance.
- * `saved` est le dernier choix de la personne : une ambiance (qu'on réutilise quand la musique
- * démarre d'elle-même), « off » (elle a coupé la musique : on ne la relance plus), ou null.
+ * The ambience at the start of a session.
+ * `saved` is the person's last choice: an ambience (reused when the music starts on its own),
+ * “off” (they turned the music off, so we do not start it again), or null.
  */
 export function initialAmbience(category: string, saved: AmbienceChoice | null): AmbienceChoice {
   if (NEVER_AUTO.has(category)) return 'off';

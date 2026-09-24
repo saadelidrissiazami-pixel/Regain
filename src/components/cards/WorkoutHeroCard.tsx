@@ -32,7 +32,7 @@ export function WorkoutHeroCard({
         <View style={{ flex: 1, paddingRight: 12 }}>
           <View style={{ flexDirection: 'row', alignItems: 'center', gap: 8 }}>
             <Ionicons name="barbell" size={18} color={theme.ink} />
-            <Text variant="label">Prochaine séance</Text>
+            <Text variant="label">Next session</Text>
           </View>
           {when ? (
             <Text variant="caption" tone="ink2" tabular style={{ marginTop: 10 }}>
@@ -50,7 +50,7 @@ export function WorkoutHeroCard({
           <View style={{ flexDirection: 'row', alignItems: 'center', gap: 6, marginTop: 8 }}>
             <Ionicons name="time-outline" size={14} color={theme.ink2} />
             <Text variant="caption" tone="ink2">
-              {session.duration_minutes} min · {session.exercises.length} exercices
+              {session.duration_minutes} min · {session.exercises.length} exercises
             </Text>
           </View>
         </View>
@@ -58,11 +58,11 @@ export function WorkoutHeroCard({
       </View>
 
       <View style={{ marginTop: 16 }}>
-        <Button label="Commencer la séance" icon="play" onPress={onStart} />
+        <Button label="Start the session" icon="play" onPress={onStart} />
       </View>
       {deload ? (
         <View style={{ marginTop: 12 }}>
-          <Pill icon="leaf" label="Adaptée à ta semaine allégée" />
+          <Pill icon="leaf" label="Eased off for this week" />
         </View>
       ) : null}
     </Card>

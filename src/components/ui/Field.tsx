@@ -3,7 +3,7 @@ import { View, type TextInputProps } from 'react-native';
 import { useTheme } from '../../theme/ThemeProvider';
 import { Text, TextInput } from './Text';
 
-/** Champ de saisie avec libellé au-dessus et message d'aide ou d'erreur en dessous. */
+/** A text field with its label above and a hint or error message below. */
 export function Field({
   label,
   hint,

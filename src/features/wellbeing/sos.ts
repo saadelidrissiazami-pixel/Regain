@@ -1,10 +1,10 @@
-// Les séances SOS forment un thème à part : on ne les range pas dans la grille, on ne les
-// « recommande » pas, et on ne les verrouille jamais.
+// The SOS sessions are a theme apart: they are not filed in the grid, they are never
+// “recommended”, and they are never locked.
 
-/** Catégorie utilisée en base pour les séances d'urgence. */
+/** The category the database uses for the emergency sessions. */
 export const SOS_CATEGORY = 'SOS';
 
-/** Slugs des quatre séances SOS, dans l'ordre d'affichage. */
+/** The slugs of the four SOS sessions, in the order they are shown. */
 export const SOS_SLUGS = [
   'sos-angoisse',
   'sos-prise-de-parole',
@@ -13,11 +13,16 @@ export const SOS_SLUGS = [
 ] as const;
 
 /**
- * Affiché avant de lancer la séance d'angoisse.
+ * Shown before the anxiety session starts.
  *
- * Une application de bien-être n'a pas à décider que ce qu'on ressent est de l'angoisse. Une
- * douleur thoracique nouvelle ou une vraie difficulté à respirer peuvent être tout autre chose,
- * et proposer une séance de respiration à la place d'un appel serait une faute.
+ * A wellbeing app does not get to decide that what someone is feeling is anxiety. New chest pain
+ * or real difficulty breathing can be something else entirely, and offering a breathing session
+ * in place of a phone call would be a serious mistake.
  */
+//
+// The number is deliberately not named. The French wording said “call 15, or 112”, which is
+// right in France and wrong everywhere else; an English build has no way of knowing which
+// country the reader is in, and a wrong number in this particular sentence is worse than no
+// number at all.
 export const SOS_URGENCE =
-  "Une douleur dans la poitrine, une vraie difficulté à respirer ou un malaise peuvent demander une aide urgente : appelle le 15, ou le 112.";
+  'Chest pain, real difficulty breathing or feeling faint can need urgent help. Call your local emergency number.';

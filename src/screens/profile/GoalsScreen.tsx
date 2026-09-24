@@ -65,11 +65,11 @@ export default function GoalsScreen() {
       keyboard
       footer={
         dataQuery.isSuccess ? (
-          <Button label="Enregistrer" loading={saveMutation.isPending} onPress={() => form.validate() && saveMutation.mutate()} />
+          <Button label="Save" loading={saveMutation.isPending} onPress={() => form.validate() && saveMutation.mutate()} />
         ) : undefined
       }
     >
-      <ScreenHeader title="Mes objectifs" subtitle="Ton coach s'en sert pour choisir tes activités." onBack={() => goBack('/(tabs)/profile')} />
+      <ScreenHeader title="My goals" subtitle="Your coach uses these to choose your activities." onBack={() => goBack('/(tabs)/profile')} />
       {dataQuery.isLoading ? (
         <LoadingSkeleton preset="list" />
       ) : dataQuery.isError ? (
@@ -77,7 +77,7 @@ export default function GoalsScreen() {
       ) : (
         <>
           <Field
-            label="Ton prénom"
+            label="Your first name"
             value={values.firstName}
             onChangeText={(text) => set('firstName', text)}
             placeholder="Ex. : Camille"
@@ -91,7 +91,7 @@ export default function GoalsScreen() {
             values={values.primaryGoals}
             options={[...GOAL_OPTIONS]}
             onChange={(goals) => set('primaryGoals', goals)}
-            placeholder="Choisir un ou plusieurs objectifs"
+            placeholder="Pick one or more goals"
           />
           {errors.primaryGoals ? (
             <Text variant="caption" tone="danger" style={{ marginTop: -6, marginBottom: 12 }}>
@@ -101,12 +101,12 @@ export default function GoalsScreen() {
           <Select label="Ton sommeil habituel" value={values.sleepMinutes} options={SLEEP_OPTIONS} onChange={(m) => set('sleepMinutes', m)} />
 
           <Text variant="label" style={{ marginTop: 12, marginBottom: 8 }}>
-            Ton budget pour les activités
+            Your budget for activities
           </Text>
           <SegmentedControl label="Budget" tone="surface" value={values.budgetLevel} onChange={(b) => set('budgetLevel', b)} options={[...BUDGET_OPTIONS]} />
 
           <Text variant="label" style={{ marginTop: 24, marginBottom: 4 }}>
-            Ton énergie habituelle
+            Your usual energy
           </Text>
           {ENERGY_SLOTS.map((slot) => (
             <View key={slot.key} style={{ marginTop: 10 }}>

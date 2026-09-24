@@ -34,10 +34,10 @@ export function SessionReview({
   return (
     <Screen keyboard footer={<Button label="Valider" loading={saving} onPress={submit} />}>
       <ScreenHeader
-        title="Comment te sens-tu ?"
-        subtitle="Après cette séance"
+        title="How do you feel?"
+        subtitle="After this session"
         onBack={() => (saving ? undefined : onSkip())}
-        backLabel="Fermer sans noter"
+        backLabel="Close without rating"
       />
       <Appear>
         <MoodScale value={mood} onChange={setMood} />
@@ -51,7 +51,7 @@ export function SessionReview({
               value={answers[i]}
               onChangeText={(text) => setAnswers((current) => current.map((a, j) => (i === j ? text : a)))}
               multiline
-              placeholder="Ta réponse… (facultatif)"
+              placeholder="Your answer… (optional)"
             />
           </Appear>
         ))}
@@ -61,14 +61,14 @@ export function SessionReview({
             value={note}
             onChangeText={setNote}
             multiline
-            placeholder="Ex. : plus calme, moins de stress…"
-            hint="Tes réponses restent privées : tu les relis dans ton journal."
+            placeholder="e.g. calmer, less on edge…"
+            hint="Your answers stay private — you read them back in your journal."
           />
         </Appear>
       </View>
       {error ? <InlineNotice tone="error" message={errorMessage(error)} /> : null}
       <Text variant="caption" tone="ink3" style={{ marginTop: 4 }}>
-        Ton ressenti nourrit ton suivi et les séances qu&apos;on te propose.
+        How you felt feeds your tracking and the sessions you get offered.
       </Text>
     </Screen>
   );

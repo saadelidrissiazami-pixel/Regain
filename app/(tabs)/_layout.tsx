@@ -11,11 +11,11 @@ import { font } from '../../src/theme/typography';
 type IconName = ComponentProps<typeof Ionicons>['name'];
 
 const TABS: { name: string; title: string; icon: string }[] = [
-  { name: 'planning', title: 'Planning', icon: 'calendar' },
-  { name: 'wellbeing', title: 'Bien-être', icon: 'leaf' },
-  { name: 'fitness', title: 'Forme', icon: 'barbell' },
-  { name: 'tracking', title: 'Suivi', icon: 'bar-chart' },
-  { name: 'profile', title: 'Profil', icon: 'person' },
+  { name: 'planning', title: 'Plan', icon: 'calendar' },
+  { name: 'wellbeing', title: 'Wellbeing', icon: 'leaf' },
+  { name: 'fitness', title: 'Fitness', icon: 'barbell' },
+  { name: 'tracking', title: 'Tracking', icon: 'bar-chart' },
+  { name: 'profile', title: 'Profile', icon: 'person' },
 ];
 
 function TabIcon({ icon, focused, color }: { icon: string; focused: boolean; color: ColorValue }) {

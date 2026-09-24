@@ -31,7 +31,7 @@ export function RouteMap({ path, start }: { path: Coords[]; start: Coords }) {
         }
       >
         <Polyline coordinates={path} strokeColor={theme.primary600} strokeWidth={4} />
-        <Marker coordinate={start} title="Départ et arrivée" pinColor={theme.orange} />
+        <Marker coordinate={start} title="Start and finish" pinColor={theme.orange} />
       </MapView>
     </View>
   );

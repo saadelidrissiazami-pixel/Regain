@@ -2,14 +2,14 @@ import type { EnergyLevel } from './catalog';
 
 export const QUOTES: Record<'moyen' | 'eleve', string[]> = {
   moyen: [
-    "Pas besoin de tout donner aujourd'hui. Un pas suffit.",
-    "Une énergie stable, c'est déjà une base solide pour avancer.",
-    "Pas besoin d'être au maximum pour avancer un peu.",
+    'No need to give everything today. One step is enough.',
+    'Steady energy is already a solid base to build on.',
+    'You do not have to be at your best to move a little.',
   ],
   eleve: [
-    "Cette énergie est précieuse : un bon moment pour avancer sur ce qui compte pour toi.",
-    "Tu te sens porté·e : profites-en pour une activité qui te fait vraiment envie.",
-    "Une belle énergie aujourd'hui. Qu'est-ce que ça te donne envie de faire ?",
+    'This kind of energy is worth spending on what matters to you.',
+    'You are carried along today — put it into something you genuinely want to do.',
+    'Good energy today. What does it make you want to do?',
   ],
 };
 
@@ -24,15 +24,15 @@ export function isLowEnergy(level: EnergyLevel): boolean {
   return level === 'bas';
 }
 
-/** Petites phrases discrètes en bas de l'écran Bien-être. */
+/** Quiet lines at the foot of the Wellbeing screen. */
 export const CALM_QUOTES = [
-  'Un petit pas chaque jour fait une grande différence.',
-  'Prends le temps d’être ici.',
-  'Respirer, c’est déjà prendre soin de soi.',
-  'Avancer à ton rythme, c’est avancer quand même.',
+  'A small step each day adds up to a great deal.',
+  'Take the time to be here.',
+  'Breathing is already a way of looking after yourself.',
+  'Going at your own pace is still going.',
 ];
 
-/** Une phrase par jour, stable dans la journée. */
+/** One line a day, steady for the whole day. */
 export function quoteOfTheDay(today: string, list: string[] = CALM_QUOTES): string {
   const seed = today.split('-').reduce((sum, part) => sum + Number(part), 0);
   return list[seed % list.length];

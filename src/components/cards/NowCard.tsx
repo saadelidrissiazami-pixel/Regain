@@ -81,7 +81,7 @@ export function NowCard({
       ) : null}
 
       <View style={{ marginTop: 16 }}>
-        <Button label={done ? 'Revoir l’activité' : 'Commencer'} icon={done ? 'eye-outline' : 'play'} onPress={onStart} variant={done ? 'secondary' : 'primary'} />
+        <Button label={done ? 'View the activity' : 'Start'} icon={done ? 'eye-outline' : 'play'} onPress={onStart} variant={done ? 'secondary' : 'primary'} />
       </View>
 
       {footer ? <View style={{ marginTop: 18, paddingTop: 16, borderTopWidth: 1, borderTopColor: theme.divider }}>{footer}</View> : null}

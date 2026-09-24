@@ -15,7 +15,7 @@ export function WeekTracker({ days }: { days: WeekTrackerDay[] }) {
   const done = days.filter((d) => d.done).length;
   const planned = days.filter((d) => d.isTraining).length;
   return (
-    <Card padding={14} accessibilityLabel={`${done} séance${done > 1 ? 's' : ''} faite${done > 1 ? 's' : ''} sur ${planned} prévues cette semaine`}>
+    <Card padding={14} accessibilityLabel={`${done} of ${planned} sessions done this week`}>
       <View style={{ flexDirection: 'row', justifyContent: 'space-between' }}>
         {days.map((day) => {
           const size = 30;
@@ -25,7 +25,7 @@ export function WeekTracker({ days }: { days: WeekTrackerDay[] }) {
               style={{ flex: 1, alignItems: 'center' }}
               accessible
               accessibilityLabel={`${LONG[day.dayIndex]}${day.isToday ? ", aujourd'hui" : ''} : ${
-                day.done ? 'séance faite' : day.isTraining ? 'séance prévue' : 'repos'
+                day.done ? 'session done' : day.isTraining ? 'session planned' : 'rest'
               }`}
             >
               <Text
@@ -69,7 +69,7 @@ export function WeekTracker({ days }: { days: WeekTrackerDay[] }) {
         })}
       </View>
       <Text variant="caption" tone="ink2" center style={{ marginTop: 10 }}>
-        {done} séance{done > 1 ? 's' : ''} faite{done > 1 ? 's' : ''} sur {planned} cette semaine
+        {done} of {planned} sessions done this week
       </Text>
     </Card>
   );

@@ -114,9 +114,9 @@ export default function TrackingScreen() {
       <View style={{ flexDirection: 'row', gap: 10 }}>
         <StatCard
           icon="checkmark-done-outline"
-          title="Activités cette semaine"
+          title="Activities this week"
           value={stats ? `${stats.completedCount} / ${stats.totalCount}` : '–'}
-          caption={stats && stats.totalCount > 0 ? `${Math.round((stats.completedCount / stats.totalCount) * 100)} %` : 'Pas encore de planning'}
+          caption={stats && stats.totalCount > 0 ? `${Math.round((stats.completedCount / stats.totalCount) * 100)}%` : 'No plan yet'}
           onPress={() => router.push('/planning/week')}
         >
           <ProgressBar progress={stats && stats.totalCount > 0 ? stats.completedCount / stats.totalCount : 0} height={6} />
@@ -124,10 +124,10 @@ export default function TrackingScreen() {
         <StatCard
           icon="flash-outline"
           iconColor={theme.orange}
-          title="Énergie moyenne"
+          title="Average energy"
           value={energyAvg === null ? '–' : `${energyLabel(energyAvg).emoji} ${energyLabel(energyAvg).label}`}
           delta={energyDelta}
-          caption={energyAvg === null ? 'Réponds au check-in du jour' : undefined}
+          caption={energyAvg === null ? 'Answer today’s check-in' : undefined}
         >
           <MiniBars values={energyBars} max={5} labels={dayLetters} color={theme.orange} />
         </StatCard>
@@ -138,16 +138,16 @@ export default function TrackingScreen() {
           iconColor={theme.purple}
           title="Sommeil"
           value={sleepQuery.data ? formatSleep(sleepQuery.data) : '–'}
-          caption={sleepQuery.data ? 'Ta durée habituelle' : 'Indique ta durée habituelle'}
+          caption={sleepQuery.data ? 'Your usual amount' : 'Tell us your usual amount'}
           onPress={() => router.push('/profile/goals')}
         />
         <StatCard
           icon="happy-outline"
           iconColor={theme.yellow}
-          title="Humeur après tes séances"
+          title="Mood after your sessions"
           value={moodAvg === null ? '–' : moodLabel(moodAvg)}
           delta={moodDelta}
-          caption={moodAvg === null ? 'Note ton ressenti en fin de séance' : undefined}
+          caption={moodAvg === null ? 'Note how you feel at the end of a session' : undefined}
         >
           <MiniBars values={moodBars} max={5} labels={dayLetters} color={theme.yellow} />
         </StatCard>
@@ -160,22 +160,22 @@ export default function TrackingScreen() {
           </View>
           <View style={{ flex: 1 }}>
             <Text variant="label">
-              {streak > 0 ? `${streak} jour${streak > 1 ? 's' : ''} d'affilée` : 'Ta série commence aujourd’hui'}
+              {streak > 0 ? `${streak} day${streak > 1 ? 's' : ''} in a row` : 'Your streak starts today'}
             </Text>
             <Text variant="caption" tone="ink2">
-              {streak >= 2 ? 'Continue à ton rythme.' : 'Une activité cochée par jour suffit à la faire grandir.'}
+              {streak >= 2 ? 'Keep going at your own pace.' : 'One activity ticked a day is enough to grow it.'}
             </Text>
           </View>
         </View>
       </Card>
 
       <View style={{ marginTop: 28 }}>
-        <SectionHeader title="Temps par catégorie" subtitle="Ce que tu as fait cette semaine" />
+        <SectionHeader title="Time by category" subtitle="What you got through this week" />
         {statsQuery.isLoading ? (
           <LoadingSkeleton preset="list" />
         ) : categoryEntries.length === 0 ? (
           <Text variant="bodySm" tone="ink2">
-            Rien de coché cette semaine pour l’instant : coche tes activités depuis le planning.
+            Nothing ticked off this week yet — tick your activities from the plan.
           </Text>
         ) : (
           <Card>
@@ -200,7 +200,7 @@ export default function TrackingScreen() {
           <LoadingSkeleton preset="list" />
         ) : history.length === 0 ? (
           <Text variant="bodySm" tone="ink2">
-            Rien de coché pour l’instant.
+            Nothing ticked off yet.
           </Text>
         ) : (
           <>
@@ -221,14 +221,14 @@ export default function TrackingScreen() {
                     onPress={() => undoMutation.mutate(item.id)}
                     disabled={undoMutation.isPending}
                     accessibilityRole="button"
-                    accessibilityLabel={`Annuler « ${item.activities_catalog.title} »`}
+                    accessibilityLabel={`Undo “${item.activities_catalog.title}”`}
                     style={{ minHeight: 44, minWidth: 64, alignItems: 'center', justifyContent: 'center' }}
                   >
                     {undoMutation.isPending && undoMutation.variables === item.id ? (
                       <ActivityIndicator size="small" color={theme.primary600} />
                     ) : (
                       <Text variant="label" tone="ink2">
-                        Annuler
+                        Undo
                       </Text>
                     )}
                   </PressableScale>
@@ -237,7 +237,7 @@ export default function TrackingScreen() {
             ))}
             {history.length > 5 ? (
               <TextLink
-                label={showAllHistory ? 'Voir moins' : `Voir les ${history.length} activités`}
+                label={showAllHistory ? 'Show less' : `See all ${history.length} activities`}
                 icon={showAllHistory ? 'chevron-up' : 'chevron-down'}
                 onPress={() => setShowAllHistory((v) => !v)}
               />
@@ -252,21 +252,21 @@ export default function TrackingScreen() {
   const fitnessTab = !fitness.isPremium ? (
     <EmptyState
       icon="barbell-outline"
-      title="Suis tes séances de musculation"
-      body="Le suivi des séances et de ton poids fait partie du coach forme Premium."
+      title="Track your strength sessions"
+      body="Session and weight tracking are part of the Premium fitness coach."
       actionLabel="Découvrir Premium"
       onAction={() => router.push('/paywall?source=locked')}
     />
   ) : !fitness.profile ? (
-    <EmptyState icon="barbell-outline" title="Pas encore de profil forme" actionLabel="Commencer" onAction={() => router.push('/fitness/questionnaire')} />
+    <EmptyState icon="barbell-outline" title="No fitness profile yet" actionLabel="Get started" onAction={() => router.push('/fitness/questionnaire')} />
   ) : (
     <>
       <View style={{ flexDirection: 'row', gap: 10 }}>
         <StatCard
           icon="barbell-outline"
-          title="Séances cette semaine"
+          title="Sessions this week"
           value={`${fitness.logsThisWeek.length} / ${fitnessTarget}`}
-          caption={fitness.logsThisWeek.length >= fitnessTarget ? 'Objectif atteint' : 'Continue à ton rythme'}
+          caption={fitness.logsThisWeek.length >= fitnessTarget ? 'Target reached' : 'Keep going at your own pace'}
         >
           <ProgressBar progress={fitnessTarget ? fitness.logsThisWeek.length / fitnessTarget : 0} height={6} />
         </StatCard>
@@ -279,7 +279,7 @@ export default function TrackingScreen() {
         />
       </View>
       <View style={{ marginTop: 16 }}>
-        <ListRow icon="list-outline" title="Voir ma progression détaillée" onPress={() => router.push('/fitness/program')} />
+        <ListRow icon="list-outline" title="See my progress in detail" onPress={() => router.push('/fitness/program')} />
       </View>
     </>
   );
@@ -290,7 +290,7 @@ export default function TrackingScreen() {
   const wellbeingTab = (
     <>
       <View style={{ flexDirection: 'row', gap: 10 }}>
-        <StatCard icon="leaf-outline" title="Séances terminées" value={String(journal.length)} caption="Sur les 30 dernières" />
+        <StatCard icon="leaf-outline" title="Sessions finished" value={String(journal.length)} caption="Of the last 30" />
         <StatCard
           icon="happy-outline"
           iconColor={theme.yellow}
@@ -299,9 +299,9 @@ export default function TrackingScreen() {
         />
       </View>
       <Card style={{ marginTop: 16 }}>
-        <Text variant="label">Ton ressenti après les séances</Text>
+        <Text variant="label">How you felt after your sessions</Text>
         <Text variant="caption" tone="ink2" style={{ marginTop: 2, marginBottom: 14 }}>
-          {lastMoods.length === 0 ? 'Note ton ressenti à la fin d’une séance.' : `Tes ${lastMoods.length} dernières séances notées`}
+          {lastMoods.length === 0 ? 'Note how you feel at the end of a session.' : `Your last ${lastMoods.length} rated sessions`}
         </Text>
         {lastMoods.length > 0 ? <MiniBars values={lastMoods.map((e) => e.mood)} max={5} height={56} color={theme.primary500} /> : null}
       </Card>
@@ -316,28 +316,28 @@ export default function TrackingScreen() {
     // la liste de courses, plutôt que des « repères » abstraits.
     <EmptyState
       icon="cart-outline"
-      title="Tes menus et ta liste de courses"
-      body="Avec Premium : des journées de repas calées sur tes besoins, et la liste de courses qui va avec, déjà triée par rayon. Fini le « qu'est-ce qu'on mange ce soir ? »."
+      title="Your meals and your shopping list"
+      body="With Premium: days of meals matched to what you need, and the shopping list that goes with them, already sorted by aisle. No more “what are we eating tonight?”."
       actionLabel="Découvrir Premium"
       onAction={() => router.push('/paywall?source=locked')}
     />
   ) : !fitness.targets ? (
     <EmptyState
       icon="nutrition-outline"
-      title="Tes repères nutrition"
-      body="Calories et macros calculées pour toi, avec le coach forme."
+      title="Your nutrition numbers"
+      body="Calories and macros worked out for you, with the fitness coach."
       actionLabel="Remplir mon profil forme"
       onAction={() => router.push('/fitness/questionnaire')}
     />
   ) : (
     <>
       <Text variant="bodySm" tone="ink2" style={{ marginBottom: 12 }}>
-        Tes repères du jour, calculés à partir de ton profil forme.
+        Today’s numbers, worked out from your fitness profile.
       </Text>
       <TargetsCard targets={fitness.targets} />
       {fitness.plan ? (
         <View style={{ marginTop: 16 }}>
-          <ListRow icon="restaurant-outline" title="Mes menus et ma liste de courses" onPress={() => router.push('/fitness/nutrition')} />
+          <ListRow icon="restaurant-outline" title="My meals and my shopping list" onPress={() => router.push('/fitness/nutrition')} />
         </View>
       ) : null}
     </>
@@ -345,15 +345,15 @@ export default function TrackingScreen() {
 
   return (
     <Screen inTabs refreshing={refreshing} onRefresh={refresh}>
-      <ScreenHeader title="Suivi" subtitle="Tes progrès, en un coup d'œil" />
+      <ScreenHeader title="Tracking" subtitle="Your progress, at a glance" />
       <SegmentedControl
         label="Suivi"
         value={tab}
         onChange={setTab}
         options={[
-          { value: 'overview', label: 'Aperçu' },
+          { value: 'overview', label: 'Overview' },
           { value: 'fitness', label: 'Forme' },
-          { value: 'wellbeing', label: 'Bien-être' },
+          { value: 'wellbeing', label: 'Wellbeing' },
           { value: 'nutrition', label: 'Nutrition' },
         ]}
       />

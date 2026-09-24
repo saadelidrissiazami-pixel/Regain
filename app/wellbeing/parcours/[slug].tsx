@@ -20,8 +20,8 @@ export default function CourseScreen() {
         <EmptyState
           icon="search-outline"
           title="Parcours introuvable"
-          body="Retrouve les parcours dans l'onglet Bien-être."
-          actionLabel="Retour"
+          body="You will find the courses in the Wellbeing tab."
+          actionLabel="Go back"
           onAction={() => goBack('/(tabs)/wellbeing')}
         />
       </Screen>
@@ -57,11 +57,10 @@ export default function CourseScreen() {
         </View>
       </Card>
 
-      {/* Reprendre, jamais recommencer : une interruption de trois semaines ne doit pas coûter
-          plus cher qu'une interruption d'un jour. */}
+      {/* Pick up, never start over: a three-week gap must not cost more than a one-day gap. */}
       {progress.nextDay ? (
         <Button
-          label={progress.doneCount === 0 ? 'Commencer le jour 1' : `Reprendre au jour ${progress.nextDay.day}`}
+          label={progress.doneCount === 0 ? 'Start day 1' : `Pick up at day ${progress.nextDay.day}`}
           icon="play"
           onPress={() => router.push(wellbeing.hrefFor(progress.nextDay!.program))}
           style={{ marginBottom: 24 }}
@@ -88,8 +87,8 @@ export default function CourseScreen() {
 
       {progress.complete ? (
         <Text variant="bodySm" tone="ink2" style={{ marginTop: 20 }}>
-          Tu as fait les {course.dayCount} jours. Rien ne t&apos;empêche d&apos;en refaire un
-          quand il te sera utile — c&apos;est même l&apos;usage prévu.
+          You have done all {course.dayCount} days. Nothing stops you doing one again when it
+          would help — that is what they are for.
         </Text>
       ) : null}
     </Screen>

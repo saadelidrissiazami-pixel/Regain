@@ -110,9 +110,9 @@ function Player({ session, sessionIndex, planId }: { session: WorkoutSession; se
     <View style={{ flexDirection: 'row', alignItems: 'center', marginBottom: 12 }}>
       <View style={{ marginLeft: -10 }}>
         {state.stage === 'intro' || state.stage === 'done' ? (
-          <IconButton icon="close" label="Fermer" onPress={close} />
+          <IconButton icon="close" label="Close" onPress={close} />
         ) : (
-          <IconButton icon="chevron-back" label="Exercice précédent" onPress={() => dispatch('back')} size={26} />
+          <IconButton icon="chevron-back" label="Previous exercise" onPress={() => dispatch('back')} size={26} />
         )}
       </View>
       <View style={{ flex: 1, paddingHorizontal: 12 }}>
@@ -128,7 +128,7 @@ function Player({ session, sessionIndex, planId }: { session: WorkoutSession; se
         ) : null}
       </View>
       <View style={{ marginRight: -10 }}>
-        {inProgress ? <IconButton icon="close" label="Arrêter la séance" onPress={close} /> : <View style={{ width: 44 }} />}
+        {inProgress ? <IconButton icon="close" label="Stop the session" onPress={close} /> : <View style={{ width: 44 }} />}
       </View>
     </View>
   );
@@ -140,13 +140,13 @@ function Player({ session, sessionIndex, planId }: { session: WorkoutSession; se
       <>
         <Text variant="title">{title}</Text>
         <Text variant="bodySm" tone="ink2" style={{ marginTop: 6 }}>
-          {session.duration_minutes} min · {exercises.length} exercices
+          {session.duration_minutes} min · {exercises.length} exercises
         </Text>
         <View style={{ marginTop: 18 }}>
           <Thumbnail source={imageForWorkout(session.focus)} width="100%" height={180} radius={20} icon="barbell-outline" />
         </View>
         <Card variant="tinted" style={{ marginTop: 18 }}>
-          <Text variant="label">🔥 Échauffement</Text>
+          <Text variant="label">🔥 Warm-up</Text>
           <Text variant="bodySm" tone="ink2" style={{ marginTop: 4 }}>
             {session.warmup}
           </Text>
@@ -162,7 +162,7 @@ function Player({ session, sessionIndex, planId }: { session: WorkoutSession; se
             <View style={{ flex: 1 }}>
               <Text variant="label">{exercise.name}</Text>
               <Text variant="caption" tone="ink2">
-                {exercise.sets} séries · {exercise.reps} répétitions · repos {exercise.rest_seconds} s
+                {exercise.sets} sets · {exercise.reps} reps · {exercise.rest_seconds} s rest
               </Text>
             </View>
           </View>
@@ -171,7 +171,7 @@ function Player({ session, sessionIndex, planId }: { session: WorkoutSession; se
     );
     footer = (
       <Button
-        label="Commencer"
+        label="Start"
         icon="play"
         onPress={() => {
           startedAt.current = Date.now();
@@ -187,23 +187,23 @@ function Player({ session, sessionIndex, planId }: { session: WorkoutSession; se
       <Animated.View key={`${state.exercise}`} entering={FadeIn.duration(220)}>
         <Text variant="title">{exercise.name}</Text>
         <Text variant="bodySm" tone="ink2" style={{ marginTop: 4 }}>
-          {exercise.sets} séries · {exercise.reps} répétitions
+          {exercise.sets} sets · {exercise.reps} reps
         </Text>
         <View style={{ marginTop: 16 }}>
           <Thumbnail source={imageForWorkout(session.focus)} width="100%" height={220} radius={20} icon="barbell-outline" />
         </View>
         <View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'center', marginTop: 20, gap: 24 }}>
-          <IconButton icon="chevron-back" label="Série précédente" variant="surface" onPress={() => dispatch('prevSet')} />
-          <View style={{ alignItems: 'center' }} accessible accessibilityLabel={`Série ${state.set + 1} sur ${exercise.sets}`}>
+          <IconButton icon="chevron-back" label="Previous set" variant="surface" onPress={() => dispatch('prevSet')} />
+          <View style={{ alignItems: 'center' }} accessible accessibilityLabel={`Set ${state.set + 1} of ${exercise.sets}`}>
             <Text variant="metric" tabular>
               {state.set + 1}
               <Text variant="section" tone="ink2">{` / ${exercise.sets}`}</Text>
             </Text>
             <Text variant="caption" tone="ink2">
-              série
+              set
             </Text>
           </View>
-          <IconButton icon="chevron-forward" label="Série suivante" variant="surface" onPress={() => dispatch('plusSet')} />
+          <IconButton icon="chevron-forward" label="Next set" variant="surface" onPress={() => dispatch('plusSet')} />
         </View>
         {exercise.tip ? (
           <Card variant="tinted" padding={14} style={{ marginTop: 20 }}>
@@ -216,7 +216,7 @@ function Player({ session, sessionIndex, planId }: { session: WorkoutSession; se
     );
     footer = (
       <Button
-        label={!lastSet ? 'Série suivante' : lastExercise ? 'Retour au calme' : 'Exercice suivant'}
+        label={!lastSet ? 'Next set' : lastExercise ? 'Cool-down' : 'Next exercise'}
         iconRight="arrow-forward"
         onPress={() => dispatch('nextSet')}
       />
@@ -236,22 +236,22 @@ function Player({ session, sessionIndex, planId }: { session: WorkoutSession; se
           </ProgressRing>
         </View>
         <Text variant="bodySm" tone="ink2" center style={{ marginTop: 24 }}>
-          Ensuite : {nextExercise.name}, série {state.next.set + 1} sur {nextExercise.sets}
+          Next: {nextExercise.name}, set {state.next.set + 1} of {nextExercise.sets}
         </Text>
       </View>
     );
-    footer = <Button label="Passer le repos" variant="secondary" iconRight="play-skip-forward" onPress={() => dispatch('skipRest')} />;
+    footer = <Button label="Skip the rest" variant="secondary" iconRight="play-skip-forward" onPress={() => dispatch('skipRest')} />;
   } else if (state.stage === 'cooldown') {
     content = (
       <View style={{ paddingTop: 12 }}>
-        <Text variant="title">Retour au calme</Text>
+        <Text variant="title">Cool-down</Text>
         <Card variant="tinted" style={{ marginTop: 18 }}>
           <Text variant="body">🧘 {session.cooldown}</Text>
         </Card>
         {logMutation.isError ? <InlineNotice tone="error" message={errorMessage(logMutation.error)} /> : null}
       </View>
     );
-    footer = <Button label="Terminer la séance" icon="checkmark" loading={logMutation.isPending} onPress={() => logMutation.mutate()} />;
+    footer = <Button label="Finish the session" icon="checkmark" loading={logMutation.isPending} onPress={() => logMutation.mutate()} />;
   } else {
     content = (
       <View style={{ alignItems: 'center', paddingTop: 60 }}>
@@ -261,14 +261,14 @@ function Player({ session, sessionIndex, planId }: { session: WorkoutSession; se
           </View>
         </Animated.View>
         <Text variant="title" center style={{ marginTop: 24 }}>
-          Séance terminée
+          Session complete
         </Text>
         <Text variant="body" tone="ink2" center style={{ marginTop: 8 }}>
-          {title} · {exercises.length} exercices. Bravo, prends le temps de bien récupérer.
+          {title} · {exercises.length} exercises. Well done — take the time to recover properly.
         </Text>
       </View>
     );
-    footer = <Button label="Retour à Forme" onPress={() => goBack('/(tabs)/fitness')} />;
+    footer = <Button label="Back to Fitness" onPress={() => goBack('/(tabs)/fitness')} />;
   }
 
   return (
@@ -277,15 +277,15 @@ function Player({ session, sessionIndex, planId }: { session: WorkoutSession; se
       {content}
       <Sheet
         visible={confirmExit}
-        title="Arrêter la séance ?"
-        subtitle="Ta progression dans cette séance ne sera pas enregistrée."
+        title="Stop the session?"
+        subtitle="Your progress in this session will not be saved."
         onClose={() => setConfirmExit(false)}
         scroll={false}
         footer={
           <View style={{ gap: 8 }}>
-            <Button label="Continuer la séance" onPress={() => setConfirmExit(false)} />
+            <Button label="Carry on" onPress={() => setConfirmExit(false)} />
             <Button
-              label="Arrêter"
+              label="Stop"
               variant="ghost"
               onPress={() => {
                 setConfirmExit(false);
@@ -318,7 +318,7 @@ export default function WorkoutPlayerScreen() {
   if (!fitness.plan || !session) {
     return (
       <Screen>
-        <EmptyState icon="barbell-outline" title="Séance introuvable" body="Elle a peut-être changé avec ton dernier bilan." actionLabel="Retour" onAction={() => goBack('/(tabs)/fitness')} />
+        <EmptyState icon="barbell-outline" title="Session not found" body="It may have changed with your last check-in." actionLabel="Go back" onAction={() => goBack('/(tabs)/fitness')} />
       </Screen>
     );
   }

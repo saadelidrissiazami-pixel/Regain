@@ -3,6 +3,7 @@ import { LinearGradient } from 'expo-linear-gradient';
 import { useState } from 'react';
 import { Image, ScrollView, View, type NativeScrollEvent, type NativeSyntheticEvent } from 'react-native';
 
+import { themeLabel } from '../../features/wellbeing/catalogue';
 import type { WellbeingRecommendation } from '../../features/wellbeing/recommend';
 import { withAlpha } from '../../theme/colors';
 import { imageForWellbeing } from '../../theme/images';
@@ -22,7 +23,7 @@ function Slide({ item, width, onStart }: { item: WellbeingRecommendation; width:
       ) : (
         <LinearGradient colors={[theme.sage100, theme.sage300]} start={{ x: 0, y: 0 }} end={{ x: 1, y: 1 }} style={{ position: 'absolute', width: '100%', height: '100%' }} />
       )}
-      {/* Voile côté texte : le titre reste lisible quelle que soit la photo. */}
+      {/* A scrim on the text side, so the title stays readable over any photo. */}
       <LinearGradient
         colors={[withAlpha(theme.scrim, 0.96), withAlpha(theme.scrim, 0.75), withAlpha(theme.scrim, 0)]}
         locations={[0, 0.5, 0.85]}
@@ -35,7 +36,7 @@ function Slide({ item, width, onStart }: { item: WellbeingRecommendation; width:
           <View style={{ flexDirection: 'row', alignItems: 'center', gap: 6 }}>
             <Ionicons name="sunny" size={16} color={theme.yellow} />
             <Text variant="caption" style={{ fontWeight: '700' }}>
-              Recommandé pour toi
+              Recommended for you
             </Text>
           </View>
           <Text variant="headline" style={{ marginTop: 12 }} numberOfLines={3}>
@@ -44,7 +45,7 @@ function Slide({ item, width, onStart }: { item: WellbeingRecommendation; width:
           <View style={{ flexDirection: 'row', alignItems: 'center', gap: 6, marginTop: 8 }}>
             <Ionicons name="headset-outline" size={14} color={theme.ink2} />
             <Text variant="overline" tone="ink2">
-              {item.program.category}
+              {themeLabel(item.program.category)}
             </Text>
             <Text variant="caption" tone="ink2">
               · {item.program.duration_minutes} min
@@ -54,7 +55,7 @@ function Slide({ item, width, onStart }: { item: WellbeingRecommendation; width:
             {item.reason}
           </Text>
         </View>
-        <Button label="Commencer" icon="play" fullWidth={false} onPress={onStart} />
+        <Button label="Start" icon="play" fullWidth={false} onPress={onStart} />
       </View>
     </View>
   );

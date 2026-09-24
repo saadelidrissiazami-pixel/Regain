@@ -59,27 +59,27 @@ export default function WellbeingScreen() {
   return (
     <Screen inTabs refreshing={wellbeing.isRefetching} onRefresh={() => wellbeing.refetch()}>
       <ScreenHeader
-        overline="Prends un moment"
-        title="Bien-être"
-        subtitle="Un esprit plus calme, une vie plus riche."
-        right={<IconButton icon="search" label="Rechercher une séance" onPress={() => router.push('/wellbeing/search')} />}
+        overline="Take a moment"
+        title="Wellbeing"
+        subtitle="A calmer mind, a fuller life."
+        right={<IconButton icon="search" label="Search sessions" onPress={() => router.push('/wellbeing/search')} />}
       />
 
       {programsQuery.isLoading ? (
         <LoadingSkeleton preset="hero" />
       ) : programsQuery.isError ? (
-        <ErrorState title="La bibliothèque n'a pas pu se charger" onRetry={() => programsQuery.refetch()} retrying={programsQuery.isFetching} />
+        <ErrorState title="The library could not be loaded" onRetry={() => programsQuery.refetch()} retrying={programsQuery.isFetching} />
       ) : (
         <>
-          {/* Avant tout le reste : quand ça ne va pas là, maintenant, on ne doit pas avoir à
-              parcourir une bibliothèque. Discret quand tout va bien, trouvable quand il faut. */}
+          {/* Before anything else: when things are bad right now, nobody should have to browse a
+              library. Quiet when all is well, findable when it is not. */}
           {sos.length > 0 ? (
             <Appear index={0}>
               <View style={{ marginBottom: 18 }}>
                 <ListRow
                   icon="pulse-outline"
-                  title="Ça ne va pas là, maintenant"
-                  subtitle={`${sos.length} séances de 2 minutes, tout de suite`}
+                  title="Not okay right now"
+                  subtitle={`${sos.length} two-minute sessions, right now`}
                   onPress={() => router.push('/wellbeing/sos')}
                 />
               </View>
@@ -96,11 +96,11 @@ export default function WellbeingScreen() {
             </Appear>
           ) : null}
 
-          {/* Après la recommandation, avant la grille : un parcours apprend quelque chose, là
-              où un thème ne fait que ranger. L'avancement se lit d'un coup d'œil. */}
+          {/* After the recommendation, before the grid: a course teaches something, where a theme
+              only files things away. Progress reads at a glance. */}
           <Appear index={2}>
             <View style={{ marginTop: 28 }}>
-              <SectionHeader title="Parcours" />
+              <SectionHeader title="Courses" />
               {COURSES.map((course, index) => {
                 const progress = courseProgress(course, programs, wellbeing.completed);
                 return (
@@ -120,8 +120,8 @@ export default function WellbeingScreen() {
           <Appear index={2}>
             <View style={{ marginTop: 28 }}>
               <SectionHeader
-                title="Explorer par thème"
-                actionLabel="Voir tout"
+                title="Browse by theme"
+                actionLabel="See all"
                 onAction={() => router.push('/wellbeing/search')}
               />
               <View style={{ flexDirection: 'row', flexWrap: 'wrap', gap: 10 }}>
@@ -146,19 +146,19 @@ export default function WellbeingScreen() {
             <View style={{ marginTop: 20 }}>
               <ListRow
                 icon="book-outline"
-                title="Mon journal"
+                title="My journal"
                 subtitle={
                   lastEntry
-                    ? `Dernière séance : ${lastEntry.program?.title ?? 'séance'}${lastMood ? ` · ${lastMood.label.toLowerCase()}` : ''}`
-                    : 'Tes ressentis et tes réponses, séance après séance.'
+                    ? `Last session: ${lastEntry.program?.title ?? 'a session'}${lastMood ? ` · ${lastMood.label.toLowerCase()}` : ''}`
+                    : 'How you felt and what you answered, session after session.'
                 }
                 onPress={() => router.push('/wellbeing/journal')}
                 divider
               />
               <ListRow
                 icon="chatbubbles-outline"
-                title="Parler à mon coach"
-                subtitle="Stress, sommeil, régularité"
+                title="Talk to my coach"
+                subtitle="Stress, sleep, consistency"
                 onPress={() => router.push('/coach?sujet=bien-etre')}
               />
             </View>
@@ -185,7 +185,7 @@ export default function WellbeingScreen() {
       )}
 
       <Text variant="caption" tone="ink3" style={{ marginTop: 24 }}>
-        Regain ne pose pas de diagnostic médical et ne remplace pas l&apos;accompagnement d&apos;un professionnel de santé.
+        Regain does not diagnose anything and is not a substitute for care from a health professional.
       </Text>
     </Screen>
   );

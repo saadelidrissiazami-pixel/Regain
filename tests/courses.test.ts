@@ -68,17 +68,17 @@ describe('avancement d un parcours', () => {
 
 describe('ce que le parcours annonce', () => {
   it('invite sans chiffrer quand on n a rien commencé', () => {
-    expect(courseStatusLabel(courseProgress(MEDITATION, dix, new Set()), MEDITATION)).toBe('10 jours, à ton rythme');
+    expect(courseStatusLabel(courseProgress(MEDITATION, dix, new Set()), MEDITATION)).toBe('10 days, at your own pace');
   });
 
   it('dit où reprendre, jamais combien il reste', () => {
     const progress = courseProgress(MEDITATION, dix, new Set(['decouvrir-meditation-1', 'decouvrir-meditation-2']));
-    expect(courseStatusLabel(progress, MEDITATION)).toBe('Jour 3 sur 10');
+    expect(courseStatusLabel(progress, MEDITATION)).toBe('Day 3 of 10');
   });
 
   it('se félicite une fois, sobrement', () => {
     const progress = courseProgress(MEDITATION, dix, new Set(dix.map((d) => d.id)));
-    expect(courseStatusLabel(progress, MEDITATION)).toBe('Terminé · 10 jours');
+    expect(courseStatusLabel(progress, MEDITATION)).toBe('Finished · 10 days');
   });
 });
 
@@ -93,7 +93,7 @@ describe('les parcours et leur contenu', () => {
   });
 
   it('se retrouvent par leur slug', () => {
-    expect(courseBySlug('decouvrir-meditation')?.title).toBe('Découvrir la méditation');
+    expect(courseBySlug('decouvrir-meditation')?.title).toBe('Discovering meditation');
     expect(courseBySlug('parcours-inexistant')).toBeUndefined();
   });
 

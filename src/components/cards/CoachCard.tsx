@@ -10,7 +10,7 @@ import { Text } from '../ui/Text';
 const LONG = 170;
 
 /** Le mot du coach : court par défaut, dépliable. */
-export function CoachCard({ message, title = 'Le mot de ton coach' }: { message: string; title?: string }) {
+export function CoachCard({ message, title = 'A word from your coach' }: { message: string; title?: string }) {
   const theme = useTheme();
   const [open, setOpen] = useState(false);
   const long = message.length > LONG;
@@ -38,7 +38,7 @@ export function CoachCard({ message, title = 'Le mot de ton coach' }: { message:
           </Text>
           {long ? (
             <View style={{ alignSelf: 'flex-end' }}>
-              <TextLink label={open ? 'Voir moins' : 'Voir plus'} icon={open ? 'chevron-up' : 'arrow-forward'} onPress={() => setOpen((v) => !v)} />
+              <TextLink label={open ? 'Show less' : 'Show more'} icon={open ? 'chevron-up' : 'arrow-forward'} onPress={() => setOpen((v) => !v)} />
             </View>
           ) : null}
         </View>

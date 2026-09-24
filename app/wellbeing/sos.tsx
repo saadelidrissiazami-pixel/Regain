@@ -19,13 +19,13 @@ export default function SosScreen() {
     <Screen>
       <ScreenHeader
         overline="Deux minutes"
-        title="Ça ne va pas là, maintenant"
-        subtitle="Une consigne à la fois, les yeux ouverts. Rien à préparer."
+        title="Not okay right now"
+        subtitle="One instruction at a time, eyes open. Nothing to prepare."
         onBack={() => goBack('/(tabs)/wellbeing')}
       />
 
-      {/* Placée avant les séances, pas après : l'application n'a pas à décider que ce qui se
-          passe est de l'angoisse, et une séance de respiration ne remplace pas un appel. */}
+      {/* Placed before the sessions, not after: the app does not get to decide that what is
+          happening is anxiety, and a breathing session is no substitute for a phone call. */}
       <Card variant="tinted" style={{ marginBottom: 20 }}>
         <Text variant="bodySm">{SOS_URGENCE}</Text>
       </Card>
@@ -45,8 +45,8 @@ export default function SosScreen() {
       </View>
 
       <Text variant="caption" tone="ink3" style={{ marginTop: 24 }}>
-        Ces séances ne remplacent pas un professionnel. Si ces moments reviennent souvent, en
-        parler à un médecin change généralement plus de choses que n&apos;importe quel exercice.
+        These sessions are not a substitute for a professional. If these moments keep coming back,
+        talking to a doctor usually changes more than any exercise will.
       </Text>
     </Screen>
   );

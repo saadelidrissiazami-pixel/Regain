@@ -41,7 +41,7 @@ export function Sheet({
         exiting={FadeOut.duration(120)}
         style={{ flex: 1, backgroundColor: withAlpha('#0B1815', 0.4), justifyContent: 'flex-end' }}
       >
-        <Pressable style={{ flex: 1 }} onPress={onClose} accessibilityRole="button" accessibilityLabel="Fermer" />
+        <Pressable style={{ flex: 1 }} onPress={onClose} accessibilityRole="button" accessibilityLabel="Close" />
         <Animated.View
           accessibilityViewIsModal
           entering={reduceMotion ? FadeIn.duration(160) : SlideInDown.duration(240)}

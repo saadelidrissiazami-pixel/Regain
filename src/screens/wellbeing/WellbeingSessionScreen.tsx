@@ -15,6 +15,7 @@ import { EmptyState, LoadingSkeleton } from '../../components/feedback';
 import { Button, Card, ChoiceChip, haptic, IconButton, ListRow, Pill, PressableScale, Screen, Sheet, Tag, Text } from '../../components/ui';
 import { AMBIENCES, ambienceLabel, initialAmbience, type AmbienceChoice } from '../../features/wellbeing/ambience';
 import { CONTENT_BY_SLUG } from '../../features/wellbeing/content';
+import { themeLabel } from '../../features/wellbeing/catalogue';
 import { SOS_URGENCE } from '../../features/wellbeing/sos';
 import { loadAmbiencePreference, saveAmbiencePreference, useAmbiencePlayer } from '../../lib/ambience';
 import { usePremium } from '../../lib/premium';
@@ -131,9 +132,9 @@ export default function WellbeingSessionScreen() {
       <Screen>
         <EmptyState
           icon="search-outline"
-          title="Séance introuvable"
-          body="Elle n'est peut-être plus disponible. Retrouve toutes les séances dans Bien-être."
-          actionLabel="Retour"
+          title="Session not found"
+          body="It may no longer be available. You will find every session under Wellbeing."
+          actionLabel="Go back"
           onAction={() => goBack('/(tabs)/wellbeing')}
         />
       </Screen>
@@ -145,11 +146,11 @@ export default function WellbeingSessionScreen() {
       <Screen>
         <EmptyState
           icon="lock-closed-outline"
-          title="Séance Premium"
-          body="Cette séance fait partie de la bibliothèque complète, accessible avec Regain Premium."
-          actionLabel="Découvrir Premium"
+          title="A Premium session"
+          body="This session is part of the full library, which comes with Regain Premium."
+          actionLabel="See what Premium adds"
           onAction={() => router.replace('/paywall?source=locked')}
-          secondaryLabel="Retour"
+          secondaryLabel="Go back"
           onSecondary={() => goBack('/(tabs)/wellbeing')}
         />
       </Screen>
@@ -180,13 +181,13 @@ export default function WellbeingSessionScreen() {
   }
 
   if (stage === 'done' && quietEnding) {
-    // Fin discrète : rien ne clignote, rien ne félicite, et la seule action possible est de
-    // partir. Si la personne s'est endormie, l'écran ne lui demandera rien au réveil.
+    // A quiet ending: nothing flashes, nothing congratulates, and the only thing to do is
+    // leave. If the person fell asleep, the screen will ask nothing of them when they wake.
     return (
-      <Screen footer={<Button label="Fermer" variant="ghost" onPress={() => goBack('/(tabs)/wellbeing')} />}>
+      <Screen footer={<Button label="Close" variant="ghost" onPress={() => goBack('/(tabs)/wellbeing')} />}>
         <View style={{ alignItems: 'center', paddingTop: 120 }}>
           <Text variant="body" tone="ink2" center>
-            C&apos;est terminé. Tu n&apos;as plus rien à faire.
+            That is the end. There is nothing left to do.
           </Text>
         </View>
       </Screen>
@@ -198,8 +199,8 @@ export default function WellbeingSessionScreen() {
       <Screen
         footer={
           <View style={{ gap: 8 }}>
-            <Button label="Retour à Bien-être" onPress={() => goBack('/(tabs)/wellbeing')} />
-            <Button label="Relire mon journal" variant="ghost" onPress={() => router.replace('/wellbeing/journal')} />
+            <Button label="Back to Wellbeing" onPress={() => goBack('/(tabs)/wellbeing')} />
+            <Button label="Read my journal" variant="ghost" onPress={() => router.replace('/wellbeing/journal')} />
           </View>
         }
       >
@@ -210,10 +211,10 @@ export default function WellbeingSessionScreen() {
             </View>
           </Animated.View>
           <Text variant="title" center style={{ marginTop: 24 }}>
-            Séance terminée
+            Session complete
           </Text>
           <Text variant="body" tone="ink2" center style={{ marginTop: 8 }}>
-            Merci d&apos;avoir pris ce moment pour toi. Tes réponses t&apos;attendent dans ton journal.
+            Thank you for taking that time. Your answers are waiting in your journal.
           </Text>
         </View>
       </Screen>
@@ -241,7 +242,7 @@ export default function WellbeingSessionScreen() {
       <View style={{ paddingTop: insets.top + 4, paddingHorizontal: 12, flexDirection: 'row', alignItems: 'center' }}>
         <IconButton
           icon="close"
-          label="Fermer la séance"
+          label="Close the session"
           onPress={() => {
             stopSpeech();
             goBack('/(tabs)/wellbeing');
@@ -252,10 +253,10 @@ export default function WellbeingSessionScreen() {
             {program.title}
           </Text>
           <View style={{ marginTop: 4 }}>
-            <Tag label={program.category} color={categoryColor} suffix={`${program.duration_minutes} min`} />
+            <Tag label={themeLabel(program.category)} color={categoryColor} suffix={`${program.duration_minutes} min`} />
           </View>
         </View>
-        <IconButton icon="ellipsis-horizontal" label="Options de la séance" onPress={() => setMenuOpen(true)} />
+        <IconButton icon="ellipsis-horizontal" label="Session options" onPress={() => setMenuOpen(true)} />
       </View>
 
       <ScrollView
@@ -265,21 +266,21 @@ export default function WellbeingSessionScreen() {
       >
         {audioOn || playingLabel ? (
           <View style={{ alignSelf: 'center', marginBottom: 16, flexDirection: 'row', gap: 8 }}>
-            {audioOn ? <Pill icon="volume-high-outline" label="Guidage vocal" tone="onImage" /> : null}
+            {audioOn ? <Pill icon="volume-high-outline" label="Voice guidance" tone="onImage" /> : null}
             {playingLabel ? (
               <PressableScale
                 onPress={() => setMenuOpen(true)}
                 feedback="selection"
                 accessibilityRole="button"
-                accessibilityLabel={`Musique : ${playingLabel}. Changer d'ambiance`}
+                accessibilityLabel={`Music: ${playingLabel}. Change the ambience`}
               >
                 <Pill icon="musical-notes-outline" label={playingLabel} tone="onImage" />
               </PressableScale>
             ) : null}
           </View>
         ) : null}
-        {/* Aussi ici, et pas seulement sur la liste : un lien direct vers la séance contournerait
-            la mention. L'application n'a pas à décider que ce qui se passe est de l'angoisse. */}
+        {/* Here too, not only on the list: a direct link to the session would slip past the
+            notice. The app does not get to decide that what is happening is anxiety. */}
         {stage === 'prep' && slug === 'sos-angoisse' ? (
           <Card variant="tinted" style={{ marginBottom: 18 }}>
             <Text variant="bodySm">{SOS_URGENCE}</Text>
@@ -304,16 +305,16 @@ export default function WellbeingSessionScreen() {
           )}
         </View>
         <Text variant="caption" tone="ink2" center style={{ marginTop: 28, fontStyle: 'italic' }}>
-          « Prends le temps d&apos;être ici. »
+          “Take the time to be here.”
         </Text>
       </ScrollView>
 
-      <Sheet visible={menuOpen} title="Options de la séance" onClose={() => setMenuOpen(false)} scroll={false}>
+      <Sheet visible={menuOpen} title="Session options" onClose={() => setMenuOpen(false)} scroll={false}>
         <View style={{ paddingHorizontal: 20 }}>
           <ListRow
             icon={audioOn ? 'volume-high-outline' : 'volume-mute-outline'}
-            title="Guidage vocal"
-            subtitle="Une voix lit les consignes"
+            title="Voice guidance"
+            subtitle="A voice reads the instructions"
             chevron={false}
             divider
             right={
@@ -325,22 +326,22 @@ export default function WellbeingSessionScreen() {
                 }}
                 trackColor={{ false: theme.line, true: theme.primary600 }}
                 thumbColor="#FFFFFF"
-                accessibilityLabel="Guidage vocal"
+                accessibilityLabel="Voice guidance"
               />
             }
           />
           <ListRow
             icon="musical-notes-outline"
-            title="Musique d'ambiance"
+            title="Background music"
             subtitle={
               playingLabel
                 ? AMBIENCES.find((a) => a.id === ambience)?.description
-                : 'Une musique calme pour t’aider à relâcher'
+                : 'Quiet music to help you let go'
             }
             chevron={false}
           />
           <View style={{ flexDirection: 'row', flexWrap: 'wrap', gap: 8, paddingBottom: 14, paddingLeft: 4 }}>
-            <ChoiceChip label="Aucune" selected={ambience === 'off'} multiple={false} onPress={() => chooseAmbience('off')} />
+            <ChoiceChip label="None" selected={ambience === 'off'} multiple={false} onPress={() => chooseAmbience('off')} />
             {AMBIENCES.map((option) => (
               <ChoiceChip
                 key={option.id}
@@ -353,7 +354,7 @@ export default function WellbeingSessionScreen() {
           </View>
           <ListRow
             icon="refresh-outline"
-            title="Recommencer la séance"
+            title="Start the session again"
             onPress={() => {
               stopSpeech();
               setMenuOpen(false);

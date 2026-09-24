@@ -1,9 +1,9 @@
 import { EmptyState } from './EmptyState';
 
-/** Échec de chargement : ce qui s'est passé, puis ce que l'on peut faire. */
+/** A failed load: what happened, then what can be done about it. */
 export function ErrorState({
-  title = 'Impossible de charger pour le moment',
-  body = 'La connexion semble interrompue. Vérifie ton réseau, puis réessaie.',
+  title = 'Cannot load this right now',
+  body = 'The connection looks interrupted. Check your network, then try again.',
   onRetry,
   retrying,
 }: {
@@ -17,7 +17,7 @@ export function ErrorState({
       icon="cloud-offline-outline"
       title={title}
       body={body}
-      actionLabel={onRetry ? 'Réessayer' : undefined}
+      actionLabel={onRetry ? 'Try again' : undefined}
       onAction={onRetry}
       actionLoading={retrying}
     />

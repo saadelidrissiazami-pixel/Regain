@@ -9,7 +9,7 @@ type Context = {
   programs: WellbeingProgram[];
   completedIds: Set<string>;
   hour: number;
-  /** Dernier check-in d'énergie du jour, s'il existe. */
+  /** Today's most recent energy check-in, when there is one. */
   energy: EnergyLevel | null;
   isPremium: boolean;
 };
@@ -17,9 +17,9 @@ type Context = {
 type Scored = { program: WellbeingProgram; score: number; reason: string; weight: number };
 
 /**
- * Ce qui pourrait aider maintenant : l'heure (le soir → sommeil), l'énergie déclarée (basse →
- * respiration), la nouveauté (séances pas encore faites). Une séance verrouillée n'est jamais
- * proposée à un compte gratuit. Au plus une recommandation par thème.
+ * What might help right now: the time of day (evening → sleep), the energy reported (low →
+ * breathing), and novelty (sessions not yet done). A locked session is never suggested to a free
+ * account. At most one recommendation per theme.
  */
 export function recommendWellbeing({ programs, completedIds, hour, energy, isPremium }: Context, count = 3): WellbeingRecommendation[] {
   const evening = hour >= 18 || hour < 5;
@@ -28,36 +28,35 @@ export function recommendWellbeing({ programs, completedIds, hour, energy, isPre
 
   const scored: Scored[] = programs
     .filter((program) => isPremium || !program.premium_only)
-    // On ne suggère pas une séance d'urgence à quelqu'un qui n'a rien demandé : la proposer
-    // spontanément, c'est suggérer que ça ne va pas.
+    // We do not suggest an emergency session to someone who did not ask for one: offering it
+    // unprompted is a way of suggesting something is wrong.
     .filter((program) => program.category !== SOS_CATEGORY)
-    // Un jour de parcours proposé hors de son parcours n'a pas de sens : le jour 7 suppose les
-    // six précédents.
+    // A course day offered outside its course makes no sense: day 7 assumes the six before it.
     .filter((program) => program.category !== COURSE_CATEGORY)
     .map((program) => {
       const reasons: { weight: number; text: string }[] = [];
       const add = (weight: number, text: string) => reasons.push({ weight, text });
       const c = program.category;
 
-      if (c === 'Sommeil' && lateNight) add(3, 'Pour préparer une nuit plus calme.');
-      else if (c === 'Sommeil' && evening) add(1.5, 'Pour ralentir doucement en fin de journée.');
-      if (c === 'Méditation' && evening) add(1, 'Pour relâcher les tensions de la journée.');
-      if (c === 'Respiration' && morning) add(1, 'Pour bien démarrer la journée.');
-      if (c === 'Journaling' && morning) add(0.8, 'Pour poser tes idées avant de commencer.');
+      if (c === 'Sommeil' && lateNight) add(3, 'To set up a calmer night.');
+      else if (c === 'Sommeil' && evening) add(1.5, 'To wind down gently at the end of the day.');
+      if (c === 'Méditation' && evening) add(1, 'To let go of the day’s tension.');
+      if (c === 'Respiration' && morning) add(1, 'To start the day well.');
+      if (c === 'Journaling' && morning) add(0.8, 'To put your thoughts down before you begin.');
 
       if (energy === 'bas') {
-        if (c === 'Respiration') add(3, "Quand l'énergie manque, quelques respirations aident à repartir.");
-        if (c === 'Méditation') add(1.2, 'Une pause douce, sans effort.');
+        if (c === 'Respiration') add(3, 'When energy is short, a few breaths help you get going.');
+        if (c === 'Méditation') add(1.2, 'A gentle pause, with no effort required.');
       } else if (energy === 'eleve') {
-        if (c === 'Confiance en soi') add(2, 'Ton énergie est haute : un bon moment pour travailler ta confiance.');
-        if (c === 'En public') add(1.5, 'Ton énergie est haute : un bon moment pour sortir de ta zone de confort.');
+        if (c === 'Confiance en soi') add(2, 'Your energy is high — a good moment to work on your confidence.');
+        if (c === 'En public') add(1.5, 'Your energy is high — a good moment to stretch your comfort zone.');
       } else if (energy === 'moyen') {
-        if (c === 'Méditation') add(1, 'Pour te recentrer, à ton rythme.');
-        if (c === 'Journaling') add(1, 'Pour faire le point, tranquillement.');
+        if (c === 'Méditation') add(1, 'To settle yourself, at your own pace.');
+        if (c === 'Journaling') add(1, 'To take stock, quietly.');
       }
 
-      if (!completedIds.has(program.id)) add(1.5, "Une séance que tu n'as pas encore essayée.");
-      // À énergie basse, on préfère les séances courtes.
+      if (!completedIds.has(program.id)) add(1.5, 'A session you have not tried yet.');
+      // On low energy, prefer the shorter sessions.
       if (energy === 'bas') add(Math.max(0, 1 - program.duration_minutes / 20), '');
 
       const score = reasons.reduce((sum, r) => sum + r.weight, 0);
@@ -66,7 +65,7 @@ export function recommendWellbeing({ programs, completedIds, hour, energy, isPre
         program,
         score,
         weight: best?.weight ?? 0,
-        reason: best?.text ?? 'Un moment pour toi, à ton rythme.',
+        reason: best?.text ?? 'A moment for yourself, at your own pace.',
       };
     })
     .sort(

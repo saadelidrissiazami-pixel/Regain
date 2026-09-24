@@ -35,7 +35,7 @@ function MealDayCard({ day, defaultOpen }: { day: MealDay; defaultOpen: boolean 
             {day.day_label} · {day.total_calories} kcal
           </Text>
           <Text variant="caption" tone="ink2" style={{ marginTop: 2 }}>
-            {day.meals.length} repas · {protein} g de protéines
+            {day.meals.length} meals · {protein} g protein
           </Text>
         </View>
         <Chevron open={open}>
@@ -49,7 +49,7 @@ function MealDayCard({ day, defaultOpen }: { day: MealDay; defaultOpen: boolean 
               <View key={j} style={{ paddingVertical: 8, borderTopWidth: 1, borderTopColor: theme.divider }}>
                 <Text variant="label">{meal.name}</Text>
                 <Text variant="caption" tone="ink2" style={{ marginTop: 2 }}>
-                  {meal.calories} kcal · {meal.protein_g} g de protéines
+                  {meal.calories} kcal · {meal.protein_g} g protein
                 </Text>
                 <Text variant="caption" tone="ink2" style={{ marginTop: 4 }}>
                   {meal.description}
@@ -81,7 +81,7 @@ function ShoppingList({ items }: { items: ShoppingItem[] }) {
   return (
     <Card>
       <Text variant="caption" tone="ink2" style={{ marginBottom: 8 }}>
-        {checked.size} sur {items.length} dans le panier
+        {checked.size} of {items.length} in the basket
       </Text>
       {categories.map((category) => (
         <View key={category} style={{ marginBottom: 12 }}>
@@ -139,7 +139,7 @@ export default function NutritionScreen() {
 
   return (
     <Screen>
-      <ScreenHeader title="Nutrition" subtitle="Tes repas et tes courses de la semaine" onBack={() => goBack('/(tabs)/fitness')} />
+      <ScreenHeader title="Nutrition" subtitle="Your meals and your shopping for the week" onBack={() => goBack('/(tabs)/fitness')} />
       {fitness.isLoading ? (
         <LoadingSkeleton preset="list" />
       ) : fitness.isError ? (
@@ -149,13 +149,13 @@ export default function NutritionScreen() {
         // une consigne qu'il ne peut pas suivre.
         <EmptyState
           icon="cart-outline"
-          title="Tes menus et ta liste de courses"
-          body="Avec Premium : des journées de repas calées sur tes besoins, et la liste de courses qui va avec, déjà triée par rayon. Tu coches en faisant tes courses, et tu sais quoi cuisiner le soir."
-          actionLabel="Découvrir Premium"
+          title="Your meals and your shopping list"
+          body="With Premium: days of meals matched to what you need, and the shopping list that goes with them, already sorted by aisle. Tick items off as you shop, and know what to cook that evening."
+          actionLabel="See what Premium adds"
           onAction={() => router.push('/paywall?source=locked')}
         />
       ) : !plan ? (
-        <EmptyState icon="restaurant-outline" title="Pas encore de menus" body="Génère ton programme depuis l'onglet Forme." />
+        <EmptyState icon="restaurant-outline" title="No meals yet" body="Build your programme from the Fitness tab." />
       ) : (
         <>
           <View style={{ marginBottom: 24 }}>
@@ -163,7 +163,7 @@ export default function NutritionScreen() {
           </View>
           {fitness.targets ? (
             <View style={{ marginBottom: 24 }}>
-              <SectionHeader title="Tes objectifs du jour" />
+              <SectionHeader title="Today’s targets" />
               <TargetsCard targets={fitness.targets} />
             </View>
           ) : null}
@@ -172,8 +172,8 @@ export default function NutritionScreen() {
             value={tab}
             onChange={setTab}
             options={[
-              { value: 'meals', label: 'Journées types' },
-              { value: 'shopping', label: 'Liste de courses' },
+              { value: 'meals', label: 'Sample days' },
+              { value: 'shopping', label: 'Shopping list' },
             ]}
           />
           <View style={{ height: 16 }} />

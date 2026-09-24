@@ -25,11 +25,11 @@ export function EnergyPromptCard() {
   const choice = level ? energyChoice(level) : null;
   const low = level ? isLowEnergy(level) : false;
 
-  const title = choice ? `Énergie ${choice.label.toLowerCase()} aujourd'hui` : "Ton énergie aujourd'hui ?";
+  const title = choice ? `${choice.label} energy today` : 'How is your energy today?';
   const subtitle = !level
-    ? 'Aide-nous à adapter ta journée.'
+    ? 'It helps us shape your day.'
     : low
-      ? 'Une courte respiration peut aider à repartir.'
+      ? 'A short breathing session can help you get going.'
       : QUOTES[level === 'eleve' ? 'eleve' : 'moyen'][new Date().getDate() % 3];
 
   return (
@@ -39,7 +39,7 @@ export function EnergyPromptCard() {
         padding={16}
         onPress={() => setOpen(true)}
         accessibilityLabel={`${title}. ${subtitle}`}
-        accessibilityHint="Ouvre le check-in d'énergie"
+        accessibilityHint="Opens the energy check-in"
       >
         <View style={{ flexDirection: 'row', alignItems: 'center' }}>
           <View
@@ -67,14 +67,14 @@ export function EnergyPromptCard() {
 
       <Sheet
         visible={open}
-        title="Comment te sens-tu maintenant ?"
-        subtitle="Ton planning et tes suggestions s'adaptent à ta réponse."
+        title="How are you feeling right now?"
+        subtitle="Your plan and your suggestions adapt to your answer."
         onClose={() => setOpen(false)}
         scroll={false}
         footer={
           low ? (
             <Button
-              label="Respiration guidée"
+              label="Guided breathing"
               icon="leaf-outline"
               onPress={() => {
                 setOpen(false);
@@ -82,7 +82,7 @@ export function EnergyPromptCard() {
               }}
             />
           ) : (
-            <Button label="Fermer" variant="secondary" onPress={() => setOpen(false)} />
+            <Button label="Close" variant="secondary" onPress={() => setOpen(false)} />
           )
         }
       >
@@ -90,7 +90,7 @@ export function EnergyPromptCard() {
           <EnergySelector value={level} onChange={energy.save} savingLevel={energy.savingLevel} disabled={energy.saving} />
           {energy.error ? <InlineNotice tone="error" message={errorMessage(energy.error)} /> : null}
           {level && !energy.saving ? (
-            <InlineNotice tone="success" message={low ? "C'est noté. On y va doucement aujourd'hui." : "C'est noté, merci."} />
+            <InlineNotice tone="success" message={low ? 'Noted. We will take it gently today.' : 'Noted, thank you.'} />
           ) : null}
         </View>
       </Sheet>

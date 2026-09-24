@@ -9,7 +9,7 @@ import { Text } from '../ui/Text';
 
 type IconName = ComponentProps<typeof Ionicons>['name'];
 
-/** Rien à afficher encore : on dit pourquoi et ce qu'on peut faire, avec une seule action. */
+/** Nothing to show yet: say why and what can be done about it, with a single action. */
 export function EmptyState({
   icon = 'leaf-outline',
   title,
@@ -29,7 +29,7 @@ export function EmptyState({
   actionLoading?: boolean;
   secondaryLabel?: string;
   onSecondary?: () => void;
-  /** Sans carte autour (dans une carte existante). */
+  /** Without a card around it (when already inside one). */
   bare?: boolean;
 }) {
   const theme = useTheme();

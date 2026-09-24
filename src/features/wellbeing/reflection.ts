@@ -1,48 +1,49 @@
 export type MoodOption = { value: number; emoji: string; label: string };
 
-/** Ressenti de fin de séance, comparé à avant : 1 = beaucoup moins bien … 5 = beaucoup mieux. */
+/** How the session left you, compared with before: 1 = much worse … 5 = much better. */
 export const MOOD_OPTIONS: MoodOption[] = [
-  { value: 1, emoji: '😣', label: 'Beaucoup moins bien' },
-  { value: 2, emoji: '😕', label: 'Un peu moins bien' },
-  { value: 3, emoji: '😐', label: 'Pareil' },
-  { value: 4, emoji: '🙂', label: 'Un peu mieux' },
-  { value: 5, emoji: '😊', label: 'Beaucoup mieux' },
+  { value: 1, emoji: '😣', label: 'Much worse' },
+  { value: 2, emoji: '😕', label: 'A little worse' },
+  { value: 3, emoji: '😐', label: 'The same' },
+  { value: 4, emoji: '🙂', label: 'A little better' },
+  { value: 5, emoji: '😊', label: 'Much better' },
 ];
 
 export function moodOption(value: number | null | undefined): MoodOption | null {
   return MOOD_OPTIONS.find((option) => option.value === value) ?? null;
 }
 
+// Keyed by the stored `category`, which is an internal key rather than something to read.
 const PROMPTS_BY_CATEGORY: Record<string, string[]> = {
   Respiration: [
-    "Qu'est-ce qui a changé dans ton corps pendant la séance ?",
-    'Où sens-tu encore de la tension ?',
+    'What changed in your body during the session?',
+    'Where can you still feel tension?',
   ],
   Méditation: [
-    'Quelles pensées sont revenues le plus souvent ?',
-    "Qu'as-tu réussi à laisser passer ?",
+    'Which thoughts came back the most?',
+    'What did you manage to let pass?',
   ],
   Journaling: [
-    "Qu'est-ce qui occupe le plus ton esprit aujourd'hui ?",
-    'Quelle petite chose a été agréable aujourd’hui ?',
+    'What is taking up the most room in your mind today?',
+    'What small thing was good today?',
   ],
   'Confiance en soi': [
-    "Qu'est-ce que tu t'es dit de dur, et que dirais-tu à un ami dans la même situation ?",
-    'De quoi es-tu fier aujourd’hui, même de petit ?',
+    'What harsh thing did you say to yourself, and what would you say to a friend in the same spot?',
+    'What are you pleased with today, however small?',
   ],
   Sommeil: [
-    "Qu'est-ce qui t'empêche de lâcher prise ce soir ?",
-    'Que peux-tu reporter à demain sans risque ?',
+    'What is stopping you letting go tonight?',
+    'What can safely wait until tomorrow?',
   ],
   'En public': [
-    "Qu'as-tu remarqué autour de toi, plutôt que sur toi ?",
-    "Qu'est-ce qui a été plus facile que prévu ?",
+    'What did you notice around you, rather than about yourself?',
+    'What turned out easier than you expected?',
   ],
 };
 
 const DEFAULT_PROMPTS = [
-  'Comment te sens-tu, là, maintenant ?',
-  "Qu'est-ce que tu retiens de cette séance ?",
+  'How are you feeling, right now?',
+  'What are you taking away from this session?',
 ];
 
 export function promptsForCategory(category: string | undefined): string[] {
@@ -51,14 +52,14 @@ export function promptsForCategory(category: string | undefined): string[] {
 
 export type Reflection = { prompt: string; answer: string };
 
-/** Ne garde que les questions auxquelles l'utilisateur a répondu. */
+/** Keeps only the questions that were actually answered. */
 export function cleanReflections(answers: Reflection[]): Reflection[] {
   return answers
     .map(({ prompt, answer }) => ({ prompt, answer: answer.trim() }))
     .filter(({ answer }) => answer.length > 0);
 }
 
-/** Moyenne des ressentis renseignés, arrondie au dixième (null si aucun). */
+/** The average of the ratings given, to one decimal place (null when there are none). */
 export function averageMood(moods: (number | null | undefined)[]): number | null {
   const values = moods.filter((mood): mood is number => typeof mood === 'number');
   if (values.length === 0) return null;

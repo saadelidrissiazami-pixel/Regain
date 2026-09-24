@@ -29,7 +29,7 @@ import { useTheme } from '../../theme/ThemeProvider';
 
 const SLOTS: { value: TimeSlot; label: string }[] = [
   { value: 'matin', label: 'Matin' },
-  { value: 'apres_midi', label: 'Après-midi' },
+  { value: 'apres_midi', label: 'Afternoon' },
   { value: 'soir', label: 'Soir' },
 ];
 
@@ -72,7 +72,7 @@ export default function AddActivityScreen() {
         <View>
           {addMutation.isError ? <InlineNotice tone="error" message={errorMessage(addMutation.error)} /> : null}
           <Button
-            label="Ajouter au planning"
+            label="Add to my plan"
             icon="add"
             disabled={!activityId}
             loading={addMutation.isPending}
@@ -82,15 +82,15 @@ export default function AddActivityScreen() {
         </View>
       }
     >
-      <ScreenHeader title="Ajouter une activité" subtitle="Choisis le moment, puis ce que tu as envie de faire." onBack={() => goBack('/(tabs)/planning')} backLabel="Fermer" />
+      <ScreenHeader title="Add an activity" subtitle="Pick the time, then what you feel like doing." onBack={() => goBack('/(tabs)/planning')} backLabel="Close" />
 
       <Select label="Jour" value={date} options={dates} onChange={setDate} />
       <View style={{ marginBottom: 24 }}>
-        <SegmentedControl label="Moment de la journée" tone="surface" value={slot} onChange={setSlot} options={SLOTS} />
+        <SegmentedControl label="Time of day" tone="surface" value={slot} onChange={setSlot} options={SLOTS} />
       </View>
 
       <Text variant="section" style={{ marginBottom: 12 }} accessibilityRole="header">
-        Activité
+        Activity
       </Text>
       <View
         style={{
@@ -109,8 +109,8 @@ export default function AddActivityScreen() {
         <TextInput
           value={search}
           onChangeText={setSearch}
-          placeholder="Rechercher une activité"
-          accessibilityLabel="Rechercher une activité"
+          placeholder="Search activities"
+          accessibilityLabel="Search activities"
           returnKeyType="search"
           style={{ flex: 1, marginLeft: 8, paddingVertical: 12 }}
         />
@@ -128,7 +128,7 @@ export default function AddActivityScreen() {
         <ErrorState onRetry={() => catalogQuery.refetch()} />
       ) : filtered.length === 0 ? (
         <Text variant="bodySm" tone="ink2">
-          Aucune activité ne correspond. Essaie un autre mot ou une autre catégorie.
+          Nothing matches. Try another word, or another category.
         </Text>
       ) : (
         <View accessibilityRole="radiogroup">

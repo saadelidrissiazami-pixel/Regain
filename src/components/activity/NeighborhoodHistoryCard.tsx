@@ -28,7 +28,7 @@ export function NeighborhoodHistoryCard() {
       const candidates = [place.neighbourhood, place.city].filter((v): v is string => !!v);
 
       if (candidates.length === 0) {
-        setErrorMessage("Impossible d'identifier ton quartier à partir de ta position.");
+        setErrorMessage('Could not work out your neighbourhood from your location.');
         setStatus('error');
         return;
       }
@@ -45,8 +45,8 @@ export function NeighborhoodHistoryCard() {
     } catch (err) {
       setErrorMessage(
         err instanceof LocationPermissionDeniedError
-          ? "Localisation refusée : active-la dans les réglages pour découvrir l'histoire de ton quartier."
-          : 'Impossible de récupérer ces informations pour le moment. Réessaie dans un instant.'
+          ? 'Location declined. Turn it on in Settings to read about your neighbourhood.'
+          : 'Could not fetch this right now. Try again in a moment.'
       );
       setStatus('error');
     }
@@ -55,14 +55,14 @@ export function NeighborhoodHistoryCard() {
   return (
     <Card style={{ marginBottom: 16 }}>
       <Text variant="overline" tone="ink2">
-        🏙️ Histoire de ton quartier
+        🏙️ The story of your neighbourhood
       </Text>
       {status === 'idle' ? (
         <>
           <Text variant="bodySm" tone="ink2" style={{ marginTop: 8, marginBottom: 12 }}>
-            On utilise ta position pour te raconter un peu de l&apos;histoire du quartier ou de la ville que tu vas explorer.
+            We use your location to tell you a little of the history of the area or town you are about to explore.
           </Text>
-          <Button label="Découvrir mon quartier" variant="secondary" size="md" fullWidth={false} icon="location-outline" onPress={handleDiscover} />
+          <Button label="Read about my area" variant="secondary" size="md" fullWidth={false} icon="location-outline" onPress={handleDiscover} />
         </>
       ) : status === 'loading' ? (
         <View style={{ paddingVertical: 12 }}>
@@ -71,7 +71,7 @@ export function NeighborhoodHistoryCard() {
       ) : status === 'error' ? (
         <>
           <InlineNotice tone="error" message={errorMessage} />
-          <Button label="Réessayer" variant="ghost" size="sm" fullWidth={false} onPress={handleDiscover} style={{ marginTop: 6 }} />
+          <Button label="Try again" variant="ghost" size="sm" fullWidth={false} onPress={handleDiscover} style={{ marginTop: 6 }} />
         </>
       ) : (
         <>
@@ -79,10 +79,10 @@ export function NeighborhoodHistoryCard() {
             {placeLabel}
           </Text>
           <Text variant="bodySm" tone="ink2" style={{ marginTop: 6 }}>
-            {extract ?? "Pas d'article disponible pour ce lieu précis : c'est peut-être l'occasion de partir à sa découverte."}
+            {extract ?? 'No article for this exact spot — which may be reason enough to go and see it.'}
           </Text>
           <Text variant="caption" tone="ink3" style={{ marginTop: 8 }}>
-            Source : Wikipédia.
+            Source: Wikipedia.
           </Text>
         </>
       )}

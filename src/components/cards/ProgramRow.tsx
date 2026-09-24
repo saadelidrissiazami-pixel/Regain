@@ -1,6 +1,7 @@
 import { Ionicons } from '@expo/vector-icons';
 import { View } from 'react-native';
 
+import { themeLabel } from '../../features/wellbeing/catalogue';
 import type { WellbeingProgram } from '../../features/wellbeing/types';
 import { useTheme } from '../../theme/ThemeProvider';
 import { Card } from '../ui/Card';
@@ -26,7 +27,7 @@ export function ProgramRow({
       padding={12}
       onPress={onPress}
       style={{ marginBottom: 10 }}
-      accessibilityLabel={`${program.title}, ${program.duration_minutes} minutes${done ? ', déjà faite' : ''}${locked ? ', réservée à Premium' : ''}`}
+      accessibilityLabel={`${program.title}, ${program.duration_minutes} minutes${done ? ', already done' : ''}${locked ? ', Premium only' : ''}`}
     >
       <View style={{ flexDirection: 'row', alignItems: 'center' }}>
         <View
@@ -49,8 +50,8 @@ export function ProgramRow({
             {program.title}
           </Text>
           <Text variant="caption" tone="ink2" style={{ marginTop: 2 }}>
-            {showCategory ? `${program.category} · ` : ''}
-            {program.duration_minutes} min{done ? ' · faite' : ''}
+            {showCategory ? `${themeLabel(program.category)} · ` : ''}
+            {program.duration_minutes} min{done ? ' · done' : ''}
           </Text>
         </View>
         {locked ? (

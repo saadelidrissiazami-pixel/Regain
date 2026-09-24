@@ -106,7 +106,7 @@ describe('courses dans le planning', () => {
 
   it('annonce le nombre d articles et renvoie à la liste', () => {
     const courses = shoppingCommitment({ tracker: tracker('2026-09-21'), itemCount: 25, today: '2026-09-21' });
-    expect(courses?.subtitle).toBe('25 articles pour tes menus');
+    expect(courses?.subtitle).toBe('25 items for your meals');
     expect(courses?.href).toBe('/fitness/nutrition');
   });
 });

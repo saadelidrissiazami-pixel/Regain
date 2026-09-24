@@ -18,7 +18,7 @@ export function SessionRow({ session, onPress, done }: { session: WorkoutSession
       padding={10}
       onPress={onPress}
       style={{ marginBottom: 10 }}
-      accessibilityLabel={`${title}, ${session.duration_minutes} minutes, ${session.exercises.length} exercices${done ? ', faite cette semaine' : ''}`}
+      accessibilityLabel={`${title}, ${session.duration_minutes} minutes, ${session.exercises.length} exercises${done ? ', done this week' : ''}`}
     >
       <View style={{ flexDirection: 'row', alignItems: 'center' }}>
         <Thumbnail source={imageForWorkout(session.focus)} width={68} height={68} radius={14} icon="barbell-outline" />
@@ -27,13 +27,13 @@ export function SessionRow({ session, onPress, done }: { session: WorkoutSession
             {title}
           </Text>
           <Text variant="caption" tone="ink2" style={{ marginTop: 3 }}>
-            {session.duration_minutes} min · {session.exercises.length} exercices
+            {session.duration_minutes} min · {session.exercises.length} exercises
           </Text>
           {done ? (
             <View style={{ flexDirection: 'row', alignItems: 'center', gap: 4, marginTop: 4 }}>
               <Ionicons name="checkmark-circle" size={14} color={theme.primary600} />
               <Text variant="caption" tone="accent">
-                Faite cette semaine
+                Done this week
               </Text>
             </View>
           ) : null}

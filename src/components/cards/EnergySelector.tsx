@@ -8,7 +8,7 @@ import { Text } from '../ui/Text';
 export const ENERGY_CHOICES: { value: EnergyLevel; label: string; emoji: string }[] = [
   { value: 'bas', label: 'Basse', emoji: '🪫' },
   { value: 'moyen', label: 'Moyenne', emoji: '🙂' },
-  { value: 'eleve', label: 'Élevée', emoji: '⚡' },
+  { value: 'eleve', label: 'High', emoji: '⚡' },
 ];
 
 export function energyChoice(level: EnergyLevel) {
@@ -29,7 +29,7 @@ export function EnergySelector({
 }) {
   const theme = useTheme();
   return (
-    <View accessibilityRole="radiogroup" accessibilityLabel="Ton énergie" style={{ flexDirection: 'row', gap: 8 }}>
+    <View accessibilityRole="radiogroup" accessibilityLabel="Your energy" style={{ flexDirection: 'row', gap: 8 }}>
       {ENERGY_CHOICES.map((choice) => {
         const selected = value === choice.value;
         return (
@@ -40,7 +40,7 @@ export function EnergySelector({
             feedback="selection"
             accessibilityRole="radio"
             accessibilityState={{ selected, disabled: !!disabled }}
-            accessibilityLabel={`Énergie ${choice.label.toLowerCase()}`}
+            accessibilityLabel={`${choice.label} energy`}
             wrapperStyle={{ flex: 1 }}
             style={{
               minHeight: 46,

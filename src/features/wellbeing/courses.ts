@@ -1,23 +1,23 @@
-// Les parcours : une suite de jours qui enseignent une technique, au lieu de séances isolées.
+// Courses: a run of days that teach a technique, instead of sessions that stand alone.
 //
-// La base sait déjà les porter — `wellbeing_programs` gagne simplement un `course_slug` et un
-// `course_day`. Un jour de parcours *est* une séance : rien n'est dupliqué, et la progression se
-// déduit des séances déjà faites plutôt que d'être tenue à jour dans une table à part.
+// The database already carries them — `wellbeing_programs` simply gains a `course_slug` and a
+// `course_day`. A course day *is* a session: nothing is duplicated, and progress is derived from
+// the sessions already done rather than kept up to date in a table of its own.
 //
-// Un parcours interrompu ne se remet jamais à zéro. Reprendre au jour 4 après deux semaines
-// d'absence doit être exactement aussi simple que d'y revenir le lendemain : transformer une
-// pause en échec est le meilleur moyen de ne jamais reprendre.
+// An interrupted course never resets. Picking up at day 4 after two weeks away has to be exactly
+// as easy as coming back the next day: turning a pause into a failure is the surest way to make
+// sure nobody ever comes back.
 
 import type { WellbeingProgram } from './types';
 
-/** Catégorie utilisée en base pour les jours de parcours. */
+/** The category the database uses for course days. */
 export const COURSE_CATEGORY = 'Parcours';
 
 export type Course = {
   slug: string;
   title: string;
   subtitle: string;
-  /** Ce qu'on apprend vraiment, par-delà la liste des jours. */
+  /** What is actually learnt, beyond the list of days. */
   promise: string;
   dayCount: number;
 };
@@ -25,18 +25,18 @@ export type Course = {
 export const COURSES: Course[] = [
   {
     slug: 'decouvrir-meditation',
-    title: 'Découvrir la méditation',
-    subtitle: '10 jours, de 2 à 6 minutes',
+    title: 'Discovering meditation',
+    subtitle: '10 days, 2 to 6 minutes',
     promise:
-      "On part d'un repère concret et on va vers un choix autonome. La vraie compétence n'est pas de rester concentré : c'est de remarquer qu'on est parti ailleurs, et de revenir.",
+      'We start from something concrete and work towards a choice of your own. The real skill is not staying focused: it is noticing that you have wandered off, and coming back.',
     dayCount: 10,
   },
   {
     slug: 'mieux-dormir',
-    title: 'Mieux dormir',
-    subtitle: '10 jours, de 3 à 7 minutes',
+    title: 'Sleeping better',
+    subtitle: '10 days, 3 to 7 minutes',
     promise:
-      "On apprend à réduire l'effort autour du coucher. Aucun de ces jours ne promet l'endormissement : vérifier si le sommeil arrive est précisément ce qui l'empêche.",
+      'You learn to take the effort out of going to bed. None of these days promises sleep: checking whether sleep is coming is precisely what keeps it away.',
     dayCount: 10,
   },
 ];
@@ -54,15 +54,15 @@ export type CourseDay = {
 export type CourseProgress = {
   days: CourseDay[];
   doneCount: number;
-  /** Le premier jour pas encore fait : celui qu'on propose de reprendre. */
+  /** The first day not yet done: the one offered to pick up from. */
   nextDay: CourseDay | null;
   complete: boolean;
 };
 
 /**
- * L'avancement d'un parcours, déduit des séances complétées.
- * Les jours se suivent mais ne se verrouillent pas : quelqu'un qui saute le jour 3 peut faire
- * le 4, et le 3 restera disponible.
+ * A course's progress, derived from the sessions completed.
+ * The days follow one another but do not lock: someone who skips day 3 can do day 4, and day 3
+ * stays available.
  */
 export function courseProgress(
   course: Course,
@@ -83,10 +83,10 @@ export function courseProgress(
   };
 }
 
-/** « Jour 4 sur 10 », ou l'invitation à commencer. */
+/** “Day 4 of 10”, or the invitation to begin. */
 export function courseStatusLabel(progress: CourseProgress, course: Course): string {
-  if (progress.days.length === 0) return 'Bientôt disponible';
-  if (progress.complete) return `Terminé · ${course.dayCount} jours`;
-  if (progress.doneCount === 0) return `${course.dayCount} jours, à ton rythme`;
-  return `Jour ${progress.nextDay?.day ?? progress.doneCount + 1} sur ${course.dayCount}`;
+  if (progress.days.length === 0) return 'Coming soon';
+  if (progress.complete) return `Finished · ${course.dayCount} days`;
+  if (progress.doneCount === 0) return `${course.dayCount} days, at your own pace`;
+  return `Day ${progress.nextDay?.day ?? progress.doneCount + 1} of ${course.dayCount}`;
 }

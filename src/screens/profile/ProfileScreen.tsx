@@ -73,19 +73,19 @@ export default function ProfileScreen() {
             {name ?? 'Bienvenue'}
           </Text>
           <Text variant="bodySm" tone="ink2" style={{ marginTop: 2 }}>
-            {name ? 'Toujours un peu plus loin 🌱' : email}
+            {name ? 'A little further each week 🌱' : email}
           </Text>
         </View>
-        <IconButton icon="settings-outline" label="Paramètres" onPress={() => router.push('/settings')} />
+        <IconButton icon="settings-outline" label="Settings" onPress={() => router.push('/settings')} />
       </View>
 
       {!name && profileQuery.isSuccess ? (
         <Appear>
-          <Card variant="tinted" padding={14} onPress={() => router.push('/profile/goals')} accessibilityLabel="Ajoute ton prénom" style={{ marginBottom: 16 }}>
+          <Card variant="tinted" padding={14} onPress={() => router.push('/profile/goals')} accessibilityLabel="Add your first name" style={{ marginBottom: 16 }}>
             <View style={{ flexDirection: 'row', alignItems: 'center', gap: 10 }}>
               <Ionicons name="person-add-outline" size={20} color={theme.primary600} />
               <Text variant="label" style={{ flex: 1 }}>
-                Comment veux-tu qu’on t’appelle ?
+                What should we call you?
               </Text>
               <Ionicons name="chevron-forward" size={16} color={theme.ink2} />
             </View>
@@ -96,11 +96,11 @@ export default function ProfileScreen() {
       <Appear index={1}>
         <Card padding={16}>
           <View style={{ flexDirection: 'row' }}>
-            <Stat value={weeks === null ? '–' : String(weeks)} label={weeks === 1 ? 'semaine' : 'semaines'} />
+            <Stat value={weeks === null ? '–' : String(weeks)} label={weeks === 1 ? 'week' : 'weeks'} />
             <View style={{ width: 1, backgroundColor: theme.divider }} />
-            <Stat value={countQuery.data === undefined ? '–' : String(countQuery.data)} label={countQuery.data === 1 ? 'activité' : 'activités'} />
+            <Stat value={countQuery.data === undefined ? '–' : String(countQuery.data)} label={countQuery.data === 1 ? 'activity' : 'activities'} />
             <View style={{ width: 1, backgroundColor: theme.divider }} />
-            <Stat value={String(streakQuery.data ?? 0)} label="jours consécutifs" />
+            <Stat value={String(streakQuery.data ?? 0)} label="days in a row" />
           </View>
         </Card>
       </Appear>
@@ -109,10 +109,10 @@ export default function ProfileScreen() {
         <View style={{ gap: 10, marginTop: 16 }}>
           <View style={{ flexDirection: 'row', gap: 10 }}>
             <MenuTile icon="flag-outline" title="Mes objectifs" onPress={() => router.push('/profile/goals')} />
-            <MenuTile icon="calendar-outline" title="Mes disponibilités" onPress={() => router.push('/availability')} />
+            <MenuTile icon="calendar-outline" title="When I am free" onPress={() => router.push('/availability')} />
           </View>
           <View style={{ flexDirection: 'row', gap: 10 }}>
-            <MenuTile icon="settings-outline" title="Paramètres" onPress={() => router.push('/settings')} />
+            <MenuTile icon="settings-outline" title="Settings" onPress={() => router.push('/settings')} />
             <MenuTile icon="help-circle-outline" title="Aide & support" onPress={() => setHelpOpen(true)} />
           </View>
         </View>
@@ -122,7 +122,7 @@ export default function ProfileScreen() {
         <PressableScale
           onPress={() => router.push(isPremium && !isDevUnlock ? '/settings' : '/paywall')}
           accessibilityRole="button"
-          accessibilityLabel={isPremium ? 'Regain Premium actif' : 'Regain Premium, accéder à toutes les fonctionnalités'}
+          accessibilityLabel={isPremium ? 'Regain Premium active' : 'Regain Premium, unlock everything'}
           style={{ marginTop: 16, borderRadius: 18, padding: 16, backgroundColor: theme.premium, flexDirection: 'row', alignItems: 'center', gap: 12 }}
         >
           <View style={{ width: 42, height: 42, borderRadius: 21, backgroundColor: theme.dark ? theme.bg : '#FFFFFF', alignItems: 'center', justifyContent: 'center' }}>
@@ -133,7 +133,7 @@ export default function ProfileScreen() {
               Regain Premium
             </Text>
             <Text variant="caption" tone="premium" style={{ opacity: 0.85 }}>
-              {isPremium ? (isDevUnlock ? 'Débloqué pour le développement' : 'Actif · gérer mon abonnement') : 'Accéder à toutes les fonctionnalités'}
+              {isPremium ? (isDevUnlock ? 'Unlocked for development' : 'Active · manage my subscription') : 'Unlock everything'}
             </Text>
           </View>
           <Ionicons name="chevron-forward" size={18} color={theme.premiumInk} />
@@ -143,16 +143,16 @@ export default function ProfileScreen() {
       <Sheet visible={helpOpen} title="Aide & support" onClose={() => setHelpOpen(false)} scroll={false}>
         <View style={{ paddingHorizontal: 20 }}>
           {SUPPORT_EMAIL ? (
-            <ListRow icon="mail-outline" title="Nous écrire" subtitle={SUPPORT_EMAIL} onPress={() => Linking.openURL(`mailto:${SUPPORT_EMAIL}`)} divider />
+            <ListRow icon="mail-outline" title="Write to us" subtitle={SUPPORT_EMAIL} onPress={() => Linking.openURL(`mailto:${SUPPORT_EMAIL}`)} divider />
           ) : null}
           {TERMS_URL ? <ListRow icon="document-text-outline" title="Conditions d'utilisation" onPress={() => Linking.openURL(TERMS_URL)} divider /> : null}
-          {PRIVACY_URL ? <ListRow icon="shield-checkmark-outline" title="Politique de confidentialité" onPress={() => Linking.openURL(PRIVACY_URL)} divider /> : null}
-          <ListRow icon="lock-closed-outline" title="Mes données" subtitle="Exporter ou supprimer ton compte" onPress={() => {
+          {PRIVACY_URL ? <ListRow icon="shield-checkmark-outline" title="Privacy policy" onPress={() => Linking.openURL(PRIVACY_URL)} divider /> : null}
+          <ListRow icon="lock-closed-outline" title="My data" subtitle="Export or delete your account" onPress={() => {
             setHelpOpen(false);
             router.push('/settings');
           }} />
           <Text variant="caption" tone="ink2" style={{ marginTop: 12 }}>
-            Regain ne remplace pas l’avis d’un professionnel de santé. En cas de difficulté importante, parles-en à ton médecin.
+            Regain is not a substitute for a health professional. If things get difficult, talk to your doctor.
           </Text>
         </View>
       </Sheet>

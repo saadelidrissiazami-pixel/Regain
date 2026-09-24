@@ -7,9 +7,9 @@ import { useAnimatedNumber } from '../ui/motion';
 import { Text } from '../ui/Text';
 
 export const STRATEGY_LABELS: Record<NutritionTargets['strategy'], string> = {
-  deficit: 'Léger déficit — perte progressive',
-  surplus: 'Léger surplus — prise de masse',
-  maintien: 'Équilibre — entretien de la forme',
+  deficit: 'Slight deficit — gradual loss',
+  surplus: 'Slight surplus — building mass',
+  maintien: 'Balanced — maintaining',
 };
 
 function CountUp({ value, suffix = '' }: { value: number; suffix?: string }) {
@@ -44,20 +44,20 @@ export function TargetsCard({ targets }: { targets: NutritionTargets }) {
   const theme = useTheme();
   return (
     <Card padding={18}>
-      <Text variant="metric" tabular accessibilityLabel={`${targets.calories} kilocalories par jour`}>
+      <Text variant="metric" tabular accessibilityLabel={`${targets.calories} kilocalories per day`}>
         <CountUp value={targets.calories} suffix=" kcal" />
       </Text>
       <Text variant="caption" tone="ink2" style={{ marginTop: 2 }}>
         {STRATEGY_LABELS[targets.strategy]}
       </Text>
       <View style={{ flexDirection: 'row', gap: 8, marginTop: 14 }}>
-        <MacroCard value={targets.proteinG} label="Protéines" background={theme.protein} />
+        <MacroCard value={targets.proteinG} label="Protein" background={theme.protein} />
         <MacroCard value={targets.carbsG} label="Glucides" background={theme.carbs} />
         <MacroCard value={targets.fatG} label="Lipides" background={theme.fat} />
       </View>
       {targets.floorApplied ? (
         <Text variant="caption" tone="ink2" style={{ marginTop: 10 }}>
-          Cible relevée au seuil de sécurité : on ne descend jamais sous ton métabolisme de base.
+          Raised to the safe floor: we never go below your basal metabolic rate.
         </Text>
       ) : null}
     </Card>

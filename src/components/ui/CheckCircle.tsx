@@ -5,7 +5,7 @@ import { ActivityIndicator, View } from 'react-native';
 import { useTheme } from '../../theme/ThemeProvider';
 import { haptic, PressableScale } from './motion';
 
-/** Indicateur de complétion cochable : cercle de 28 px dans une zone tactile de 44 px. */
+/** A tickable completion mark: a 28 px circle inside a 44 px touch target. */
 export function CheckCircle({
   checked,
   onPress,
@@ -16,7 +16,7 @@ export function CheckCircle({
   checked: boolean;
   onPress?: () => void;
   busy?: boolean;
-  /** Ce que l'on coche, lu par VoiceOver : « Scan corporel ». */
+  /** What is being ticked, as VoiceOver reads it: “Body scan”. */
   label: string;
   size?: number;
 }) {
@@ -55,7 +55,7 @@ export function CheckCircle({
       feedback={null}
       accessibilityRole="checkbox"
       accessibilityState={{ checked, busy: !!busy }}
-      accessibilityLabel={checked ? `${label} : fait` : `Marquer « ${label} » comme fait`}
+      accessibilityLabel={checked ? `${label}: done` : `Mark “${label}” as done`}
       style={{ width: 44, height: 44, alignItems: 'center', justifyContent: 'center' }}
     >
       {circle}

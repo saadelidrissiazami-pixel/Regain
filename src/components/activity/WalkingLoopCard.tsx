@@ -52,8 +52,8 @@ export function WalkingLoopCard({ durationMinutes }: { durationMinutes: number }
     } catch (err) {
       setErrorMessage(
         err instanceof LocationPermissionDeniedError
-          ? "Localisation refusée : tu peux l'activer dans les réglages pour obtenir un itinéraire."
-          : "Impossible de générer l'itinéraire pour le moment. Réessaie dans un instant."
+          ? 'Location declined. You can turn it on in Settings to get a route.'
+          : 'Could not build the route right now. Try again in a moment.'
       );
       setStatus('error');
     }
@@ -62,36 +62,36 @@ export function WalkingLoopCard({ durationMinutes }: { durationMinutes: number }
   return (
     <Card style={{ marginBottom: 16 }}>
       <Text variant="overline" tone="ink2">
-        🧭 Itinéraire de marche près de toi
+        🧭 A walking route near you
       </Text>
 
       {status === 'idle' ? (
         <>
           <Text variant="bodySm" tone="ink2" style={{ marginTop: 8, marginBottom: 12 }}>
-            On trace une boucle sur les rues autour de toi, adaptée à la durée de cette activité, avec la carte et les indications pas à pas.
+            We trace a loop through the streets around you, sized to this activity, with a map and step-by-step directions.
           </Text>
-          <Button label="Générer mon itinéraire" variant="secondary" size="md" fullWidth={false} icon="navigate-outline" onPress={handleLocate} />
+          <Button label="Build my route" variant="secondary" size="md" fullWidth={false} icon="navigate-outline" onPress={handleLocate} />
         </>
       ) : status === 'loading' ? (
         <View style={{ flexDirection: 'row', alignItems: 'center', gap: 10, paddingVertical: 12 }}>
           <ActivityIndicator color={theme.primary600} />
           <Text variant="bodySm" tone="ink2" style={{ flex: 1 }}>
-            Ajustement du parcours pour tenir en {durationMinutes} min…
+            Adjusting the route to fit {durationMinutes} min…
           </Text>
         </View>
       ) : status === 'error' ? (
         <>
           <InlineNotice tone="error" message={errorMessage} />
-          <Button label="Réessayer" variant="ghost" size="sm" fullWidth={false} onPress={handleLocate} style={{ marginTop: 6 }} />
+          <Button label="Try again" variant="ghost" size="sm" fullWidth={false} onPress={handleLocate} style={{ marginTop: 6 }} />
         </>
       ) : result?.kind === 'route' ? (
         <View style={{ marginTop: 12 }}>
           <RouteMap path={result.route.path} start={result.start} />
           <Text variant="cardTitle" tabular>
-            {(result.route.distanceM / 1000).toFixed(1).replace('.', ',')} km · environ {Math.round(result.route.durationS / 60)} min
+            {(result.route.distanceM / 1000).toFixed(1)} km · about {Math.round(result.route.durationS / 60)} min
           </Text>
           <Text variant="caption" tone="ink2" style={{ marginTop: 2, marginBottom: 12 }}>
-            Boucle au départ de {startLabel ?? 'ta position'}, retour au même endroit, pour tenir en {durationMinutes} min maximum.
+            A loop from {startLabel ?? 'where you are'} and back to the same place, to fit within {durationMinutes} min.
           </Text>
           {result.route.steps.map((step, i) => (
             <View key={i} style={{ flexDirection: 'row', alignItems: 'flex-start', marginBottom: 8 }}>
@@ -107,15 +107,15 @@ export function WalkingLoopCard({ durationMinutes }: { durationMinutes: number }
           <Button label="Autre boucle" variant="outline" size="sm" fullWidth={false} icon="refresh" onPress={handleLocate} style={{ marginTop: 6 }} />
           <View style={{ marginTop: 8, flexDirection: 'row', flexWrap: 'wrap', alignItems: 'center' }}>
             <Text variant="caption" tone="ink3">
-              Itinéraire © contributeurs OpenStreetMap ·{' '}
+              Route © OpenStreetMap contributors ·{' '}
             </Text>
-            <TextLink label="Signaler une erreur de carte" icon={null} tone="ink2" onPress={() => Linking.openURL(FIX_THE_MAP_URL)} />
+            <TextLink label="Report a map error" icon={null} tone="ink2" onPress={() => Linking.openURL(FIX_THE_MAP_URL)} />
           </View>
         </View>
       ) : (
         <View style={{ marginTop: 10 }}>
           <Text variant="caption" tone="ink2" style={{ marginBottom: 10 }}>
-            Itinéraire détaillé indisponible pour le moment : voici une boucle indicative depuis {startLabel ?? 'ta position'}.
+            Step-by-step directions are unavailable right now. Here is an indicative loop from {startLabel ?? 'where you are'}.
           </Text>
           {result?.legs.map((leg, i) => (
             <View key={i} style={{ flexDirection: 'row', alignItems: 'flex-start', marginBottom: 8 }}>
@@ -127,7 +127,7 @@ export function WalkingLoopCard({ durationMinutes }: { durationMinutes: number }
               </Text>
             </View>
           ))}
-          <Button label="Réessayer" variant="outline" size="sm" fullWidth={false} onPress={handleLocate} style={{ marginTop: 6 }} />
+          <Button label="Try again" variant="outline" size="sm" fullWidth={false} onPress={handleLocate} style={{ marginTop: 6 }} />
         </View>
       )}
     </Card>

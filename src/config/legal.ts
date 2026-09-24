@@ -8,9 +8,9 @@ export const PRIVACY_URL = process.env.EXPO_PUBLIC_PRIVACY_URL ?? '';
 export const hasLegalUrls = !!TERMS_URL && !!PRIVACY_URL;
 
 export const SUBSCRIPTION_DISCLOSURE =
-  "L'abonnement est renouvelé automatiquement sauf résiliation au moins 24 h avant la fin de la période en cours. " +
-  'Le paiement est débité sur votre compte App Store ou Google Play à la confirmation. ' +
-  'Vous pouvez gérer ou résilier votre abonnement à tout moment depuis les réglages de votre compte.';
+  'Your subscription renews automatically unless it is cancelled at least 24 hours before the end of the current period. ' +
+  'Payment is charged to your App Store or Google Play account on confirmation. ' +
+  'You can manage or cancel your subscription at any time from your account settings.';
 
 /** Adresse de contact affichée dans Profil → Aide & support (facultative). */
 export const SUPPORT_EMAIL = process.env.EXPO_PUBLIC_SUPPORT_EMAIL ?? '';

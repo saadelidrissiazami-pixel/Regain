@@ -30,7 +30,7 @@ export function SessionRing({
         animate={false}
         trackColor={theme.dark ? theme.sage200 : 'rgba(255,255,255,0.7)'}
         color={theme.primary600}
-        accessibilityLabel={elapsed !== undefined && total !== undefined ? `${formatClock(elapsed)} sur ${formatClock(total)}` : 'Progression de la séance'}
+        accessibilityLabel={elapsed !== undefined && total !== undefined ? `${formatClock(elapsed)} of ${formatClock(total)}` : 'Session progress'}
       >
         {children ?? (
           <>
@@ -57,7 +57,7 @@ function SeekButton({ direction, onPress }: { direction: -1 | 1; onPress: () => 
       }}
       feedback={null}
       accessibilityRole="button"
-      accessibilityLabel={direction < 0 ? 'Reculer de 15 secondes' : 'Avancer de 15 secondes'}
+      accessibilityLabel={direction < 0 ? 'Back 15 seconds' : 'Forward 15 seconds'}
       style={{ width: 56, height: 56, alignItems: 'center', justifyContent: 'center' }}
     >
       <Ionicons name={direction < 0 ? 'refresh' : 'refresh'} size={30} color={theme.ink} style={direction < 0 ? { transform: [{ scaleX: -1 }] } : undefined} />

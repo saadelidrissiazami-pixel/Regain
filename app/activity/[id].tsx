@@ -20,12 +20,16 @@ import { useTheme } from '../../src/theme/ThemeProvider';
 
 type IconName = ComponentProps<typeof Thumbnail>['icon'];
 
+// These three extras belong to catalogue rows from an earlier version, which are no longer
+// offered but are still referenced by older plans. Those rows have no English wording, so they
+// come back from the database exactly as they are stored — which is why the titles matched here
+// are the stored ones.
 const NEIGHBORHOOD_HISTORY_TITLES = ['Explorer un nouveau quartier'];
 const WALKING_LOOP_TITLES = ['Marche rapide 30 min', 'Balade en nature'];
 const BOOK_TITLES = ["Lecture d'un livre"];
-const COST_LABELS = { gratuit: 'Gratuit', faible: 'Coût faible', modere: 'Coût modéré' } as const;
+const COST_LABELS = { gratuit: 'Free', faible: 'Low cost', modere: 'Moderate cost' } as const;
 
-/** Fiche activité : pourquoi elle t'est proposée, comment la faire, et la cocher une fois faite. */
+/** One activity: why it was suggested, how to do it, and how to tick it off. */
 export default function ActivityDetailScreen() {
   const theme = useTheme();
   const { id } = useLocalSearchParams<{ id: string }>();
@@ -39,7 +43,7 @@ export default function ActivityDetailScreen() {
   const fit = activity && prefs ? computeActivityFit(activity, prefs) : null;
   const complementary = activity && prefs && catalogQuery.data ? pickComplementaryActivities(activity, catalogQuery.data, prefs) : [];
 
-  // L'occurrence de cette activité dans la semaine en cours (la prochaine non faite, sinon la dernière faite).
+  // This activity's slot in the current week: the next one not done, otherwise the last one done.
   const planned = planning.items.filter((item) => item.activities_catalog.id === id);
   const occurrence = planned.find((item) => item.status !== 'realise' && item.date >= planning.today) ?? planned.find((item) => item.status === 'realise');
   const done = occurrence?.status === 'realise';
@@ -49,7 +53,7 @@ export default function ActivityDetailScreen() {
       footer={
         occurrence ? (
           <Button
-            label={done ? 'Fait ✓ · Annuler' : "C'est fait"}
+            label={done ? 'Done ✓ · Undo' : 'Mark as done'}
             variant={done ? 'outline' : 'primary'}
             icon={done ? undefined : 'checkmark'}
             loading={planning.isToggling(occurrence)}
@@ -58,14 +62,14 @@ export default function ActivityDetailScreen() {
         ) : undefined
       }
     >
-      <ScreenHeader title={activity?.title ?? 'Activité'} onBack={() => goBack('/(tabs)/planning')} size="headline" />
+      <ScreenHeader title={activity?.title ?? 'Activity'} onBack={() => goBack('/(tabs)/planning')} size="headline" />
 
       {activityQuery.isLoading ? (
         <LoadingSkeleton preset="hero" />
       ) : activityQuery.isError ? (
         <ErrorState onRetry={() => activityQuery.refetch()} />
       ) : !activity ? (
-        <EmptyState title="Activité introuvable" />
+        <EmptyState title="Activity not found" />
       ) : (
         <>
           <Appear>
@@ -87,20 +91,20 @@ export default function ActivityDetailScreen() {
             ) : null}
           </Appear>
 
-          {/* La première action vient avant tout le reste : c'est le seul endroit où quelqu'un
-              qui n'a envie de rien peut s'accrocher. La règle d'arrêt est juste en dessous, pour
-              que l'activité ait une fin annoncée et ne se transforme pas en engagement flou. */}
+          {/* The first action comes before everything else: it is the one thing someone with no
+              appetite for any of this can hold on to. The stop rule sits right underneath, so the
+              activity has an announced end instead of turning into an open commitment. */}
           {activity.first_action ? (
             <Appear index={1}>
               <Card variant="tinted" style={{ marginTop: 20 }}>
                 <Text variant="label" style={{ marginBottom: 6 }}>
-                  Pour commencer
+                  How to start
                 </Text>
                 <Text variant="body">{activity.first_action}</Text>
                 {activity.stop_rule ? (
                   <View style={{ marginTop: 14 }}>
                     <Text variant="overline" tone="ink3">
-                      Quand s&apos;arrêter
+                      When to stop
                     </Text>
                     <Text variant="caption" tone="ink2" style={{ marginTop: 2 }}>
                       {activity.stop_rule}
@@ -115,32 +119,32 @@ export default function ActivityDetailScreen() {
             <Appear index={1}>
               <Card variant="tinted" style={{ marginTop: 20 }}>
                 <Text variant="label" style={{ marginBottom: 6 }}>
-                  Pourquoi pour toi
+                  Why this one
                 </Text>
                 <ListRow
                   icon="flag-outline"
                   compact
-                  title={fit.matchedGoalLabels.length > 0 ? `Sert tes objectifs : ${fit.matchedGoalLabels.join(', ').toLowerCase()}` : 'À tester si l’envie est là'}
+                  title={fit.matchedGoalLabels.length > 0 ? `Serves your goals: ${fit.matchedGoalLabels.join(', ').toLowerCase()}` : 'Worth a try if you feel like it'}
                 />
                 <ListRow
                   icon="flash-outline"
                   compact
                   title={
                     fit.goodEnergySlotLabels.length === 3
-                      ? 'Adaptée à ton énergie, à tout moment'
+                      ? 'Fits your energy at any time of day'
                       : fit.goodEnergySlotLabels.length > 0
-                        ? `Plutôt adaptée le ${fit.goodEnergySlotLabels.join(', ').toLowerCase()}`
-                        : 'Demande un peu plus d’énergie : mieux un jour en forme'
+                        ? `Better suited to the ${fit.goodEnergySlotLabels.join(', ').toLowerCase()}`
+                        : 'Asks for a bit more energy — better on a good day'
                   }
                 />
-                <ListRow icon="wallet-outline" compact title={fit.budgetFits ? 'Correspond à ton budget' : 'Un peu au-dessus de ton budget habituel'} />
+                <ListRow icon="wallet-outline" compact title={fit.budgetFits ? 'Within your budget' : 'A little above your usual budget'} />
               </Card>
             </Appear>
           ) : null}
 
           {activity.steps.length > 0 ? (
             <View style={{ marginTop: 28 }}>
-              <SectionHeader title="Comment faire" />
+              <SectionHeader title="How to do it" />
               {activity.steps.map((step, i) => (
                 <Appear key={i} index={i + 2}>
                   <Card padding={14} style={{ marginBottom: 10 }}>
@@ -173,7 +177,7 @@ export default function ActivityDetailScreen() {
 
           {complementary.length > 0 ? (
             <View style={{ marginTop: 16 }}>
-              <SectionHeader title="Dans la même veine" />
+              <SectionHeader title="In the same vein" />
               {complementary.map((a) => (
                 <View key={a.id} style={{ marginBottom: 10 }}>
                   <NextUpCard when="Suggestion" activity={a} onPress={() => router.push(`/activity/${a.id}`)} />

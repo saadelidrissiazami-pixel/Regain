@@ -1,17 +1,18 @@
-// Offre freemium de la bibliothèque bien-être.
+// The freemium offer for the wellbeing library.
 //
-// Cette liste est nommée séance par séance, et c'est délibéré. Elle a d'abord été calculée :
-// « les trois plus courtes de chaque catégorie restent gratuites », règle rejouée à l'identique
-// en SQL et en TypeScript. Mais l'accès dépendait alors de la durée — réécrire un script un peu
-// plus long suffisait à reverrouiller une séance qu'un abonné utilisait déjà, sans que personne
-// ne s'en aperçoive. Une liste explicite ne change que lorsqu'on la change.
+// This list names every session, and that is deliberate. It used to be computed — “the three
+// shortest in each category stay free”, a rule replayed identically in SQL and in TypeScript.
+// But access then depended on duration, so rewriting a script slightly longer was enough to
+// re-lock a session a subscriber was already using, without anyone noticing. An explicit list
+// only changes when somebody changes it.
 //
-// La migration 0023_explicit_premium_catalog.sql applique la liste de la bibliothèque, et
-// 0025_wellbeing_sos.sql force les SOS en gratuit. tests/access.test.ts tient les deux ensemble.
+// Migration 0023_explicit_premium_catalog.sql applies the library's list, and
+// 0025_wellbeing_sos.sql forces the SOS sessions free. tests/access.test.ts holds the two
+// together.
 
 import { SOS_SLUGS } from './sos';
 
-/** Les trois premiers jours de chaque parcours, comme les trois séances libres d'un thème. */
+/** The first three days of each course, like the three free sessions in a theme. */
 const PARCOURS_LIBRES = [
   'parcours-meditation-j1',
   'parcours-meditation-j2',
@@ -21,13 +22,13 @@ const PARCOURS_LIBRES = [
   'parcours-sommeil-j3',
 ];
 
-/** Séances libres de la bibliothèque, telles qu'elles l'étaient au 23 septembre 2026. */
+/** The library's free sessions, as they stood on 23 September 2026. */
 const BIBLIOTHEQUE_LIBRE: readonly string[] = [
-  // Respiration
+  // Breathing
   'respiration-express',
   'respiration-4-7-8',
   'respiration-soupir-physiologique',
-  // Méditation
+  // Meditation
   'meditation-pause-1min',
   'meditation-matin',
   'meditation-5-sens',
@@ -35,30 +36,30 @@ const BIBLIOTHEQUE_LIBRE: readonly string[] = [
   'journaling-gratitude-express',
   'journaling-clarifier',
   'journaling-vider-tete',
-  // Confiance en soi
+  // Confidence
   'confiance-trois-qualites',
   'confiance-posture-presence',
   'confiance-reussite',
-  // Sommeil
+  // Sleep
   'sommeil-ralentir',
   'sommeil-relacher',
   'sommeil-scan-corporel',
-  // En public
+  // In public
   'public-ancrage-rapide',
   'public-kit-urgence',
   'detachement-regard-autres',
 ];
 
 /**
- * Les séances accessibles sans abonnement.
- * Les SOS s'y ajoutent en bloc : elles ne sont pas un échantillon gratuit qu'on pourrait
- * réduire un jour, elles sont gratuites par nature.
+ * The sessions available without a subscription.
+ * The SOS sessions join them as a block: they are not a free sample that might be trimmed one
+ * day, they are free by their nature.
  */
 export const FREE_PROGRAM_SLUGS: readonly string[] = [...BIBLIOTHEQUE_LIBRE, ...SOS_SLUGS, ...PARCOURS_LIBRES];
 
 const FREE = new Set(FREE_PROGRAM_SLUGS);
 
-/** Une séance est gratuite si elle figure dans la liste. Tout le reste demande Premium. */
+/** A session is free if it appears in the list. Everything else needs Premium. */
 export function isFreeProgram(slug: string): boolean {
   return FREE.has(slug);
 }

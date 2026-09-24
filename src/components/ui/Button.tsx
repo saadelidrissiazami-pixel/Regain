@@ -11,8 +11,8 @@ type IconName = ComponentProps<typeof Ionicons>['name'];
 export type ButtonVariant = 'primary' | 'secondary' | 'outline' | 'ghost' | 'destructive';
 
 /**
- * Bouton d'action. Un seul `primary` (vert foncé plein) par écran : c'est l'action principale.
- * `secondary` (sauge) et `outline` pour les alternatives, `ghost` pour les liens d'action discrets.
+ * An action button. One `primary` (solid dark green) per screen: that is the main action.
+ * `secondary` (sage) and `outline` for alternatives, `ghost` for quieter action links.
  */
 export function Button({
   label,
@@ -38,7 +38,7 @@ export function Button({
   disabled?: boolean;
   loading?: boolean;
   fullWidth?: boolean;
-  /** Position quand le bouton n'occupe pas toute la largeur. */
+  /** Where it sits when the button does not fill the width. */
   align?: 'flex-start' | 'center';
   accessibilityHint?: string;
   style?: StyleProp<ViewStyle>;
@@ -93,7 +93,7 @@ export function Button({
   );
 }
 
-/** Lien d'action discret en ligne (« Voir tout → », « Modifier »). Zone tactile de 44 px. */
+/** A quiet inline action link (“See all →”, “Edit”). 44 px touch target. */
 export function TextLink({
   label,
   onPress,

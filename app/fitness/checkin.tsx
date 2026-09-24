@@ -13,11 +13,11 @@ import { createCheckin, createFitnessPlan, fetchFitnessProfile, fetchLatestFitne
 import { useAuthStore } from '../../src/store/authStore';
 
 const ENERGY_LEVELS = [
-  { value: 1, label: 'Épuisé·e', hint: 'Rien dans le réservoir' },
-  { value: 2, label: 'Fatigué·e', hint: 'Les séances ont été dures' },
-  { value: 3, label: 'Correct', hint: 'Ni plus ni moins que d’habitude' },
-  { value: 4, label: 'En forme', hint: 'Bonne semaine' },
-  { value: 5, label: 'Au top', hint: 'Prêt·e à en faire plus' },
+  { value: 1, label: 'Running on empty', hint: 'Nothing left in the tank' },
+  { value: 2, label: 'Tired', hint: 'The sessions were hard' },
+  { value: 3, label: 'Okay', hint: 'No better or worse than usual' },
+  { value: 4, label: 'Good', hint: 'A good week' },
+  { value: 5, label: 'Great', hint: 'Ready for more' },
 ];
 
 export default function FitnessCheckinScreen() {
@@ -41,7 +41,7 @@ export default function FitnessCheckinScreen() {
     mutationFn: async (): Promise<{ plan: FitnessPlan; adjustments: PlanAdjustment[] }> => {
       if (!userId || !profile) throw new Error('Profil forme introuvable.');
       if (sessionsDone === null || energy === null) {
-        throw new Error('Indique tes séances faites et ton niveau d’énergie.');
+        throw new Error('Tell us how many sessions you did and how your energy was.');
       }
       const weight = weightText.trim() ? Number(weightText.trim().replace(',', '.')) : null;
       if (weight !== null && (!Number.isFinite(weight) || weight < 35 || weight > 250)) {
@@ -92,9 +92,9 @@ export default function FitnessCheckinScreen() {
   // Après l'envoi : ce que le bilan a changé, avant de revenir au programme.
   if (result) {
     return (
-      <Screen footer={<Button label="Voir mon programme" onPress={() => goBack('/(tabs)/fitness')} />}>
+      <Screen footer={<Button label="See my programme" onPress={() => goBack('/(tabs)/fitness')} />}>
         <Appear>
-          <ScreenHeader title="Bilan pris en compte" subtitle="Ton programme, tes menus et ta liste de courses viennent d'être adaptés." />
+          <ScreenHeader title="Check-in saved" subtitle="Your programme, your meals and your shopping list have just been adapted." />
         </Appear>
         <Card>
           <AdjustmentsList adjustments={result.adjustments} />
@@ -117,7 +117,7 @@ export default function FitnessCheckinScreen() {
         <View>
           {submitMutation.isError ? <InlineNotice tone="error" message={errorMessage(submitMutation.error)} /> : null}
           <Button
-            label={submitMutation.isPending ? 'Ajustement de ton programme…' : 'Envoyer mon bilan'}
+            label={submitMutation.isPending ? 'Adjusting your programme…' : 'Send my check-in'}
             loading={submitMutation.isPending}
             disabled={!profile}
             onPress={() => submitMutation.mutate()}
@@ -128,30 +128,30 @@ export default function FitnessCheckinScreen() {
     >
       <ScreenHeader
         overline="Ton coach forme"
-        title="Bilan de la semaine"
-        subtitle="Quelques réponses honnêtes, et ton coach ajuste la semaine qui vient. Une semaine chargée, ça arrive."
+        title="This week’s check-in"
+        subtitle="A few honest answers, and your coach adjusts the week ahead. A busy week happens."
         onBack={() => goBack('/(tabs)/fitness')}
       />
 
       {profileQuery.isLoading ? <LoadingSkeleton preset="list" /> : null}
 
       <Text variant="label" style={{ marginBottom: 8 }}>
-        Séances faites
+        Sessions done
       </Text>
       <SegmentedControl
-        label="Séances faites"
+        label="Sessions done"
         tone="surface"
         value={sessionsDone ?? -1}
         onChange={setSessionsDone}
         options={Array.from({ length: plannedSessions + 1 }, (_, n) => ({ value: n, label: String(n) }))}
       />
       <Text variant="caption" tone="ink2" style={{ marginTop: 6, marginBottom: 20 }}>
-        Sur {plannedSessions} prévues. Zéro aussi est une réponse.
+        Out of {plannedSessions} planned. Zero is an answer too.
       </Text>
 
       <Select
-        label="Ton énergie cette semaine"
-        title="Comment as-tu tenu ?"
+        label="Your energy this week"
+        title="How did you hold up?"
         placeholder="Choisir"
         value={energy}
         options={ENERGY_LEVELS}
@@ -167,9 +167,9 @@ export default function FitnessCheckinScreen() {
       />
 
       <Field
-        label="Un mot pour ton coach (facultatif)"
+        label="A word for your coach (optional)"
         multiline
-        placeholder="Ce qui a été facile, difficile, une douleur, une envie…"
+        placeholder="What was easy, what was hard, an ache, something you fancy…"
         value={note}
         onChangeText={setNote}
       />

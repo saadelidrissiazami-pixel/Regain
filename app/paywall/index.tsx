@@ -33,23 +33,23 @@ type IconName = ComponentProps<typeof Ionicons>['name'];
 
 type Source = 'onboarding' | 'locked' | 'milestone' | 'default';
 
-// Le titre dépend de l'endroit d'où l'on arrive : on parle de ce que la personne vient de faire.
+// The heading depends on where you arrived from, so it can speak to what you just did.
 const HEADINGS: Record<Source, { title: string; lede: string }> = {
   onboarding: {
-    title: 'Ta routine est prête',
-    lede: 'Planning, suivi et journal restent gratuits. Premium ajoute un coach forme et toute la bibliothèque bien-être.',
+    title: 'Your routine is ready',
+    lede: 'The plan, the tracking and the journal stay free. Premium adds a fitness coach and the whole wellbeing library.',
   },
   locked: {
-    title: 'Ceci fait partie de Premium',
-    lede: 'Débloque le coach forme et toutes les séances de bien-être.',
+    title: 'This one is part of Premium',
+    lede: 'Unlock the fitness coach and every wellbeing session.',
   },
   milestone: {
-    title: 'Tu as pris le rythme',
-    lede: 'Trois séances terminées : de quoi aller plus loin, avec toute la bibliothèque.',
+    title: 'You have found a rhythm',
+    lede: 'Three sessions done. There is more where that came from, in the full library.',
   },
   default: {
     title: 'Regain Premium',
-    lede: 'Va plus loin, avec un coach qui s’adapte à ta semaine.',
+    lede: 'Go further, with a coach that adapts to your week.',
   },
 };
 
@@ -132,15 +132,15 @@ export default function PaywallScreen() {
   const premiumSessions = programsQuery.data?.filter((program) => program.premium_only).length ?? 0;
 
   const benefits: { icon: IconName; text: string }[] = [
-    { icon: 'barbell-outline', text: 'Un programme de musculation à ton niveau, ajusté chaque semaine' },
-    { icon: 'restaurant-outline', text: 'Des menus et une liste de courses calés sur tes calories' },
-    { icon: 'clipboard-outline', text: 'Un bilan hebdo qui adapte séances et repas à ta semaine' },
+    { icon: 'barbell-outline', text: 'A strength programme at your level, adjusted every week' },
+    { icon: 'restaurant-outline', text: 'Meals and a shopping list built around your calories' },
+    { icon: 'clipboard-outline', text: 'A weekly check-in that adapts sessions and meals to your week' },
     {
       icon: 'moon-outline',
       text:
         premiumSessions > 0
-          ? `${premiumSessions} séances de bien-être en plus : sommeil, méditation, respiration…`
-          : 'Toute la bibliothèque de séances de bien-être',
+          ? `${premiumSessions} more wellbeing sessions: sleep, meditation, breathing…`
+          : 'The entire library of wellbeing sessions',
     },
   ];
 
@@ -150,7 +150,7 @@ export default function PaywallScreen() {
   const selectedDisplay = selected ? describePackage(selected, savings) : null;
   const trialDays = selected ? freeTrialDays(selected.product.introPrice) : null;
 
-  // Depuis l'accueil, il n'y a pas d'écran précédent : on continue vers le planning.
+  // Arriving from onboarding there is no previous screen, so carry on to the plan.
   const leave = () => (source === 'onboarding' ? router.replace('/(tabs)/planning') : goBack('/(tabs)/planning'));
 
   const unlockPremium = () => {
@@ -168,8 +168,8 @@ export default function PaywallScreen() {
       if (outcome === 'premium') unlockPremium();
       if (outcome === 'not-activated') {
         setNotice(
-          "Paiement enregistré, mais Premium n'est pas encore actif (achat en attente de validation ?). " +
-            'Réessaie « Restaurer mes achats » dans quelques instants.'
+          'Payment went through, but Premium is not active yet (the purchase may still be pending). ' +
+            'Try “Restore purchases” again in a moment.'
         );
       }
     } catch (e) {
@@ -185,7 +185,7 @@ export default function PaywallScreen() {
     setBusy('restore');
     try {
       if (await restorePurchases()) unlockPremium();
-      else setNotice("Aucun abonnement Premium actif n'a été retrouvé pour ce compte App Store / Google Play.");
+      else setNotice('No active Premium subscription was found for this App Store / Google Play account.');
     } catch (e) {
       setError((e as Error).message);
     } finally {
@@ -201,21 +201,21 @@ export default function PaywallScreen() {
         canBuy ? (
           <View style={{ gap: 4 }}>
             <Button
-              label={trialDays ? `Essayer ${trialDays} jours gratuitement` : 'Continuer'}
+              label={trialDays ? `Try ${trialDays} days free` : 'Continue'}
               loading={busy === 'purchase'}
               disabled={busy !== null}
               onPress={handlePurchase}
             />
-            <Button label="Restaurer mes achats" variant="ghost" size="md" loading={busy === 'restore'} disabled={busy !== null} onPress={handleRestore} />
+            <Button label="Restore purchases" variant="ghost" size="md" loading={busy === 'restore'} disabled={busy !== null} onPress={handleRestore} />
           </View>
         ) : undefined
       }
     >
       <View style={{ flexDirection: 'row', justifyContent: source === 'onboarding' ? 'flex-end' : 'flex-start', marginLeft: -10, marginBottom: 8 }}>
         {source === 'onboarding' ? (
-          <TextLink label="Plus tard" onPress={leave} tone="ink2" />
+          <TextLink label="Not now" onPress={leave} tone="ink2" />
         ) : (
-          <IconButton icon="close" label="Fermer" onPress={leave} />
+          <IconButton icon="close" label="Close" onPress={leave} />
         )}
       </View>
 
@@ -262,20 +262,20 @@ export default function PaywallScreen() {
           <LoadingSkeleton preset="list" />
         ) : offeringsQuery.isError ? (
           <ErrorState
-            title="Les offres n'ont pas pu se charger"
+            title="The plans could not be loaded"
             body={errorMessage(offeringsQuery.error)}
             onRetry={() => offeringsQuery.refetch()}
             retrying={offeringsQuery.isFetching}
           />
         ) : packages.length === 0 ? (
           <Text variant="bodySm" tone="ink2">
-            Aucune offre disponible pour le moment.
+            No plans are available right now.
           </Text>
         ) : (
           <>
             {isUsingTestStore ? (
               <View style={{ alignSelf: 'center', marginBottom: 12 }}>
-                <Pill icon="flask-outline" label="Mode test RevenueCat : rien n'est débité" tone="premium" />
+                <Pill icon="flask-outline" label="RevenueCat test mode: nothing is charged" tone="premium" />
               </View>
             ) : null}
             <View accessibilityRole="radiogroup">
@@ -309,7 +309,7 @@ export default function PaywallScreen() {
       </View>
 
       {source === 'onboarding' ? (
-        <Button label="Continuer en version gratuite" variant="ghost" onPress={leave} style={{ marginTop: 8 }} />
+        <Button label="Carry on with the free version" variant="ghost" onPress={leave} style={{ marginTop: 8 }} />
       ) : null}
 
       {notice ? <InlineNotice message={notice} /> : null}
@@ -321,13 +321,13 @@ export default function PaywallScreen() {
 
       {hasLegalUrls ? (
         <View style={{ flexDirection: 'row', flexWrap: 'wrap', gap: 16, marginTop: 4 }}>
-          <TextLink label="Conditions d'utilisation" icon={null} tone="ink2" onPress={() => Linking.openURL(TERMS_URL)} />
-          <TextLink label="Politique de confidentialité" icon={null} tone="ink2" onPress={() => Linking.openURL(PRIVACY_URL)} />
+          <TextLink label="Terms of use" icon={null} tone="ink2" onPress={() => Linking.openURL(TERMS_URL)} />
+          <TextLink label="Privacy policy" icon={null} tone="ink2" onPress={() => Linking.openURL(PRIVACY_URL)} />
         </View>
       ) : (
         <InlineNotice
           tone="error"
-          message="EXPO_PUBLIC_TERMS_URL et EXPO_PUBLIC_PRIVACY_URL ne sont pas renseignées : ces liens sont obligatoires pour passer la validation App Store."
+          message="EXPO_PUBLIC_TERMS_URL and EXPO_PUBLIC_PRIVACY_URL are not set. Both links are required to pass App Store review."
         />
       )}
     </Screen>

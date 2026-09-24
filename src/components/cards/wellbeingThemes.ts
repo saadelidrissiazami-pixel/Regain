@@ -4,7 +4,11 @@ type Themed = Palette & { dark: boolean };
 
 export type WellbeingTheme = { icon: string; color: (p: Themed) => string; tint: (p: Themed) => string };
 
-/** Thèmes de la bibliothèque bien-être : icône et couleur de repère. */
+/**
+ * The wellbeing library's themes: icon and accent colour.
+ * The keys are the `category` values as the database stores them — an internal key, never shown.
+ * `themeLabel` in features/wellbeing/catalogue turns one into something to read.
+ */
 export const WELLBEING_THEMES: Record<string, WellbeingTheme> = {
   Respiration: { icon: 'leaf', color: (p) => p.primary600, tint: (p) => p.sage100 },
   Méditation: { icon: 'flower', color: (p) => p.purple, tint: (p) => (p.dark ? p.sage200 : '#F0EDFA') },

@@ -28,7 +28,7 @@ describe('recommandation bien-être', () => {
   it('propose le sommeil tard le soir', () => {
     const [first] = recommendWellbeing({ programs: PROGRAMS, completedIds: new Set(), hour: 22, energy: null, isPremium: true });
     expect(first.program.category).toBe('Sommeil');
-    expect(first.reason).toContain('nuit');
+    expect(first.reason).toContain('night');
   });
 
   it("propose la respiration quand l'énergie est basse", () => {

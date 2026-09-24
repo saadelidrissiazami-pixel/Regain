@@ -5,7 +5,7 @@ import Animated, { FadeIn } from 'react-native-reanimated';
 import { useTheme } from '../../theme/ThemeProvider';
 import { Text } from '../ui/Text';
 
-/** Message court sous une action : succès, information ou erreur (jamais la couleur seule). */
+/** A short message under an action: success, information or error (never colour alone). */
 export function InlineNotice({ tone = 'info', message }: { tone?: 'info' | 'success' | 'error'; message: string }) {
   const theme = useTheme();
   const icon = tone === 'error' ? 'alert-circle-outline' : tone === 'success' ? 'checkmark-circle-outline' : 'information-circle-outline';
@@ -22,11 +22,11 @@ export function InlineNotice({ tone = 'info', message }: { tone?: 'info' | 'succ
   );
 }
 
-/** Message d'erreur lisible à partir de n'importe quelle erreur (réseau, Supabase, etc.). */
-export function errorMessage(error: unknown, fallback = 'Une erreur est survenue. Réessaie dans un instant.'): string {
+/** A readable message out of any error (network, Supabase, and the rest). */
+export function errorMessage(error: unknown, fallback = 'Something went wrong. Try again in a moment.'): string {
   if (error instanceof Error && error.message) {
     if (/network|fetch|Failed to fetch|timeout/i.test(error.message)) {
-      return 'La connexion semble interrompue. Vérifie ton réseau, puis réessaie.';
+      return 'The connection looks interrupted. Check your network, then try again.';
     }
     return error.message;
   }

@@ -47,7 +47,7 @@ export default function FitnessScreen() {
       <ScreenHeader
         overline="Ton coach"
         title="Forme"
-        subtitle="Un corps plus fort, un esprit plus serein."
+        subtitle="A stronger body, a calmer mind."
         right={
           fitness.isPremium && profile ? (
             <IconButton icon="settings-outline" label="Mon profil forme" onPress={() => router.push('/fitness/questionnaire')} />
@@ -63,7 +63,7 @@ export default function FitnessScreen() {
               if (value === 'program') router.push('/fitness/program');
             }}
             options={[
-              { value: 'overview', label: 'Aperçu' },
+              { value: 'overview', label: 'Overview' },
               { value: 'program', label: 'Programme' },
             ]}
           />
@@ -79,9 +79,9 @@ export default function FitnessScreen() {
     body = (
       <EmptyState
         icon="barbell-outline"
-        title="Un coach forme rien que pour toi"
-        body="Programme de musculation personnalisé, menus et liste de courses calés sur tes calories, et un bilan chaque semaine pour tout ajuster."
-        actionLabel="Découvrir Premium"
+        title="A fitness coach of your own"
+        body="A strength programme built for you, meals and a shopping list matched to your calories, and a weekly check-in that adjusts all of it."
+        actionLabel="See what Premium adds"
         onAction={() => router.push('/paywall?source=locked')}
       />
     );
@@ -93,8 +93,8 @@ export default function FitnessScreen() {
       <EmptyState
         icon="chatbubbles-outline"
         title="Faisons connaissance"
-        body="Quelques questions sur tes objectifs, ton niveau et tes habitudes, et ton coach te prépare un programme sur mesure."
-        actionLabel="Commencer le questionnaire"
+        body="A few questions about your goals, your level and your habits, and your coach builds a programme around them."
+        actionLabel="Start the questionnaire"
         onAction={() => router.push('/fitness/questionnaire')}
       />
     );
@@ -106,17 +106,17 @@ export default function FitnessScreen() {
           title="Ton programme t'attend"
           body={
             generateMutation.isPending
-              ? 'Préparation de tes séances, de tes menus et de ta liste de courses…'
-              : 'Séances, menus et liste de courses, calés sur ton profil.'
+              ? 'Preparing your sessions, your meals and your shopping list…'
+              : 'Sessions, meals and a shopping list, matched to your profile.'
           }
-          actionLabel="Générer mon programme"
+          actionLabel="Build my programme"
           onAction={() => generateMutation.mutate()}
           actionLoading={generateMutation.isPending}
         />
         {generateMutation.isError ? <InlineNotice tone="error" message={errorMessage(generateMutation.error)} /> : null}
         {fitness.targets ? (
           <View style={{ marginTop: 28 }}>
-            <SectionHeader title="Tes objectifs" actionLabel="Modifier" onAction={() => router.push('/fitness/questionnaire')} />
+            <SectionHeader title="Your goals" actionLabel="Edit" onAction={() => router.push('/fitness/questionnaire')} />
             <TargetsCard targets={fitness.targets} />
           </View>
         ) : null}
@@ -139,21 +139,21 @@ export default function FitnessScreen() {
         </Appear>
         {!fitness.schedule.training_slot ? (
           <Text variant="caption" tone="ink2" style={{ marginTop: 10 }}>
-            Indique quand tu t'entraînes dans ton profil forme pour voir l'heure de tes séances.
+            Set your training times in your fitness profile to see when each session falls.
           </Text>
         ) : null}
 
         {fitness.adjustments && fitness.lastCheckin ? (
           <Appear index={2}>
             <Card variant="tinted" style={{ marginTop: 16 }}>
-              <Text variant="label">Ton programme a été adapté</Text>
+              <Text variant="label">Your programme has been adapted</Text>
               <Text variant="caption" tone="ink2" style={{ marginTop: 2, marginBottom: 12 }}>
-                Après ton bilan du {formatDateTimeLabel(fitness.lastCheckin.created_at).toLowerCase()}
+                After your check-in on {formatDateTimeLabel(fitness.lastCheckin.created_at)}
               </Text>
               <AdjustmentsList adjustments={showAllAdjustments ? fitness.adjustments : fitness.adjustments.slice(0, 2)} />
               {fitness.adjustments.length > 2 ? (
                 <TextLink
-                  label={showAllAdjustments ? 'Voir moins' : `Voir les ${fitness.adjustments.length} changements`}
+                  label={showAllAdjustments ? 'Show less' : `See all ${fitness.adjustments.length} changes`}
                   icon={showAllAdjustments ? 'chevron-up' : 'chevron-down'}
                   onPress={() => setShowAllAdjustments((v) => !v)}
                 />
@@ -165,7 +165,7 @@ export default function FitnessScreen() {
         {fitness.targets ? (
           <Appear index={3}>
             <View style={{ marginTop: 28 }}>
-              <SectionHeader title="Tes objectifs" actionLabel="Modifier" onAction={() => router.push('/fitness/questionnaire')} />
+              <SectionHeader title="Your goals" actionLabel="Edit" onAction={() => router.push('/fitness/questionnaire')} />
               <TargetsCard targets={fitness.targets} />
             </View>
           </Appear>
@@ -181,7 +181,7 @@ export default function FitnessScreen() {
 
         <Appear index={5}>
           <View style={{ marginTop: 28 }}>
-            <SectionHeader title="Tes séances de la semaine" actionLabel="Voir tout" onAction={() => router.push('/fitness/program')} />
+            <SectionHeader title="Your sessions this week" actionLabel="See all" onAction={() => router.push('/fitness/program')} />
             <WeekTracker days={fitness.tracker} />
           </View>
         </Appear>
@@ -190,26 +190,26 @@ export default function FitnessScreen() {
           <View style={{ marginTop: 20 }}>
             <ListRow
               icon="restaurant-outline"
-              title="Nutrition de la semaine"
-              subtitle={`${plan.meals.length} journées types et ta liste de courses`}
+              title="Nutrition this week"
+              subtitle={`${plan.meals.length} sample days and your shopping list`}
               onPress={() => router.push('/fitness/nutrition')}
               divider
             />
             <ListRow
               icon="clipboard-outline"
-              title="Faire mon bilan de la semaine"
+              title="Do my weekly check-in"
               subtitle={
                 fitness.lastCheckin
                   ? `Dernier bilan : ${formatDateTimeLabel(fitness.lastCheckin.created_at).toLowerCase()}`
-                  : 'Ton coach ajuste ensuite ton programme'
+                  : 'Your coach then adjusts your programme'
               }
               onPress={() => router.push('/fitness/checkin')}
               divider
             />
             <ListRow
               icon="chatbubbles-outline"
-              title="Poser une question à mon coach"
-              subtitle="Séances, repas, récupération"
+              title="Ask my coach a question"
+              subtitle="Sessions, meals, recovery"
               onPress={() => router.push('/coach?sujet=forme')}
             />
           </View>
@@ -224,13 +224,13 @@ export default function FitnessScreen() {
       {recalcule === '1' ? (
         <InlineNotice
           tone="success"
-          message="Ton programme, tes menus et ta liste de courses ont été recalculés à partir de ton nouveau profil."
+          message="Your programme, your meals and your shopping list have been recalculated from your new profile."
         />
       ) : null}
       {body}
       <Text variant="caption" tone="ink3" style={{ marginTop: 28 }}>
-        Regain ne remplace pas l&apos;avis d&apos;un médecin ou d&apos;un diététicien. En cas de problème de santé, de blessure ou
-        de grossesse, demande conseil à un professionnel avant de commencer.
+        Regain is not a substitute for a doctor or a dietitian. If you have a health condition, an
+        injury or are pregnant, speak to a professional before you start.
       </Text>
     </Screen>
   );

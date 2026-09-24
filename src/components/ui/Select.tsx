@@ -243,7 +243,7 @@ export function SelectMulti<T extends string>({
       <Field
         label={label}
         value={summary}
-        hint={chosen.length > 1 ? `${chosen.length} sélectionnés` : undefined}
+        hint={chosen.length > 1 ? `${chosen.length} selected` : undefined}
         placeholder={placeholder}
         onPress={() => setOpen(true)}
       />
@@ -252,7 +252,7 @@ export function SelectMulti<T extends string>({
         title={title ?? label}
         subtitle={subtitle ?? 'Plusieurs choix possibles'}
         onClose={() => setOpen(false)}
-        footer={<Button label="Terminé" onPress={() => setOpen(false)} />}
+        footer={<Button label="Done" onPress={() => setOpen(false)} />}
       >
         <GroupedRows
           options={options}

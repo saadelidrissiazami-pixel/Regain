@@ -54,7 +54,7 @@ export default function SettingsScreen() {
     mutationFn: async (next: boolean) => {
       if (next) {
         const granted = await enableDailyReminder();
-        if (!granted) throw new Error("Autorise les notifications pour Regain dans les réglages de l'appareil.");
+        if (!granted) throw new Error('Allow notifications for Regain in your device settings.');
         if (session?.user.id) {
           const { plan, availability } = await fetchCurrentWeek(session.user.id);
           await scheduleActivityReminders(plan, availability);
@@ -105,7 +105,7 @@ export default function SettingsScreen() {
 
   return (
     <Screen>
-      <ScreenHeader title="Paramètres" subtitle={email} onBack={() => goBack('/(tabs)/profile')} />
+      <ScreenHeader title="Settings" subtitle={email} onBack={() => goBack('/(tabs)/profile')} />
 
       <Section title="Apparence">
         <SegmentedControl<ThemeMode>
@@ -120,7 +120,7 @@ export default function SettingsScreen() {
           ]}
         />
         <Text variant="caption" tone="ink2" style={{ marginTop: 10 }}>
-          En automatique, Regain suit le réglage clair ou sombre de ton téléphone.
+          On automatic, Regain follows your phone's light or dark setting.
         </Text>
       </Section>
 
@@ -128,7 +128,7 @@ export default function SettingsScreen() {
         <ListRow
           icon="notifications-outline"
           title="Rappels"
-          subtitle="Un signe à 8 h pour préférer une respiration aux réseaux, et un rappel à l'heure de chaque activité."
+          subtitle="A nudge at 8 am to pick breathing over scrolling, and a reminder when each activity is due."
           chevron={false}
           divider
           subtitleLines={4}
@@ -148,7 +148,7 @@ export default function SettingsScreen() {
           title="Calendrier"
           subtitle={
             calendarUnavailableReason ??
-            'Ajoute automatiquement chaque planning dans un calendrier « Regain », aux heures de tes disponibilités.'
+            'Automatically adds each plan to a “Regain” calendar, at the times you are free.'
           }
           chevron={false}
           subtitleLines={4}
@@ -160,7 +160,7 @@ export default function SettingsScreen() {
                 value={!!calendarQuery.data}
                 onValueChange={(v) => toggleCalendar.mutate(v)}
                 disabled={calendarQuery.isLoading}
-                accessibilityLabel="Synchroniser le calendrier"
+                accessibilityLabel="Sync the calendar"
                 {...switchProps}
               />
             )
@@ -170,13 +170,13 @@ export default function SettingsScreen() {
         {toggleCalendar.isSuccess && toggleCalendar.data !== null ? (
           <InlineNotice
             tone="success"
-            message={`${toggleCalendar.data} activité${toggleCalendar.data > 1 ? 's' : ''} de la semaine ajoutée${
+            message={`${toggleCalendar.data} activit${toggleCalendar.data > 1 ? 'ies' : 'y'} from this week added${
               toggleCalendar.data > 1 ? 's' : ''
             }. Les prochains plannings suivront automatiquement.`}
           />
         ) : null}
         {toggleCalendar.isSuccess && toggleCalendar.data === null ? (
-          <InlineNotice message="Synchronisation coupée : les activités à venir ont été retirées du calendrier." />
+          <InlineNotice message="Syncing is off: upcoming activities have been removed from the calendar." />
         ) : null}
       </Section>
 
@@ -185,17 +185,17 @@ export default function SettingsScreen() {
         {isDevUnlock ? (
           <>
             <Text variant="caption" tone="ink2" style={{ marginTop: 4 }}>
-              Débloqué pour le développement : les achats ne sont pas disponibles ici, un build de production demandera un vrai abonnement.
+              Unlocked for development. Purchases are unavailable here; a production build will ask for a real subscription.
             </Text>
-            <Button label="Voir l'écran d'abonnement" variant="outline" size="md" onPress={() => router.push('/paywall')} style={{ marginTop: 12 }} />
+            <Button label="See the subscription screen" variant="outline" size="md" onPress={() => router.push('/paywall')} style={{ marginTop: 12 }} />
           </>
         ) : isPremium ? (
           <>
             <Text variant="caption" tone="ink2" style={{ marginTop: 4 }}>
-              Modifie ou résilie ton abonnement à tout moment depuis ton compte App Store / Google Play.
+              Change or cancel your subscription any time from your App Store / Google Play account.
             </Text>
             <Button
-              label="Gérer mon abonnement"
+              label="Manage my subscription"
               variant="outline"
               size="md"
               loading={manageSubscription.isPending}
@@ -206,20 +206,20 @@ export default function SettingsScreen() {
         ) : (
           <>
             <Text variant="caption" tone="ink2" style={{ marginTop: 4 }}>
-              Passe à Premium pour le coach forme et toute la bibliothèque bien-être.
+              Go Premium for the fitness coach and the whole wellbeing library.
             </Text>
-            <Button label="Découvrir Premium" size="md" onPress={() => router.push('/paywall')} style={{ marginTop: 12 }} />
+            <Button label="See what Premium adds" size="md" onPress={() => router.push('/paywall')} style={{ marginTop: 12 }} />
           </>
         )}
       </Section>
 
-      <Section title="Confidentialité">
+      <Section title="Privacy">
         <Text variant="caption" tone="ink2">
-          Notifications, calendrier et localisation restent facultatifs : ils ne s&apos;activent que si tu les autorises, et se coupent ici ou
-          dans les réglages de ton appareil.
+          Notifications, calendar and location stay optional: they only turn on if you allow them,
+          and they turn off here or in your device settings.
         </Text>
         <Button
-          label="Exporter mes données"
+          label="Export my data"
           variant="outline"
           size="md"
           icon="download-outline"
@@ -231,22 +231,22 @@ export default function SettingsScreen() {
 
         {confirmingDelete ? (
           <View style={{ marginTop: 14, borderRadius: 14, padding: 14, backgroundColor: theme.fat }}>
-            <Text variant="bodySm">Supprimer définitivement ton compte et toutes tes données ? Cette action est irréversible.</Text>
+            <Text variant="bodySm">Permanently delete your account and all your data? This cannot be undone.</Text>
             {isPremium && !isDevUnlock ? (
               <Text variant="caption" tone="ink2" style={{ marginTop: 6 }}>
-                Supprimer le compte ne résilie pas l&apos;abonnement : pense à le résilier depuis « Gérer mon abonnement ».
+                Deleting the account does not cancel the subscription — cancel it from “Manage my subscription”.
               </Text>
             ) : null}
             <View style={{ flexDirection: 'row', gap: 8, marginTop: 12 }}>
               <Button
-                label="Supprimer définitivement"
+                label="Delete permanently"
                 variant="destructive"
                 size="md"
                 fullWidth={false}
                 loading={deleteMutation.isPending}
                 onPress={() => deleteMutation.mutate()}
               />
-              <Button label="Annuler" variant="ghost" size="md" fullWidth={false} onPress={() => setConfirmingDelete(false)} />
+              <Button label="Cancel" variant="ghost" size="md" fullWidth={false} onPress={() => setConfirmingDelete(false)} />
             </View>
             {deleteMutation.isError ? <InlineNotice tone="error" message={errorMessage(deleteMutation.error)} /> : null}
           </View>
@@ -255,7 +255,7 @@ export default function SettingsScreen() {
         )}
       </Section>
 
-      <Button label="Se déconnecter" variant="outline" icon="log-out-outline" onPress={handleSignOut} />
+      <Button label="Sign out" variant="outline" icon="log-out-outline" onPress={handleSignOut} />
     </Screen>
   );
 }

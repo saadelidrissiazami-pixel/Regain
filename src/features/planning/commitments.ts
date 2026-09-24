@@ -1,13 +1,13 @@
-// Les engagements de la semaine : les séances d'entraînement et le passage aux courses.
+// The week's commitments: the training sessions and the trip to the shops.
 //
-// Ils viennent du programme forme, qui existe déjà. Rien n'est recopié ni enregistré une seconde
-// fois : on les recalcule à la lecture, et chaque carte renvoie à l'écran qui fait autorité. Une
-// deuxième version du programme dans le planning finirait fatalement par diverger de la première.
+// They come from the fitness programme, which already exists. Nothing is copied or stored a
+// second time: they are recomputed on read, and every row points back to the screen that owns
+// them. A second copy of the programme inside the plan would eventually disagree with the first.
 //
-// Ils se distinguent des activités proposées par le moteur de règles : une activité est une
-// suggestion, qui disparaît sans rien devoir si on l'ignore ; une séance est quelque chose que la
-// personne s'est engagée à faire. Le statut et la nature sont deux choses différentes, et une
-// séance passée sans retour n'est pas une séance ratée — c'est une séance dont on ne sait rien.
+// They are not the same thing as the activities the rule engine suggests. An activity is a
+// suggestion, and ignoring it costs nothing; a session is something the person committed to.
+// Status and nature are two different things, and a past session with no feedback is not a failed
+// session — it is a session nobody knows anything about.
 
 import { DEFAULT_SLOT_START } from './schedule';
 import { sessionTitle } from '../fitness/schedule';
@@ -22,29 +22,29 @@ export type PlanningCommitment = {
   id: string;
   kind: 'entrainement' | 'courses';
   date: string;
-  /** « 19:00 », ou null quand la personne n'a pas dit à quelle heure elle s'entraîne. */
+  /** “19:00”, or null when the person has not said what time they train. */
   startTime: string | null;
   title: string;
   subtitle: string;
   durationMinutes: number;
-  /** L'écran qui fait autorité : le planning ne fait que pointer vers lui. */
+  /** The screen that owns this: the plan only points at it. */
   href: string;
   status: CommitmentStatus;
 };
 
-/** Temps réservé pour les courses : le trajet et le rangement comptent autant que le magasin. */
+/** Time set aside for shopping: getting there and putting it away count as much as the shop. */
 export const SHOPPING_MINUTES = 60;
 
 function workoutMinutes(session: WorkoutSession | undefined): number {
-  // Prévoir un peu plus que la séance elle-même : on se change, on s'installe, on récupère.
+  // Allow a little more than the session itself: getting changed, setting up, recovering.
   const exercises = session?.exercises.length ?? 5;
   return 15 + exercises * 6;
 }
 
 /**
- * Les séances de la semaine, une par jour d'entraînement.
- * `tracker` vient de buildWeekTracker : il sait déjà quels jours sont des jours d'entraînement et
- * lesquels ont été honorés.
+ * The week's sessions, one per training day.
+ * `tracker` comes from buildWeekTracker, which already knows which days are training days and
+ * which ones were honoured.
  */
 export function workoutCommitments({
   tracker,
@@ -73,22 +73,22 @@ export function workoutCommitments({
         date: day.date,
         startTime,
         title: sessionTitle(session),
-        subtitle: `${session.exercises.length} exercices`,
+        subtitle: `${session.exercises.length} exercises`,
         durationMinutes: workoutMinutes(session),
         href: `/fitness/workout/${sessionIndex}`,
-        // Un jour passé sans validation reste « inconnu » : on ne décrète pas un échec à la
-        // place de quelqu'un qui a peut-être fait sa séance sans ouvrir l'application.
+        // A past day with nothing ticked stays “unknown”. We do not declare a failure on behalf
+        // of someone who may well have trained without opening the app.
         status: day.done ? ('realise' as const) : day.date < today ? ('inconnu' as const) : ('a_faire' as const),
       };
     });
 }
 
 /**
- * Le passage aux courses, une fois dans la semaine.
+ * The trip to the shops, once in the week.
  *
- * Il n'y a pas de bon jour universel : ce qui compte, c'est d'acheter avant le premier repas qui
- * en dépend, et de ne pas empiler les courses sur un jour d'entraînement. On prend donc le
- * prochain jour libre à venir ; s'il n'y en a plus, le prochain jour tout court.
+ * There is no universally right day: what matters is buying before the first meal that depends on
+ * it, and not stacking the shopping on top of a training day. So we take the next free day
+ * coming up, and failing that simply the next day.
  */
 export function shoppingCommitment({
   tracker,
@@ -109,15 +109,15 @@ export function shoppingCommitment({
     kind: 'courses',
     date: day.date,
     startTime: null,
-    title: 'Faire les courses',
-    subtitle: `${itemCount} articles pour tes menus`,
+    title: 'Do the shopping',
+    subtitle: `${itemCount} items for your meals`,
     durationMinutes: SHOPPING_MINUTES,
     href: '/fitness/nutrition',
     status: 'a_faire',
   };
 }
 
-/** Tous les engagements de la semaine, dans l'ordre chronologique. */
+/** Every commitment of the week, in chronological order. */
 export function weekCommitments(input: {
   tracker: WeekTrackerDay[];
   program: WorkoutSession[];

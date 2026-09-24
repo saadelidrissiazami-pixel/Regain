@@ -14,7 +14,7 @@ export function ScreenHeader({
   subtitle,
   right,
   onBack,
-  backLabel = 'Retour',
+  backLabel = 'Back',
   size = 'title',
 }: {
   overline?: string;
