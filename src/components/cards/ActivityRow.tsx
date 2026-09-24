@@ -8,7 +8,7 @@ import { PressableScale } from '../ui/motion';
 import { Tag } from '../ui/Tag';
 import { Text } from '../ui/Text';
 
-/** Ligne du planning : heure dans une case, activité, et sa coche de complétion. */
+/** A row of the plan: the time in a box, the activity, and its completion tick. */
 export function ActivityRow({
   time,
   activity,

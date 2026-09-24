@@ -6,7 +6,7 @@ import { Card } from '../ui/Card';
 import { ProgressBar } from '../ui/motion';
 import { Text } from '../ui/Text';
 
-/** Progression de la semaine : « 3 sur 8 activités », barre et pourcentage. */
+/** The week's progress: “3 of 8 activities”, a bar and a percentage. */
 export function WeekProgressCard({ done, total, onPress }: { done: number; total: number; onPress?: () => void }) {
   const theme = useTheme();
   const ratio = total > 0 ? done / total : 0;

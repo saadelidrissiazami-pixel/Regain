@@ -14,10 +14,10 @@ import Animated, {
   withTiming,
 } from 'react-native-reanimated';
 
-// Les animations d'entrée Reanimated suivent le réglage « Réduire les animations » du système ;
-// les boucles (Skeleton, Wiggle) le vérifient elles-mêmes.
+// Reanimated's entering animations follow the system's “Reduce Motion” setting; the loops
+// (Skeleton, Wiggle) check it themselves.
 
-/** Retour haptique discret (ignoré sur le web). */
+/** Quiet haptic feedback (ignored on the web). */
 export const haptic = {
   light: () => {
     if (Platform.OS !== 'web') Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light).catch(() => {});
@@ -35,8 +35,8 @@ export const haptic = {
 
 const LAYOUT = LinearTransition.duration(220);
 
-/** Apparition en glissant vers le haut, décalée selon la position dans la liste. Anime aussi
- *  les changements de taille et de position (cartes qui s'ouvrent, éléments retirés). */
+/** Appears sliding upwards, staggered by position in the list. Also animates changes of
+ *  size and position (cards opening, items removed). */
 export function Appear({
   index = 0,
   children,
@@ -63,13 +63,13 @@ export function Appear({
 
 type PressableScaleProps = PressableProps & {
   className?: string;
-  /** Style du conteneur animé (utile quand le bouton doit prendre `flex: 1`). */
+  /** The animated container's style (useful when the button needs `flex: 1`). */
   wrapperStyle?: StyleProp<ViewStyle>;
   scaleTo?: number;
   feedback?: keyof typeof haptic | null;
 };
 
-/** Pressable qui s'enfonce légèrement au toucher, avec un retour haptique. */
+/** A Pressable that sinks slightly on touch, with haptic feedback. */
 export function PressableScale({
   wrapperStyle,
   scaleTo = 0.98,
@@ -105,7 +105,7 @@ export function PressableScale({
   );
 }
 
-/** Petit rebond quand `trigger` change (coche, sélection…). */
+/** A small bounce when `trigger` changes (a tick, a selection…). */
 export function Pop({ trigger, children, style }: { trigger: unknown; children: ReactNode; style?: StyleProp<ViewStyle> }) {
   const scale = useSharedValue(1);
   const first = useRef(true);
@@ -120,7 +120,7 @@ export function Pop({ trigger, children, style }: { trigger: unknown; children: 
   return <Animated.View style={[style, animatedStyle]}>{children}</Animated.View>;
 }
 
-/** Chevron qui pivote en douceur à l'ouverture d'une section. */
+/** A chevron that turns gently when a section opens. */
 export function Chevron({ open, children }: { open: boolean; children: ReactNode }) {
   const rotation = useSharedValue(open ? 90 : 0);
   useEffect(() => {
@@ -130,7 +130,7 @@ export function Chevron({ open, children }: { open: boolean; children: ReactNode
   return <Animated.View style={animatedStyle}>{children}</Animated.View>;
 }
 
-/** Barre de progression qui se remplit jusqu'à `progress` (0..1). */
+/** A progress bar that fills up to `progress` (0..1). */
 export function ProgressBar({
   progress,
   color,
@@ -168,7 +168,7 @@ export function ProgressBar({
   );
 }
 
-/** Valeur numérique qui défile jusqu'à sa cible (compteurs, anneaux de progression). */
+/** A number that counts up to its target (counters, progress rings). */
 export function useAnimatedNumber(target: number, duration = 800): number {
   const reduceMotion = useReducedMotion();
   const [value, setValue] = useState(reduceMotion ? target : 0);
@@ -198,7 +198,7 @@ export function useAnimatedNumber(target: number, duration = 800): number {
   return value;
 }
 
-/** Bloc gris qui pulse pendant un chargement, à la place d'un simple indicateur. */
+/** A grey block that pulses while loading, in place of a plain spinner. */
 export function Skeleton({ height, style }: { height: number; style?: StyleProp<ViewStyle> }) {
   const theme = useTheme();
   const reduceMotion = useReducedMotion();
@@ -216,7 +216,7 @@ export function Skeleton({ height, style }: { height: number; style?: StyleProp<
   );
 }
 
-/** Léger balancement répété, pour attirer l'œil sur une réussite (🎉, 🔥). */
+/** A slight repeated sway, to draw the eye to something achieved (🎉, 🔥). */
 export function Wiggle({ children, active = true }: { children: ReactNode; active?: boolean }) {
   const reduceMotion = useReducedMotion();
   const rotation = useSharedValue(0);

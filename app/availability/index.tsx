@@ -73,8 +73,8 @@ export default function AvailabilityScreen() {
     },
   });
 
-  // Tout effacer d'un coup se confirme, comme la suppression d'un seul créneau : c'est la même
-  // action, en plus définitif.
+  // Clearing everything at once is confirmed, like deleting a single slot: it is the same
+  // action, only more final.
   const [confirmingClearAll, setConfirmingClearAll] = useState(false);
 
   const clearAllMutation = useMutation({

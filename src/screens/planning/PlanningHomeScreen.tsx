@@ -36,8 +36,8 @@ export default function PlanningHomeScreen() {
   const hasPlan = view.totalCount > 0;
   const allDone = hasPlan && view.doneCount === view.totalCount;
 
-  // Activités à venir triées par jour puis par heure. Ce qui est déjà fini aujourd'hui (non coché)
-  // ne peut pas être « maintenant » : il reste à cocher depuis la semaine.
+  // Upcoming activities sorted by day then by time. Anything already over today but unticked
+  // cannot be “now”: it is still to be ticked off from the week.
   const upcoming = view.upcomingDays.flatMap(({ items }) => [...items].sort((a, b) => startOf(a).localeCompare(startOf(b))));
   const over = (item: PlannedActivityRow) =>
     item.date === today && isOver(item.date, startOf(item), item.activities_catalog.duration_minutes, now);
@@ -45,7 +45,7 @@ export default function PlanningHomeScreen() {
   const toCheck = upcoming.filter(over).length + view.pastPending.length;
   const next = active[0];
   const after = active[1];
-  // Trois au maximum : l'écran d'accueil propose, il ne récite pas l'agenda de la semaine.
+  // Three at most: the home screen suggests, it does not recite the week's diary.
   const aVenir = commitments.filter((engagement) => engagement.status === 'a_faire').slice(0, 3);
   const pendingToday = active.filter((item) => item.date === today).length;
 

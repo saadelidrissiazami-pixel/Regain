@@ -5,8 +5,8 @@ import MapView, { Marker, Polyline } from 'react-native-maps';
 import type { Coords } from '../../lib/location';
 import { useTheme } from '../../theme/ThemeProvider';
 
-// Version mobile (iOS : Apple Maps, sans clé). Le web utilise RouteMap.web.tsx, react-native-maps
-// n'ayant pas d'implémentation navigateur.
+// The mobile version (iOS: Apple Maps, no key). The web uses RouteMap.web.tsx, since
+// react-native-maps has no browser implementation.
 export function RouteMap({ path, start }: { path: Coords[]; start: Coords }) {
   const theme = useTheme();
   const mapRef = useRef<MapView>(null);

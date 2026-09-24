@@ -9,15 +9,15 @@ const WIDTH = 320;
 const HEIGHT = 220;
 const PADDING = 18;
 
-// react-native-maps n'existe pas sur le web : l'aperçu navigateur montre un schéma fidèle du
-// tracé (mêmes coordonnées, proportions conservées) au lieu d'une carte interactive.
+// react-native-maps does not exist on the web: the browser preview shows a faithful diagram of
+// the route (same coordinates, proportions kept) instead of an interactive map.
 export function RouteMap({ path, start }: { path: Coords[]; start: Coords }) {
   const theme = useTheme();
   const lats = path.map((p) => p.latitude);
   const lons = path.map((p) => p.longitude);
   const minLat = Math.min(...lats);
   const minLon = Math.min(...lons);
-  // Un degré de longitude rétrécit avec la latitude : on corrige pour garder la forme réelle.
+  // A degree of longitude shrinks with latitude: corrected here to keep the real shape.
   const lonFactor = Math.cos((start.latitude * Math.PI) / 180);
   const spanLat = Math.max(Math.max(...lats) - minLat, 1e-6);
   const spanLon = Math.max((Math.max(...lons) - minLon) * lonFactor, 1e-6);

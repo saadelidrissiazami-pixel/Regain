@@ -6,9 +6,9 @@ export type WellbeingProgram = {
   session_count: number;
   premium_only: boolean;
   duration_minutes: number;
-  /** Parcours auquel cette séance appartient, s il y en a un. */
+  /** The course this session belongs to, if there is one. */
   course_slug: string | null;
-  /** Rang du jour dans ce parcours, à partir de 1. */
+  /** The day's rank within that course, from 1. */
   course_day: number | null;
 };
 
@@ -21,23 +21,23 @@ export type GroundingStep =
   | { kind: 'breath-counter'; text: string; count: number };
 
 /**
- * Un bloc de séance narrée : du texte, puis un vrai silence pour le vivre.
- * La durée de la séance se déduit de ses blocs, au lieu d'être annoncée à côté.
+ * One block of a narrated session: some text, then a real silence to live it in.
+ * The session's length is derived from its blocks, rather than stated alongside them.
  */
 export type NarratedBlock = {
   text: string;
-  /** Durée de diction visée. Estimée depuis le texte si absente. */
+  /** The intended speaking time. Estimated from the text when absent. */
   speakSeconds?: number;
-  /** Silence qui suit le texte, en secondes. Zéro est permis, mais rare. */
+  /** The silence that follows the text, in seconds. Zero is allowed, but rare. */
   silenceSeconds: number;
 };
 
 export type ProgramContent =
   | { type: 'breathing'; cycles: number; phases: BreathingPhase[]; intro?: NarratedBlock[]; outro?: NarratedBlock[] }
   /**
-   * Séance qui se déroule seule, sans rien demander.
-   * `endsQuietly` s'arrête après la dernière seconde, sans proposer de bilan : c'est ce qu'il
-   * faut pour une séance qu'on écoute au lit, où l'on ne veut plus rien avoir à faire.
+   * A session that runs on its own, asking for nothing.
+   * `endsQuietly` stops after the last second with no review offered: that is what a session
+   * listened to in bed needs, where there is nothing left anyone wants to do.
    */
   | { type: 'narrated'; blocks: NarratedBlock[]; endsQuietly?: boolean }
   | { type: 'grounding'; steps: GroundingStep[] };

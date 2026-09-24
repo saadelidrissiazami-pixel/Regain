@@ -2,7 +2,7 @@ import type { CatalogActivity } from '../../features/planning/catalog';
 import { computeActivityFit } from '../../features/planning/recommendation';
 import type { UserPreferences } from '../../lib/planning';
 
-/** Pourquoi cette activité est proposée, en une phrase (null si on n'a rien de précis à dire). */
+/** Why this activity is suggested, in one sentence (null when there is nothing specific to say). */
 export function activityReason(activity: CatalogActivity, prefs: UserPreferences | undefined): string | null {
   if (!prefs) return null;
   const fit = computeActivityFit(activity, prefs);

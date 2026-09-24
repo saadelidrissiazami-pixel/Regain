@@ -11,7 +11,7 @@ import { Pill } from '../ui/Tag';
 import { Text } from '../ui/Text';
 import { Thumbnail } from '../ui/Thumbnail';
 
-/** Prochaine séance : quand, quoi, combien de temps, et le bouton pour commencer. */
+/** The next session: when, what, how long, and the button to start. */
 export function WorkoutHeroCard({
   when,
   session,

@@ -46,7 +46,7 @@ function MenuTile({ icon, title, onPress }: { icon: IconName; title: string; onP
   );
 }
 
-/** Profil : « Comment gérer mon expérience ? » */
+/** Profile: “How do I manage my experience?” */
 export default function ProfileScreen() {
   const theme = useTheme();
   const session = useAuthStore((s) => s.session);

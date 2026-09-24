@@ -15,7 +15,7 @@ function stopSpeech() {
   try {
     Speech.stop();
   } catch {
-    // La synthèse vocale n'est pas disponible ici.
+    // Speech synthesis is not available here.
   }
 }
 
@@ -35,7 +35,7 @@ function Dots({ count, index }: { count: number; index: number }) {
   );
 }
 
-/** Pendant un silence : un point qui respire, pour dire que la séance continue. */
+/** During a silence: a dot that breathes, to say the session is still going. */
 function SilenceBreath() {
   const theme = useTheme();
   const reducedMotion = useReducedMotion();
@@ -56,11 +56,11 @@ function SilenceBreath() {
 }
 
 /**
- * Séance narrée : elle se déroule seule, il n'y a rien à toucher.
+ * A narrated session: it runs on its own, and there is nothing to tap.
  *
- * Le bloc affiché n'est pas un état, il se déduit du temps écoulé. Pause, reprise et ±15 s
- * tombent donc juste sans code supplémentaire, et le minuteur cesse d'être décoratif : quand
- * l'horloge arrive au bout, la séance est réellement finie.
+ * The block on screen is not a piece of state, it is derived from the time elapsed. Pause,
+ * resume and ±15 s therefore land correctly with no extra code, and the timer stops being
+ * decorative: when the clock runs out, the session really is over.
  */
 function NarratedSequence({
   blocks,
@@ -75,8 +75,8 @@ function NarratedSequence({
 }) {
   const position = blockAt(blocks, elapsed);
 
-  // La voix dit le bloc une fois, à son entrée — jamais pendant le silence, qui est le cœur de
-  // l'exercice. Une pause la coupe, et la reprise redit le bloc en cours depuis le début.
+  // The voice says the block once, as it begins — never during the silence, which is the heart of
+  // the exercise. A pause cuts it, and resuming says the current block again from its start.
   const spokenRef = useRef(-1);
   const blockIndex = position?.index ?? -1;
   const phase = position?.phase;
@@ -109,7 +109,7 @@ function NarratedSequence({
   );
 }
 
-/** Déclenche `onDone` une seule fois, même si le parent recrée la fonction à chaque rendu. */
+/** Fires `onDone` exactly once, even if the parent recreates the function on every render. */
 function useFinishOnce(finished: boolean, onDone: () => void) {
   const doneRef = useRef(false);
   useEffect(() => {
@@ -120,7 +120,7 @@ function useFinishOnce(finished: boolean, onDone: () => void) {
   }, [finished, onDone]);
 }
 
-/** Intro ou conclusion d'une respiration : elle se déroule seule, et se saute d'un geste. */
+/** The intro or outro of a breathing session: it runs on its own, and skips in one move. */
 export function NarratedIntro({
   blocks,
   audioOn,
@@ -173,7 +173,7 @@ type BreathingState = {
   secondsLeft: number;
 };
 
-/** Respiration guidée : l'anneau suit les cycles, le cercle intérieur respire avec la phase. */
+/** Guided breathing: the ring follows the rounds, the inner circle breathes with the phase. */
 export function BreathingPlayer({
   cycles,
   phases,
@@ -192,7 +192,7 @@ export function BreathingPlayer({
   const theme = useTheme();
   const reduceMotion = useReducedMotion();
   const [paused, setPaused] = useState(false);
-  // Tick et changements de phase passent par un reducer pur, déclenché depuis l'intervalle.
+  // Ticks and phase changes go through a pure reducer, driven from the interval.
   const [{ stage, cycle, phaseIndex, secondsLeft }, dispatch] = useReducer(
     (state: BreathingState, action: 'start' | 'tick'): BreathingState => {
       if (action === 'start') return { ...state, stage: 'active' };
@@ -213,7 +213,7 @@ export function BreathingPlayer({
     const inhale = /inspir/i.test(phase.label);
     const target = inhale ? 1.35 : /retene|bloque|pause/i.test(phase.label) ? scale.get() : 0.9;
     scale.set(reduceMotion ? target : withTiming(target, { duration: secondsLeft * 1000 }));
-    // secondsLeft volontairement absent : on ne relance l'animation qu'à chaque nouvelle phase ou reprise.
+    // secondsLeft deliberately absent: the animation only restarts on a new phase or on resuming.
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [stage, cycle, phaseIndex, paused, phase.label, reduceMotion, scale]);
 
@@ -293,7 +293,7 @@ export function BreathingPlayer({
 
 const SCALE_VALUES = Array.from({ length: 11 }, (_, i) => i);
 
-/** Exercice d'ancrage pas à pas (texte, échelle 0-10, confirmation, respirations à compter). */
+/** A step-by-step grounding exercise (text, a 0-10 scale, a confirmation, breaths to count). */
 export function GroundingPlayer({
   steps,
   durationMinutes,

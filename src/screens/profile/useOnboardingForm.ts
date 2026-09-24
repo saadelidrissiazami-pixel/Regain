@@ -10,7 +10,7 @@ export const DEFAULT_ONBOARDING: OnboardingFormValues = {
   energyBySlot: { matin: 'moyen', apres_midi: 'moyen', soir: 'moyen' },
 };
 
-/** Réponses d'accueil (création ou édition) avec validation zod champ par champ. */
+/** The onboarding answers (creating or editing) with field-by-field zod validation. */
 export function useOnboardingForm(initial: OnboardingFormValues = DEFAULT_ONBOARDING) {
   const [values, setValues] = useState<OnboardingFormValues>(initial);
   const [errors, setErrors] = useState<Partial<Record<keyof OnboardingFormValues, string>>>({});
@@ -20,7 +20,7 @@ export function useOnboardingForm(initial: OnboardingFormValues = DEFAULT_ONBOAR
     setErrors((e) => ({ ...e, [key]: undefined }));
   };
 
-  /** Valide les champs demandés (tous par défaut) ; renvoie true si tout va bien. */
+  /** Validates the fields asked for (all of them by default); returns true when all is well. */
   const validate = (keys?: (keyof OnboardingFormValues)[]) => {
     const result = onboardingSchema.safeParse(values);
     if (result.success) return true;

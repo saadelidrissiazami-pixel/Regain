@@ -7,7 +7,7 @@ import { Appear, Button, Field, Screen, ScreenHeader, Text } from '../../../comp
 import { cleanReflections, promptsForCategory, type Reflection } from '../../../features/wellbeing/reflection';
 import type { SessionReview as Review } from '../../../lib/wellbeing';
 
-/** Après la séance : ressenti en 5 niveaux, questions ouvertes, petit mot. Tout est facultatif. */
+/** After the session: a rating on 5 levels, open questions, a note. All of it optional. */
 export function SessionReview({
   category,
   initialNote,
@@ -21,7 +21,7 @@ export function SessionReview({
   saving: boolean;
   error?: unknown;
   onSubmit: (review: Required<Pick<Review, 'mood' | 'reflections' | 'note'>>) => void;
-  /** Quitter sans noter : la séance compte quand même comme faite. */
+  /** Leaving without rating: the session still counts as done. */
   onSkip: () => void;
 }) {
   const prompts = promptsForCategory(category);

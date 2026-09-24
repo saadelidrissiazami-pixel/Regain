@@ -41,8 +41,8 @@ export function WalkingLoopCard({ durationMinutes }: { durationMinutes: number }
       setStartLabel(
         place.status === 'fulfilled' ? (place.value.road ?? place.value.neighbourhood ?? place.value.city) : null
       );
-      // Si le service de routage ne répond pas (réseau, quota), on garde une boucle indicative
-      // à la boussole plutôt que de laisser l'utilisateur sans rien.
+      // If the routing service does not answer (network, quota), keep an indicative loop drawn by
+      // compass rather than leaving the user with nothing.
       setResult(
         route.status === 'fulfilled'
           ? { kind: 'route', start, route: route.value }

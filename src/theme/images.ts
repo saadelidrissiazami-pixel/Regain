@@ -2,8 +2,8 @@ import type { ImageSourcePropType } from 'react-native';
 
 import type { ActivityCategory } from '../features/planning/types';
 
-// Photos d'ambiance (assets/images), générées pour Regain dans un même style : lumière douce,
-// sauge et crème. Une clé absente ici affiche le dégradé de secours de <Thumbnail>.
+// Mood photography (assets/images), generated for Regain in one style: soft light, sage and
+// cream. A key missing here shows <Thumbnail>'s fallback gradient instead.
 export type ImageKey =
   | 'wellbeingHero'
   | 'sessionLake'

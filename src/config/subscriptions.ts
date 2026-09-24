@@ -1,10 +1,10 @@
-// Identifiants à recréer À L'IDENTIQUE dans RevenueCat, App Store Connect et Google Play
-// Console (voir docs/abonnements.md). Un identifiant différent = Premium jamais débloqué.
+// Identifiers to recreate EXACTLY in RevenueCat, App Store Connect and the Google Play
+// Console (see docs/abonnements.md). A different identifier means Premium never unlocks.
 
-/** Droit d'accès (« entitlement ») RevenueCat qui débloque toutes les fonctionnalités Premium. */
+/** The RevenueCat entitlement that unlocks every Premium feature. */
 export const PREMIUM_ENTITLEMENT_ID = 'premium';
 
-/** Produits d'abonnement proposés, rattachés à l'offre « default » de RevenueCat. */
+/** The subscription products offered, attached to RevenueCat's “default” offering. */
 export const PRODUCT_IDS = {
   monthly: 'regain_premium_monthly',
   annual: 'regain_premium_annual',

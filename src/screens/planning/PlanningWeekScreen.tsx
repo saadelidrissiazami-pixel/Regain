@@ -37,7 +37,7 @@ function groupByDay(items: PlannedActivityRow[], startOf: (item: PlannedActivity
   }));
 }
 
-/** Planning complet : la semaine (ou le mois) en un coup d'œil, chaque activité cochable. */
+/** The full plan: the week (or the month) at a glance, every activity tickable. */
 export default function PlanningWeekScreen() {
   const planning = usePlanning();
   const { today, weekStart, items, planQuery, userId } = planning;

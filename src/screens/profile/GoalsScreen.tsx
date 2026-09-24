@@ -12,7 +12,7 @@ import { completeOnboarding, fetchProfile, fetchSleepMinutes } from '../../lib/p
 import { useAuthStore } from '../../store/authStore';
 import { useOnboardingForm } from './useOnboardingForm';
 
-/** Mes objectifs : prénom, sommeil, objectifs, budget et énergie habituelle, modifiables à tout moment. */
+/** My goals: first name, sleep, goals, budget and usual energy, all editable at any time. */
 export default function GoalsScreen() {
   const userId = useAuthStore((s) => s.session?.user.id);
   const queryClient = useQueryClient();

@@ -6,11 +6,11 @@ export type CategoryAffinity = Partial<Record<ActivityCategory, number>>;
 
 const MIN_SAMPLES = 2;
 
-// Ratio complétées/planifiées par catégorie, sur l'historique *passé* de l'utilisateur.
-// Les activités encore à venir sont exclues : comptées comme planifiées mais jamais encore
-// réalisées, elles feraient chuter mécaniquement le ratio de leur propre catégorie.
-// En dessous de MIN_SAMPLES occurrences, une catégorie reste neutre (0.5) plutôt que
-// de biaiser le planning avant d'avoir assez de signal réel.
+// The completed-to-planned ratio per category, over the user's *past* history.
+// Activities still ahead are excluded: counted as planned but never yet done, they would
+// mechanically drag down the ratio of their own category.
+// Below MIN_SAMPLES occurrences a category stays neutral (0.5) rather than skewing the plan
+// before there is enough real signal.
 export async function fetchCategoryAffinity(userId: string): Promise<CategoryAffinity> {
   const { data, error } = await supabase
     .from('planned_activities')

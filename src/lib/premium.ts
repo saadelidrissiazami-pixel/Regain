@@ -11,10 +11,10 @@ export function usePremium() {
     enabled: !!session?.user.id && isPurchasesConfigured,
     staleTime: 60_000,
   });
-  // Tant que les achats ne sont pas utilisables (Expo Go, preview web, clé RevenueCat absente),
-  // le Premium est débloqué en développement pour pouvoir tester les fonctionnalités payantes.
-  // Dès qu'une clé est présente dans un build (Test Store compris), c'est le vrai droit qui compte ;
-  // un build de production n'y donne jamais accès sans abonnement.
+  // While purchases are unusable (Expo Go, the web preview, a missing RevenueCat key), Premium is
+  // unlocked in development so the paid features can be tested.
+  // As soon as a key is present in a build (the Test Store included), the real entitlement is what
+  // counts; a production build never grants access without a subscription.
   // EXPO_PUBLIC_SIMULATE_FREE=1 : voir l'app comme un utilisateur gratuit (cadenas, paywall).
   if (__DEV__ && process.env.EXPO_PUBLIC_SIMULATE_FREE === '1') {
     return { isPremium: false, isLoading: false, isPurchasesConfigured, isDevUnlock: false };

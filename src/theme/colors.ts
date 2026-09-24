@@ -1,10 +1,10 @@
-// Couleurs de Regain : sauge claire le jour, vert-nuit en mode sombre. Chaque clé devient une
+// Regain's colours: pale sage by day, night green in dark mode. Each key becomes a
 // variable CSS (lue par les classes Tailwind) et reste accessible en JS via useTheme().
 
 export type ColorScheme = 'light' | 'dark';
 
 export type Palette = {
-  /** Fond des écrans. */
+  /** The ground behind screens. */
   bg: string;
   /** Cartes, barre d'onglets, feuilles. */
   surface: string;
@@ -12,19 +12,19 @@ export type Palette = {
   ink: string;
   /** Texte secondaire. */
   ink2: string;
-  /** Texte tertiaire, légendes non essentielles. */
+  /** Tertiary text, captions that are not essential. */
   ink3: string;
   /** Bordure fine des cartes et champs. */
   line: string;
-  /** Séparateur entre lignes d'une liste. */
+  /** The divider between rows of a list. */
   divider: string;
-  /** Boutons principaux (vert foncé). */
+  /** Primary buttons (dark green). */
   primary: string;
-  /** Texte / icônes posés sur `primary`. */
+  /** Text and icons sitting on `primary`. */
   onPrimary: string;
   primary900: string;
   primary700: string;
-  /** Accent actif (onglet, lien, sélection). */
+  /** The active accent (a tab, a link, a selection). */
   primary600: string;
   primary500: string;
   sage100: string;
@@ -40,10 +40,10 @@ export type Palette = {
   protein: string;
   carbs: string;
   fat: string;
-  /** Carte Premium : crème / or. */
+  /** The Premium card: cream and gold. */
   premium: string;
   premiumInk: string;
-  /** Voile posé sur les photos pour garder le texte lisible. */
+  /** The scrim over photos that keeps text readable. */
   scrim: string;
 };
 
@@ -128,7 +128,7 @@ export function themeVariables(palette: Palette): Record<string, string> {
   );
 }
 
-/** `#RRGGBB` + opacité → `rgba(...)`, pour les voiles et les teintes ponctuelles. */
+/** `#RRGGBB` plus opacity → `rgba(...)`, for scrims and one-off tints. */
 export function withAlpha(hex: string, alpha: number): string {
   const [r, g, b] = toRgbTriplet(hex).split(' ');
   return `rgba(${r}, ${g}, ${b}, ${alpha})`;
@@ -144,7 +144,7 @@ function luminance(hex: string): number {
   return 0.2126 * r + 0.7152 * g + 0.0722 * b;
 }
 
-/** Rapport de contraste WCAG entre deux couleurs (1 à 21). */
+/** The WCAG contrast ratio between two colours (1 to 21). */
 export function contrastRatio(a: string, b: string): number {
   const [light, dark] = [luminance(a), luminance(b)].sort((x, y) => y - x);
   return (light + 0.05) / (dark + 0.05);

@@ -131,7 +131,7 @@ function ShoppingList({ items }: { items: ShoppingItem[] }) {
   );
 }
 
-/** Nutrition de la semaine : cibles, journées types et liste de courses. */
+/** Nutrition for the week: targets, sample days and the shopping list. */
 export default function NutritionScreen() {
   const fitness = useFitness();
   const [tab, setTab] = useState<'meals' | 'shopping'>('meals');
@@ -145,7 +145,7 @@ export default function NutritionScreen() {
       ) : fitness.isError ? (
         <ErrorState onRetry={() => fitness.refetch()} />
       ) : !fitness.isPremium ? (
-        // Sans ce cas, un compte gratuit arrivant ici lirait « génère ton programme » :
+        // Without this case, a free account arriving here would read “build your programme”:
         // une consigne qu'il ne peut pas suivre.
         <EmptyState
           icon="cart-outline"

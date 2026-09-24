@@ -23,13 +23,13 @@ export type TextTone =
 export type TextProps = RNTextProps & {
   variant?: TextVariant;
   tone?: TextTone;
-  /** Chiffres à chasse fixe (heures, compteurs). */
+  /** Tabular figures (times, counters). */
   tabular?: boolean;
   center?: boolean;
 };
 
-// React 19 ignore defaultProps sur les composants fonction : la police et la couleur par défaut
-// passent donc par ce composant, utilisé à la place de celui de react-native. Le style de
+// React 19 ignores defaultProps on function components, so the default font and colour come
+// through this component, used in place of react-native's own. The style of
 // l'appelant reste prioritaire.
 export const Text = forwardRef<RNText, TextProps>(
   ({ variant = 'body', tone = 'ink', tabular, center, style, maxFontSizeMultiplier, ...props }, ref) => {

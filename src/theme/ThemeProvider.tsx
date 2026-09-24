@@ -6,7 +6,7 @@ import { useColorScheme, View } from 'react-native';
 
 import { PALETTES, themeVariables, type ColorScheme, type Palette } from './colors';
 
-/** « auto » suit le réglage clair / sombre de l'appareil. */
+/** “auto” follows the device's light / dark setting. */
 export type ThemeMode = 'auto' | ColorScheme;
 
 const MODE_KEY = 'regain.theme.mode';
@@ -33,7 +33,7 @@ export function ThemeProvider({ children }: { children: ReactNode }) {
   useEffect(() => {
     AsyncStorage.getItem(MODE_KEY)
       .then((saved) => {
-        // Les anciennes valeurs (matin / après-midi / soir) retombent sur « auto ».
+        // The old values (matin / apres-midi / soir) fall back to “auto”.
         if (saved === 'light' || saved === 'dark') setModeState(saved);
       })
       .catch(() => {});
@@ -51,8 +51,8 @@ export function ThemeProvider({ children }: { children: ReactNode }) {
     () => ({ ...palette, scheme, dark: scheme === 'dark', mode, setMode }),
     [palette, scheme, mode]
   );
-  // Les variables sont posées dès le premier rendu (seules leurs valeurs changent ensuite) :
-  // NativeWind recrée sinon la vue et perd l'état de l'app.
+  // The variables are set on the first render (only their values change afterwards): otherwise
+  // NativeWind recreates the view and loses the app's state.
   const rootStyle = useMemo(() => [{ flex: 1, backgroundColor: palette.bg }, vars(themeVariables(palette))], [palette]);
 
   return (
@@ -63,7 +63,7 @@ export function ThemeProvider({ children }: { children: ReactNode }) {
   );
 }
 
-/** Palette active, pour ce que les classes Tailwind ne couvrent pas (icônes, SVG, dégradés). */
+/** The active palette, for what Tailwind classes do not cover (icons, SVG, gradients). */
 export function useTheme(): ThemeValue {
   return useContext(ThemeContext);
 }

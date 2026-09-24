@@ -33,7 +33,7 @@ const SLOTS: { value: TimeSlot; label: string }[] = [
   { value: 'soir', label: 'Soir' },
 ];
 
-/** Ajouter une activité du catalogue à un jour et un moment choisis. */
+/** Add an activity from the catalogue to a chosen day and time. */
 export default function AddActivityScreen() {
   const theme = useTheme();
   const params = useLocalSearchParams<{ date?: string }>();

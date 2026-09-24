@@ -96,7 +96,7 @@ function QuestionnaireForm({
     resolver: zodResolver(fitnessQuestionnaireSchema),
     defaultValues: defaults,
   });
-  // useWatch plutôt que watch() : watch n'est pas compatible avec la mémoïsation du compilateur React.
+  // useWatch rather than watch(): watch is not compatible with the React compiler's memoisation.
   const daysPerWeek = useWatch({ control, name: 'daysPerWeek' });
 
   const saveMutation = useMutation({
@@ -105,9 +105,9 @@ function QuestionnaireForm({
       await saveFitnessProfile(userId, profile);
       await saveTrainingSchedule(userId, { training_slot: slot, training_days: [...days].sort() });
 
-      // Un plan déjà enregistré décrit l'ancien profil. Sans ce recalcul, quelqu'un qui vient de
-      // déclarer une allergie continuerait de voir des repas qui la contiennent, et une liste de
-      // courses qui les achète. On garde la variation en cours : c'est sa semaine, corrigée.
+      // A plan already saved describes the old profile. Without this recalculation, somebody who
+      // has just declared an allergy would keep seeing meals that contain it, and a shopping list
+      // that buys them. The current variation is kept: it is their week, corrected.
       if (!initialProfile || !affectsPlan(initialProfile, profile)) return false;
       if ((await countFitnessPlans(userId)) === 0) return false;
       await createFitnessPlan(userId, profile, undefined, { keepVariation: true });
@@ -121,8 +121,8 @@ function QuestionnaireForm({
         queryClient.invalidateQueries({ queryKey: ['fitnessPlans', userId] }),
         queryClient.invalidateQueries({ queryKey: ['fitnessPlanCount', userId] }),
       ]);
-      // La liste de courses se lit au supermarché : on prévient plutôt que de la changer en
-      // silence sous les yeux de quelqu'un qui l'a déjà notée.
+      // The shopping list gets read in the supermarket: better to say so than to change it
+      // silently under the eyes of somebody who has already copied it down.
       if (planRefreshed) router.replace({ pathname: '/(tabs)/fitness', params: { recalcule: '1' } });
       else goBack('/(tabs)/fitness');
     },

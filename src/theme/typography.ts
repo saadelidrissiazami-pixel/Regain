@@ -11,7 +11,7 @@ const INTER: Record<FontWeight, string> = {
 };
 
 /**
- * SF Pro (police système) sur iOS, Inter ailleurs. Sur iOS, la graisse passe par fontWeight ;
+ * SF Pro (the system font) on iOS, Inter elsewhere. On iOS the weight goes through fontWeight;
  * avec Inter, chaque graisse est une famille distincte.
  */
 export function font(weight: FontWeight = 400): TextStyle {
@@ -62,5 +62,5 @@ export function variantMaxScale(variant: TextVariant): number {
   return TEXT_VARIANTS[variant].maxScale;
 }
 
-/** Chiffres à chasse fixe : heures et compteurs ne « sautent » pas quand ils changent. */
+/** Tabular figures: times and counters do not jump about as they change. */
 export const TABULAR: TextStyle = { fontVariant: ['tabular-nums'] };

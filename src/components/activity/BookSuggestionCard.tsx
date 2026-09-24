@@ -25,7 +25,7 @@ export function BookSuggestionCard({ primaryGoals }: { primaryGoals: string[] })
         </Text>
       </View>
       <Text variant="caption" tone="ink3" style={{ marginTop: 8 }}>
-        Idée clé reformulée à partir de ce texte du domaine public, pas une citation exacte.
+        A key idea put in our own words from this public-domain text, not an exact quotation.
       </Text>
     </Card>
   );

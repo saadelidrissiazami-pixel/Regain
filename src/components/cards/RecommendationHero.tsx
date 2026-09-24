@@ -61,7 +61,7 @@ function Slide({ item, width, onStart }: { item: WellbeingRecommendation; width:
   );
 }
 
-/** Recommandations du moment, en carrousel paginé. */
+/** What is recommended right now, as a paged carousel. */
 export function RecommendationHero({
   items,
   width,

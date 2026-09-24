@@ -21,7 +21,7 @@ function CountUp({ value, suffix = '' }: { value: number; suffix?: string }) {
   );
 }
 
-/** Une macro : valeur en grammes sur fond teinté (protéines, glucides, lipides). */
+/** One macro: the value in grams on a tinted ground (protein, carbohydrate, fat). */
 export function MacroCard({ value, label, background }: { value: number; label: string; background: string }) {
   return (
     <View
@@ -39,7 +39,7 @@ export function MacroCard({ value, label, background }: { value: number; label: 
   );
 }
 
-/** Cibles du jour : calories, stratégie et macros. */
+/** Today's targets: calories, strategy and macros. */
 export function TargetsCard({ targets }: { targets: NutritionTargets }) {
   const theme = useTheme();
   return (

@@ -90,14 +90,14 @@ export default function TrackingScreen() {
   const days7 = lastDays(today, 7);
   const dayLetters = days7.map((d) => DAY_LETTERS[fromLocalISODate(d).getDay()]);
 
-  // Énergie : check-ins (1-5), moyenne de la semaine et comparaison avec la précédente.
+  // Energy: check-ins (1-5), this week's average and the comparison with last week's.
   const energySamples = (energyQuery.data ?? []).map((r) => ({ at: r.checkin_at, value: r.energy_level }));
   const energyWeeks = splitWeeks(energySamples, today);
   const energyAvg = average(energyWeeks.current);
   const energyDelta = percentChange(energyAvg, average(energyWeeks.previous));
   const energyBars = dailyAverages(energySamples, days7);
 
-  // Humeur : ressenti noté à la fin des séances bien-être.
+  // Mood: the rating given at the end of wellbeing sessions.
   const moodSamples = (journalQuery.data ?? []).filter((e) => typeof e.mood === 'number').map((e) => ({ at: e.completed_at, value: e.mood as number }));
   const moodWeeks = splitWeeks(moodSamples, today);
   const moodAvg = average(moodWeeks.current) ?? average(moodSamples.slice(0, 10).map((s) => s.value));
@@ -312,8 +312,8 @@ export default function TrackingScreen() {
   );
 
   const nutritionTab = !fitness.isPremium ? (
-    // Le seul endroit où un compte gratuit croise la nutrition : on y nomme ce qu'il rate,
-    // la liste de courses, plutôt que des « repères » abstraits.
+    // The one place a free account meets nutrition: it names what they are missing, the shopping
+    // list, rather than abstract “numbers”.
     <EmptyState
       icon="cart-outline"
       title="Your meals and your shopping list"

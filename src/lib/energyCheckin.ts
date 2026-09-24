@@ -2,7 +2,7 @@ import type { EnergyLevel } from '../features/planning/catalog';
 import { supabase } from './supabase';
 
 // energy_checkins.energy_level est un entier 1-5 en base ; on y projette les 3 niveaux
-// utilisés ailleurs dans l'app (bas/moyen/élevé) pour rester cohérent avec l'onboarding.
+// used elsewhere in the app (bas/moyen/eleve) to stay consistent with onboarding.
 const LEVEL_TO_INT: Record<EnergyLevel, number> = { bas: 1, moyen: 3, eleve: 5 };
 
 export async function saveEnergyCheckin(userId: string, energyLevel: EnergyLevel) {
@@ -14,7 +14,7 @@ export async function saveEnergyCheckin(userId: string, energyLevel: EnergyLevel
 
 export type EnergyCheckinRow = { checkin_at: string; energy_level: number };
 
-/** Check-ins d'énergie depuis une date (ISO), du plus récent au plus ancien. */
+/** Energy check-ins since a date (ISO), most recent first. */
 export async function fetchEnergyCheckins(userId: string, sinceIso: string): Promise<EnergyCheckinRow[]> {
   const { data, error } = await supabase
     .from('energy_checkins')
@@ -26,7 +26,7 @@ export async function fetchEnergyCheckins(userId: string, sinceIso: string): Pro
   return data as EnergyCheckinRow[];
 }
 
-/** 1-5 en base → bas / moyen / élevé. */
+/** 1-5 in the database → low / medium / high. */
 export function levelFromInt(value: number): EnergyLevel {
   return value <= 2 ? 'bas' : value >= 4 ? 'eleve' : 'moyen';
 }

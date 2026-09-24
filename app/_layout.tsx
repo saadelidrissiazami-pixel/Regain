@@ -19,15 +19,15 @@ import { initPurchases, onPremiumChange } from '../src/lib/purchases';
 import { ThemeProvider } from '../src/theme/ThemeProvider';
 import { useAuthStore } from '../src/store/authStore';
 
-// RevenueCat avertit à chaque démarrage quand on utilise une clé de bac à sable. C'est exact et
-// voulu en développement, où l'on teste les abonnements sans passer par l'App Store — mais
-// l'avertissement recouvre le bas de l'écran à chaque lancement, y compris pendant les captures.
-// La production n'est pas concernée : elle utilise une vraie clé, et LogBox n'y existe pas.
+// RevenueCat warns on every start when a sandbox key is in use. That is accurate and wanted in
+// development, where subscriptions are tested without going through the App Store — but the
+// warning covers the bottom of the screen on every launch, screenshots included.
+// Production is unaffected: it uses a real key, and LogBox does not exist there.
 LogBox.ignoreLogs(['[RevenueCat] ⚠️ Using a Test Store API key.']);
 
 SplashScreen.preventAutoHideAsync().catch(() => {});
 
-// SF Pro (police système) sur iOS : Inter n'est chargée que pour Android et le web.
+// SF Pro (the system font) on iOS: Inter is only loaded for Android and the web.
 const FONTS =
   Platform.OS === 'ios' ? {} : { Inter_400Regular, Inter_500Medium, Inter_600SemiBold, Inter_700Bold, Inter_800ExtraBold };
 
@@ -46,7 +46,7 @@ export default function RootLayout() {
   useEffect(() => {
     if (!userId) return;
     initPurchases(userId).catch(() => {});
-    // Achat, renouvellement ou expiration : le Premium se met à jour sans relancer l'app.
+    // Purchase, renewal or expiry: Premium updates without restarting the app.
     return onPremiumChange((premium) => queryClient.setQueryData(['premium', userId], premium));
   }, [userId]);
 

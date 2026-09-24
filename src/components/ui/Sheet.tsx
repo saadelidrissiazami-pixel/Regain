@@ -7,7 +7,7 @@ import { useTheme } from '../../theme/ThemeProvider';
 import { withAlpha } from '../../theme/colors';
 import { Text } from './Text';
 
-/** Feuille qui monte du bas de l'écran : listes de choix, check-in, actions secondaires. */
+/** A sheet rising from the bottom: choice lists, the check-in, secondary actions. */
 export function Sheet({
   visible,
   title,

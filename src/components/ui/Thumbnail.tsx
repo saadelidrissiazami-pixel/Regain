@@ -8,8 +8,8 @@ import { useTheme } from '../../theme/ThemeProvider';
 type IconName = ComponentProps<typeof Ionicons>['name'];
 
 /**
- * Image d'illustration. Sans photo, un dégradé sauge doux et une icône prennent le relais,
- * pour que la mise en page reste la même.
+ * An illustrative image. With no photo, a soft sage gradient and an icon take over, so the
+ * layout stays the same.
  */
 export function Thumbnail({
   source,
@@ -25,7 +25,7 @@ export function Thumbnail({
   height: DimensionValue;
   radius?: number;
   icon?: IconName;
-  /** Couleur de l'icône de secours (couleur de la catégorie). */
+  /** The fallback icon's colour (the category's colour). */
   tint?: string;
   children?: ReactNode;
 }) {

@@ -16,7 +16,7 @@ import { useToday, useWeekStart } from '../lib/useCurrentDate';
 import { fromLocalISODate } from '../lib/week';
 import { useAuthStore } from '../store/authStore';
 
-/** Tout ce que l'espace Forme affiche : profil, programme, bilans, séances faites, planning. */
+/** Everything the Fitness area shows: profile, programme, check-ins, sessions done, schedule. */
 export function useFitness() {
   const userId = useAuthStore((s) => s.session?.user.id);
   const { isPremium, isLoading: premiumLoading } = usePremium();
@@ -25,7 +25,7 @@ export function useFitness() {
   const enabled = !!userId && isPremium;
 
   const profileQuery = useQuery({ queryKey: ['fitnessProfile', userId], queryFn: () => fetchFitnessProfile(userId!), enabled });
-  // Programme en cours + précédent : sert à montrer ce que le dernier bilan a changé.
+  // The current programme plus the previous one: used to show what the last check-in changed.
   const plansQuery = useQuery({ queryKey: ['fitnessPlans', userId], queryFn: () => fetchLatestFitnessPlans(userId!, 2), enabled });
   const checkinsQuery = useQuery({ queryKey: ['fitnessCheckins', userId], queryFn: () => fetchRecentCheckins(userId!, 8), enabled });
   const scheduleQuery = useQuery({ queryKey: ['trainingSchedule', userId], queryFn: () => fetchTrainingSchedule(userId!), enabled });
@@ -33,7 +33,7 @@ export function useFitness() {
   const logsQuery = useQuery({
     queryKey: ['workoutLogs', userId, weekStart],
     queryFn: () => {
-      // 4 semaines : la semaine en cours pour le suivi, les précédentes pour la progression.
+      // 4 weeks: the current one for tracking, the earlier ones for progress.
       const since = fromLocalISODate(weekStart);
       since.setDate(since.getDate() - 21);
       return fetchWorkoutLogs(userId!, since.toISOString());

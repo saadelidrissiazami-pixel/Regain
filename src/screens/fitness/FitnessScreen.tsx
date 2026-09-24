@@ -15,19 +15,19 @@ import { useFitness } from '../../hooks/useFitness';
 import { createFitnessPlan } from '../../lib/fitness';
 import { formatDateTimeLabel, formatDayLabel } from '../../lib/formatDate';
 
-/** Forme : « Quelle est ma prochaine séance ? » */
+/** Fitness: “What is my next session?” */
 export default function FitnessScreen() {
   const fitness = useFitness();
   const queryClient = useQueryClient();
   const { profile, plan, next, userId } = fitness;
-  // Posé par le questionnaire quand l'enregistrement a entraîné un recalcul du plan.
-  // L'onglet reste monté quand on en change : sans effacer le paramètre, le bandeau
-  // réapparaîtrait à chaque retour sur Forme, longtemps après le recalcul.
+  // Set by the questionnaire when saving caused the plan to be recalculated.
+  // The tab stays mounted when you switch away: without clearing the parameter, the banner would
+  // reappear on every return to Fitness, long after the recalculation.
   const { recalcule } = useLocalSearchParams<{ recalcule?: string }>();
   useEffect(() => {
     if (recalcule !== '1') return;
-    // Effacer le paramètre masque le bandeau et l'empêche de revenir : un seul geste pour les
-    // deux, et rien à synchroniser dans un état local.
+    // Clearing the parameter hides the banner and stops it coming back: one move for both, and
+    // nothing to keep in sync in local state.
     const timer = setTimeout(() => router.setParams({ recalcule: undefined }), 12_000);
     return () => clearTimeout(timer);
   }, [recalcule]);
@@ -86,7 +86,7 @@ export default function FitnessScreen() {
       />
     );
   } else if (fitness.isError) {
-    // Sans cet état, une panne réseau ferait croire qu'il n'y a pas de profil.
+    // Without this state, a network fault would look like having no profile.
     body = <ErrorState title="Ton espace forme n'a pas pu se charger" onRetry={() => fitness.refetch()} retrying={fitness.isRefetching} />;
   } else if (!profile) {
     body = (

@@ -7,7 +7,7 @@ import { PressableScale } from './motion';
 
 type IconName = ComponentProps<typeof Ionicons>['name'];
 
-/** Icône cliquable de 44 × 44 : réglages, recherche, retour, fermer. */
+/** A 44 × 44 tappable icon: settings, search, back, close. */
 export function IconButton({
   icon,
   label,
@@ -17,7 +17,7 @@ export function IconButton({
   color,
 }: {
   icon: IconName;
-  /** Libellé lu par VoiceOver. */
+  /** The label VoiceOver reads. */
   label: string;
   onPress: () => void;
   variant?: 'plain' | 'tinted' | 'surface' | 'primary';

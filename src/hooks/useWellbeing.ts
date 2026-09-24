@@ -5,11 +5,11 @@ import { usePremium } from '../lib/premium';
 import { fetchCompletedProgramIds, fetchPrograms, fetchWellbeingJournal } from '../lib/wellbeing';
 import { useAuthStore } from '../store/authStore';
 
-/** Bibliothèque bien-être : séances, séances faites, journal, et accès Premium. */
+/** The wellbeing library: sessions, sessions done, the journal, and Premium access. */
 export function useWellbeing() {
   const userId = useAuthStore((s) => s.session?.user.id);
-  // Tant que le droit Premium n'est pas résolu, on n'affiche pas de cadenas : sinon un abonné
-  // verrait ses séances verrouillées pendant la résolution.
+  // Until the Premium entitlement resolves, no padlock is shown: otherwise a subscriber would
+  // see their sessions locked while it resolves.
   const { isPremium, isLoading: premiumLoading } = usePremium();
 
   const programsQuery = useQuery({ queryKey: ['wellbeingPrograms'], queryFn: fetchPrograms });

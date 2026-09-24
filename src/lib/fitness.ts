@@ -31,7 +31,7 @@ export async function updateFitnessWeight(userId: string, weightKg: number) {
   if (error) throw error;
 }
 
-/** Derniers programmes, du plus récent au plus ancien : le précédent sert à montrer ce qui a changé. */
+/** The latest programmes, most recent first: the previous one shows what changed. */
 export async function fetchLatestFitnessPlans(userId: string, limit = 2): Promise<FitnessPlan[]> {
   const { data, error } = await supabase
     .from('fitness_plans')
@@ -75,12 +75,12 @@ export function targetsForProfile(profile: FitnessProfileInput): NutritionTarget
 }
 
 /**
- * Génère un programme par règles (sans IA, gratuit) et l'enregistre. Le nombre de programmes
- * déjà créés sert de graine : chaque nouvelle semaine varie les exercices et les recettes.
+ * Builds a programme from the rules (no AI, free) and saves it. The number of programmes already
+ * created is the seed: each new week varies the exercises and the recipes.
  *
- * `keepVariation` reprend la graine du plan courant. À utiliser quand on régénère parce que le
- * profil a changé : l'utilisateur retrouve **sa** semaine, corrigée de ce qu'il vient de
- * déclarer, au lieu d'un programme et de menus entièrement différents pour avoir corrigé sa
+ * `keepVariation` reuses the current plan's seed. Use it when regenerating because the profile
+ * changed: the user gets **their** week back, corrected for what they have just declared,
+ * instead of an entirely different programme and set of meals for having corrected their
  * taille. Le bilan hebdomadaire, lui, veut bien une nouvelle semaine : il ne passe rien.
  */
 export async function createFitnessPlan(
@@ -112,7 +112,7 @@ export async function createFitnessPlan(
 
 export type TimeSlot = 'matin' | 'apres_midi' | 'soir';
 
-/** Quand l'utilisateur s'entraîne (0 = lundi … 6 = dimanche). */
+/** When the user trains (0 = Monday … 6 = Sunday). */
 export type TrainingSchedule = { training_slot: TimeSlot | null; training_days: number[] | null };
 
 const EMPTY_SCHEDULE: TrainingSchedule = { training_slot: null, training_days: null };
@@ -144,7 +144,7 @@ export type WorkoutLog = {
   completed_at: string;
 };
 
-/** Séances faites dans le lecteur depuis une date (ISO), des plus récentes aux plus anciennes. */
+/** Sessions completed in the player since a date (ISO), most recent first. */
 export async function fetchWorkoutLogs(userId: string, sinceIso: string): Promise<WorkoutLog[]> {
   const { data, error } = await supabase
     .from('workout_logs')
@@ -173,7 +173,7 @@ export async function logWorkout(
   if (error && !isMissingSchema(error)) throw error;
 }
 
-/** Nombre de programmes générés : sert de numéro de semaine du programme. */
+/** How many programmes have been generated: used as the programme's week number. */
 export async function countFitnessPlans(userId: string): Promise<number> {
   const { count, error } = await supabase
     .from('fitness_plans')

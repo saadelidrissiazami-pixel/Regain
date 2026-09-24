@@ -26,10 +26,10 @@ export async function deleteAvailabilitySlot(id: string) {
 }
 
 /**
- * Efface tous les créneaux du compte, en une requête.
+ * Clears every slot on the account, in one query.
  *
- * Supprimer ligne par ligne depuis l'app laisserait un état à moitié vidé si le réseau lâche
- * au milieu, et ferait autant d'allers-retours que de créneaux.
+ * Deleting row by row from the app would leave a half-emptied state if the network gave out
+ * halfway, and would make as many round trips as there are slots.
  */
 export async function deleteAllAvailabilitySlots(userId: string) {
   const { error } = await supabase.from('availability_slots').delete().eq('user_id', userId);

@@ -8,8 +8,8 @@ import { PressableScale } from './motion';
 export type CardVariant = 'default' | 'tinted' | 'premium' | 'flat';
 
 /**
- * Carte : fond blanc, bordure fine, ombre à peine visible. `tinted` = fond sauge (conseil,
- * information douce), `premium` = crème / or, `flat` = sans ombre (carte dans une carte).
+ * A card: white ground, thin border, a shadow barely there. `tinted` is a sage ground (advice,
+ * gentle information), `premium` is cream and gold, `flat` has no shadow (a card inside a card).
  */
 export function Card({
   children,
@@ -44,8 +44,8 @@ export function Card({
   };
 
   if (onPress) {
-    // Le conteneur animé de PressableScale doit porter la taille (flex, largeur) pour que la carte
-    // se comporte dans une rangée comme une carte non cliquable.
+    // PressableScale's animated container has to carry the size (flex, width) so the card behaves
+    // in a row the way a non-clickable card does.
     const flat = StyleSheet.flatten(style) ?? {};
     const sizing: ViewStyle = { flex: flat.flex, width: flat.width, alignSelf: flat.alignSelf };
     return (

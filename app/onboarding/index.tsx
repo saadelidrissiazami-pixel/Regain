@@ -20,7 +20,7 @@ const STEPS: { title: string; subtitle: string; fields: (keyof OnboardingFormVal
   { title: 'Your budget', subtitle: 'So the ideas actually suit you.', fields: ['budgetLevel'] },
 ];
 
-/** Accueil en 4 étapes courtes : une question par écran. */
+/** Onboarding in 4 short steps: one question per screen. */
 export default function OnboardingScreen() {
   const userId = useAuthStore((s) => s.session?.user.id);
   const queryClient = useQueryClient();

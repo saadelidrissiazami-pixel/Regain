@@ -9,7 +9,7 @@ import { Text } from '../ui/Text';
 const SHORT = ['Lun', 'Mar', 'Mer', 'Jeu', 'Ven', 'Sam', 'Dim'];
 const LONG = ['lundi', 'mardi', 'mercredi', 'jeudi', 'vendredi', 'samedi', 'dimanche'];
 
-/** Les séances de la semaine : un cercle par jour, coché quand la séance est faite. */
+/** The week's sessions: one circle per day, ticked once the session is done. */
 export function WeekTracker({ days }: { days: WeekTrackerDay[] }) {
   const theme = useTheme();
   const done = days.filter((d) => d.done).length;

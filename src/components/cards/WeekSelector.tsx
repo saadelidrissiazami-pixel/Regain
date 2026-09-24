@@ -10,7 +10,7 @@ const LONG_DAYS = ['lundi', 'mardi', 'mercredi', 'jeudi', 'vendredi', 'samedi', 
 
 export type DayMarker = { count: number; done: number };
 
-/** Les 7 jours de la semaine. Jour choisi en vert plein, aujourd'hui souligné, point = activités. */
+/** The 7 days of the week. The chosen day in solid green, today underlined, a dot for activities. */
 export function WeekSelector({
   days,
   selected,

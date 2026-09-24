@@ -8,7 +8,7 @@ import { Text } from './Text';
 
 type IconName = ComponentProps<typeof Ionicons>['name'];
 
-/** Ligne de liste : icône, titre, précision, et un chevron quand elle mène ailleurs. */
+/** A list row: icon, title, detail, and a chevron when it leads somewhere. */
 export function ListRow({
   icon,
   iconColor,

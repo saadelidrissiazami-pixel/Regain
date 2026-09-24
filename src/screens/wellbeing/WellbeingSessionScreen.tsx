@@ -35,7 +35,7 @@ function stopSpeech() {
   }
 }
 
-/** Séance bien-être immersive : pas de barre d'onglets, un seul point d'attention. */
+/** An immersive wellbeing session: no tab bar, one single thing to attend to. */
 export default function WellbeingSessionScreen() {
   const theme = useTheme();
   const insets = useSafeAreaInsets();
@@ -45,20 +45,20 @@ export default function WellbeingSessionScreen() {
   const { isPremium, isLoading: premiumLoading } = usePremium();
   const [stage, setStage] = useState<'prep' | 'play' | 'review' | 'done'>('prep');
   const [noteDraft, setNoteDraft] = useState('');
-  // Une séance narrée se déroule seule : sans voix, elle obligerait quand même à lire l'écran,
-  // donc à garder les yeux ouverts. La voix y est active d'emblée, et coupable en un geste
-  // depuis les options. Les autres séances, qu'on fait à son rythme, restent silencieuses.
+  // A narrated session runs on its own: with no voice it would still force you to read the
+  // screen, and so to keep your eyes open. The voice is on from the start there, and can be
+  // turned off in one move from the options. The others, done at your own pace, stay silent.
   const [audioOn, setAudioOn] = useState(() => (slug ? CONTENT_BY_SLUG[slug]?.type === 'narrated' : false));
   const [menuOpen, setMenuOpen] = useState(false);
   const [runKey, setRunKey] = useState(0);
-  // Stable : PrepCountdown dépend de onDone dans son effet de décompte.
+  // Stable: PrepCountdown depends on onDone inside its countdown effect.
   const handlePrepDone = useCallback(() => setStage('play'), []);
 
   const programsQuery = useQuery({ queryKey: ['wellbeingPrograms'], queryFn: fetchPrograms });
   const program = programsQuery.data?.find((p) => p.slug === slug);
   const content = slug ? CONTENT_BY_SLUG[slug] : undefined;
 
-  // Musique d'ambiance : choisie selon la catégorie et le dernier choix, jouée pendant la séance.
+  // Background music: chosen from the category and the last choice, played through the session.
   const [ambience, setAmbience] = useState<AmbienceChoice>('off');
   const category = program?.category;
   useEffect(() => {
@@ -79,8 +79,8 @@ export default function WellbeingSessionScreen() {
   };
   const playingLabel = ambienceLabel(ambience);
 
-  // Une séance qu'on écoute au lit doit se terminer sans rien réclamer : pas de vibration de
-  // fin, pas de bilan à remplir. On enregistre, et on se tait.
+  // A session listened to in bed has to end without asking for anything: no buzz at the end, no
+  // review to fill in. We record it, and say nothing.
   const [quietEnding, setQuietEnding] = useState(false);
 
   const completeMutation = useMutation({

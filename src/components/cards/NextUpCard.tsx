@@ -13,7 +13,7 @@ import type { ComponentProps } from 'react';
 
 type IconName = ComponentProps<typeof Ionicons>['name'];
 
-/** L'activité suivante, en version compacte. */
+/** The next activity, in compact form. */
 export function NextUpCard({ when, activity, onPress }: { when: string; activity: CatalogActivity; onPress: () => void }) {
   const theme = useTheme();
   return (

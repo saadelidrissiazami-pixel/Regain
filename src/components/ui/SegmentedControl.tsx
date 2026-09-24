@@ -8,7 +8,7 @@ import { Text } from './Text';
 
 const PADDING = 4;
 
-/** Sélecteur à segments : la pastille verte glisse jusqu'au choix. Pour 2 à 4 options courtes. */
+/** A segmented control: the green pill slides to the choice. For 2 to 4 short options. */
 export function SegmentedControl<T extends string | number>({
   options,
   value,
@@ -21,7 +21,7 @@ export function SegmentedControl<T extends string | number>({
   onChange: (value: T) => void;
   /** Nom du groupe lu par VoiceOver. */
   label?: string;
-  /** `primary` = pastille vert foncé (navigation d'écran), `surface` = pastille blanche (formulaires). */
+  /** `primary` is a dark green pill (screen navigation), `surface` a white one (forms). */
   tone?: 'primary' | 'surface';
 }) {
   const theme = useTheme();

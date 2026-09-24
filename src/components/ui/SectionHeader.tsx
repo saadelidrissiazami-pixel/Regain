@@ -3,7 +3,7 @@ import { View } from 'react-native';
 import { TextLink } from './Button';
 import { Text } from './Text';
 
-/** Titre de section, avec un lien d'action discret à droite (« Voir tout → »). */
+/** A section title, with a quiet action link on the right (“See all →”). */
 export function SectionHeader({
   title,
   actionLabel,

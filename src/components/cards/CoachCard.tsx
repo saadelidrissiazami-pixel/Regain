@@ -9,7 +9,7 @@ import { Text } from '../ui/Text';
 
 const LONG = 170;
 
-/** Le mot du coach : court par défaut, dépliable. */
+/** A word from the coach: short by default, expandable. */
 export function CoachCard({ message, title = 'A word from your coach' }: { message: string; title?: string }) {
   const theme = useTheme();
   const [open, setOpen] = useState(false);

@@ -31,8 +31,8 @@ export function saveAmbiencePreference(choice: AmbienceChoice) {
 }
 
 /**
- * Joue l'ambiance choisie en boucle pendant la séance : fondu à l'entrée comme à la sortie,
- * volume abaissé quand la voix guide. `active` à false met en pause (fin de séance).
+ * Plays the chosen ambience on a loop through the session: fading in and out, with the volume
+ * lowered while the voice speaks. `active` set to false pauses it (the end of a session).
  */
 export function useAmbiencePlayer(choice: AmbienceChoice, { active, ducked }: { active: boolean; ducked: boolean }) {
   const playerRef = useRef<AudioPlayer | null>(null);
@@ -45,12 +45,12 @@ export function useAmbiencePlayer(choice: AmbienceChoice, { active, ducked }: { 
   };
 
   useEffect(() => {
-    // La musique fait partie de la séance : elle joue même en mode silencieux, et se mêle à
-    // ce que la personne écoute déjà au lieu de le couper.
+    // The music is part of the session: it plays even on silent, and mixes with whatever the
+    // person is already listening to instead of cutting it off.
     setAudioModeAsync({ playsInSilentMode: true, interruptionMode: 'mixWithOthers' }).catch(() => {});
   }, []);
 
-  // Un lecteur par ambiance, libéré quand elle change ou quand la séance se ferme.
+  // One player per ambience, released when it changes or when the session closes.
   useEffect(() => {
     if (choice === 'off') return;
     const player = createAudioPlayer(SOURCES[choice]);
@@ -64,12 +64,12 @@ export function useAmbiencePlayer(choice: AmbienceChoice, { active, ducked }: { 
         player.pause();
         player.remove();
       } catch {
-        // déjà libéré
+        // already released
       }
     };
   }, [choice]);
 
-  // Fondu jusqu'au volume voulu ; à zéro, la lecture se met en pause.
+  // Fade to the intended volume; at zero, playback pauses.
   useEffect(() => {
     const player = playerRef.current;
     if (!player) return;

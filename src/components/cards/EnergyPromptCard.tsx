@@ -14,7 +14,7 @@ import { Text } from '../ui/Text';
 import { energyChoice, EnergySelector } from './EnergySelector';
 
 /**
- * « Ton énergie aujourd'hui ? » : ouvre le check-in. Une fois répondu, la carte rappelle le niveau
+ * “How is your energy today?” opens the check-in. Once answered, the card recalls the level
  * et, s'il est bas, propose une respiration courte.
  */
 export function EnergyPromptCard() {

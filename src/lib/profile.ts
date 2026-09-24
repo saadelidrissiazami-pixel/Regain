@@ -27,7 +27,7 @@ export async function updateDisplayName(userId: string, displayName: string) {
   if (error) throw error;
 }
 
-/** Sommeil habituel en minutes (null si non renseigné ou si la migration 0022 manque). */
+/** Usual sleep in minutes (null when unset, or when migration 0022 is missing). */
 export async function fetchSleepMinutes(userId: string): Promise<number | null> {
   const { data, error } = await supabase
     .from('user_preferences')
@@ -43,11 +43,11 @@ export async function fetchSleepMinutes(userId: string): Promise<number | null> 
 
 export async function saveSleepMinutes(userId: string, minutes: number | null) {
   const { error } = await supabase.from('user_preferences').update({ typical_sleep_minutes: minutes }).eq('user_id', userId);
-  // Sans la migration 0022, on garde le reste de l'onboarding plutôt que de tout bloquer.
+  // Without migration 0022, keep the rest of onboarding rather than blocking all of it.
   if (error && !isMissingSchema(error)) throw error;
 }
 
-/** Enregistre les réponses d'accueil. `markCompleted` = premier passage (sinon : édition). */
+/** Saves the onboarding answers. `markCompleted` means the first run (otherwise it is an edit). */
 export async function completeOnboarding(userId: string, values: OnboardingFormValues, markCompleted = true) {
   const { error: prefsError } = await supabase.from('user_preferences').upsert({
     user_id: userId,
@@ -69,7 +69,7 @@ export async function completeOnboarding(userId: string, values: OnboardingFormV
   if (profileError) throw profileError;
 }
 
-/** Prénom à afficher : celui saisi, sinon rien (on ne devine pas un prénom depuis l'e-mail). */
+/** The first name to show: the one given, otherwise nothing (we do not guess one from the email). */
 export function firstNameOf(profile: Pick<Profile, 'display_name'> | null | undefined): string | null {
   const name = profile?.display_name?.trim();
   return name ? name.split(/\s+/)[0] : null;

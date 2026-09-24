@@ -5,7 +5,7 @@ import Svg, { Circle } from 'react-native-svg';
 import { useTheme } from '../../theme/ThemeProvider';
 import { useAnimatedNumber } from './motion';
 
-/** Anneau de progression (0..1). Le contenu central est libre : minuteur, compteur, icône. */
+/** A progress ring (0..1). The centre is free: a timer, a counter, an icon. */
 export function ProgressRing({
   progress,
   size = 96,
@@ -21,7 +21,7 @@ export function ProgressRing({
   strokeWidth?: number;
   color?: string;
   trackColor?: string;
-  /** false pour un minuteur qui avance déjà seconde par seconde. */
+  /** false for a timer that already advances second by second. */
   animate?: boolean;
   children?: ReactNode;
   accessibilityLabel?: string;
@@ -41,8 +41,8 @@ export function ProgressRing({
       accessibilityRole={accessibilityLabel ? 'progressbar' : undefined}
       accessibilityValue={accessibilityLabel ? { min: 0, max: 100, now: Math.round(clamped * 100) } : undefined}
     >
-      {/* La rotation passe par le style RN de ce wrapper plutôt que par les props SVG
-          rotation/transform, qui déclenchent un bug de react-native-svg sur web. */}
+      {/* The rotation goes through this wrapper's RN style rather than the SVG
+          rotation/transform props, which trigger a react-native-svg bug on the web. */}
       <View style={{ transform: [{ rotate: '-90deg' }] }}>
         <Svg width={size} height={size}>
           <Circle cx={size / 2} cy={size / 2} r={radius} stroke={trackColor ?? theme.sage200} strokeWidth={strokeWidth} fill="none" />

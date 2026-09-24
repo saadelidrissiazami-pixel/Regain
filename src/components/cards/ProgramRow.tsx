@@ -7,7 +7,7 @@ import { useTheme } from '../../theme/ThemeProvider';
 import { Card } from '../ui/Card';
 import { Text } from '../ui/Text';
 
-/** Une séance de la bibliothèque : durée, titre, et son état (faite, réservée à Premium). */
+/** One session from the library: duration, title, and its state (done, Premium only). */
 export function ProgramRow({
   program,
   done,

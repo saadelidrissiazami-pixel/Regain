@@ -8,7 +8,7 @@ import { courseBySlug, courseProgress } from '../../../src/features/wellbeing/co
 import { useWellbeing } from '../../../src/hooks/useWellbeing';
 import { goBack } from '../../../src/lib/navigation';
 
-/** Un parcours : ses jours, ce qui est fait, et où reprendre. */
+/** One course: its days, what is done, and where to pick up. */
 export default function CourseScreen() {
   const { slug } = useLocalSearchParams<{ slug: string }>();
   const wellbeing = useWellbeing();

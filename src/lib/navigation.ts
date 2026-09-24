@@ -1,11 +1,11 @@
 import { router, type Href } from 'expo-router';
 
 /**
- * Revient à l'écran précédent, ou rejoint `fallback` s'il n'y en a pas.
+ * Goes back to the previous screen, or to `fallback` when there is none.
  *
- * Un écran atteint depuis une notification, un lien ou un rappel est le premier de la pile :
+ * A screen reached from a notification, a link or a reminder is the first on the stack, so
  * `router.back()` n'y fait rien du tout, et le bouton « retour » reste sans effet sous le doigt,
- * sans rien afficher. Le repli choisit alors l'onglet dont l'écran dépend.
+ * showing nothing. The fallback then picks the tab the screen belongs to.
  */
 export function goBack(fallback: Href) {
   if (router.canGoBack()) router.back();

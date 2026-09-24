@@ -19,7 +19,7 @@ import { useWellbeing } from '../../hooks/useWellbeing';
 import { useToday } from '../../lib/useCurrentDate';
 import { useTheme } from '../../theme/ThemeProvider';
 
-/** Bien-être : « Qu'est-ce qui pourrait m'aider maintenant ? » */
+/** Wellbeing: “What might help me right now?” */
 export default function WellbeingScreen() {
   const theme = useTheme();
   const today = useToday();
@@ -37,8 +37,8 @@ export default function WellbeingScreen() {
     isPremium: wellbeing.isPremium,
   });
 
-  // Les SOS ne sont pas un thème : elles ne se parcourent pas, elles se déclenchent. Elles ont
-  // leur propre accès, en haut de l'écran.
+  // The SOS sessions are not a theme: you do not browse them, you reach for them. They have
+  // their own way in, at the top of the screen.
   const sos = programs.filter((program) => program.category === SOS_CATEGORY);
   const byCategory = new Map<string, WellbeingProgram[]>();
   for (const program of programs.filter(

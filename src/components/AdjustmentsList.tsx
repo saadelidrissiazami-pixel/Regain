@@ -4,7 +4,7 @@ import { Appear } from './ui/motion';
 import { Text } from './ui/Text';
 import type { PlanAdjustment } from '../features/fitness/planDiff';
 
-/** Ce que le dernier bilan a changé : une ligne par ajustement. */
+/** What the last check-in changed: one row per adjustment. */
 export function AdjustmentsList({ adjustments }: { adjustments: PlanAdjustment[] }) {
   return (
     <>

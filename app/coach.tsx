@@ -41,8 +41,8 @@ function Bubble({ message }: { message: Pick<CoachMessage, 'role' | 'content'> }
   );
 }
 
-/** Coach conversationnel. Le programme et les menus restent produits par les règles : ici on
- *  répond aux questions, on explique, on encourage — ce que des règles ne savent pas faire. */
+/** The conversational coach. The programme and the meals stay rule-generated; here we answer
+ *  questions, explain, encourage — the things rules cannot do. */
 export default function CoachScreen() {
   const theme = useTheme();
   const userId = useAuthStore((s) => s.session?.user.id);

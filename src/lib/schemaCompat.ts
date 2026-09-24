@@ -1,6 +1,6 @@
-// Les colonnes et tables ajoutées par une migration récente peuvent manquer tant que la
-// migration n'a pas été appliquée sur Supabase. Ces erreurs-là ne doivent pas casser l'écran :
-// l'information est simplement considérée comme absente.
+// Columns and tables added by a recent migration can be missing until that migration has been
+// applied on Supabase. Those errors must not break the screen: the information is simply
+// treated as absent.
 const MISSING_SCHEMA_CODES = new Set(['42703', '42P01', 'PGRST204', 'PGRST205']);
 
 export function isMissingSchema(error: unknown): boolean {

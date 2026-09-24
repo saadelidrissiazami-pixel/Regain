@@ -5,8 +5,8 @@ import { IconButton } from './IconButton';
 import { Text } from './Text';
 
 /**
- * En-tête d'écran : petite ligne de contexte (date, « Votre coach »), grand titre, sous-titre,
- * et une action discrète à droite (avatar, réglages, recherche). `onBack` ajoute un retour.
+ * A screen header: a small line of context (a date, “Your coach”), a large title, a subtitle,
+ * and one quiet action on the right (avatar, settings, search). `onBack` adds a back button.
  */
 export function ScreenHeader({
   overline,

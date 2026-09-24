@@ -38,8 +38,8 @@ export async function fetchStreak(userId: string): Promise<number> {
     .order('completed_at', { ascending: false });
   if (error) throw error;
 
-  // completed_at est un timestamptz : sa date UTC peut désigner la veille pour une activité
-  // cochée en soirée. On compare donc des dates locales des deux côtés.
+  // completed_at is a timestamptz: its UTC date can name the day before for an activity ticked
+  // off in the evening. So local dates are compared on both sides.
   const days = new Set(data.map((row) => toLocalISODate(new Date(row.completed_at as string))));
 
   const cursor = new Date();

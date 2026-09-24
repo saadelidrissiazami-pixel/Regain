@@ -41,7 +41,7 @@ function Section({ title, children }: { title: string; children: ReactNode }) {
   );
 }
 
-/** Paramètres : apparence, rappels, calendrier, abonnement, données, déconnexion. */
+/** Settings: appearance, reminders, calendar, subscription, data, signing out. */
 export default function SettingsScreen() {
   const theme = useTheme();
   const session = useAuthStore((s) => s.session);
@@ -94,8 +94,8 @@ export default function SettingsScreen() {
 
   const handleSignOut = async () => {
     await supabase.auth.signOut();
-    // Sans ce nettoyage, les données du compte précédent (catalogue, planning, droits
-    // Premium RevenueCat) restent visibles pour le compte suivant sur le même appareil.
+    // Without this clean-up, the previous account's data (catalogue, plan, RevenueCat Premium
+    // entitlement) stays visible to the next account on the same device.
     await logOutPurchases().catch(() => {});
     queryClient.clear();
     router.replace('/');

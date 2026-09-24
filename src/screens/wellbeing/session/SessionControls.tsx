@@ -6,7 +6,7 @@ import { haptic, PressableScale, ProgressRing, Text } from '../../../components/
 import { useTheme } from '../../../theme/ThemeProvider';
 import { formatClock } from './useSessionClock';
 
-/** Grand anneau de séance, avec le minuteur (ou le contenu du joueur) au centre. */
+/** The large session ring, with the timer (or the player's content) at its centre. */
 export function SessionRing({
   progress,
   elapsed,
@@ -68,7 +68,7 @@ function SeekButton({ direction, onPress }: { direction: -1 | 1; onPress: () => 
   );
 }
 
-/** −15 s · lecture / pause · +15 s. Sans `onSeek`, seul le bouton central est affiché. */
+/** −15 s · play / pause · +15 s. Without `onSeek`, only the central button is shown. */
 export function SessionControls({
   running,
   onToggle,

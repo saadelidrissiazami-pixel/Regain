@@ -20,7 +20,7 @@ import { fetchProfile } from '../lib/profile';
 import { useToday, useWeekStart } from '../lib/useCurrentDate';
 import { useAuthStore } from '../store/authStore';
 
-/** Données et actions du planning de la semaine, partagées par l'accueil et la vue semaine. */
+/** The week's plan, data and actions, shared by the home screen and the week view. */
 export function usePlanning() {
   const userId = useAuthStore((s) => s.session?.user.id);
   const queryClient = useQueryClient();

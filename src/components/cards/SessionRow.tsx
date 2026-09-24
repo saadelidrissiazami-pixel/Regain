@@ -9,7 +9,7 @@ import { Card } from '../ui/Card';
 import { Text } from '../ui/Text';
 import { Thumbnail } from '../ui/Thumbnail';
 
-/** Une séance du programme : vignette, titre, durée et nombre d'exercices. */
+/** One session of the programme: thumbnail, title, duration and number of exercises. */
 export function SessionRow({ session, onPress, done }: { session: WorkoutSession; onPress: () => void; done?: boolean }) {
   const theme = useTheme();
   const title = sessionTitle(session);

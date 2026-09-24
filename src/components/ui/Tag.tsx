@@ -7,7 +7,7 @@ import { Text } from './Text';
 
 type IconName = ComponentProps<typeof Ionicons>['name'];
 
-/** Libellé de catégorie discret : un point de couleur + « MÉDITATION · 15 min ». */
+/** A quiet category label: a coloured dot plus “MEDITATION · 15 min”. */
 export function Tag({ label, color, suffix }: { label: string; color?: string; suffix?: string }) {
   const theme = useTheme();
   return (
@@ -23,7 +23,7 @@ export function Tag({ label, color, suffix }: { label: string; color?: string; s
 
 export type PillTone = 'sage' | 'neutral' | 'premium' | 'primary' | 'onImage';
 
-/** Petite pastille arrondie : badge d'état (« Adaptée à ta semaine allégée »), filtre, statut. */
+/** A small rounded pill: a state badge (“Eased off for this week”), a filter, a status. */
 export function Pill({ label, icon, tone = 'sage' }: { label: string; icon?: IconName; tone?: PillTone }) {
   const theme = useTheme();
   const colors = {

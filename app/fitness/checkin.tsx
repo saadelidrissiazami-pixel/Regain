@@ -56,9 +56,9 @@ export default function FitnessCheckinScreen() {
       });
       if (weight !== null) await updateFitnessWeight(userId, weight);
 
-      // Nouveau programme : cibles recalculées avec le poids du jour, volume ajusté selon le bilan.
-      // La clé est celle qu'alimente useFitness (les deux plans les plus récents) : une clé au
-      // singulier, lue ici auparavant, n'était jamais remplie et forçait un aller-retour réseau.
+      // A new programme: targets recalculated from today's weight, volume adjusted by the check-in.
+      // The key is the one useFitness fills (the two most recent plans): a singular key, which
+      // used to be read here, was never populated and forced a network round trip.
       const cached = queryClient.getQueryData<FitnessPlan[]>(['fitnessPlans', userId]);
       const previous = cached?.[0] ?? (await fetchLatestFitnessPlan(userId));
       const updatedProfile = weight !== null ? { ...profile, weight_kg: weight } : profile;
@@ -89,7 +89,7 @@ export default function FitnessCheckinScreen() {
 
   const plannedSessions = profile?.days_per_week ?? 3;
 
-  // Après l'envoi : ce que le bilan a changé, avant de revenir au programme.
+  // After sending: what the check-in changed, before going back to the programme.
   if (result) {
     return (
       <Screen footer={<Button label="See my programme" onPress={() => goBack('/(tabs)/fitness')} />}>

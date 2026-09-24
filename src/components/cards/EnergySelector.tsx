@@ -15,7 +15,7 @@ export function energyChoice(level: EnergyLevel) {
   return ENERGY_CHOICES.find((choice) => choice.value === level)!;
 }
 
-/** Trois niveaux d'énergie côte à côte ; le choix actif passe en vert foncé. */
+/** Three energy levels side by side; the active one turns dark green. */
 export function EnergySelector({
   value,
   onChange,

@@ -25,7 +25,7 @@ function tipsFor({ deload, strategy }: { deload: boolean; strategy: string | und
   ];
 }
 
-/** Mon programme : les séances de la semaine, les exercices, la progression. */
+/** My programme: the week's sessions, the exercises, the progress. */
 export default function ProgramScreen() {
   const theme = useTheme();
   const fitness = useFitness();
@@ -39,7 +39,7 @@ export default function ProgramScreen() {
     ? [fitness.weekNumber ? `Semaine ${fitness.weekNumber}` : null, `Phase : ${programPhase(plan.targets.strategy)}`].filter(Boolean).join(' · ')
     : undefined;
 
-  // Séances faites par semaine, sur les 4 dernières semaines.
+  // Sessions done per week, over the last 4 weeks.
   const weeks = Array.from({ length: 4 }, (_, i) => {
     const start = fromLocalISODate(fitness.weekStart);
     start.setDate(start.getDate() - 7 * (3 - i));

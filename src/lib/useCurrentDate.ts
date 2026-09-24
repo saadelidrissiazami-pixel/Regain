@@ -4,9 +4,9 @@ import { AppState } from 'react-native';
 import { getUpcomingDates } from './upcomingDates';
 import { fromLocalISODate, getWeekStart, toLocalISODate } from './week';
 
-// Une app mobile reste en mémoire plusieurs jours : calculer la date au chargement du module
-// ferait vivre l'utilisateur dans la semaine passée jusqu'au prochain redémarrage complet.
-// On recalcule donc au retour au premier plan, et seulement si le jour a réellement changé.
+// A mobile app stays in memory for days: computing the date when the module loads would leave
+// the user living in last week until the next full restart.
+// So it is recomputed on returning to the foreground, and only if the day really changed.
 export function useToday(): string {
   const [today, setToday] = useState(() => toLocalISODate(new Date()));
 

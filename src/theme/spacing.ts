@@ -1,4 +1,4 @@
-/** Grille de 4 px. `screen` = marge latérale des écrans, `section` = écart entre grandes sections. */
+/** A 4 px grid. `screen` is the side margin of screens, `section` the gap between big sections. */
 export const spacing = {
   xxs: 4,
   xs: 8,

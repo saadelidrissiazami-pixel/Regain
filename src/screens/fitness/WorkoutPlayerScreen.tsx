@@ -301,7 +301,7 @@ function Player({ session, sessionIndex, planId }: { session: WorkoutSession; se
   );
 }
 
-/** Lecteur d'entraînement : un exercice à la fois, compréhensible en un coup d'œil. */
+/** The workout player: one exercise at a time, readable at a glance. */
 export default function WorkoutPlayerScreen() {
   const { index } = useLocalSearchParams<{ index: string }>();
   const fitness = useFitness();

@@ -11,7 +11,7 @@ import { Text } from './Text';
 export type SelectOption<T extends string | number> = {
   value: T;
   label: string;
-  /** Précision affichée sous le libellé (« 3 à 5 séances par semaine »). */
+  /** Detail shown under the label (“3 to 5 sessions a week”). */
   hint?: string;
   /** Titre de section dans la liste (« Matin », « Soir »…). */
   group?: string;
@@ -117,7 +117,7 @@ function Field({
   );
 }
 
-/** Position à laquelle ouvrir la liste pour que l'option choisie soit visible. */
+/** Where to open the list so the chosen option is visible. */
 function offsetOfSelected<T extends string | number>(options: SelectOption<T>[], index: number): number {
   if (index <= 2) return 0;
   let y = 0;
@@ -132,7 +132,7 @@ function offsetOfSelected<T extends string | number>(options: SelectOption<T>[],
   return Math.max(0, y - ROW_HEIGHT * 2);
 }
 
-/** Associe à chaque option le titre de section à afficher au-dessus, s'il change. */
+/** Gives each option the section title to show above it, when that changes. */
 function withHeaders<T extends string | number>(options: SelectOption<T>[]) {
   let lastGroup: string | undefined;
   const rows: { option: SelectOption<T>; header: string | null }[] = [];
@@ -170,7 +170,7 @@ function GroupedRows<T extends string | number>({
   );
 }
 
-/** Champ à choix unique : ouvre une liste en bas de l'écran. */
+/** A single-choice field: opens a list from the bottom of the screen. */
 export function Select<T extends string | number>({
   label,
   value,
@@ -216,7 +216,7 @@ export function Select<T extends string | number>({
   );
 }
 
-/** Champ à choix multiples : la liste reste ouverte jusqu'à « Terminé ». */
+/** A multiple-choice field: the list stays open until “Done”. */
 export function SelectMulti<T extends string>({
   label,
   values,

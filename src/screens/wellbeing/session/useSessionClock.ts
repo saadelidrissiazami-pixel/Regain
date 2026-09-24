@@ -1,6 +1,6 @@
 import { useCallback, useEffect, useState } from 'react';
 
-/** Horloge de séance en secondes : lecture / pause, avance et recul de 15 s. */
+/** A session clock in seconds: play / pause, forward and back 15 s. */
 export function useSessionClock(totalSeconds: number) {
   const [elapsed, setElapsed] = useState(0);
   const [running, setRunning] = useState(true);

@@ -8,7 +8,7 @@ import { Text } from '../ui/Text';
 
 type IconName = ComponentProps<typeof Ionicons>['name'];
 
-/** Évolution en % : flèche + signe, jamais la couleur seule. */
+/** A change in %: arrow plus sign, never colour alone. */
 export function Delta({ value }: { value: number }) {
   const theme = useTheme();
   const up = value >= 0;
@@ -26,7 +26,7 @@ export function Delta({ value }: { value: number }) {
   );
 }
 
-/** Petites barres verticales (7 jours, 10 séances…). Une barre vide = pas de mesure. */
+/** Small vertical bars (7 days, 10 sessions…). An empty bar means no reading. */
 export function MiniBars({
   values,
   max,
@@ -70,7 +70,7 @@ export function MiniBars({
   );
 }
 
-/** Tuile d'indicateur : question implicite, réponse en gros, détail discret. */
+/** A metric tile: an implicit question, the answer large, the detail quiet. */
 export function StatCard({
   icon,
   iconColor,

@@ -8,7 +8,7 @@ import { Text } from '../ui/Text';
 
 /** Visage au trait : la bouche passe de la moue (1) au grand sourire (5). */
 function Face({ level, color, size = 30 }: { level: number; color: string; size?: number }) {
-  // Courbure de la bouche : négative = moue, positive = sourire.
+  // The curve of the mouth: negative is a frown, positive a smile.
   const curve = [-5, -2.5, 0, 3, 5.5][level - 1];
   const mouthY = 21 - curve / 2;
   return (
@@ -21,7 +21,7 @@ function Face({ level, color, size = 30 }: { level: number; color: string; size?
   );
 }
 
-/** Ressenti après la séance, en 5 niveaux. Le libellé reste toujours visible (pas la couleur seule). */
+/** How the session felt, on 5 levels. The label always stays visible (never colour alone). */
 export function MoodScale({ value, onChange }: { value: number | null; onChange: (value: number) => void }) {
   const theme = useTheme();
   return (

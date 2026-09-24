@@ -10,7 +10,7 @@ import type { DayMarker } from './WeekSelector';
 const HEADERS = ['L', 'M', 'M', 'J', 'V', 'S', 'D'];
 const MONTH_FORMATTER = new Intl.DateTimeFormat('fr-FR', { month: 'long', year: 'numeric' });
 
-/** Dates affichées pour un mois (semaines complètes, du lundi au dimanche). */
+/** The dates shown for a month (whole weeks, Monday to Sunday). */
 export function monthCells(year: number, month: number): (string | null)[] {
   const first = new Date(year, month, 1);
   const offset = (first.getDay() + 6) % 7;
@@ -21,7 +21,7 @@ export function monthCells(year: number, month: number): (string | null)[] {
   return cells;
 }
 
-/** Vue mensuelle : un point sous chaque jour qui a des activités. */
+/** The month view: a dot under every day that has activities. */
 export function MonthGrid({
   year,
   month,

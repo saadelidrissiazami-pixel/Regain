@@ -4,7 +4,7 @@ import { useTheme } from '../../theme/ThemeProvider';
 import { PressableScale } from './motion';
 import { Text } from './Text';
 
-/** Pastille de choix (filtre, jour de la semaine). Cochée : vert foncé avec une coche. */
+/** A choice chip (a filter, a day of the week). Selected: dark green with a tick. */
 export function ChoiceChip({
   label,
   selected,

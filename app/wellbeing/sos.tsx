@@ -8,7 +8,7 @@ import { SOS_CATEGORY, SOS_SLUGS, SOS_URGENCE } from '../../src/features/wellbei
 import { useWellbeing } from '../../src/hooks/useWellbeing';
 import { goBack } from '../../src/lib/navigation';
 
-/** Les quatre séances d'urgence, dans l'ordre, sans rien à choisir de plus. */
+/** The four emergency sessions, in order, with nothing else to choose. */
 export default function SosScreen() {
   const { programs, programsQuery, completed } = useWellbeing();
   const sos = SOS_SLUGS.map((slug) => programs.find((p) => p.slug === slug && p.category === SOS_CATEGORY)).filter(

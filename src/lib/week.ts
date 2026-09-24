@@ -2,13 +2,13 @@ export function toISODateUTC(year: number, month: number, day: number): string {
   return new Date(Date.UTC(year, month, day)).toISOString().slice(0, 10);
 }
 
-/** Date calendaire *locale* d'un instant, au format ISO (une activité cochée à 00h30 à Paris
- *  appartient à ce jour-là, pas à la veille comme le donnerait la date UTC). */
+/** The *local* calendar date of an instant, in ISO form (an activity ticked at 00:30 in Paris
+ *  belongs to that day, not to the one before, as the UTC date would have it). */
 export function toLocalISODate(date: Date): string {
   return toISODateUTC(date.getFullYear(), date.getMonth(), date.getDate());
 }
 
-/** Inverse de toLocalISODate : minuit, heure locale, du jour donné (new Date('AAAA-MM-JJ')
+/** The inverse of toLocalISODate: midnight, local time, on the given day (new Date('YYYY-MM-DD')
  *  le lirait en UTC et pourrait tomber la veille). */
 export function fromLocalISODate(iso: string): Date {
   const [year, month, day] = iso.split('-').map(Number);

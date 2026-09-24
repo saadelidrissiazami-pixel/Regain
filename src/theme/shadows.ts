@@ -2,7 +2,7 @@ import type { ViewStyle } from 'react-native';
 
 import type { ColorScheme } from './colors';
 
-/** Ombre à peine perceptible : la carte se détache par sa bordure, pas en flottant. */
+/** A shadow barely there: the card stands out by its border, not by floating. */
 export function cardShadow(scheme: ColorScheme): ViewStyle {
   if (scheme === 'dark') return {};
   return {
@@ -14,7 +14,7 @@ export function cardShadow(scheme: ColorScheme): ViewStyle {
   };
 }
 
-/** Pour les éléments qui flottent vraiment (bouton lecture sur une photo, indicateur de segment). */
+/** For the things that really do float (a play button over a photo, a segment indicator). */
 export function raisedShadow(scheme: ColorScheme): ViewStyle {
   if (scheme === 'dark') return {};
   return {

@@ -7,7 +7,7 @@ import { useToday } from '../lib/useCurrentDate';
 import { fromLocalISODate } from '../lib/week';
 import { useAuthStore } from '../store/authStore';
 
-/** Énergie déclarée aujourd'hui (dernier check-in), partagée par la carte d'accueil et le sélecteur. */
+/** The energy reported today (the last check-in), shared by the home card and the selector. */
 export function useEnergyToday() {
   const userId = useAuthStore((s) => s.session?.user.id);
   const today = useToday();

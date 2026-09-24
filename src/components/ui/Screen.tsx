@@ -14,8 +14,8 @@ import { useTheme } from '../../theme/ThemeProvider';
 import { spacing } from '../../theme/spacing';
 
 /**
- * Conteneur d'écran : fond, zone sûre, marges latérales, défilement. `footer` reste collé en
- * bas (bouton principal d'un écran de saisie ou d'un lecteur), au-dessus de l'indicateur d'accueil.
+ * A screen container: ground, safe area, side margins, scrolling. `footer` stays pinned to the
+ * bottom (the main button of a form or a player), above the home indicator.
  */
 export function Screen({
   children,
@@ -34,7 +34,7 @@ export function Screen({
   refreshing?: boolean;
   onRefresh?: () => void;
   footer?: ReactNode;
-  /** Écran d'onglet : la barre d'onglets gère déjà la zone basse. */
+  /** A tab screen: the tab bar already handles the bottom inset. */
   inTabs?: boolean;
   /** Formulaires : le contenu remonte au-dessus du clavier. */
   keyboard?: boolean;
