@@ -6,16 +6,16 @@ export type Recipe = {
   id: string;
   name: string;
   mealType: MealType;
-  /** Portion de base, en grammes ou millilitres selon l'unité de l'ingrédient. */
+  /** The base portion, in grams or millilitres depending on the ingredient's unit. */
   ingredients: { id: IngredientId; amount: number }[];
 };
 
-// Portions de base (~400-600 kcal par repas) : le générateur les multiplie ensuite pour que
-// chaque journée atteigne la cible calorique de la personne.
+// Base portions (~400-600 kcal per meal): the generator then scales them so that each day
+// reaches the person's calorie target.
 export const RECIPES: Recipe[] = [
   {
     id: 'pdj_porridge_banane',
-    name: 'Porridge à la banane',
+    name: 'Banana porridge',
     mealType: 'petit_dejeuner',
     ingredients: [
       { id: 'flocons_avoine', amount: 60 },
@@ -25,7 +25,7 @@ export const RECIPES: Recipe[] = [
   },
   {
     id: 'pdj_porridge_soja',
-    name: 'Porridge soja et fruits rouges',
+    name: 'Soya porridge with berries',
     mealType: 'petit_dejeuner',
     ingredients: [
       { id: 'flocons_avoine', amount: 60 },
@@ -36,7 +36,7 @@ export const RECIPES: Recipe[] = [
   },
   {
     id: 'pdj_omelette_pain',
-    name: 'Omelette et tartine complète',
+    name: 'Omelette with wholemeal toast',
     mealType: 'petit_dejeuner',
     ingredients: [
       { id: 'oeuf', amount: 120 },
@@ -47,7 +47,7 @@ export const RECIPES: Recipe[] = [
   },
   {
     id: 'pdj_skyr_bowl',
-    name: 'Bol de skyr, fruits rouges et amandes',
+    name: 'Skyr bowl with berries and almonds',
     mealType: 'petit_dejeuner',
     ingredients: [
       { id: 'skyr', amount: 200 },
@@ -58,7 +58,7 @@ export const RECIPES: Recipe[] = [
   },
   {
     id: 'pdj_tartines_cacahuete',
-    name: 'Tartines beurre de cacahuète et banane',
+    name: 'Peanut butter and banana on toast',
     mealType: 'petit_dejeuner',
     ingredients: [
       { id: 'pain_complet', amount: 80 },
@@ -68,7 +68,7 @@ export const RECIPES: Recipe[] = [
   },
   {
     id: 'pdj_yaourt_soja_pomme',
-    name: "Yaourt soja, pomme et flocons d'avoine",
+    name: 'Soya yoghurt, apple and oats',
     mealType: 'petit_dejeuner',
     ingredients: [
       { id: 'yaourt_soja', amount: 250 },
@@ -78,7 +78,7 @@ export const RECIPES: Recipe[] = [
   },
   {
     id: 'pdj_oeufs_avocat',
-    name: 'Œufs brouillés, avocat et tomates',
+    name: 'Scrambled eggs, avocado and tomatoes',
     mealType: 'petit_dejeuner',
     ingredients: [
       { id: 'oeuf', amount: 180 },
@@ -89,7 +89,7 @@ export const RECIPES: Recipe[] = [
   },
   {
     id: 'pdj_bol_soja_fruits',
-    name: 'Bol yaourt soja, banane et fruits rouges',
+    name: 'Soya yoghurt bowl with banana and berries',
     mealType: 'petit_dejeuner',
     ingredients: [
       { id: 'yaourt_soja', amount: 250 },
@@ -101,7 +101,7 @@ export const RECIPES: Recipe[] = [
 
   {
     id: 'dej_poulet_riz',
-    name: 'Poulet, riz basmati et brocoli',
+    name: 'Chicken, basmati rice and broccoli',
     mealType: 'dejeuner',
     ingredients: [
       { id: 'blanc_poulet', amount: 130 },
@@ -112,7 +112,7 @@ export const RECIPES: Recipe[] = [
   },
   {
     id: 'dej_bowl_quinoa',
-    name: 'Bowl quinoa, pois chiches et crudités',
+    name: 'Quinoa and chickpea bowl with raw vegetables',
     mealType: 'dejeuner',
     ingredients: [
       { id: 'quinoa', amount: 70 },
@@ -124,7 +124,7 @@ export const RECIPES: Recipe[] = [
   },
   {
     id: 'dej_saumon_patate',
-    name: 'Saumon, patate douce et épinards',
+    name: 'Salmon, sweet potato and spinach',
     mealType: 'dejeuner',
     ingredients: [
       { id: 'saumon', amount: 120 },
@@ -135,7 +135,7 @@ export const RECIPES: Recipe[] = [
   },
   {
     id: 'dej_pates_thon',
-    name: 'Pâtes complètes au thon et à la tomate',
+    name: 'Wholewheat pasta with tuna and tomato',
     mealType: 'dejeuner',
     ingredients: [
       { id: 'pates_completes', amount: 80 },
@@ -146,7 +146,7 @@ export const RECIPES: Recipe[] = [
   },
   {
     id: 'dej_wrap_dinde',
-    name: 'Wrap dinde, houmous et crudités',
+    name: 'Turkey wrap with hummus and salad',
     mealType: 'dejeuner',
     ingredients: [
       { id: 'tortilla', amount: 60 },
@@ -158,7 +158,7 @@ export const RECIPES: Recipe[] = [
   },
   {
     id: 'dej_dahl',
-    name: 'Dahl de lentilles corail et riz',
+    name: 'Red lentil dhal with rice',
     mealType: 'dejeuner',
     ingredients: [
       { id: 'lentilles_corail', amount: 70 },
@@ -170,7 +170,7 @@ export const RECIPES: Recipe[] = [
   },
   {
     id: 'dej_salade_feta',
-    name: 'Salade de quinoa, pois chiches et feta',
+    name: 'Quinoa, chickpea and feta salad',
     mealType: 'dejeuner',
     ingredients: [
       { id: 'quinoa', amount: 60 },
@@ -184,7 +184,7 @@ export const RECIPES: Recipe[] = [
 
   {
     id: 'din_tofu_legumes',
-    name: 'Tofu sauté, légumes et riz',
+    name: 'Stir-fried tofu with vegetables and rice',
     mealType: 'diner',
     ingredients: [
       { id: 'tofu', amount: 150 },
@@ -196,7 +196,7 @@ export const RECIPES: Recipe[] = [
   },
   {
     id: 'din_cabillaud',
-    name: 'Cabillaud, pommes de terre et brocoli',
+    name: 'Cod, potatoes and broccoli',
     mealType: 'diner',
     ingredients: [
       { id: 'cabillaud', amount: 150 },
@@ -207,7 +207,7 @@ export const RECIPES: Recipe[] = [
   },
   {
     id: 'din_boeuf_patate',
-    name: 'Bœuf haché, patate douce et courgettes',
+    name: 'Beef mince, sweet potato and courgettes',
     mealType: 'diner',
     ingredients: [
       { id: 'boeuf_hache', amount: 120 },
@@ -218,7 +218,7 @@ export const RECIPES: Recipe[] = [
   },
   {
     id: 'din_omelette_epinards',
-    name: 'Omelette aux épinards et pommes de terre',
+    name: 'Spinach omelette with potatoes',
     mealType: 'diner',
     ingredients: [
       { id: 'oeuf', amount: 180 },
@@ -229,7 +229,7 @@ export const RECIPES: Recipe[] = [
   },
   {
     id: 'din_curry_pois_chiches',
-    name: 'Curry de pois chiches aux épinards',
+    name: 'Chickpea and spinach curry',
     mealType: 'diner',
     ingredients: [
       { id: 'pois_chiches', amount: 200 },
@@ -241,7 +241,7 @@ export const RECIPES: Recipe[] = [
   },
   {
     id: 'din_poulet_quinoa',
-    name: 'Poulet, quinoa et légumes rôtis',
+    name: 'Chicken, quinoa and roast vegetables',
     mealType: 'diner',
     ingredients: [
       { id: 'blanc_poulet', amount: 130 },
@@ -253,7 +253,7 @@ export const RECIPES: Recipe[] = [
   },
   {
     id: 'din_pates_mozza',
-    name: 'Pâtes complètes tomate, mozzarella et épinards',
+    name: 'Wholewheat pasta with tomato, mozzarella and spinach',
     mealType: 'diner',
     ingredients: [
       { id: 'pates_completes', amount: 80 },
@@ -265,7 +265,7 @@ export const RECIPES: Recipe[] = [
 
   {
     id: 'col_skyr',
-    name: 'Skyr et fruits rouges',
+    name: 'Skyr and berries',
     mealType: 'collation',
     ingredients: [
       { id: 'skyr', amount: 150 },
@@ -274,7 +274,7 @@ export const RECIPES: Recipe[] = [
   },
   {
     id: 'col_pomme_amandes',
-    name: 'Pomme et amandes',
+    name: 'Apple and almonds',
     mealType: 'collation',
     ingredients: [
       { id: 'pomme', amount: 150 },
@@ -283,7 +283,7 @@ export const RECIPES: Recipe[] = [
   },
   {
     id: 'col_houmous_carottes',
-    name: 'Houmous et bâtonnets de carotte',
+    name: 'Hummus and carrot sticks',
     mealType: 'collation',
     ingredients: [
       { id: 'houmous', amount: 50 },
@@ -292,7 +292,7 @@ export const RECIPES: Recipe[] = [
   },
   {
     id: 'col_banane_cacahuete',
-    name: 'Banane et beurre de cacahuète',
+    name: 'Banana and peanut butter',
     mealType: 'collation',
     ingredients: [
       { id: 'banane', amount: 120 },
@@ -301,7 +301,7 @@ export const RECIPES: Recipe[] = [
   },
   {
     id: 'col_yaourt_soja_banane',
-    name: 'Yaourt soja et banane',
+    name: 'Soya yoghurt and banana',
     mealType: 'collation',
     ingredients: [
       { id: 'yaourt_soja', amount: 125 },
@@ -310,7 +310,7 @@ export const RECIPES: Recipe[] = [
   },
   {
     id: 'col_oeufs_durs',
-    name: 'Œufs durs et tomates cerises',
+    name: 'Boiled eggs and cherry tomatoes',
     mealType: 'collation',
     ingredients: [
       { id: 'oeuf', amount: 120 },

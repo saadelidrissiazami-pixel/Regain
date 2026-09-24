@@ -12,72 +12,77 @@ import type {
   WorkoutSession,
 } from './types';
 
-// Générateur par règles, sans IA : gratuit, instantané, et aucune donnée de santé ne quitte la
-// base de l'utilisateur. Déterministe pour un même `seed`, pour être testable.
+// A rule-based generator, no AI: free, instant, and no health data leaves the user's own rows.
+// Deterministic for a given `seed`, so it can be tested.
 
-// --- Le plan suit-il encore le profil ? -----------------------------------------------------
+// --- Does the plan still match the profile? -------------------------------------------------
 
 function sameValue(previous: unknown, next: unknown): boolean {
   if (Array.isArray(previous) && Array.isArray(next)) {
-    // Les objectifs sont une liste : leur ordre ne change rien au programme produit.
+    // Goals are a list: their order makes no difference to the programme produced.
     return previous.length === next.length && [...previous].sort().join('|') === [...next].sort().join('|');
   }
   const isText = (v: unknown) => v === null || typeof v === 'string';
-  // Allergies et notes de santé sont saisies à la main : un espace en plus n'est pas un changement.
+  // Allergies and health notes are typed by hand: one extra space is not a change.
   if (isText(previous) && isText(next)) return ((previous as string) ?? '').trim() === ((next as string) ?? '').trim();
   return previous === next;
 }
 
 /**
- * Le profil a-t-il changé d'une façon qui rende le plan affiché faux ?
+ * Has the profile changed in a way that makes the plan on screen wrong?
  *
- * On compare **tous** les champs plutôt qu'une liste choisie : chacun d'eux nourrit la
- * génération (calories, choix des exercices, exclusions alimentaires), et une liste manuelle
- * finirait par oublier un champ ajouté plus tard — un oubli qui laisserait afficher des repas
- * contenant un allergène déclaré. Le créneau et les jours d'entraînement ne sont volontairement
- * pas dans `FitnessProfileInput` : ils ne servent qu'à l'affichage et ne doivent rien régénérer.
+ * **Every** field is compared rather than a chosen few: each one feeds the generation (calories,
+ * the choice of exercises, dietary exclusions), and a hand-maintained list would eventually
+ * forget a field added later — an omission that would leave meals containing a declared allergen
+ * on screen. The training slot and training days are deliberately not in `FitnessProfileInput`:
+ * they only affect display and must not regenerate anything.
  */
 export function affectsPlan(previous: FitnessProfileInput, next: FitnessProfileInput): boolean {
-  // On parcourt les clés de `next`, jamais l'union des deux : `previous` vient de la base, où
-  // `select('*')` ramène aussi user_id, created_at, training_slot… absents du profil reconstruit
-  // depuis le formulaire. Comparer l'union les voyait disparaître à chaque fois, et la fonction
-  // répondait toujours vrai — donc un recalcul à chaque enregistrement, même sans modification.
+  // We walk the keys of `next`, never the union of both: `previous` comes from the database,
+  // where `select('*')` also brings back user_id, created_at, training_slot… none of which exist
+  // on the profile rebuilt from the form. Comparing the union saw those vanish every time, so the
+  // function always answered true — a recalculation on every save, even with nothing changed.
   return (Object.keys(next) as (keyof FitnessProfileInput)[]).some((key) => !sameValue(previous[key], next[key]));
 }
 
-// --- Lecture des textes libres (allergies, santé) -------------------------------------------
+// --- Reading the free-text fields (allergies, health) ---------------------------------------
 
 function normalize(text: string): string {
   return text.toLowerCase().replace(/œ/g, 'oe').normalize('NFD').replace(/[̀-ͯ]/g, '');
 }
 
+// The keyword has to be a whole word, with an optional plural `s`. An open-ended prefix match
+// was fine against French words but is dangerous in English: `nut` would fire on “nutrition”,
+// `cod` on “codeine” and `disc` on “discomfort” — each one silently stripping food or exercises
+// out of somebody's plan because of a word that had nothing to do with it.
 function mentions(text: string, keywords: string[]): boolean {
   const normalized = normalize(text);
-  return keywords.some((keyword) => new RegExp(`\\b${keyword}`).test(normalized));
+  return keywords.some((keyword) => new RegExp(`\\b${keyword}s?\\b`).test(normalized));
 }
 
+// Matched against what the person typed, so the words are the ones they would write.
 const ALLERGY_KEYWORDS: Record<Allergen, string[]> = {
-  gluten: ['gluten', 'ble', 'froment', 'coeliaque', 'celiaque'],
-  lactose: ['lactose', 'lait', 'laitier', 'fromage'],
-  oeufs: ['oeuf'],
-  arachides: ['arachide', 'cacahuete'],
-  fruits_a_coque: ['noix', 'amande', 'noisette', 'cajou', 'pistache', 'fruits? a coque'],
-  poisson: ['poisson'],
-  crustaces: ['crustace', 'crevette', 'fruits de mer'],
-  soja: ['soja'],
-  sesame: ['sesame'],
+  gluten: ['gluten', 'wheat', 'coeliac', 'celiac'],
+  lactose: ['lactose', 'milk', 'dairy', 'cheese'],
+  oeufs: ['egg'],
+  arachides: ['peanut', 'groundnut'],
+  fruits_a_coque: ['nut', 'almond', 'hazelnut', 'cashew', 'pistachio', 'walnut', 'pecan'],
+  poisson: ['fish', 'salmon', 'cod', 'tuna'],
+  crustaces: ['shellfish', 'crustacean', 'prawn', 'shrimp', 'crab', 'lobster'],
+  soja: ['soy', 'soya'],
+  sesame: ['sesame', 'tahini'],
 };
 
 export const ALLERGEN_LABELS: Record<Allergen, string> = {
   gluten: 'gluten',
   lactose: 'lactose',
-  oeufs: 'œufs',
-  arachides: 'arachides',
-  fruits_a_coque: 'fruits à coque',
-  poisson: 'poisson',
-  crustaces: 'crustacés',
-  soja: 'soja',
-  sesame: 'sésame',
+  oeufs: 'eggs',
+  arachides: 'peanuts',
+  fruits_a_coque: 'tree nuts',
+  poisson: 'fish',
+  crustaces: 'shellfish',
+  soja: 'soya',
+  sesame: 'sesame',
 };
 
 export function parseAllergies(text: string): Allergen[] {
@@ -85,24 +90,24 @@ export function parseAllergies(text: string): Allergen[] {
 }
 
 const JOINT_KEYWORDS: Record<JointStress, string[]> = {
-  genou: ['genou', 'menisque', 'rotule', 'ligament croise'],
-  dos: ['dos', 'lombaire', 'hernie', 'sciatique', 'colonne'],
-  epaule: ['epaule', 'coiffe des rotateurs'],
+  genou: ['knee', 'meniscus', 'kneecap', 'patella', 'cruciate', 'acl'],
+  dos: ['back', 'lumbar', 'hernia', 'sciatica', 'spine', 'disc'],
+  epaule: ['shoulder', 'rotator cuff'],
 };
 
-const JOINT_LABELS: Record<JointStress, string> = { genou: 'genou', dos: 'dos', epaule: 'épaule' };
+const JOINT_LABELS: Record<JointStress, string> = { genou: 'knee', dos: 'back', epaule: 'shoulder' };
 
 export function detectJointIssues(text: string): JointStress[] {
   return (Object.keys(JOINT_KEYWORDS) as JointStress[]).filter((joint) => mentions(text, JOINT_KEYWORDS[joint]));
 }
 
-// --- Séances ---------------------------------------------------------------------------------
+// --- Sessions --------------------------------------------------------------------------------
 
 const EQUIPMENT_RANK: Record<Equipment, number> = { poids_du_corps: 0, halteres_maison: 1, salle: 2 };
 const LEVEL_RANK: Record<ExperienceLevel, number> = { debutant: 0, intermediaire: 1, confirme: 2 };
 
-const WARMUP = "5 min : mobilité des épaules, des hanches et des chevilles, puis 2 min de cardio doux.";
-const COOLDOWN = '5 min d’étirements doux des muscles travaillés et quelques respirations lentes.';
+const WARMUP = '5 min: mobility for the shoulders, hips and ankles, then 2 min of easy cardio.';
+const COOLDOWN = '5 min of gentle stretching for the muscles you worked, and a few slow breaths.';
 const WARMUP_AND_COOLDOWN_MINUTES = 10;
 const WORK_SECONDS_PER_SET = 45;
 
@@ -111,21 +116,21 @@ type SplitDay = { focus: string; slots: MuscleGroup[] };
 function splitFor(daysPerWeek: number): { name: string; days: SplitDay[] } {
   if (daysPerWeek <= 3) {
     const fullBody: SplitDay[] = [
-      { focus: 'Corps entier A', slots: ['jambes', 'pectoraux', 'dos', 'fessiers', 'epaules', 'abdos', 'biceps'] },
-      { focus: 'Corps entier B', slots: ['fessiers', 'dos', 'pectoraux', 'jambes', 'triceps', 'abdos', 'epaules'] },
-      { focus: 'Corps entier C', slots: ['jambes', 'dos', 'epaules', 'pectoraux', 'fessiers', 'abdos', 'biceps'] },
+      { focus: 'Full body A', slots: ['jambes', 'pectoraux', 'dos', 'fessiers', 'epaules', 'abdos', 'biceps'] },
+      { focus: 'Full body B', slots: ['fessiers', 'dos', 'pectoraux', 'jambes', 'triceps', 'abdos', 'epaules'] },
+      { focus: 'Full body C', slots: ['jambes', 'dos', 'epaules', 'pectoraux', 'fessiers', 'abdos', 'biceps'] },
     ];
-    return { name: 'corps entier', days: fullBody.slice(0, daysPerWeek) };
+    return { name: 'full body', days: fullBody.slice(0, daysPerWeek) };
   }
   if (daysPerWeek === 4) {
-    const upper: SplitDay = { focus: 'Haut du corps', slots: ['pectoraux', 'dos', 'epaules', 'biceps', 'triceps', 'dos', 'abdos'] };
-    const lower: SplitDay = { focus: 'Bas du corps', slots: ['jambes', 'fessiers', 'jambes', 'abdos', 'fessiers', 'jambes', 'abdos'] };
-    return { name: 'haut / bas du corps', days: [upper, lower, upper, lower] };
+    const upper: SplitDay = { focus: 'Upper body', slots: ['pectoraux', 'dos', 'epaules', 'biceps', 'triceps', 'dos', 'abdos'] };
+    const lower: SplitDay = { focus: 'Lower body', slots: ['jambes', 'fessiers', 'jambes', 'abdos', 'fessiers', 'jambes', 'abdos'] };
+    return { name: 'an upper / lower split', days: [upper, lower, upper, lower] };
   }
-  const push: SplitDay = { focus: 'Poussée — pectoraux, épaules, triceps', slots: ['pectoraux', 'epaules', 'triceps', 'pectoraux', 'epaules', 'abdos', 'triceps'] };
-  const pull: SplitDay = { focus: 'Tirage — dos, biceps', slots: ['dos', 'dos', 'biceps', 'epaules', 'abdos', 'dos', 'biceps'] };
-  const legs: SplitDay = { focus: 'Jambes et fessiers', slots: ['jambes', 'fessiers', 'jambes', 'fessiers', 'abdos', 'jambes', 'abdos'] };
-  return { name: 'poussée / tirage / jambes', days: [push, pull, legs, push, pull, legs].slice(0, daysPerWeek) };
+  const push: SplitDay = { focus: 'Push — chest, shoulders, triceps', slots: ['pectoraux', 'epaules', 'triceps', 'pectoraux', 'epaules', 'abdos', 'triceps'] };
+  const pull: SplitDay = { focus: 'Pull — back, biceps', slots: ['dos', 'dos', 'biceps', 'epaules', 'abdos', 'dos', 'biceps'] };
+  const legs: SplitDay = { focus: 'Legs and glutes', slots: ['jambes', 'fessiers', 'jambes', 'fessiers', 'abdos', 'jambes', 'abdos'] };
+  return { name: 'a push / pull / legs split', days: [push, pull, legs, push, pull, legs].slice(0, daysPerWeek) };
 }
 
 type Scheme = { sets: number; reps: string; rest: number };
@@ -148,7 +153,7 @@ function exerciseCountFor(sessionMinutes: number): number {
 
 export type Intensity = -1 | 0 | 1;
 
-/** Bilan hebdo → semaine allégée, identique ou en progression. */
+/** Weekly check-in → an easier week, the same one, or a step up. */
 export function intensityFromCheckin(
   checkin: Pick<FitnessCheckinInput, 'sessions_done' | 'energy'> | undefined,
   daysPerWeek: number
@@ -202,13 +207,13 @@ export function buildWorkoutProgram(
       if (cardio.length > 0) {
         const def = cardio[(seed + sessionIndex) % cardio.length];
         finisher = def.timed
-          ? { name: def.name, sets: 1, reps: def.timed, rest_seconds: 0, tip: `Finisher cardio : ${def.tip}` }
-          : { name: def.name, sets: 4, reps: '30 s', rest_seconds: 30, tip: `Finisher cardio : ${def.tip}` };
+          ? { name: def.name, sets: 1, reps: def.timed, rest_seconds: 0, tip: `Cardio finisher: ${def.tip}` }
+          : { name: def.name, sets: 4, reps: '30 s', rest_seconds: 30, tip: `Cardio finisher: ${def.tip}` };
       }
     }
 
-    // La séance doit tenir dans le temps disponible : on retire d'abord des exercices (jamais
-    // sous 3), puis le finisher, puis une série partout.
+    // The session has to fit the time available: drop exercises first (never below 3), then the
+    // finisher, then one set everywhere.
     const fits = () => estimateMinutes(finisher ? [...main, finisher] : main) <= profile.session_minutes;
     while (!fits()) {
       if (main.length > 3) main.pop();
@@ -219,7 +224,7 @@ export function buildWorkoutProgram(
 
     const exercises = finisher ? [...main, finisher] : main;
     return {
-      day_label: `Séance ${sessionIndex + 1}`,
+      day_label: `Session ${sessionIndex + 1}`,
       focus: day.focus,
       duration_minutes: Math.min(profile.session_minutes, Math.ceil(estimateMinutes(exercises) / 5) * 5),
       warmup: WARMUP,
@@ -229,7 +234,7 @@ export function buildWorkoutProgram(
   });
 }
 
-// --- Repas -----------------------------------------------------------------------------------
+// --- Meals -----------------------------------------------------------------------------------
 
 const EXCLUDED_ANIMALS: Record<Diet, AnimalSource[]> = {
   omnivore: [],
@@ -240,18 +245,19 @@ const EXCLUDED_ANIMALS: Record<Diet, AnimalSource[]> = {
 };
 
 const MEAL_LABELS: Record<MealType, string> = {
-  petit_dejeuner: 'Petit-déjeuner',
-  dejeuner: 'Déjeuner',
-  diner: 'Dîner',
-  collation: 'Collation',
+  petit_dejeuner: 'Breakfast',
+  dejeuner: 'Lunch',
+  diner: 'Dinner',
+  collation: 'Snack',
 };
 
+// The order the shopping list is grouped in, roughly the order of a supermarket's aisles.
 const CATEGORY_ORDER = [
-  'Fruits et légumes',
-  'Protéines',
-  'Féculents et céréales',
-  'Produits laitiers et alternatives',
-  'Épicerie',
+  'Fruit and vegetables',
+  'Protein',
+  'Grains and starches',
+  'Dairy and alternatives',
+  'Store cupboard',
 ];
 
 export function isRecipeCompatible(recipe: Recipe, diet: Diet, allergens: Allergen[]): boolean {
@@ -286,7 +292,7 @@ function nutritionOf(portions: Portion[]): { kcal: number; protein: number } {
 }
 
 function formatDecimal(value: number): string {
-  return String(Math.round(value * 100) / 100).replace('.', ',');
+  return String(Math.round(value * 100) / 100);
 }
 
 function formatPieces(pieces: number, label: string): string {
@@ -299,16 +305,14 @@ function describePortion({ id, amount }: Portion): string {
   if (ingredient.gramsPerPiece && ingredient.pieceLabel) {
     return formatPieces(amount / ingredient.gramsPerPiece, ingredient.pieceLabel);
   }
-  // Élision devant voyelle ou h muet (« d'huile »), mais pas devant y (« de yaourt »).
-  const preposition = /^[aeiouhéèêœ]/i.test(ingredient.name) ? "d'" : 'de ';
-  return `${amount} ${ingredient.unit} ${preposition}${ingredient.name}`;
+  return `${amount} ${ingredient.unit} ${ingredient.name}`;
 }
 
 function capitalize(text: string): string {
   return text.charAt(0).toUpperCase() + text.slice(1);
 }
 
-/** Quantité d'achat, arrondie vers le haut pour ne jamais manquer. */
+/** The amount to buy, rounded up so you never come up short. */
 export function formatQuantity(amount: number, ingredient: Ingredient): string {
   if (ingredient.gramsPerPiece) return String(Math.ceil(amount / ingredient.gramsPerPiece - 1e-9));
   const rounded = Math.ceil(amount / 10) * 10;
@@ -316,7 +320,7 @@ export function formatQuantity(amount: number, ingredient: Ingredient): string {
   return `${rounded} ${ingredient.unit}`;
 }
 
-// Semaine de 7 jours avec 3 journées types en rotation : A, B, C, A, B, C, A.
+// A seven-day week built from 3 sample days in rotation: A, B, C, A, B, C, A.
 const WEEKLY_REPETITIONS = [3, 2, 2];
 const DAY_LETTERS = ['A', 'B', 'C'];
 
@@ -329,8 +333,8 @@ export type MealPlan = {
 
 export function buildMealPlan(profile: FitnessProfileInput, targets: NutritionTargets, seed = 0): MealPlan {
   const allergens = parseAllergies(profile.allergies ?? '');
-  // Objectifs musculaires (au moins 25 % des calories en protéines) : on ne fait tourner que les
-  // recettes les plus protéinées, et on ajoute une collation protéinée même à petit budget.
+  // Muscle-building targets (at least 25% of calories from protein): only the highest-protein
+  // recipes go into the rotation, and a protein snack is added even on a small calorie budget.
   const needsHighProtein = (targets.proteinG * 4) / targets.calories >= 0.25;
   const snackCount = targets.calories > 2600 ? 2 : targets.calories > 1900 || needsHighProtein ? 1 : 0;
   const slots: MealType[] = ['petit_dejeuner', 'dejeuner', 'diner', ...Array<MealType>(snackCount).fill('collation')];
@@ -349,7 +353,7 @@ export function buildMealPlan(profile: FitnessProfileInput, targets: NutritionTa
   for (const type of new Set(slots)) {
     if (optionsFor(type).length === 0) {
       warnings.push(
-        `Aucune recette de ${MEAL_LABELS[type].toLowerCase()} ne correspond à vos restrictions : composez ce repas vous-même.`
+        `No ${MEAL_LABELS[type].toLowerCase()} recipe fits your restrictions — put this meal together yourself.`
       );
     }
   }
@@ -359,7 +363,7 @@ export function buildMealPlan(profile: FitnessProfileInput, targets: NutritionTa
       const options = optionsFor(type);
       return options.length > 0 ? [options[(seed + dayIndex + slotIndex * 2) % options.length]] : [];
     });
-    // Portions multipliées pour atteindre la cible calorique (dans une limite raisonnable).
+    // Portions are scaled to reach the calorie target, within reason.
     const baseKcal = recipes.reduce((total, r) => total + nutritionOf(r.ingredients).kcal, 0);
     const factor = baseKcal > 0 ? Math.min(1.8, Math.max(0.75, targets.calories / baseKcal)) : 1;
     return recipes.map((recipe) => ({
@@ -379,7 +383,7 @@ export function buildMealPlan(profile: FitnessProfileInput, targets: NutritionTa
       };
     });
     return {
-      day_label: `Journée ${DAY_LETTERS[dayIndex]}`,
+      day_label: `Day ${DAY_LETTERS[dayIndex]}`,
       total_calories: described.reduce((total, m) => total + m.calories, 0),
       meals: described,
     };
@@ -401,7 +405,7 @@ export function buildMealPlan(profile: FitnessProfileInput, targets: NutritionTa
     }))
     .sort(
       (a, b) =>
-        CATEGORY_ORDER.indexOf(a.category) - CATEGORY_ORDER.indexOf(b.category) || a.item.localeCompare(b.item, 'fr')
+        CATEGORY_ORDER.indexOf(a.category) - CATEGORY_ORDER.indexOf(b.category) || a.item.localeCompare(b.item, 'en')
     );
 
   const averageProtein =
@@ -409,7 +413,7 @@ export function buildMealPlan(profile: FitnessProfileInput, targets: NutritionTa
     plannedDays.length;
   if (averageProtein < targets.proteinG * 0.8) {
     warnings.push(
-      `Ces journées apportent environ ${Math.round(averageProtein)} g de protéines pour une cible de ${targets.proteinG} g : ajoutez si besoin une portion de tofu, de légumineuses ou de yaourt.`
+      `These days come to about ${Math.round(averageProtein)} g of protein against a target of ${targets.proteinG} g. Add a portion of tofu, pulses or yoghurt if you need to.`
     );
   }
 
@@ -418,32 +422,32 @@ export function buildMealPlan(profile: FitnessProfileInput, targets: NutritionTa
     profile.diet === 'halal' &&
     usedIngredientIds.some((id) => ['viande', 'volaille'].includes(INGREDIENTS[id].animal ?? ''))
   ) {
-    warnings.push('Choisissez des viandes et volailles certifiées halal.');
+    warnings.push('Choose certified halal meat and poultry.');
   }
 
   if (profile.allergies?.trim()) {
     warnings.push(
       allergens.length > 0
-        ? `Allergies exclues automatiquement : ${allergens.map((a) => ALLERGEN_LABELS[a]).join(', ')}. Si une autre allergie n'apparaît pas dans cette liste, vérifiez chaque recette et les étiquettes.`
-        : "Votre allergie n'a pas pu être reconnue automatiquement : vérifiez chaque recette et les étiquettes."
+        ? `Allergies excluded automatically: ${allergens.map((a) => ALLERGEN_LABELS[a]).join(', ')}. If another allergy is not in that list, check each recipe and read the labels.`
+        : 'Your allergy could not be recognised automatically: check each recipe and read the labels.'
     );
   }
 
   return { days, shoppingList, warnings, usedIngredientIds };
 }
 
-// --- Programme complet -----------------------------------------------------------------------
+// --- The whole programme ---------------------------------------------------------------------
 
 const STRATEGY_NOTES: Record<NutritionTargets['strategy'], string> = {
-  deficit: 'Objectif : une perte progressive, avec un léger déficit calorique et des séances qui préservent vos muscles.',
-  surplus: 'Objectif : une prise de masse progressive, avec un léger surplus calorique et des charges qui augmentent petit à petit.',
-  maintien: 'Objectif : entretenir votre forme et votre énergie, sans restriction.',
+  deficit: 'The aim: a gradual loss, on a slight calorie deficit, with sessions that protect your muscle.',
+  surplus: 'The aim: gradual gain, on a slight calorie surplus, with weights that creep up over time.',
+  maintien: 'The aim: keeping your fitness and your energy, with nothing to restrict.',
 };
 
 const INTENSITY_NOTES: Record<Intensity, string> = {
-  [-1]: 'Semaine allégée : une série de moins, pour récupérer sans culpabiliser.',
-  0: 'On garde le même rythme cette semaine.',
-  1: 'Belle semaine : une série de plus sur chaque exercice pour progresser.',
+  [-1]: 'An easier week: one set fewer, to recover without guilt.',
+  0: 'We keep the same rhythm this week.',
+  1: 'A good week: one extra set on each exercise, to keep progressing.',
 };
 
 export function generateFitnessPlan(
@@ -456,18 +460,18 @@ export function generateFitnessPlan(
   const mealPlan = buildMealPlan(profile, targets, seed);
   const jointIssues = detectJointIssues(profile.health_notes ?? '');
 
-  const sessionsWord = profile.days_per_week > 1 ? 'séances' : 'séance';
+  const sessionsWord = profile.days_per_week > 1 ? 'sessions' : 'session';
   const notes = [
     STRATEGY_NOTES[targets.strategy],
-    `${profile.days_per_week} ${sessionsWord} par semaine en ${splitFor(profile.days_per_week).name}.`,
+    `${profile.days_per_week} ${sessionsWord} a week, on ${splitFor(profile.days_per_week).name}.`,
   ];
   if (checkin) notes.push(INTENSITY_NOTES[intensity]);
   if (jointIssues.length > 0) {
     notes.push(
-      `Vous avez signalé une gêne (${jointIssues.map((j) => JOINT_LABELS[j]).join(', ')}) : les exercices qui la sollicitent ont été retirés. Demandez l'avis d'un professionnel de santé avant de reprendre.`
+      `You reported trouble with your ${jointIssues.map((j) => JOINT_LABELS[j]).join(', ')}, so the exercises that load it have been removed. Ask a health professional before you start again.`
     );
   } else if (profile.health_notes?.trim()) {
-    notes.push('Vous avez indiqué une particularité de santé : faites valider ce programme par un professionnel avant de commencer.');
+    notes.push('You mentioned something about your health: have this programme checked by a professional before you begin.');
   }
   notes.push(...mealPlan.warnings);
 

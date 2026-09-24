@@ -50,12 +50,12 @@ describe('summarizeAdjustments', () => {
 
   it('allège la semaine après peu de séances ou une énergie basse', () => {
     const [first] = summarizeAdjustments({ ...base, checkin: { sessions_done: 0, energy: 2 } });
-    expect(first.label).toBe('Semaine allégée');
+    expect(first.label).toBe('An easier week');
   });
 
   it('renforce après une semaine complète en forme', () => {
     const [first] = summarizeAdjustments({ ...base, checkin: { sessions_done: 3, energy: 5 } });
-    expect(first.label).toBe('Semaine plus soutenue');
+    expect(first.label).toBe('A harder week');
   });
 
   it('annonce le changement de cible calorique et le poids', () => {
@@ -69,19 +69,19 @@ describe('summarizeAdjustments', () => {
     });
     const labels = summary.map((a) => a.label);
 
-    expect(labels).toContain('Cible : 2200 → 2100 kcal');
-    expect(summary.find((a) => a.label.startsWith('Cible'))?.detail).toContain('votre poids du jour');
-    expect(labels).toContain('Poids : 80 → 79,4 kg');
-    expect(labels).toContain('1 nouveau plat');
+    expect(labels).toContain('Target: 2200 → 2100 kcal');
+    expect(summary.find((a) => a.label.startsWith('Target'))?.detail).toContain('today’s weight');
+    expect(labels).toContain('Weight: 80 → 79.4 kg');
+    expect(labels).toContain('1 new dish');
   });
 
   it('indique une cible inchangée et compte séances et courses', () => {
     const summary = summarizeAdjustments({ ...base, next: plan(2200, ['Dahl'], 4, 25), checkin: { sessions_done: 2, energy: 3 } });
     const labels = summary.map((a) => a.label);
-    expect(labels).toContain('Cible inchangée : 2200 kcal par jour');
-    expect(labels).toContain('4 séances cette semaine');
-    expect(labels).toContain('Liste de courses mise à jour : 25 articles');
-    expect(labels).toContain('Mêmes plats que la semaine passée');
+    expect(labels).toContain('Target unchanged: 2200 kcal a day');
+    expect(labels).toContain('4 sessions this week');
+    expect(labels).toContain('Shopping list updated: 25 items');
+    expect(labels).toContain('Same dishes as last week');
   });
 
   it('ne parle pas du poids sans nouvelle pesée, et le dit autrement', () => {
@@ -91,7 +91,7 @@ describe('summarizeAdjustments', () => {
       previousWeightKg: 80,
       newWeightKg: null,
     });
-    expect(summary.some((a) => a.label.startsWith('Poids'))).toBe(false);
-    expect(summary.find((a) => a.label.startsWith('Cible'))?.detail).toContain('votre profil à jour');
+    expect(summary.some((a) => a.label.startsWith('Weight'))).toBe(false);
+    expect(summary.find((a) => a.label.startsWith('Target'))?.detail).toContain('your updated profile');
   });
 });

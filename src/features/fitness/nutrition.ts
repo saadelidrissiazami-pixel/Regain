@@ -1,7 +1,7 @@
 import type { ActivityLevel, FitnessGoal, Sex } from './options';
 
-// Les calories sont calculées ici, de façon déterministe et testée — jamais par l'IA.
-// L'agent compose ensuite les menus à l'intérieur de ces cibles.
+// Calories are worked out here, deterministically and under test — never by the model.
+// The meals are then composed inside these targets.
 
 const ACTIVITY_FACTORS: Record<ActivityLevel, number> = {
   sedentaire: 1.2,
@@ -10,8 +10,8 @@ const ACTIVITY_FACTORS: Record<ActivityLevel, number> = {
   actif: 1.725,
 };
 
-// Plancher de sécurité : jamais sous ce seuil, ni sous le métabolisme de base. Particulièrement
-// important pour un public en sortie de burn-out, où la restriction sévère est à proscrire.
+// A safety floor: never below this, and never below basal metabolic rate. This matters
+// especially for people coming out of burnout, where severe restriction is out of the question.
 const SEX_CALORIE_FLOOR: Record<Sex, number> = { femme: 1200, homme: 1500 };
 
 const MAX_DEFICIT_KCAL = 500;
@@ -46,7 +46,7 @@ export function ageFromBirthYear(birthYear: number, today = new Date()): number 
   return today.getFullYear() - birthYear;
 }
 
-/** Métabolisme de base, équation de Mifflin-St Jeor. */
+/** Basal metabolic rate, using the Mifflin-St Jeor equation. */
 export function computeBmr({ sex, age, heightCm, weightKg }: Omit<NutritionInput, 'activityLevel' | 'goals'>): number {
   return 10 * weightKg + 6.25 * heightCm - 5 * age + (sex === 'homme' ? 5 : -161);
 }

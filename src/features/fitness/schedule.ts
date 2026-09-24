@@ -6,7 +6,7 @@ import type { FitnessCheckin, FitnessPlan, WorkoutSession } from './types';
 
 type TimeSlot = keyof typeof DEFAULT_SLOT_START;
 
-/** Répartition par défaut des séances dans la semaine (0 = lundi), avec un jour de repos entre deux. */
+/** The default spread of sessions across the week (0 = Monday), with a rest day in between. */
 const DEFAULT_DAYS: Record<number, number[]> = {
   1: [2],
   2: [0, 3],
@@ -16,14 +16,14 @@ const DEFAULT_DAYS: Record<number, number[]> = {
   6: [0, 1, 2, 3, 4, 5],
 };
 
-/** Jours d'entraînement : ceux choisis au questionnaire, sinon une répartition par défaut. */
+/** Training days: the ones chosen in the questionnaire, otherwise a default spread. */
 export function trainingDays(saved: number[] | null | undefined, daysPerWeek: number): number[] {
   const valid = Array.from(new Set((saved ?? []).filter((d) => Number.isInteger(d) && d >= 0 && d <= 6))).sort();
   if (valid.length > 0) return valid;
   return DEFAULT_DAYS[Math.min(6, Math.max(1, daysPerWeek))];
 }
 
-/** « Séance 1 · Poussée » à partir de « Séance 1 » et « Poussée — pectoraux, épaules ». */
+/** “Session 1 · Push” out of “Session 1” and “Push — chest, shoulders”. */
 export function sessionTitle(session: Pick<WorkoutSession, 'day_label' | 'focus'>): string {
   return `${session.day_label} · ${shortFocus(session.focus)}`;
 }
@@ -46,7 +46,7 @@ export type WeekTrackerDay = {
   isToday: boolean;
 };
 
-/** Les 7 jours de la semaine : jour d'entraînement prévu, séance faite, aujourd'hui. */
+/** The seven days of the week: a training day planned, a session done, today. */
 export function buildWeekTracker({
   weekStart,
   today,

@@ -13,31 +13,31 @@ type PlanLike = {
 
 const INTENSITY_LABEL: Record<-1 | 0 | 1, { label: string; detail: string }> = {
   [-1]: {
-    label: 'Semaine allégée',
-    detail: 'Une série de moins par exercice, pour repartir sans forcer.',
+    label: 'An easier week',
+    detail: 'One set fewer per exercise, to get going again without forcing it.',
   },
   [0]: {
-    label: 'Même rythme',
-    detail: 'Le volume reste le même, avec de nouveaux exercices.',
+    label: 'Same rhythm',
+    detail: 'The volume stays the same, with new exercises.',
   },
   [1]: {
-    label: 'Semaine plus soutenue',
-    detail: 'Une série de plus par exercice, puisque la semaine est bien passée.',
+    label: 'A harder week',
+    detail: 'One extra set per exercise, since last week went well.',
   },
 };
 
-function frenchNumber(value: number): string {
-  return String(Math.round(value * 10) / 10).replace('.', ',');
+function oneDecimal(value: number): string {
+  return String(Math.round(value * 10) / 10);
 }
 
-/** Nombre de plats du nouveau programme absents de l'ancien. */
+/** How many dishes in the new programme were not in the old one. */
 export function countNewDishes(previous: MealDay[] | undefined, next: MealDay[]): number {
   const before = new Set((previous ?? []).flatMap((day) => day.meals.map((meal) => meal.name)));
   const after = new Set(next.flatMap((day) => day.meals.map((meal) => meal.name)));
   return [...after].filter((name) => !before.has(name)).length;
 }
 
-/** Ce que le bilan a changé, en clair : intensité, séances, calories, poids, menus, courses. */
+/** What the check-in changed, in plain words: intensity, sessions, calories, weight, meals, shopping. */
 export function summarizeAdjustments({
   previous,
   next,
@@ -62,8 +62,8 @@ export function summarizeAdjustments({
   const totalMinutes = next.program.reduce((sum, session) => sum + session.duration_minutes, 0);
   adjustments.push({
     icon: '📅',
-    label: `${next.program.length} séance${next.program.length > 1 ? 's' : ''} cette semaine`,
-    detail: `${totalMinutes} min au total, échauffement et retour au calme compris.`,
+    label: `${next.program.length} session${next.program.length > 1 ? 's' : ''} this week`,
+    detail: `${totalMinutes} min in total, warm-up and cool-down included.`,
   });
 
   const caloriesBefore = previous?.targets.calories;
@@ -71,15 +71,15 @@ export function summarizeAdjustments({
     const delta = next.targets.calories - caloriesBefore;
     adjustments.push({
       icon: '🔥',
-      label: `Cible : ${caloriesBefore} → ${next.targets.calories} kcal`,
-      detail: `${delta > 0 ? '+' : ''}${delta} kcal par jour, recalculé ${
-        typeof newWeightKg === 'number' ? 'avec votre poids du jour' : 'avec votre profil à jour'
+      label: `Target: ${caloriesBefore} → ${next.targets.calories} kcal`,
+      detail: `${delta > 0 ? '+' : ''}${delta} kcal a day, recalculated ${
+        typeof newWeightKg === 'number' ? 'from today’s weight' : 'from your updated profile'
       }.`,
     });
   } else {
     adjustments.push({
       icon: '🔥',
-      label: `Cible inchangée : ${next.targets.calories} kcal par jour`,
+      label: `Target unchanged: ${next.targets.calories} kcal a day`,
     });
   }
 
@@ -87,8 +87,8 @@ export function summarizeAdjustments({
     const delta = newWeightKg - previousWeightKg;
     adjustments.push({
       icon: '⚖️',
-      label: `Poids : ${frenchNumber(previousWeightKg)} → ${frenchNumber(newWeightKg)} kg`,
-      detail: `${delta > 0 ? '+' : '−'}${frenchNumber(Math.abs(delta))} kg depuis le dernier bilan.`,
+      label: `Weight: ${oneDecimal(previousWeightKg)} → ${oneDecimal(newWeightKg)} kg`,
+      detail: `${delta > 0 ? '+' : '−'}${oneDecimal(Math.abs(delta))} kg since the last check-in.`,
     });
   }
 
@@ -96,13 +96,13 @@ export function summarizeAdjustments({
   const totalDishes = next.meals.flatMap((day) => day.meals).length;
   adjustments.push({
     icon: '🍽️',
-    label: newDishes > 0 ? `${newDishes} nouveau${newDishes > 1 ? 'x' : ''} plat${newDishes > 1 ? 's' : ''}` : 'Mêmes plats que la semaine passée',
-    detail: `${next.meals.length} journées types, ${totalDishes} repas en tout.`,
+    label: newDishes > 0 ? `${newDishes} new dish${newDishes > 1 ? 'es' : ''}` : 'Same dishes as last week',
+    detail: `${next.meals.length} sample days, ${totalDishes} meals in all.`,
   });
 
   adjustments.push({
     icon: '🛒',
-    label: `Liste de courses mise à jour : ${next.shopping_list.length} articles`,
+    label: `Shopping list updated: ${next.shopping_list.length} items`,
   });
 
   return adjustments;

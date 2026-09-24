@@ -51,13 +51,13 @@ export function imageForActivity(category: ActivityCategory): ImageSourcePropTyp
   return IMAGES[BY_ACTIVITY_CATEGORY[category]];
 }
 
-/** Photo d'une séance de musculation selon son intitulé (« Jambes — … », « Poussée — … »). */
+/** A photo for a strength session, chosen from its focus (“Legs …”, “Push — …”). */
 export function imageForWorkout(focus: string): ImageSourcePropType | undefined {
   const f = focus.toLowerCase();
-  if (/jambe|squat|fessier|bas du corps|inférieur/.test(f)) return IMAGES.fitLegs;
-  if (/tirage|dos|biceps|soulevé/.test(f)) return IMAGES.fitPull;
-  if (/gainage|abdo|core|cardio/.test(f)) return IMAGES.fitCore;
-  if (/poussée|pector|épaule|triceps|haut du corps/.test(f)) return IMAGES.fitPush;
+  if (/leg|squat|glute|lower body/.test(f)) return IMAGES.fitLegs;
+  if (/pull|back|biceps|deadlift/.test(f)) return IMAGES.fitPull;
+  if (/plank|abs|core|cardio/.test(f)) return IMAGES.fitCore;
+  if (/push|chest|shoulder|triceps|upper body/.test(f)) return IMAGES.fitPush;
   return IMAGES.fitLegs ?? IMAGES.sport;
 }
 

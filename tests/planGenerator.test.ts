@@ -47,23 +47,29 @@ function targetsFor(profile: FitnessProfileInput) {
 
 function exerciseDef(name: string) {
   const def = EXERCISES.find((e) => e.name === name);
-  if (!def) throw new Error(`Exercice inconnu : ${name}`);
+  if (!def) throw new Error(`Unknown exercise: ${name}`);
   return def;
 }
 
 describe('lecture des textes libres', () => {
-  it('reconnaît les allergies courantes, accents et majuscules compris', () => {
-    expect(parseAllergies('Intolérant au LACTOSE, allergique aux noix et aux œufs')).toEqual(
+  it('recognises the common allergies, whatever the case', () => {
+    expect(parseAllergies('LACTOSE intolerant, allergic to nuts and to eggs')).toEqual(
       expect.arrayContaining(['lactose', 'fruits_a_coque', 'oeufs'])
     );
   });
 
-  it("ne confond pas « problème » avec le blé ni « bœuf » avec les œufs", () => {
-    expect(parseAllergies('aucun problème, je mange du bœuf')).toEqual([]);
+  it('does not read an allergy into a word that merely contains one', () => {
+    // A prefix match would have found `nut` in “nutrition”, `cod` in “codeine” and `egg` in
+    // “eggplant”, and quietly stripped food out of the plan over none of them.
+    expect(parseAllergies('no nutrition problems, I eat eggplant, I take codeine')).toEqual([]);
   });
 
-  it('repère les gênes articulaires signalées', () => {
-    expect(detectJointIssues('Mal de dos et une vieille blessure à l’épaule droite')).toEqual(['dos', 'epaule']);
+  it('picks up the joint trouble reported', () => {
+    expect(detectJointIssues('Bad back and an old injury to my right shoulder')).toEqual(['dos', 'epaule']);
+  });
+
+  it('does not read joint trouble into a word that merely contains one', () => {
+    expect(detectJointIssues('some discomfort after a long day')).toEqual([]);
   });
 });
 
@@ -99,7 +105,7 @@ describe('buildWorkoutProgram', () => {
       equipment: 'salle',
       days_per_week: 5,
       session_minutes: 90,
-      health_notes: 'douleur au genou gauche',
+      health_notes: 'pain in my left knee',
     });
     for (const exercise of program.flatMap((s) => s.exercises)) {
       expect(exerciseDef(exercise.name).stress).not.toContain('genou');
@@ -171,34 +177,36 @@ describe('buildMealPlan', () => {
   });
 
   it('exclut les allergènes signalés', () => {
-    const profile = { ...BASE, allergies: 'lactose et arachides' };
+    const profile = { ...BASE, allergies: 'lactose and peanuts' };
     const plan = buildMealPlan(profile, targetsFor(profile));
     for (const id of plan.usedIngredientIds) {
       expect(INGREDIENTS[id].allergens).not.toContain('lactose');
       expect(INGREDIENTS[id].allergens).not.toContain('arachides');
     }
-    expect(plan.warnings.join(' ')).toContain('lactose, arachides');
+    expect(plan.warnings.join(' ')).toContain('lactose, peanuts');
   });
 
-  it("prévient quand une allergie n'est pas reconnue automatiquement", () => {
+  it('warns when an allergy could not be recognised', () => {
     const profile = { ...BASE, allergies: 'kiwi' };
-    expect(buildMealPlan(profile, targetsFor(profile)).warnings.join(' ')).toContain("n'a pas pu être reconnue");
+    expect(buildMealPlan(profile, targetsFor(profile)).warnings.join(' ')).toContain('could not be recognised');
   });
 
-  it('rappelle de choisir des viandes halal', () => {
+  it('reminds halal eaters to choose certified meat', () => {
     const profile = { ...BASE, diet: 'halal' as const };
-    expect(buildMealPlan(profile, targetsFor(profile)).warnings).toContain('Choisissez des viandes et volailles certifiées halal.');
+    expect(buildMealPlan(profile, targetsFor(profile)).warnings).toContain('Choose certified halal meat and poultry.');
   });
 
-  it('écrit des quantités en bon français (« de yaourt », « d’huile »)', () => {
+  it('writes portions with their unit, and counts the things sold by the piece', () => {
     const profile = { ...BASE, diet: 'vegan' as const };
     const descriptions = [0, 1, 2, 3].flatMap((seed) =>
       buildMealPlan(profile, targetsFor(profile), seed).days.flatMap((d) => d.meals.map((m) => m.description))
     );
     const all = descriptions.join(' | ');
-    expect(all).not.toMatch(/d'y/);
-    expect(all).toMatch(/de yaourt/);
-    expect(all).toMatch(/d'huile/);
+    expect(all).toMatch(/\d+ g plain soya yoghurt/);
+    expect(all).toMatch(/\d+ ml olive oil/);
+    // Bananas are bought by the piece, so they are counted rather than weighed.
+    expect(all).toMatch(/\d+ bananas?/);
+    expect(all).not.toMatch(/\d+ g bananas/);
   });
 
   it('construit une liste de courses pour toute la semaine', () => {
@@ -210,8 +218,8 @@ describe('buildMealPlan', () => {
 
 describe('formatQuantity', () => {
   it('convertit en kg / L et arrondit vers le haut', () => {
-    expect(formatQuantity(1250, INGREDIENTS.riz_basmati)).toBe('1,25 kg');
-    expect(formatQuantity(1500, INGREDIENTS.lait_demi_ecreme)).toBe('1,5 L');
+    expect(formatQuantity(1250, INGREDIENTS.riz_basmati)).toBe('1.25 kg');
+    expect(formatQuantity(1500, INGREDIENTS.lait_demi_ecreme)).toBe('1.5 L');
     expect(formatQuantity(137, INGREDIENTS.brocoli)).toBe('140 g');
   });
 
@@ -231,7 +239,7 @@ describe('generateFitnessPlan', () => {
 
   it('explique l’ajustement dans le mot du coach après un bilan', () => {
     const plan = generateFitnessPlan(BASE, targetsFor(BASE), { checkin: { sessions_done: 0, energy: 1 } });
-    expect(plan.coach_notes).toContain('Semaine allégée');
+    expect(plan.coach_notes).toContain('An easier week');
   });
 });
 
@@ -259,10 +267,10 @@ describe('apport en protéines', () => {
 
 describe('affectsPlan', () => {
   it('signale les changements qui rendent le plan affiché faux', () => {
-    expect(affectsPlan(BASE, { ...BASE, allergies: 'arachides' })).toBe(true);
+    expect(affectsPlan(BASE, { ...BASE, allergies: 'peanuts' })).toBe(true);
     expect(affectsPlan(BASE, { ...BASE, diet: 'vegetarien' })).toBe(true);
     expect(affectsPlan(BASE, { ...BASE, equipment: 'salle' })).toBe(true);
-    expect(affectsPlan(BASE, { ...BASE, health_notes: 'genou douloureux' })).toBe(true);
+    expect(affectsPlan(BASE, { ...BASE, health_notes: 'sore knee' })).toBe(true);
     expect(affectsPlan(BASE, { ...BASE, days_per_week: 5 })).toBe(true);
     expect(affectsPlan(BASE, { ...BASE, weight_kg: 84 })).toBe(true);
     expect(affectsPlan(BASE, { ...BASE, goals: ['prise_masse'] })).toBe(true);
@@ -289,7 +297,7 @@ describe('affectsPlan', () => {
     const twoGoals: FitnessProfileInput = { ...BASE, goals: ['perte_poids', 'endurance'] };
     expect(affectsPlan(twoGoals, { ...twoGoals, goals: ['endurance', 'perte_poids'] })).toBe(false);
     // Champs libres : un espace ou un champ vidé plutôt que laissé nul ne doit rien régénérer.
-    expect(affectsPlan({ ...BASE, allergies: 'arachides' }, { ...BASE, allergies: ' arachides ' })).toBe(false);
+    expect(affectsPlan({ ...BASE, allergies: 'peanuts' }, { ...BASE, allergies: ' peanuts ' })).toBe(false);
     expect(affectsPlan({ ...BASE, health_notes: null }, { ...BASE, health_notes: '  ' })).toBe(false);
   });
 

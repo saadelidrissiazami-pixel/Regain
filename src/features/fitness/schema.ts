@@ -30,11 +30,11 @@ const currentYear = new Date().getFullYear();
 export const fitnessQuestionnaireSchema = z.object({
   goals: z.array(enumOf(FITNESS_GOALS)).min(1, 'Choisis au moins un objectif'),
   sex: enumOf(SEX_OPTIONS),
-  // Réservé aux adultes : plans de calories et de musculation non adaptés aux mineurs.
+  // Adults only: calorie and strength plans are not suitable for minors.
   birthYear: z.string().refine((v) => {
     const year = Number(v.trim());
     return Number.isInteger(year) && year >= currentYear - 90 && year <= currentYear - 18;
-  }, 'Le coach forme est réservé aux adultes (18 ans et plus) : indique une année de naissance valide'),
+  }, 'The fitness coach is for adults only (18 and over): enter a valid year of birth'),
   heightCm: decimalInRange('Taille (cm)', 120, 230),
   weightKg: decimalInRange('Poids (kg)', 35, 250),
   activityLevel: enumOf(ACTIVITY_LEVELS),
@@ -43,8 +43,8 @@ export const fitnessQuestionnaireSchema = z.object({
   daysPerWeek: z.number().int().min(1).max(6),
   sessionMinutes: z.number().int().min(20).max(120),
   diet: enumOf(DIET_OPTIONS),
-  allergies: z.string().max(300, '300 caractères maximum'),
-  healthNotes: z.string().max(500, '500 caractères maximum'),
+  allergies: z.string().max(300, '300 characters maximum'),
+  healthNotes: z.string().max(500, '500 characters maximum'),
 });
 
 export type FitnessQuestionnaireValues = z.infer<typeof fitnessQuestionnaireSchema>;
