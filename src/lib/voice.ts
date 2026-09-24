@@ -51,7 +51,18 @@ export async function speakGently(text: string) {
     Speech.speak(text, {
       language: 'en-US',
       voice: voice ?? undefined,
-      pitch: 1.1,
+      // Below 1, because a raised pitch reads as bright and alert — the opposite of what a
+      // session is for. Not lower than this: past about 0.9 most installed voices start to
+      // sound synthetic rather than calm.
+      pitch: 0.95,
+      // Spoken a little under full volume, which is most of what makes a voice sound gentle.
+      volume: 0.9,
+      // Not slower than this, however unhurried we would like to sound. Every block in the
+      // scripts carries a speaking time written by hand, and the tightest of them already asks
+      // for 2.4 words a second — more than the 2.2 narration.ts calls a cautious assumption. A
+      // slower delivery would run past those windows and cut sentences off at the silence.
+      // To actually slow the voice down, lengthen those blocks first; the stated duration of
+      // each session is calculated from them and would change with it.
       rate: 0.85,
     });
   } catch {
