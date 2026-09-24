@@ -77,6 +77,8 @@ export const FR: Record<string, string> = {
   'Tell Regain when you are free, and it suggests what to do, at the right time.': 'Dis à Regain quand tu es libre : il te propose ensuite quoi faire, au bon moment.',
   'Add my free times': 'Ajouter mes disponibilités',
   'Now': 'Maintenant',
+  'A word from your coach': 'Un mot de ton coach',
+  'Later this week': 'Plus tard cette semaine',
   'Up next': 'Ensuite',
   'How are you feeling right now?': 'Comment te sens-tu maintenant ?',
   'Everything is done for this week': 'Tout est fait pour cette semaine',

@@ -4,13 +4,30 @@
     {
       "name": "regain-web",
       "runtimeExecutable": "npx",
-      "runtimeArgs": ["expo", "start", "--web"],
+      "runtimeArgs": [
+        "expo",
+        "start",
+        "--web"
+      ],
       "port": 8081
     },
     {
       "name": "regain-native",
       "runtimeExecutable": "npx",
-      "runtimeArgs": ["expo", "start", "--offline"],
+      "runtimeArgs": [
+        "expo",
+        "start",
+        "--offline"
+      ],
+      "port": 8081
+    },
+    {
+      "name": "regain-native-premium",
+      "runtimeExecutable": "sh",
+      "runtimeArgs": [
+        "-c",
+        "EXPO_PUBLIC_REVENUECAT_TEST_STORE_KEY= npx expo start --offline"
+      ],
       "port": 8081
     }
   ]

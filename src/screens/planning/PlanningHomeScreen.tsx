@@ -3,15 +3,13 @@ import { useState } from 'react';
 import { View } from 'react-native';
 
 import { EnergyPromptCard } from '../../components/cards/EnergyPromptCard';
-import { EnergySelector } from '../../components/cards/EnergySelector';
 import { NextUpCard } from '../../components/cards/NextUpCard';
 import { NowCard } from '../../components/cards/NowCard';
 import { WeekProgressCard } from '../../components/cards/WeekProgressCard';
 import { EmptyState, ErrorState, errorMessage, InlineNotice, LoadingSkeleton } from '../../components/feedback';
-import { Appear, Avatar, Button, Card, ListRow, PressableScale, Screen, ScreenHeader, SectionHeader, Sheet, Text } from '../../components/ui';
+import { Appear, Avatar, Button, Card, ListRow, PressableScale, Screen, ScreenHeader, SectionHeader, Sheet } from '../../components/ui';
 import { formatCountdown, greetingFor, isOver, minutesUntil, coachLine } from '../../features/planning/weekView';
 import { useCommitments } from '../../hooks/useCommitments';
-import { useEnergyToday } from '../../hooks/useEnergyToday';
 import { usePlanning } from '../../hooks/usePlanning';
 import { formatDayLabel } from '../../lib/formatDate';
 import type { PlannedActivityRow } from '../../lib/planning';
@@ -25,7 +23,6 @@ import { t } from '../../lib/i18n';
 export default function PlanningHomeScreen() {
   const planning = usePlanning();
   const commitments = useCommitments();
-  const energy = useEnergyToday();
   const email = useAuthStore((s) => s.session?.user.email ?? '');
   const { today, view, planQuery, availabilityQuery, generateMutation, startOf } = planning;
   const [now] = useState(() => new Date());
@@ -148,14 +145,6 @@ export default function PlanningHomeScreen() {
             toggling={planning.isToggling(next)}
             onToggle={() => planning.toggle(next)}
             onStart={() => router.push(`/activity/${next.activities_catalog.id}`)}
-            footer={
-              <>
-                <Text variant="label" style={{ marginBottom: 10 }}>
-                  {t('How are you feeling right now?')}
-                </Text>
-                <EnergySelector value={energy.level} onChange={energy.save} savingLevel={energy.savingLevel} disabled={energy.saving} />
-              </>
-            }
           />
         </Appear>
       ) : (
@@ -177,7 +166,7 @@ export default function PlanningHomeScreen() {
       {after ? (
         <Appear index={3}>
           <View style={{ marginTop: 28 }}>
-            <SectionHeader title={t('Up next')} actionLabel={t('See the week')} onAction={() => router.push('/planning/week')} />
+            <SectionHeader title={t('Later this week')} actionLabel={t('See the week')} onAction={() => router.push('/planning/week')} />
             <NextUpCard
               when={whenOf(after)}
               activity={after.activities_catalog}

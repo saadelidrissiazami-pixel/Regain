@@ -5,7 +5,7 @@ module.exports = defineConfig([
   expoConfig,
   {
     // Mêmes exclusions que tsconfig : Edge Functions (runtime Deno) et code V3 mis de côté.
-    ignores: ['dist/*', '.expo/*', 'node_modules/*', 'supabase/functions/*', 'future-v3/*'],
+    ignores: ['dist/*', '.expo/*', 'node_modules/*', 'supabase/functions/*', 'future-v3/*', '.claude/**'],
   },
   {
     rules: {
