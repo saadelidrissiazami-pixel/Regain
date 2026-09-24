@@ -13,7 +13,6 @@ import { formatCountdown, greetingFor, isOver, minutesUntil, coachLine } from '.
 import { useCommitments } from '../../hooks/useCommitments';
 import { useEnergyToday } from '../../hooks/useEnergyToday';
 import { usePlanning } from '../../hooks/usePlanning';
-import { calendarUnavailableReason } from '../../lib/deviceCalendar';
 import { formatDayLabel } from '../../lib/formatDate';
 import type { PlannedActivityRow } from '../../lib/planning';
 import { firstNameOf } from '../../lib/profile';
@@ -28,7 +27,7 @@ export default function PlanningHomeScreen() {
   const commitments = useCommitments();
   const energy = useEnergyToday();
   const email = useAuthStore((s) => s.session?.user.email ?? '');
-  const { today, view, planQuery, availabilityQuery, generateMutation, calendarSyncMutation, startOf } = planning;
+  const { today, view, planQuery, availabilityQuery, generateMutation, startOf } = planning;
   const [now] = useState(() => new Date());
   const hour = now.getHours();
   const [confirmRegenerate, setConfirmRegenerate] = useState(false);
@@ -43,11 +42,17 @@ export default function PlanningHomeScreen() {
   const over = (item: PlannedActivityRow) =>
     item.date === today && isOver(item.date, startOf(item), item.activities_catalog.duration_minutes, now);
   const active = upcoming.filter((item) => !over(item));
-  const toCheck = upcoming.filter(over).length + view.pastPending.length;
   const next = active[0];
   const after = active[1];
-  // Three at most: the home screen suggests, it does not recite the week's diary.
-  const aVenir = commitments.filter((engagement) => engagement.status === 'a_faire').slice(0, 3);
+  // Three sessions at most — the home screen suggests, it does not recite the week's diary —
+  // but the shopping is kept whatever happens. Taking a flat first three dropped it off the
+  // list on any week with three sessions ahead of it, and it is the one commitment the week's
+  // meals depend on.
+  const pending = commitments.filter((engagement) => engagement.status === 'a_faire');
+  const shopping = pending.filter((engagement) => engagement.kind === 'courses');
+  const aVenir = [...pending.filter((engagement) => engagement.kind !== 'courses').slice(0, 3), ...shopping.slice(0, 1)].sort(
+    (a, b) => a.date.localeCompare(b.date)
+  );
   const pendingToday = active.filter((item) => item.date === today).length;
 
   const name = firstNameOf(planning.profile);
@@ -76,7 +81,26 @@ export default function PlanningHomeScreen() {
         }
       />
 
+      {/* Setting the week up belongs where the week is read, not at the foot of the page after
+          everything it produced. */}
       <Appear index={0}>
+        <Card variant="flat" padding={4} style={{ marginBottom: 16 }}>
+          <View style={{ paddingHorizontal: 12 }}>
+            <ListRow icon="time-outline" title={t('When I am free')} onPress={() => router.push('/availability')} divider={hasPlan} compact />
+            {hasPlan ? (
+              <ListRow
+                icon="refresh-outline"
+                title={t('Rebuild my week')}
+                subtitle={t('Activities already done stay where they are.')}
+                onPress={() => setConfirmRegenerate(true)}
+                compact
+              />
+            ) : null}
+          </View>
+        </Card>
+      </Appear>
+
+      <Appear index={1}>
         <EnergyPromptCard />
       </Appear>
 
@@ -150,22 +174,6 @@ export default function PlanningHomeScreen() {
         </Appear>
       )}
 
-      {toCheck > 0 && hasPlan ? (
-        <Appear index={2}>
-          <Card variant="flat" padding={4} style={{ marginTop: 12 }}>
-            <View style={{ paddingHorizontal: 12 }}>
-              <ListRow
-                icon="checkmark-done-outline"
-                title={toCheck > 1 ? t('{count} activities to tick off', { count: toCheck }) : t('{count} activity to tick off', { count: toCheck })}
-                subtitle={t('Already done? Tick it off from your week.')}
-                onPress={() => router.push('/planning/week')}
-                compact
-              />
-            </View>
-          </Card>
-        </Appear>
-      ) : null}
-
       {after ? (
         <Appear index={3}>
           <View style={{ marginTop: 28 }}>
@@ -214,53 +222,8 @@ export default function PlanningHomeScreen() {
         </Appear>
       ) : null}
 
-      {/* Secondary actions: reachable, without competing with the action of the moment. */}
-      <Appear index={6}>
-        <View style={{ marginTop: 32 }}>
-          <Text variant="overline" tone="ink2" style={{ marginBottom: 4 }}>
-            {t('Organise my week')}
-          </Text>
-          <ListRow icon="calendar-outline" title={t('See the whole week')} onPress={() => router.push('/planning/week')} divider compact />
-          <ListRow icon="time-outline" title={t('When I am free')} onPress={() => router.push('/availability')} divider compact />
-          {hasPlan ? (
-            <ListRow
-              icon="refresh-outline"
-              title={t('Rebuild my week')}
-              subtitle={t('Activities already done stay where they are.')}
-              onPress={() => setConfirmRegenerate(true)}
-              divider
-              compact
-            />
-          ) : null}
-          {hasPlan && !calendarUnavailableReason ? (
-            <ListRow
-              icon="sync-outline"
-              title={calendarSyncMutation.isPending ? t('Syncing…') : t('Sync with my calendar')}
-              onPress={() => calendarSyncMutation.mutate()}
-              compact
-              chevron={false}
-            />
-          ) : null}
-          {hasPlan && calendarUnavailableReason ? (
-            <Text variant="caption" tone="ink2" style={{ marginTop: 8 }}>
-              {calendarUnavailableReason}
-            </Text>
-          ) : null}
-          {calendarSyncMutation.isError ? <InlineNotice tone="error" message={errorMessage(calendarSyncMutation.error)} /> : null}
-          {calendarSyncMutation.isSuccess ? (
-            <InlineNotice
-              tone="success"
-              message={
-                calendarSyncMutation.data > 1
-                  ? t('{count} activities added to the “Regain” calendar.', { count: calendarSyncMutation.data })
-                  : t('{count} activity added to the “Regain” calendar.', { count: calendarSyncMutation.data })
-              }
-            />
-          ) : null}
-          {hasPlan && generateMutation.isError ? <InlineNotice tone="error" message={errorMessage(generateMutation.error)} /> : null}
-          {hasPlan && generateMutation.isSuccess ? <InlineNotice tone="success" message={t('Your week has been adapted.')} /> : null}
-        </View>
-      </Appear>
+      {generateMutation.isError && hasPlan ? <InlineNotice tone="error" message={errorMessage(generateMutation.error)} /> : null}
+      {generateMutation.isSuccess && hasPlan ? <InlineNotice tone="success" message={t('Your week has been adapted.')} /> : null}
 
       <Sheet
         visible={confirmRegenerate}

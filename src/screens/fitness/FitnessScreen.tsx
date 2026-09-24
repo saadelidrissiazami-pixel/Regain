@@ -62,10 +62,12 @@ export default function FitnessScreen() {
             value="overview"
             onChange={(value) => {
               if (value === 'program') router.push('/fitness/program');
+              if (value === 'nutrition') router.push('/fitness/nutrition');
             }}
             options={[
               { value: 'overview', label: t('Overview') },
               { value: 'program', label: t('Programme') },
+              { value: 'nutrition', label: t('Nutrition') },
             ]}
           />
         </View>
@@ -182,20 +184,13 @@ export default function FitnessScreen() {
 
         <Appear index={5}>
           <View style={{ marginTop: 28 }}>
-            <SectionHeader title={t('Your sessions this week')} actionLabel={t('See all')} onAction={() => router.push('/fitness/program')} />
+            <SectionHeader title={t('Your sessions this week')} />
             <WeekTracker days={fitness.tracker} />
           </View>
         </Appear>
 
         <Appear index={6}>
           <View style={{ marginTop: 20 }}>
-            <ListRow
-              icon="restaurant-outline"
-              title={t('Nutrition this week')}
-              subtitle={t('{count} sample days and your shopping list', { count: plan.meals.length })}
-              onPress={() => router.push('/fitness/nutrition')}
-              divider
-            />
             <ListRow
               icon="clipboard-outline"
               title={t('Do my weekly check-in')}

@@ -12,7 +12,9 @@ import { Button } from '../ui/Button';
 import { Text } from '../ui/Text';
 import { t } from '../../lib/i18n';
 
-const HEIGHT = 300;
+// The photo is the background of the whole card, so the card's height *is* the photo's size.
+// At 300 a single recommendation filled most of the screen and pushed the library below the fold.
+const HEIGHT = 206;
 
 function Slide({ item, width, onStart }: { item: WellbeingRecommendation; width: number; onStart: () => void }) {
   const theme = useTheme();
@@ -32,7 +34,7 @@ function Slide({ item, width, onStart }: { item: WellbeingRecommendation; width:
         end={{ x: 1, y: 0 }}
         style={{ position: 'absolute', width: '100%', height: '100%' }}
       />
-      <View style={{ flex: 1, padding: 20, width: '72%', justifyContent: 'space-between' }}>
+      <View style={{ flex: 1, padding: 16, width: '74%', justifyContent: 'space-between' }}>
         <View>
           <View style={{ flexDirection: 'row', alignItems: 'center', gap: 6 }}>
             <Ionicons name="sunny" size={16} color={theme.yellow} />
@@ -40,10 +42,10 @@ function Slide({ item, width, onStart }: { item: WellbeingRecommendation; width:
               {t('Recommended for you')}
             </Text>
           </View>
-          <Text variant="headline" style={{ marginTop: 12 }} numberOfLines={3}>
+          <Text variant="headline" style={{ marginTop: 8 }} numberOfLines={2}>
             {item.program.title}
           </Text>
-          <View style={{ flexDirection: 'row', alignItems: 'center', gap: 6, marginTop: 8 }}>
+          <View style={{ flexDirection: 'row', alignItems: 'center', gap: 6, marginTop: 6 }}>
             <Ionicons name="headset-outline" size={14} color={theme.ink2} />
             <Text variant="overline" tone="ink2">
               {themeLabel(item.program.category)}
@@ -52,7 +54,7 @@ function Slide({ item, width, onStart }: { item: WellbeingRecommendation; width:
               · {t('{minutes} min', { minutes: item.program.duration_minutes })}
             </Text>
           </View>
-          <Text variant="caption" tone="ink2" style={{ marginTop: 10 }} numberOfLines={3}>
+          <Text variant="caption" tone="ink2" style={{ marginTop: 8 }} numberOfLines={2}>
             {item.reason}
           </Text>
         </View>

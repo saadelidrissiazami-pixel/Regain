@@ -15,7 +15,15 @@ import {
   isCalendarAutoSyncEnabled,
 } from '../../lib/deviceCalendar';
 import { deleteAccount, exportUserData } from '../../lib/gdpr';
-import { areRemindersEnabled, disableDailyReminder, enableDailyReminder, scheduleActivityReminders } from '../../lib/notifications';
+import {
+  areRemindersEnabled,
+  disableDailyReminder,
+  disableWeeklyCheckinReminder,
+  enableDailyReminder,
+  enableWeeklyCheckinReminder,
+  isWeeklyCheckinReminderEnabled,
+  scheduleActivityReminders,
+} from '../../lib/notifications';
 import { fetchWeekPlan } from '../../lib/planning';
 import { usePremium } from '../../lib/premium';
 import { getManagementUrl, logOutPurchases } from '../../lib/purchases';
@@ -65,6 +73,20 @@ export default function SettingsScreen() {
       return next;
     },
     onSuccess: () => queryClient.invalidateQueries({ queryKey: ['remindersEnabled'] }),
+  });
+
+  const checkinQuery = useQuery({ queryKey: ['weeklyCheckinReminder'], queryFn: isWeeklyCheckinReminderEnabled });
+  const toggleCheckin = useMutation({
+    mutationFn: async (next: boolean) => {
+      if (next) {
+        const granted = await enableWeeklyCheckinReminder();
+        if (!granted) throw new Error('Allow notifications for Regain in your device settings.');
+      } else {
+        await disableWeeklyCheckinReminder();
+      }
+      return next;
+    },
+    onSuccess: () => queryClient.invalidateQueries({ queryKey: ['weeklyCheckinReminder'] }),
   });
 
   const calendarQuery = useQuery({ queryKey: ['calendarAutoSync'], queryFn: isCalendarAutoSyncEnabled });
@@ -143,6 +165,24 @@ export default function SettingsScreen() {
           }
         />
         {toggleReminders.isError ? <InlineNotice tone="error" message={errorMessage(toggleReminders.error)} /> : null}
+        <ListRow
+          icon="clipboard-outline"
+          title="Weekly check-in"
+          subtitle="A reminder on Sunday evening, while your answers can still change the coming week."
+          chevron={false}
+          divider
+          subtitleLines={3}
+          right={
+            <Switch
+              value={!!checkinQuery.data}
+              onValueChange={(v) => toggleCheckin.mutate(v)}
+              disabled={checkinQuery.isLoading || toggleCheckin.isPending}
+              accessibilityLabel="Weekly check-in reminder"
+              {...switchProps}
+            />
+          }
+        />
+        {toggleCheckin.isError ? <InlineNotice tone="error" message={errorMessage(toggleCheckin.error)} /> : null}
         <ListRow
           icon="calendar-outline"
           title="Calendar"
