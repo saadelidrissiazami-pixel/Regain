@@ -89,6 +89,14 @@
             ]
           }
         }
+      ],
+      [
+        "expo-image-picker",
+        {
+          "photosPermission": "Regain reads a photo of your meal to estimate its calories. The photo is not kept.",
+          "cameraPermission": "Regain uses the camera to estimate the calories of a meal you photograph.",
+          "microphonePermission": false
+        }
       ]
     ],
     "description": "Regain helps you rebuild a routine: a realistic weekly plan, guided wellbeing sessions and a fitness coach.",

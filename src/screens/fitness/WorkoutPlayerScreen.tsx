@@ -14,7 +14,7 @@ import { sessionTitle } from '../../features/fitness/schedule';
 import type { WorkoutSession } from '../../features/fitness/types';
 import { useFitness } from '../../hooks/useFitness';
 import { logWorkout } from '../../lib/fitness';
-import { imageForWorkout } from '../../theme/images';
+import { imageForExercise, imageForWorkout } from '../../theme/images';
 import { useTheme } from '../../theme/ThemeProvider';
 import { t } from '../../lib/i18n';
 
@@ -160,7 +160,14 @@ function Player({ session, sessionIndex, planId }: { session: WorkoutSession; se
             <Text variant="label" tone="ink3" tabular style={{ width: 28 }}>
               {i + 1}
             </Text>
-            <View style={{ flex: 1 }}>
+            <Thumbnail
+              source={imageForExercise(exercise.name, session?.focus)}
+              width={44}
+              height={44}
+              radius={10}
+              icon="barbell-outline"
+            />
+            <View style={{ flex: 1, paddingLeft: 12 }}>
               <Text variant="label">{exercise.name}</Text>
               <Text variant="caption" tone="ink2">
                 {t('{sets} sets · {reps} reps · {rest} s rest', { sets: exercise.sets, reps: exercise.reps, rest: exercise.rest_seconds })}

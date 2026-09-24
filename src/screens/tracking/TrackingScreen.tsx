@@ -6,6 +6,7 @@ import { ActivityIndicator, View } from 'react-native';
 
 import { AddFoodSheet } from '../../components/cards/AddFoodSheet';
 import { CalorieProgressCard } from '../../components/cards/CalorieProgressCard';
+import { PhotoEstimateSheet } from '../../components/cards/PhotoEstimateSheet';
 import { MiniBars, StatCard } from '../../components/cards/StatCard';
 import { TargetsCard } from '../../components/cards/TargetsCard';
 import { EmptyState, ErrorState, LoadingSkeleton } from '../../components/feedback';
@@ -55,7 +56,7 @@ export default function TrackingScreen() {
   const [tab, setTab] = useState<Tab>('overview');
   const [showAllHistory, setShowAllHistory] = useState(false);
   const nutrition = useNutritionLog();
-  const [addingFood, setAddingFood] = useState(false);
+  const [foodSheet, setFoodSheet] = useState<'none' | 'manual' | 'photo'>('none');
 
   const statsQuery = useQuery({ queryKey: ['trackingStats', userId, weekStart], queryFn: () => fetchWeekStats(userId!, weekStart), enabled: !!userId });
   const streakQuery = useQuery({ queryKey: ['streak', userId], queryFn: () => fetchStreak(userId!), enabled: !!userId });
@@ -344,7 +345,7 @@ export default function TrackingScreen() {
       {/* The target above, what was actually eaten below: on its own the target is a number with
           nothing to compare it to. */}
       <View style={{ marginTop: 16 }}>
-        <CalorieProgressCard log={nutrition} onAdd={() => setAddingFood(true)} />
+        <CalorieProgressCard log={nutrition} onAdd={() => setFoodSheet('manual')} />
       </View>
       {fitness.plan ? (
         <View style={{ marginTop: 16 }}>
@@ -376,7 +377,13 @@ export default function TrackingScreen() {
           {tab === 'overview' ? overview : tab === 'fitness' ? fitnessTab : tab === 'wellbeing' ? wellbeingTab : nutritionTab}
         </Appear>
       )}
-      <AddFoodSheet log={nutrition} visible={addingFood} onClose={() => setAddingFood(false)} />
+      <AddFoodSheet
+        log={nutrition}
+        visible={foodSheet === 'manual'}
+        onClose={() => setFoodSheet('none')}
+        onScan={() => setFoodSheet('photo')}
+      />
+      <PhotoEstimateSheet log={nutrition} visible={foodSheet === 'photo'} onClose={() => setFoodSheet('none')} />
     </Screen>
   );
 }

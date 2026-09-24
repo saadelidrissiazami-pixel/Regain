@@ -1,3 +1,4 @@
+import type { ImageKey } from '../../theme/imageKeys';
 import type { Equipment, ExperienceLevel } from './options';
 import { t } from '../../lib/i18n';
 
@@ -102,3 +103,38 @@ export const EXERCISES: ExerciseDef[] = [
   { name: 'Burpees', group: 'cardio', equipment: 'poids_du_corps', minLevel: 'intermediaire', stress: ['genou', 'dos'], tip: t('String them together without rushing, keep the back braced.') },
   { name: t('Indoor bike or rower'), group: 'cardio', equipment: 'salle', minLevel: 'debutant', stress: [], tip: t('A steady pace where you could still hold a conversation.'), timed: '8-10 min' },
 ];
+
+/**
+ * The muscle group an exercise belongs to, found from the name the plan stored.
+ *
+ * The plan keeps only the name, and that name was translated when the plan was generated. So a
+ * plan built in French will not match a catalogue rendered in English, and this returns null
+ * rather than the wrong group — the caller falls back to the session's own image.
+ */
+export function muscleGroupOf(name: string): MuscleGroup | null {
+  const wanted = name.trim().toLowerCase();
+  return EXERCISES.find((exercise) => exercise.name.trim().toLowerCase() === wanted)?.group ?? null;
+}
+
+/**
+ * One photograph per muscle group, not per exercise.
+ *
+ * There are 56 exercises and no photograph of any of them. Rather than leaving every row blank,
+ * or putting one picture on all of them, an exercise shows the group it trains: a squat and a
+ * lunge share the legs image, a row and a curl share the pulling one. It illustrates honestly
+ * without claiming to show that particular movement.
+ *
+ * It lives here rather than beside the images because this module loads no assets, which keeps
+ * the mapping testable.
+ */
+export const IMAGE_KEY_BY_MUSCLE_GROUP: Record<MuscleGroup, ImageKey> = {
+  jambes: 'fitLegs',
+  fessiers: 'fitLegs',
+  pectoraux: 'fitPush',
+  epaules: 'fitPush',
+  triceps: 'fitPush',
+  dos: 'fitPull',
+  biceps: 'fitPull',
+  abdos: 'fitCore',
+  cardio: 'sport',
+};

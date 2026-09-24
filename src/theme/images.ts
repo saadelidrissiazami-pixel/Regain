@@ -1,23 +1,11 @@
 import type { ImageSourcePropType } from 'react-native';
 
+import { IMAGE_KEY_BY_MUSCLE_GROUP, muscleGroupOf } from '../features/fitness/exercises';
+import type { ImageKey } from './imageKeys';
 import type { ActivityCategory } from '../features/planning/types';
 
 // Mood photography (assets/images), generated for Regain in one style: soft light, sage and
 // cream. A key missing here shows <Thumbnail>'s fallback gradient instead.
-export type ImageKey =
-  | 'wellbeingHero'
-  | 'sessionLake'
-  | 'meditation'
-  | 'sport'
-  | 'nature'
-  | 'social'
-  | 'reading'
-  | 'rest'
-  | 'fitLegs'
-  | 'fitPush'
-  | 'fitPull'
-  | 'fitCore'
-  | 'nutrition';
 
 export const IMAGES: Partial<Record<ImageKey, ImageSourcePropType>> = {
   wellbeingHero: require('../../assets/images/wellbeing-hero.jpg'),
@@ -69,6 +57,12 @@ const BY_WELLBEING_CATEGORY: Record<string, ImageKey> = {
   Sommeil: 'rest',
   'En public': 'wellbeingHero',
 };
+
+export function imageForExercise(name: string, fallbackFocus?: string): ImageSourcePropType | undefined {
+  const group = muscleGroupOf(name);
+  if (group) return IMAGES[IMAGE_KEY_BY_MUSCLE_GROUP[group]];
+  return fallbackFocus ? imageForWorkout(fallbackFocus) : undefined;
+}
 
 export function imageForWellbeing(category: string): ImageSourcePropType | undefined {
   return IMAGES[BY_WELLBEING_CATEGORY[category] ?? 'sessionLake'];

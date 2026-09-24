@@ -7,11 +7,12 @@ import { View } from 'react-native';
 
 import { SessionRow } from '../../components/cards/SessionRow';
 import { EmptyState, ErrorState, LoadingSkeleton } from '../../components/feedback';
-import { Appear, Card, IconButton, ProgressBar, Screen, ScreenHeader, SegmentedControl, Text } from '../../components/ui';
+import { Appear, Card, IconButton, ProgressBar, Screen, ScreenHeader, SegmentedControl, Text, Thumbnail } from '../../components/ui';
 import { programPhase, uniqueExercises } from '../../features/fitness/schedule';
 import { useFitness } from '../../hooks/useFitness';
 import { formatDateTimeLabel } from '../../lib/formatDate';
 import { fromLocalISODate } from '../../lib/week';
+import { imageForExercise } from '../../theme/images';
 import { useTheme } from '../../theme/ThemeProvider';
 import { locale, t } from '../../lib/i18n';
 
@@ -132,10 +133,21 @@ export default function ProgramScreen() {
             uniqueExercises(plan.program).map((exercise, i) => (
               <Appear key={exercise.name} index={i}>
                 <Card padding={16} style={{ marginBottom: 10 }}>
-                  <Text variant="label">{exercise.name}</Text>
-                  <Text variant="caption" tone="ink2" style={{ marginTop: 3 }}>
-                    {t('{sets} sets × {reps} · {rest} s rest · {sessions}', { sets: exercise.sets, reps: exercise.reps, rest: exercise.rest_seconds, sessions: exercise.sessions.join(', ') })}
-                  </Text>
+                  <View style={{ flexDirection: 'row', alignItems: 'center' }}>
+                    <Thumbnail
+                      source={imageForExercise(exercise.name)}
+                      width={56}
+                      height={56}
+                      radius={12}
+                      icon="barbell-outline"
+                    />
+                    <View style={{ flex: 1, paddingLeft: 12 }}>
+                      <Text variant="label">{exercise.name}</Text>
+                      <Text variant="caption" tone="ink2" style={{ marginTop: 3 }}>
+                        {t('{sets} sets × {reps} · {rest} s rest · {sessions}', { sets: exercise.sets, reps: exercise.reps, rest: exercise.rest_seconds, sessions: exercise.sessions.join(', ') })}
+                      </Text>
+                    </View>
+                  </View>
                   {exercise.tip ? (
                     <Text variant="caption" tone="ink2" style={{ marginTop: 8 }}>
                       💡 {exercise.tip}

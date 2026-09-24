@@ -6,6 +6,7 @@ import { View } from 'react-native';
 import { AdjustmentsList } from '../../components/AdjustmentsList';
 import { AddFoodSheet } from '../../components/cards/AddFoodSheet';
 import { CalorieProgressCard } from '../../components/cards/CalorieProgressCard';
+import { PhotoEstimateSheet } from '../../components/cards/PhotoEstimateSheet';
 import { CoachCard } from '../../components/cards/CoachCard';
 import { TargetsCard } from '../../components/cards/TargetsCard';
 import { WeekTracker } from '../../components/cards/WeekTracker';
@@ -37,7 +38,7 @@ export default function FitnessScreen() {
   }, [recalcule]);
   const [showAllAdjustments, setShowAllAdjustments] = useState(false);
   const nutrition = useNutritionLog();
-  const [addingFood, setAddingFood] = useState(false);
+  const [foodSheet, setFoodSheet] = useState<'none' | 'manual' | 'photo'>('none');
 
   const generateMutation = useMutation({
     mutationFn: () => createFitnessPlan(userId!, profile!),
@@ -182,7 +183,7 @@ export default function FitnessScreen() {
         {fitness.targets ? (
           <Appear index={4}>
             <View style={{ marginTop: 16 }}>
-              <CalorieProgressCard log={nutrition} onAdd={() => setAddingFood(true)} />
+              <CalorieProgressCard log={nutrition} onAdd={() => setFoodSheet('manual')} />
             </View>
           </Appear>
         ) : null}
@@ -237,7 +238,13 @@ export default function FitnessScreen() {
         />
       ) : null}
       {body}
-      <AddFoodSheet log={nutrition} visible={addingFood} onClose={() => setAddingFood(false)} />
+      <AddFoodSheet
+        log={nutrition}
+        visible={foodSheet === 'manual'}
+        onClose={() => setFoodSheet('none')}
+        onScan={() => setFoodSheet('photo')}
+      />
+      <PhotoEstimateSheet log={nutrition} visible={foodSheet === 'photo'} onClose={() => setFoodSheet('none')} />
       <Text variant="caption" tone="ink3" style={{ marginTop: 28 }}>
         {t('Regain is not a substitute for a doctor or a dietitian. If you have a health condition, an injury or are pregnant, speak to a professional before you start.')}
       </Text>
