@@ -17,7 +17,8 @@ import { Text } from '../ui/Text';
 import { energyChoice, EnergySelector } from './EnergySelector';
 
 /**
- * “How is your energy today?” opens the check-in. Answering it has to lead somewhere: the answer
+ * “How are you feeling right now?” opens the check-in — the same words as the sheet it opens, so
+ * the flow asks one question rather than two slightly different ones. Answering it has to lead somewhere: the answer
  * comes back as a line written for that level, and as one session already chosen and ready to
  * start. Being told your answer was recorded is not help.
  */
@@ -31,10 +32,11 @@ export function EnergyPromptCard() {
   const suggestion = useEnergySuggestion(level);
   const line = level ? lineForEnergy(level, today) : null;
 
-  const title = choice ? `${choice.label} energy today` : 'How is your energy today?';
-  // Only the suggestions read this answer — the week's plan is built from the rhythm given at
-  // sign-up — so this does not claim the plan changes.
-  const subtitle = line ?? 'It changes what we suggest next.';
+  const title = choice ? `${choice.label} energy today` : 'How are you feeling right now?';
+  // Unanswered, the card is the question and nothing else. The second line only appears once
+  // there is an answer to respond to — explaining the check-in before it is taken added words
+  // without adding help.
+  const subtitle = line;
 
   return (
     <>
@@ -42,7 +44,7 @@ export function EnergyPromptCard() {
         variant="tinted"
         padding={16}
         onPress={() => setOpen(true)}
-        accessibilityLabel={`${title}. ${subtitle}`}
+        accessibilityLabel={subtitle ? `${title}. ${subtitle}` : title}
         accessibilityHint="Opens the energy check-in"
       >
         <View style={{ flexDirection: 'row', alignItems: 'center' }}>
@@ -61,9 +63,11 @@ export function EnergyPromptCard() {
           </View>
           <View style={{ flex: 1, paddingRight: 8 }}>
             <Text variant="label">{title}</Text>
-            <Text variant="caption" tone="ink2" style={{ marginTop: 2 }} numberOfLines={2}>
-              {subtitle}
-            </Text>
+            {subtitle ? (
+              <Text variant="caption" tone="ink2" style={{ marginTop: 2 }} numberOfLines={2}>
+                {subtitle}
+              </Text>
+            ) : null}
           </View>
           <Ionicons name="chevron-forward" size={18} color={theme.ink2} />
         </View>
@@ -72,7 +76,6 @@ export function EnergyPromptCard() {
       <Sheet
         visible={open}
         title="How are you feeling right now?"
-        subtitle="Your suggestions adapt to your answer."
         onClose={() => setOpen(false)}
         scroll={false}
         footer={
