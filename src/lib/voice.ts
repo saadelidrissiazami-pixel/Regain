@@ -1,6 +1,9 @@
+import { createAudioPlayer, setAudioModeAsync, type AudioPlayer } from 'expo-audio';
 import * as Speech from 'expo-speech';
 
 import { lang, locale } from './i18n';
+import { NARRATION_AUDIO } from './narrationAudio';
+import { clipKey } from './narrationKey';
 
 // expo-speech doesn't expose a voice's gender (and neither iOS, Android nor the web reports it
 // reliably) — so we pick out the voices in the app's language with a typically female name among those installed.
@@ -67,9 +70,50 @@ async function resolveGentleVoice(): Promise<string | null> {
   return cachedVoiceId;
 }
 
+// One player at a time: a session speaks one block, and the next block must replace it rather
+// than talk over it. Kept so stopSpeaking can silence a recording the way it silences the
+// synthesiser.
+let player: AudioPlayer | null = null;
+let audioModeSet = false;
+
+function releasePlayer() {
+  try {
+    player?.remove();
+  } catch {
+    // Already gone.
+  }
+  player = null;
+}
+
+/**
+ * Plays the recorded clip for this text if there is one, and speaks it with the device voice
+ * otherwise. Returns whether a recording was used.
+ */
+function playRecording(text: string): boolean {
+  const source = NARRATION_AUDIO[clipKey(text)];
+  if (!source) return false;
+  try {
+    releasePlayer();
+    if (!audioModeSet) {
+      audioModeSet = true;
+      // A guided session is the reason the phone is out; a silent switch left on should not turn
+      // it into a silent screen.
+      void setAudioModeAsync({ playsInSilentMode: true, interruptionMode: 'duckOthers' });
+    }
+    player = createAudioPlayer(source);
+    player.volume = 0.9;
+    player.play();
+    return true;
+  } catch {
+    releasePlayer();
+    return false;
+  }
+}
+
 export async function speakGently(text: string) {
   try {
-    Speech.stop();
+    stopSpeaking();
+    if (playRecording(text)) return;
     const voice = await resolveGentleVoice();
     Speech.speak(text, {
       language: locale,
@@ -90,5 +134,15 @@ export async function speakGently(text: string) {
     });
   } catch {
     // Speech synthesis isn't available on this device/browser — carry on silently.
+  }
+}
+
+/** Silences whichever of the two is talking. */
+export function stopSpeaking() {
+  releasePlayer();
+  try {
+    Speech.stop();
+  } catch {
+    // Nothing was speaking.
   }
 }

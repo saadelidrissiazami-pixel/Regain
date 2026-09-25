@@ -1,4 +1,3 @@
-import * as Speech from 'expo-speech';
 import { useEffect, useMemo, useReducer, useRef, useState } from 'react';
 import { Pressable, View } from 'react-native';
 import Animated, { FadeIn, useAnimatedStyle, useReducedMotion, useSharedValue, withRepeat, withTiming } from 'react-native-reanimated';
@@ -6,19 +5,11 @@ import Animated, { FadeIn, useAnimatedStyle, useReducedMotion, useSharedValue, w
 import { Button, Text } from '../../../components/ui';
 import { blockAt, narratedDuration } from '../../../features/wellbeing/narration';
 import type { BreathingPhase, GroundingStep, NarratedBlock } from '../../../features/wellbeing/types';
-import { speakGently as speak } from '../../../lib/voice';
+import { speakGently as speak, stopSpeaking as stopSpeech } from '../../../lib/voice';
 import { useTheme } from '../../../theme/ThemeProvider';
 import { SessionControls, SessionRing } from './SessionControls';
 import { useSessionClock } from './useSessionClock';
 import { t } from '../../../lib/i18n';
-
-function stopSpeech() {
-  try {
-    Speech.stop();
-  } catch {
-    // Speech synthesis is not available here.
-  }
-}
 
 function Dots({ count, index }: { count: number; index: number }) {
   const theme = useTheme();
