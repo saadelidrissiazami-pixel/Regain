@@ -21,12 +21,12 @@ export const sosAngoisse: ProgramContent = {
     {
       text: "Garde les yeux ouverts si tu peux. Regarde autour de toi et choisis un objet immobile. Remarque sa couleur, puis sa forme. Pour les prochaines secondes, tu n'as rien d'autre à faire que le regarder.",
       speakSeconds: 20,
-      silenceSeconds: 10,
+      silenceSeconds: 8,
     },
     {
       text: "Remarque maintenant un contact : tes pieds sur le sol, ton dos contre le siège, ta main sur un tissu. Choisis celui qui te convient. Sens la surface, sans appuyer fort.",
       speakSeconds: 20,
-      silenceSeconds: 10,
+      silenceSeconds: 9,
     },
     {
       text: "Laisse ta respiration se faire, sans chercher à prendre de grandes inspirations. Porte plutôt ton attention sur un son autour de toi. Puis sur un deuxième, s'il y en a un.",
@@ -35,7 +35,7 @@ export const sosAngoisse: ProgramContent = {
     },
     {
       text: "C'est bientôt fini. Si tu as besoin d'une présence, tu peux appeler quelqu'un et dire : « Je traverse un moment difficile, tu peux rester avec moi ? » Tu n'as pas à attendre que ce soit pire pour demander.",
-      speakSeconds: 20,
+      speakSeconds: 23,
       silenceSeconds: 10,
     },
   ],
@@ -47,22 +47,22 @@ export const sosPriseDeParole: ProgramContent = {
   blocks: [
     {
       text: "Sens tes pieds au sol, ou ton corps sur le siège. Pose ton regard sur un point stable devant toi. Tu as le droit de prendre cet instant avant de commencer.",
-      speakSeconds: 15,
-      silenceSeconds: 15,
+      speakSeconds: 18,
+      silenceSeconds: 8,
     },
     {
       text: "Si tu peux, desserre un peu la mâchoire et les mains. Laisse passer une respiration à ton rythme. Tu n'as pas besoin de faire disparaître la nervosité — elle sert aussi à quelque chose.",
-      speakSeconds: 15,
-      silenceSeconds: 15,
+      speakSeconds: 19,
+      silenceSeconds: 12,
     },
     {
       text: "Choisis seulement ta première phrase. Par exemple : « Je vais vous présenter le point principal. » Dis-la une fois dans ta tête, un peu plus lentement que d'habitude.",
-      speakSeconds: 15,
+      speakSeconds: 17,
       silenceSeconds: 15,
     },
     {
       text: "Au moment de commencer, retrouve tes appuis, dis ta première phrase, puis autorise-toi une pause. Tu peux parler avec une voix imparfaite et avancer une phrase après l'autre.",
-      speakSeconds: 15,
+      speakSeconds: 16,
       silenceSeconds: 15,
     },
   ],
@@ -75,21 +75,21 @@ export const sosStressTravail: ProgramContent = {
     {
       text: "Si tu peux t'interrompre sans risque, pose les mains un instant et détourne le regard de l'écran. La prochaine réponse peut attendre quelques secondes.",
       speakSeconds: 15,
-      silenceSeconds: 15,
+      silenceSeconds: 9,
     },
     {
       text: "Sens un contact avec le sol ou le siège. Laisse tes épaules prendre une position un peu plus confortable. Respire comme ça vient, sans chercher à réussir un exercice.",
-      speakSeconds: 15,
+      speakSeconds: 17,
       silenceSeconds: 15,
     },
     {
       text: "Demande-toi : quelle est la seule chose utile, maintenant ? Une petite action, une précision à demander, ou une pause. Tu n'as pas à traiter toute la liste.",
-      speakSeconds: 15,
+      speakSeconds: 16,
       silenceSeconds: 15,
     },
     {
       text: "Choisis la suite la plus réaliste. Si la demande dépasse ce que tu peux faire, tu peux dire : « J'ai besoin qu'on choisisse la priorité. » Puis avance à ton rythme.",
-      speakSeconds: 15,
+      speakSeconds: 18,
       silenceSeconds: 15,
     },
   ],

@@ -41,7 +41,7 @@ export const clarifierJournee: ProgramContent = {
     },
     {
       text: "Qu'est-ce qui a pris le plus de place aujourd'hui ? Dans ton temps, ou dans ta tête — les deux ne sont pas toujours la même chose.",
-      speakSeconds: 14,
+      speakSeconds: 15,
       silenceSeconds: 26,
     },
     {
@@ -88,7 +88,7 @@ export const viderSaTete: ProgramContent = {
     },
     {
       text: "Si c'est à décider : qu'est-ce qui te manque ? Du temps, une information, l'avis de quelqu'un ? Et si c'est juste un ressenti, il n'a pas besoin d'être réglé — seulement remarqué.",
-      speakSeconds: 16,
+      speakSeconds: 19,
       silenceSeconds: 29,
     },
     {
@@ -120,7 +120,7 @@ export const dechargementMental: ProgramContent = {
     },
     {
       text: "Arrête-toi. Relis, et sépare ce que tu as écrit en deux : ce qui est sous ton contrôle, et ce qui ne l'est pas. Tes décisions et tes actions le sont. Le passé et les réactions des autres, non.",
-      speakSeconds: 20,
+      speakSeconds: 22,
       silenceSeconds: 40,
     },
     {

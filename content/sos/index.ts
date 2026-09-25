@@ -19,13 +19,13 @@ export const sosAngoisse: ProgramContent = {
   blocks: [
     {
       text: 'Keep your eyes open if you can. Look around and choose one object that is not moving. Notice its colour, then its shape. For the next few seconds you have nothing to do but look at it.',
-      speakSeconds: 20,
-      silenceSeconds: 10,
+      speakSeconds: 21,
+      silenceSeconds: 8,
     },
     {
       text: 'Now notice one point of contact: your feet on the floor, your back against the seat, your hand on some fabric. Pick whichever suits you. Feel the surface, without pressing hard.',
       speakSeconds: 20,
-      silenceSeconds: 10,
+      silenceSeconds: 8,
     },
     {
       text: 'Let your breathing happen, without trying to take big breaths in. Put your attention on a sound around you instead. Then on a second one, if there is one.',
@@ -34,7 +34,7 @@ export const sosAngoisse: ProgramContent = {
     },
     {
       text: 'This is nearly over. If you need somebody with you, you can call and say: “I am having a hard time, can you stay with me?” You do not have to wait for it to get worse before you ask.',
-      speakSeconds: 20,
+      speakSeconds: 23,
       silenceSeconds: 10,
     },
   ],
@@ -46,22 +46,22 @@ export const sosPriseDeParole: ProgramContent = {
   blocks: [
     {
       text: 'Feel your feet on the floor, or your body on the seat. Rest your gaze on something steady in front of you. You are allowed to take this moment before you start.',
-      speakSeconds: 15,
-      silenceSeconds: 15,
+      speakSeconds: 18,
+      silenceSeconds: 8,
     },
     {
       text: 'If you can, unclench your jaw and your hands a little. Let one breath go by at your own pace. You do not need to make the nerves disappear — they are good for something too.',
-      speakSeconds: 15,
-      silenceSeconds: 15,
+      speakSeconds: 20,
+      silenceSeconds: 9,
     },
     {
       text: 'Choose only your first sentence. For instance: “I am going to take you through the main point.” Say it once in your head, a little slower than usual.',
-      speakSeconds: 15,
+      speakSeconds: 16,
       silenceSeconds: 15,
     },
     {
       text: 'When it is time to start, find your footing, say your first sentence, then allow yourself a pause. You can speak with an imperfect voice and get there one sentence at a time.',
-      speakSeconds: 15,
+      speakSeconds: 19,
       silenceSeconds: 15,
     },
   ],
@@ -74,21 +74,21 @@ export const sosStressTravail: ProgramContent = {
     {
       text: 'If you can stop safely, rest your hands for a moment and look away from the screen. The next reply can wait a few seconds.',
       speakSeconds: 15,
-      silenceSeconds: 15,
+      silenceSeconds: 8,
     },
     {
       text: 'Feel a point of contact with the floor or the seat. Let your shoulders find a slightly more comfortable position. Breathe however it comes, without trying to get an exercise right.',
-      speakSeconds: 15,
-      silenceSeconds: 15,
+      speakSeconds: 18,
+      silenceSeconds: 12,
     },
     {
       text: 'Ask yourself: what is the one useful thing, right now? A small action, a detail to ask about, or a break. You do not have to get through the whole list.',
-      speakSeconds: 15,
+      speakSeconds: 18,
       silenceSeconds: 15,
     },
     {
       text: 'Choose the most realistic next step. If what is being asked is beyond what you can do, you can say: “I need us to choose the priority.” Then move at your own pace.',
-      speakSeconds: 15,
+      speakSeconds: 19,
       silenceSeconds: 15,
     },
   ],

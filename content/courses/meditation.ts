@@ -223,7 +223,7 @@ export const meditationJour7: ProgramContent = {
   blocks: [
     {
       text: 'Today we look at what is here. If it is too much, you can go back to the breath at any point: that is an option, not giving up.',
-      speakSeconds: 16,
+      speakSeconds: 17,
       silenceSeconds: 14,
     },
     {

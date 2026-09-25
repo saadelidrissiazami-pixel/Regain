@@ -126,7 +126,7 @@ export const postureDePresence: ProgramContent = {
     },
     {
       text: 'Now walk calmly for one minute. The point is not to look confident, it is to take up space without making yourself small.',
-      speakSeconds: 12,
+      speakSeconds: 13,
       silenceSeconds: 58,
     },
   ],

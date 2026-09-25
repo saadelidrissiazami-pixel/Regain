@@ -246,7 +246,7 @@ export const voyageMentalMonotone: ProgramContent = {
     },
     {
       text: 'If the pictures go blurry or disappear, let them go. That is not a failure — it is often the sign that sleep is close.',
-      speakSeconds: 12,
+      speakSeconds: 14,
       silenceSeconds: 53,
     },
   ],

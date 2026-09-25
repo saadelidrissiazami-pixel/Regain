@@ -88,7 +88,7 @@ export const viderSaTete: ProgramContent = {
     },
     {
       text: 'If it is something to decide: what are you missing? Time, a piece of information, somebody else’s view? And if it is only a feeling, it does not need settling — only noticing.',
-      speakSeconds: 16,
+      speakSeconds: 19,
       silenceSeconds: 29,
     },
     {

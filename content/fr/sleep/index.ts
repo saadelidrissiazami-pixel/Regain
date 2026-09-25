@@ -246,7 +246,7 @@ export const voyageMentalMonotone: ProgramContent = {
     },
     {
       text: "Si les images deviennent floues ou disparaissent, laisse-les partir. Ce n'est pas un échec — c'est souvent le signe que le sommeil approche.",
-      speakSeconds: 12,
+      speakSeconds: 13,
       silenceSeconds: 53,
     },
   ],

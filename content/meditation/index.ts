@@ -192,7 +192,7 @@ export const meditationObserverPensees: ProgramContent = {
     },
     {
       text: 'Carry on. There is no score to beat, and noticing that you had wandered a long way off is already the thing working.',
-      speakSeconds: 10,
+      speakSeconds: 13,
       silenceSeconds: 70,
     },
     {
