@@ -20,13 +20,15 @@ const ALLOWED_MEDIA_TYPES = ['image/jpeg', 'image/png', 'image/webp'];
 const SYSTEM_PROMPT = `You estimate the nutrition of a meal from a photograph, for a wellbeing app.
 
 Return ONLY a JSON object, with no prose around it, in this exact shape:
-{"items":[{"label":"string","calories":number,"protein_g":number}],"note":"string"}
+{"items":[{"label":"string","calories":number,"protein_g":number,"carbs_g":number,"fat_g":number}],"note":"string"}
 
 Rules:
 - One entry per distinct food you can identify. At most 6.
 - "label" is what a person would call it, two or three words, in the language asked for.
 - "calories" is for the portion actually visible, not per 100g. Integer.
-- "protein_g" is an integer, 0 if you genuinely cannot tell.
+- "protein_g", "carbs_g" and "fat_g" are integers for that same visible portion, 0 where you
+  genuinely cannot tell. "carbs_g" excludes fibre, as a European label does.
+- Keep the three macronutrients roughly consistent with the calories (4/4/9 kcal per gram).
 - Judge the portion from the plate, the cutlery or the packaging when they are visible.
 - If the photo shows no food at all, return {"items":[],"note":"no food"}.
 - Estimating from a photograph is imprecise. When a food is ambiguous, choose the more common
@@ -145,21 +147,27 @@ Deno.serve(async (req) => {
   // Everything below this line treats the model's output as untrusted: the numbers go on to be
   // written to a table with its own constraints, and a NaN or a negative would be rejected there
   // as a server error the person cannot act on.
+  // A macronutrient outside what the table will accept becomes 0 rather than failing the whole
+  // estimate: one implausible number should not lose the five sound ones beside it.
+  const macro = (value: unknown, max: number): number => {
+    const n = Math.round(Number(value));
+    return Number.isFinite(n) && n >= 0 && n <= max ? n : 0;
+  };
+
+  type RawItem = { label?: unknown; calories?: unknown; protein_g?: unknown; carbs_g?: unknown; fat_g?: unknown };
   const items = (Array.isArray(parsed.items) ? parsed.items : [])
     .slice(0, 6)
-    .map((item: { label?: unknown; calories?: unknown; protein_g?: unknown }) => ({
+    .map((item: RawItem) => ({
       label: typeof item?.label === 'string' ? item.label.trim().slice(0, 80) : '',
       calories: Math.round(Number(item?.calories)),
-      protein_g: Math.round(Number(item?.protein_g)),
+      protein_g: macro(item?.protein_g, 500),
+      carbs_g: macro(item?.carbs_g, 1000),
+      fat_g: macro(item?.fat_g, 500),
     }))
     .filter(
-      (item: { label: string; calories: number; protein_g: number }) =>
+      (item: { label: string; calories: number }) =>
         item.label.length > 0 && Number.isFinite(item.calories) && item.calories >= 0 && item.calories <= 10000
-    )
-    .map((item: { label: string; calories: number; protein_g: number }) => ({
-      ...item,
-      protein_g: Number.isFinite(item.protein_g) && item.protein_g >= 0 && item.protein_g <= 500 ? item.protein_g : 0,
-    }));
+    );
 
   return jsonResponse({ items, note: typeof parsed.note === 'string' ? parsed.note.slice(0, 200) : '' });
 });

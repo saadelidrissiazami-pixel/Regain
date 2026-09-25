@@ -3,15 +3,35 @@ import { describe, expect, it } from 'vitest';
 import { INGREDIENTS, type IngredientId } from '../src/features/fitness/ingredients';
 import { complementsFor, dayTotals, nutritionStatus } from '../src/features/fitness/nutritionProgress';
 
-const entry = (calories: number, protein_g: number | null = null) => ({ calories, protein_g });
+const entry = (
+  calories: number,
+  protein_g: number | null = null,
+  carbs_g: number | null = null,
+  fat_g: number | null = null
+) => ({ calories, protein_g, carbs_g, fat_g });
 
 describe('dayTotals', () => {
-  it('adds calories and protein, counting a missing protein as zero', () => {
-    expect(dayTotals([entry(400, 30), entry(250), entry(120, 8)])).toEqual({ calories: 770, proteinG: 38 });
+  it('adds every macronutrient, counting a missing one as zero', () => {
+    expect(dayTotals([entry(400, 30, 20, 12), entry(250), entry(120, 8, 5, 2)])).toEqual({
+      calories: 770,
+      proteinG: 38,
+      carbsG: 25,
+      fatG: 14,
+    });
   });
 
   it('is zero for a day with nothing in it', () => {
-    expect(dayTotals([])).toEqual({ calories: 0, proteinG: 0 });
+    expect(dayTotals([])).toEqual({ calories: 0, proteinG: 0, carbsG: 0, fatG: 0 });
+  });
+
+  it('counts an entry noted before the app asked for carbohydrate and fat', () => {
+    // Those rows have the two columns null, and must still add up rather than becoming NaN.
+    expect(dayTotals([{ calories: 500, protein_g: 20 }])).toEqual({
+      calories: 500,
+      proteinG: 20,
+      carbsG: 0,
+      fatG: 0,
+    });
   });
 });
 

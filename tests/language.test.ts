@@ -21,6 +21,9 @@ const FILES_WITH_DELIBERATE_FRENCH = [
   // The French half of the app, and the one place that picks the French date locale.
   'src/i18n/fr.ts',
   'src/lib/i18n.ts',
+  // The food table names each food in both languages on its own row, rather than through t(): a
+  // dictionary entry per food would double the file, and searching then matches either language.
+  'src/features/fitness/foods.ts',
 ];
 
 /** Values the database stores, which the app translates for display but must send back as-is. */

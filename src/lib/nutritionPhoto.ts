@@ -3,7 +3,14 @@ import * as ImagePicker from 'expo-image-picker';
 import { lang, t } from './i18n';
 import { supabase } from './supabase';
 
-export type PhotoEstimateItem = { label: string; calories: number; protein_g: number };
+export type PhotoEstimateItem = {
+  label: string;
+  calories: number;
+  protein_g: number;
+  // Absent from what a server deployed before this version returns, so never assumed present.
+  carbs_g?: number | null;
+  fat_g?: number | null;
+};
 export type PhotoEstimate = { items: PhotoEstimateItem[]; note: string };
 
 // The photo is only ever a means of estimating: it is sent, read, and never stored anywhere —

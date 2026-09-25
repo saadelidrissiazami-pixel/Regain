@@ -74,10 +74,33 @@ export function CalorieProgressCard({ log, onAdd }: { log: NutritionLog; onAdd: 
         </View>
       </View>
 
+      {/* The three macronutrients under the calories, each against the target the profile already
+          implies. They are read-outs, not a second set of bars: four bars on one card turn a
+          glance into a reading exercise, and calories are the number that carries the day. */}
       {log.proteinTarget > 0 ? (
-        <Text variant="caption" tone="ink2" tabular style={{ marginTop: 8 }}>
-          {t('Protein: {consumed} / {target} g', { consumed: log.totals.proteinG, target: log.proteinTarget })}
-        </Text>
+        <View style={{ flexDirection: 'row', flexWrap: 'wrap', columnGap: 14, rowGap: 2, marginTop: 8 }}>
+          <Text variant="caption" tone="ink2" tabular>
+            {t('{name} {consumed} / {target} g', {
+              name: t('prot'),
+              consumed: log.totals.proteinG,
+              target: log.proteinTarget,
+            })}
+          </Text>
+          <Text variant="caption" tone="ink2" tabular>
+            {t('{name} {consumed} / {target} g', {
+              name: t('carbs'),
+              consumed: log.totals.carbsG,
+              target: log.carbsTarget,
+            })}
+          </Text>
+          <Text variant="caption" tone="ink2" tabular>
+            {t('{name} {consumed} / {target} g', {
+              name: t('fat'),
+              consumed: log.totals.fatG,
+              target: log.fatTarget,
+            })}
+          </Text>
+        </View>
       ) : null}
 
       {/* Only once the day is nearly there: naming two foods is useful when a snack closes the

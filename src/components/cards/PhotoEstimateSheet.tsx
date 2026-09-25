@@ -2,6 +2,7 @@ import { Ionicons } from '@expo/vector-icons';
 import { useState } from 'react';
 import { View } from 'react-native';
 
+import { macroSummary } from '../../features/fitness/foods';
 import type { NutritionLog } from '../../hooks/useNutritionLog';
 import { t } from '../../lib/i18n';
 import {
@@ -83,7 +84,14 @@ export function PhotoEstimateSheet({
 
   const saveAll = () => {
     for (const item of items) {
-      log.add({ label: item.label, calories: item.calories, proteinG: item.protein_g, source: 'photo' });
+      log.add({
+        label: item.label,
+        calories: item.calories,
+        proteinG: item.protein_g,
+        carbsG: item.carbs_g ?? null,
+        fatG: item.fat_g ?? null,
+        source: 'photo',
+      });
     }
     close();
   };
@@ -147,7 +155,12 @@ export function PhotoEstimateSheet({
                   <View style={{ flex: 1 }}>
                     <Text variant="body">{item.label}</Text>
                     <Text variant="caption" tone="ink2" tabular>
-                      {t('{calories} kcal · {protein} g protein', { calories: item.calories, protein: item.protein_g })}
+                      {macroSummary({
+                        calories: item.calories,
+                        proteinG: item.protein_g,
+                        carbsG: item.carbs_g,
+                        fatG: item.fat_g,
+                      })}
                     </Text>
                   </View>
                   <Ionicons

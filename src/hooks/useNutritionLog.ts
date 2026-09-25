@@ -14,8 +14,8 @@ import {
   addNutritionEntry,
   deleteNutritionEntry,
   fetchNutritionDay,
+  type NewNutritionEntry,
   type NutritionEntry,
-  type NutritionSource,
 } from '../lib/nutritionLog';
 import { useFitness } from './useFitness';
 
@@ -24,6 +24,8 @@ export type NutritionLog = {
   totals: DayTotals;
   target: number;
   proteinTarget: number;
+  carbsTarget: number;
+  fatTarget: number;
   status: NutritionStatus;
   /** What is left before the target. Never below zero: a gap is a gap, not a debt. */
   remainingKcal: number;
@@ -32,7 +34,7 @@ export type NutritionLog = {
   complements: Complement[];
   isLoading: boolean;
   isError: boolean;
-  add: (entry: { label: string; calories: number; proteinG?: number | null; source?: NutritionSource }) => void;
+  add: (entry: NewNutritionEntry) => void;
   remove: (id: string) => void;
   adding: boolean;
   addError: unknown;
@@ -56,6 +58,9 @@ export function useNutritionLog(date?: string): NutritionLog {
   const totals = useMemo(() => dayTotals(entries), [entries]);
   const target = targets?.calories ?? 0;
   const proteinTarget = targets?.proteinG ?? 0;
+  // Both already come out of computeNutritionTargets; nothing here needed working out.
+  const carbsTarget = targets?.carbsG ?? 0;
+  const fatTarget = targets?.fatG ?? 0;
   const status = nutritionStatus(totals.calories, target, entries.length);
   const remainingKcal = Math.max(0, target - totals.calories);
   const remainingProteinG = Math.max(0, proteinTarget - totals.proteinG);
@@ -82,8 +87,7 @@ export function useNutritionLog(date?: string): NutritionLog {
   };
 
   const addMutation = useMutation({
-    mutationFn: (entry: { label: string; calories: number; proteinG?: number | null; source?: NutritionSource }) =>
-      addNutritionEntry(userId!, { date: day, ...entry }),
+    mutationFn: (entry: NewNutritionEntry) => addNutritionEntry(userId!, { date: day, ...entry }),
     onSuccess: invalidate,
   });
 
@@ -94,6 +98,8 @@ export function useNutritionLog(date?: string): NutritionLog {
     totals,
     target,
     proteinTarget,
+    carbsTarget,
+    fatTarget,
     status,
     remainingKcal,
     remainingProteinG,

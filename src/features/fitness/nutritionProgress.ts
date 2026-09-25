@@ -11,15 +11,31 @@ import { EXCLUDED_ANIMALS } from './planGenerator';
  * allergens and the diet on their profile filter the list before anything is proposed.
  */
 
-export type DayTotals = { calories: number; proteinG: number };
+export type DayTotals = { calories: number; proteinG: number; carbsG: number; fatG: number };
 
-export function dayTotals(entries: { calories: number; protein_g: number | null }[]): DayTotals {
+type CountableEntry = {
+  calories: number;
+  protein_g: number | null;
+  carbs_g?: number | null;
+  fat_g?: number | null;
+};
+
+/**
+ * A macronutrient nobody recorded counts as zero.
+ *
+ * It understates the day rather than guessing, which is the right way round: a total that invents
+ * carbohydrate nobody ate would make the bars lie. Entries noted before the app asked for
+ * carbohydrate and fat are exactly this case, and they stay readable.
+ */
+export function dayTotals(entries: CountableEntry[]): DayTotals {
   return entries.reduce<DayTotals>(
     (total, entry) => ({
       calories: total.calories + entry.calories,
       proteinG: total.proteinG + (entry.protein_g ?? 0),
+      carbsG: total.carbsG + (entry.carbs_g ?? 0),
+      fatG: total.fatG + (entry.fat_g ?? 0),
     }),
-    { calories: 0, proteinG: 0 }
+    { calories: 0, proteinG: 0, carbsG: 0, fatG: 0 }
   );
 }
 

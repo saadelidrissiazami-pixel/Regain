@@ -9,11 +9,13 @@ export type NutritionEntry = {
   label: string;
   calories: number;
   protein_g: number | null;
+  carbs_g: number | null;
+  fat_g: number | null;
   source: NutritionSource;
   created_at: string;
 };
 
-const COLUMNS = 'id, entry_date, label, calories, protein_g, source, created_at';
+const COLUMNS = 'id, entry_date, label, calories, protein_g, carbs_g, fat_g, source, created_at';
 
 /** Everything eaten on one day, oldest first — the order it was added is the order it is read. */
 export async function fetchNutritionDay(userId: string, date: string): Promise<NutritionEntry[]> {
@@ -40,16 +42,33 @@ export async function fetchNutritionRange(userId: string, from: string, to: stri
   return (data ?? []) as NutritionEntry[];
 }
 
+/** What the app knows about a food it is about to note. Everything but the label can be unknown. */
+export type NewNutritionEntry = {
+  label: string;
+  calories: number;
+  proteinG?: number | null;
+  carbsG?: number | null;
+  fatG?: number | null;
+  source?: NutritionSource;
+};
+
+/** A macronutrient the person did not supply stays null rather than becoming a confident zero. */
+function grams(value: number | null | undefined): number | null {
+  return value == null ? null : Math.round(value);
+}
+
 export async function addNutritionEntry(
   userId: string,
-  entry: { date: string; label: string; calories: number; proteinG?: number | null; source?: NutritionSource }
+  entry: NewNutritionEntry & { date: string }
 ): Promise<void> {
   const { error } = await supabase.from('nutrition_entries').insert({
     user_id: userId,
     entry_date: entry.date,
     label: entry.label.trim(),
     calories: Math.round(entry.calories),
-    protein_g: entry.proteinG == null ? null : Math.round(entry.proteinG),
+    protein_g: grams(entry.proteinG),
+    carbs_g: grams(entry.carbsG),
+    fat_g: grams(entry.fatG),
     source: entry.source ?? 'manual',
   });
   if (error) throw error;
