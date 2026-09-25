@@ -71,6 +71,9 @@ export function Sheet({
                 if (scrollToY) scrollRef.current?.scrollTo({ y: scrollToY, animated: false });
               }}
               keyboardShouldPersistTaps="handled"
+              // A number-pad has no return key, so a numeric field could trap the keyboard open
+              // over the footer with no way to dismiss it and no way to reach the save button.
+              keyboardDismissMode="on-drag"
               contentContainerStyle={{ paddingBottom: 12 }}
             >
               {children}

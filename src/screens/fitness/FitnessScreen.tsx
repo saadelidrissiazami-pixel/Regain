@@ -229,7 +229,14 @@ export default function FitnessScreen() {
   }
 
   return (
-    <Screen inTabs refreshing={fitness.isRefetching} onRefresh={fitness.isPremium ? () => fitness.refetch() : undefined}>
+    <Screen inTabs refreshing={fitness.isRefetching} onRefresh={
+        fitness.isPremium
+          ? () => {
+              fitness.refetch();
+              nutrition.refetch();
+            }
+          : undefined
+      }>
       {header}
       {recalcule === '1' ? (
         <InlineNotice

@@ -90,6 +90,7 @@ export default function TrackingScreen() {
     journalQuery.refetch();
     energyQuery.refetch();
     sleepQuery.refetch();
+    nutrition.refetch();
   };
 
   const stats = statsQuery.data;
