@@ -1,6 +1,7 @@
 import type { ImageSourcePropType } from 'react-native';
 
-import { IMAGE_KEY_BY_MUSCLE_GROUP, muscleGroupOf } from '../features/fitness/exercises';
+import { IMAGE_KEY_BY_MUSCLE_GROUP, muscleGroupOf, photoSlug } from '../features/fitness/exercises';
+import { EXERCISE_PHOTOS } from './exercisePhotos';
 import type { ImageKey } from './imageKeys';
 import type { ActivityCategory } from '../features/planning/types';
 
@@ -58,7 +59,15 @@ const BY_WELLBEING_CATEGORY: Record<string, ImageKey> = {
   'En public': 'wellbeingHero',
 };
 
+/**
+ * The exercise's own photograph when it has one, its muscle group's when it does not.
+ *
+ * The photographs are generated one by one (scripts/exercise-photos.mjs), so the set is complete
+ * only between two runs of that script. Falling back keeps every row illustrated meanwhile.
+ */
 export function imageForExercise(name: string, fallbackFocus?: string): ImageSourcePropType | undefined {
+  const slug = photoSlug(name);
+  if (slug && EXERCISE_PHOTOS[slug]) return EXERCISE_PHOTOS[slug];
   const group = muscleGroupOf(name);
   if (group) return IMAGES[IMAGE_KEY_BY_MUSCLE_GROUP[group]];
   return fallbackFocus ? imageForWorkout(fallbackFocus) : undefined;

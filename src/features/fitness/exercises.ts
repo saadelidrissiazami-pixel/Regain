@@ -105,13 +105,13 @@ export const EXERCISES: ExerciseDef[] = [
 ];
 
 /**
- * The muscle group an exercise belongs to, found from the name the plan stored.
+ * The catalogue entry behind the name a plan stored.
  *
  * The plan keeps only the name, and that name was translated when the plan was generated. So a
  * plan built in French will not match a catalogue rendered in English, and this returns null
- * rather than the wrong group — the caller falls back to the session's own image.
+ * rather than the wrong exercise — every caller has somewhere duller to fall back to.
  */
-export function muscleGroupOf(name: string): MuscleGroup | null {
+export function exerciseByName(name: string): ExerciseDef | null {
   const wanted = name.trim().toLowerCase();
   // The stored name is also tried through t(): the catalogue's keys are the English names, so a
   // plan generated in English still matches a catalogue rendered in French. The reverse (a French
@@ -121,17 +121,44 @@ export function muscleGroupOf(name: string): MuscleGroup | null {
     EXERCISES.find((exercise) => {
       const own = exercise.name.trim().toLowerCase();
       return own === wanted || own === translated;
-    })?.group ?? null
+    }) ?? null
   );
 }
 
+/** The muscle group an exercise belongs to, found from the name the plan stored. */
+export function muscleGroupOf(name: string): MuscleGroup | null {
+  return exerciseByName(name)?.group ?? null;
+}
+
 /**
- * One photograph per muscle group, not per exercise.
+ * The file name of an exercise's own photograph, from the name a plan stored.
  *
- * There are 56 exercises and no photograph of any of them. Rather than leaving every row blank,
- * or putting one picture on all of them, an exercise shows the group it trains: a squat and a
- * lunge share the legs image, a row and a curl share the pulling one. It illustrates honestly
- * without claiming to show that particular movement.
+ * Both sides of the pipeline read it from here — scripts/exercise-photos.mjs to name the file it
+ * writes, the app to find it again — so a renamed exercise loses its photograph and falls back to
+ * its muscle group, instead of keeping the picture of the movement it used to be.
+ */
+export function photoSlug(name: string): string | null {
+  const exercise = exerciseByName(name);
+  if (!exercise) return null;
+  return slugify(exercise.name);
+}
+
+export function slugify(name: string): string {
+  return name
+    .toLowerCase()
+    .normalize('NFD')
+    .replace(/[\u0300-\u036f]/g, '')
+    .replace(/[^a-z0-9]+/g, '-')
+    .replace(/^-|-$/g, '');
+}
+
+/**
+ * The photograph an exercise falls back to when it has none of its own.
+ *
+ * Each exercise is being given its own picture, one generated file at a time, so for a while some
+ * have one and some do not. Rather than leaving those rows blank, an exercise shows the group it
+ * trains: a squat and a lunge share the legs image, a row and a curl share the pulling one. It
+ * illustrates honestly without claiming to show that particular movement.
  *
  * It lives here rather than beside the images because this module loads no assets, which keeps
  * the mapping testable.
