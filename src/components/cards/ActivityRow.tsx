@@ -1,6 +1,7 @@
 import { View } from 'react-native';
 
 import type { CatalogActivity } from '../../features/planning/catalog';
+import { t } from '../../lib/i18n';
 import { CATEGORY_COLORS, CATEGORY_LABELS } from '../../features/planning/types';
 import { useTheme } from '../../theme/ThemeProvider';
 import { CheckCircle } from '../ui/CheckCircle';
@@ -43,7 +44,14 @@ export function ActivityRow({
       <PressableScale
         onPress={onPress}
         accessibilityRole="button"
-        accessibilityLabel={`${time}, ${activity.title}, ${CATEGORY_LABELS[activity.category]}, ${activity.duration_minutes} minutes${done ? ', fait' : ''}`}
+        accessibilityLabel={
+          t('{time}, {title}, {category}, {minutes} minutes', {
+            time,
+            title: activity.title,
+            category: CATEGORY_LABELS[activity.category],
+            minutes: activity.duration_minutes,
+          }) + (done ? `, ${t('done')}` : '')
+        }
         wrapperStyle={{ flex: 1 }}
         style={{ flexDirection: 'row', alignItems: 'center' }}
       >

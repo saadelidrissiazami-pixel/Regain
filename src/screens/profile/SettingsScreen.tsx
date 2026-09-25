@@ -28,6 +28,7 @@ import { fetchWeekPlan } from '../../lib/planning';
 import { usePremium } from '../../lib/premium';
 import { getManagementUrl, logOutPurchases } from '../../lib/purchases';
 import { supabase } from '../../lib/supabase';
+import { t } from '../../lib/i18n';
 import { getWeekStart } from '../../lib/week';
 import { useAuthStore } from '../../store/authStore';
 import { useTheme, type ThemeMode } from '../../theme/ThemeProvider';
@@ -62,7 +63,7 @@ export default function SettingsScreen() {
     mutationFn: async (next: boolean) => {
       if (next) {
         const granted = await enableDailyReminder();
-        if (!granted) throw new Error('Allow notifications for Regain in your device settings.');
+        if (!granted) throw new Error(t('Allow notifications for Regain in your device settings.'));
         if (session?.user.id) {
           const { plan, availability } = await fetchCurrentWeek(session.user.id);
           await scheduleActivityReminders(plan, availability);
@@ -80,7 +81,7 @@ export default function SettingsScreen() {
     mutationFn: async (next: boolean) => {
       if (next) {
         const granted = await enableWeeklyCheckinReminder();
-        if (!granted) throw new Error('Allow notifications for Regain in your device settings.');
+        if (!granted) throw new Error(t('Allow notifications for Regain in your device settings.'));
       } else {
         await disableWeeklyCheckinReminder();
       }
@@ -127,30 +128,30 @@ export default function SettingsScreen() {
 
   return (
     <Screen>
-      <ScreenHeader title="Settings" subtitle={email} onBack={() => goBack('/(tabs)/profile')} />
+      <ScreenHeader title={t('Settings')} subtitle={email} onBack={() => goBack('/(tabs)/profile')} />
 
-      <Section title="Appearance">
+      <Section title={t('Appearance')}>
         <SegmentedControl<ThemeMode>
-          label="Appearance"
+          label={t('Appearance')}
           tone="surface"
           value={theme.mode}
           onChange={theme.setMode}
           options={[
-            { value: 'auto', label: 'Auto' },
-            { value: 'light', label: 'Light' },
-            { value: 'dark', label: 'Dark' },
+            { value: 'auto', label: t('Auto') },
+            { value: 'light', label: t('Light') },
+            { value: 'dark', label: t('Dark') },
           ]}
         />
         <Text variant="caption" tone="ink2" style={{ marginTop: 10 }}>
-          On automatic, Regain follows your phone's light or dark setting.
+          {t('On automatic, Regain follows your phone’s light or dark setting.')}
         </Text>
       </Section>
 
-      <Section title="Reminders and calendar">
+      <Section title={t('Reminders and calendar')}>
         <ListRow
           icon="notifications-outline"
-          title="Reminders"
-          subtitle="A nudge at 8 am to pick breathing over scrolling, and a reminder when each activity is due."
+          title={t('Reminders')}
+          subtitle={t('A nudge at 8 am to pick breathing over scrolling, and a reminder when each activity is due.')}
           chevron={false}
           divider
           subtitleLines={4}
@@ -159,7 +160,7 @@ export default function SettingsScreen() {
               value={!!remindersQuery.data}
               onValueChange={(v) => toggleReminders.mutate(v)}
               disabled={remindersQuery.isLoading || toggleReminders.isPending}
-              accessibilityLabel="Reminders"
+              accessibilityLabel={t('Reminders')}
               {...switchProps}
             />
           }
@@ -167,8 +168,8 @@ export default function SettingsScreen() {
         {toggleReminders.isError ? <InlineNotice tone="error" message={errorMessage(toggleReminders.error)} /> : null}
         <ListRow
           icon="clipboard-outline"
-          title="Weekly check-in"
-          subtitle="A reminder on Sunday evening, while your answers can still change the coming week."
+          title={t('Weekly check-in')}
+          subtitle={t('A reminder on Sunday evening, while your answers can still change the coming week.')}
           chevron={false}
           divider
           subtitleLines={3}
@@ -177,7 +178,7 @@ export default function SettingsScreen() {
               value={!!checkinQuery.data}
               onValueChange={(v) => toggleCheckin.mutate(v)}
               disabled={checkinQuery.isLoading || toggleCheckin.isPending}
-              accessibilityLabel="Weekly check-in reminder"
+              accessibilityLabel={t('Weekly check-in reminder')}
               {...switchProps}
             />
           }
@@ -185,10 +186,10 @@ export default function SettingsScreen() {
         {toggleCheckin.isError ? <InlineNotice tone="error" message={errorMessage(toggleCheckin.error)} /> : null}
         <ListRow
           icon="calendar-outline"
-          title="Calendar"
+          title={t('Calendar')}
           subtitle={
             calendarUnavailableReason ??
-            'Automatically adds each plan to a “Regain” calendar, at the times you are free.'
+            t('Automatically adds each plan to a “Regain” calendar, at the times you are free.')
           }
           chevron={false}
           subtitleLines={4}
@@ -200,7 +201,7 @@ export default function SettingsScreen() {
                 value={!!calendarQuery.data}
                 onValueChange={(v) => toggleCalendar.mutate(v)}
                 disabled={calendarQuery.isLoading}
-                accessibilityLabel="Sync the calendar"
+                accessibilityLabel={t('Sync the calendar')}
                 {...switchProps}
               />
             )
@@ -210,32 +211,40 @@ export default function SettingsScreen() {
         {toggleCalendar.isSuccess && toggleCalendar.data !== null ? (
           <InlineNotice
             tone="success"
-            message={`${toggleCalendar.data} activit${
-              toggleCalendar.data > 1 ? 'ies' : 'y'
-            } from this week added. Future weeks will follow on their own.`}
+            message={
+              toggleCalendar.data > 1
+                ? t('{count} activities from this week added. Future weeks will follow on their own.', { count: toggleCalendar.data })
+                : t('{count} activity from this week added. Future weeks will follow on their own.', { count: toggleCalendar.data })
+            }
           />
         ) : null}
         {toggleCalendar.isSuccess && toggleCalendar.data === null ? (
-          <InlineNotice message="Syncing is off: upcoming activities have been removed from the calendar." />
+          <InlineNotice message={t('Syncing is off: upcoming activities have been removed from the calendar.')} />
         ) : null}
       </Section>
 
-      <Section title="Subscription">
-        <Text variant="label">{isPremium ? 'Regain Premium' : 'Free plan'}</Text>
+      <Section title={t('Subscription')}>
+        <Text variant="label">{isPremium ? t('Regain Premium') : t('Free plan')}</Text>
         {isDevUnlock ? (
           <>
             <Text variant="caption" tone="ink2" style={{ marginTop: 4 }}>
-              Unlocked for development. Purchases are unavailable here; a production build will ask for a real subscription.
+              {t('Unlocked for development. Purchases are unavailable here; a production build will ask for a real subscription.')}
             </Text>
-            <Button label="See the subscription screen" variant="outline" size="md" onPress={() => router.push('/paywall')} style={{ marginTop: 12 }} />
+            <Button
+              label={t('See the subscription screen')}
+              variant="outline"
+              size="md"
+              onPress={() => router.push('/paywall')}
+              style={{ marginTop: 12 }}
+            />
           </>
         ) : isPremium ? (
           <>
             <Text variant="caption" tone="ink2" style={{ marginTop: 4 }}>
-              Change or cancel your subscription any time from your App Store / Google Play account.
+              {t('Change or cancel your subscription any time from your App Store / Google Play account.')}
             </Text>
             <Button
-              label="Manage my subscription"
+              label={t('Manage my subscription')}
               variant="outline"
               size="md"
               loading={manageSubscription.isPending}
@@ -246,20 +255,19 @@ export default function SettingsScreen() {
         ) : (
           <>
             <Text variant="caption" tone="ink2" style={{ marginTop: 4 }}>
-              Go Premium for the fitness coach and the whole wellbeing library.
+              {t('Go Premium for the fitness coach and the whole wellbeing library.')}
             </Text>
-            <Button label="See what Premium adds" size="md" onPress={() => router.push('/paywall')} style={{ marginTop: 12 }} />
+            <Button label={t('See what Premium adds')} size="md" onPress={() => router.push('/paywall')} style={{ marginTop: 12 }} />
           </>
         )}
       </Section>
 
-      <Section title="Privacy">
+      <Section title={t('Privacy')}>
         <Text variant="caption" tone="ink2">
-          Notifications, calendar and location stay optional: they only turn on if you allow them,
-          and they turn off here or in your device settings.
+          {t('Notifications, calendar and location stay optional: they only turn on if you allow them, and they turn off here or in your device settings.')}
         </Text>
         <Button
-          label="Export my data"
+          label={t('Export my data')}
           variant="outline"
           size="md"
           icon="download-outline"
@@ -271,31 +279,31 @@ export default function SettingsScreen() {
 
         {confirmingDelete ? (
           <View style={{ marginTop: 14, borderRadius: 14, padding: 14, backgroundColor: theme.fat }}>
-            <Text variant="bodySm">Permanently delete your account and all your data? This cannot be undone.</Text>
+            <Text variant="bodySm">{t('Permanently delete your account and all your data? This cannot be undone.')}</Text>
             {isPremium && !isDevUnlock ? (
               <Text variant="caption" tone="ink2" style={{ marginTop: 6 }}>
-                Deleting the account does not cancel the subscription — cancel it from “Manage my subscription”.
+                {t('Deleting the account does not cancel the subscription — cancel it from “Manage my subscription”.')}
               </Text>
             ) : null}
             <View style={{ flexDirection: 'row', gap: 8, marginTop: 12 }}>
               <Button
-                label="Delete permanently"
+                label={t('Delete permanently')}
                 variant="destructive"
                 size="md"
                 fullWidth={false}
                 loading={deleteMutation.isPending}
                 onPress={() => deleteMutation.mutate()}
               />
-              <Button label="Cancel" variant="ghost" size="md" fullWidth={false} onPress={() => setConfirmingDelete(false)} />
+              <Button label={t('Cancel')} variant="ghost" size="md" fullWidth={false} onPress={() => setConfirmingDelete(false)} />
             </View>
             {deleteMutation.isError ? <InlineNotice tone="error" message={errorMessage(deleteMutation.error)} /> : null}
           </View>
         ) : (
-          <Button label="Delete my account" variant="ghost" size="md" onPress={() => setConfirmingDelete(true)} style={{ marginTop: 4 }} />
+          <Button label={t('Delete my account')} variant="ghost" size="md" onPress={() => setConfirmingDelete(true)} style={{ marginTop: 4 }} />
         )}
       </Section>
 
-      <Button label="Sign out" variant="outline" icon="log-out-outline" onPress={handleSignOut} />
+      <Button label={t('Sign out')} variant="outline" icon="log-out-outline" onPress={handleSignOut} />
     </Screen>
   );
 }

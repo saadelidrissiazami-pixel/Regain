@@ -2,6 +2,7 @@ import { Ionicons } from '@expo/vector-icons';
 import { useState } from 'react';
 import { Pressable, View } from 'react-native';
 
+import { t } from '../../lib/i18n';
 import { useTheme } from '../../theme/ThemeProvider';
 import { Button } from './Button';
 import { haptic, PressableScale } from './motion';
@@ -84,7 +85,7 @@ function Field({
       onPress={onPress}
       feedback="selection"
       accessibilityRole="button"
-      accessibilityLabel={`${label} : ${value ?? placeholder}`}
+      accessibilityLabel={t('{label}: {value}', { label, value: value ?? placeholder })}
       style={{
         marginBottom: 12,
         minHeight: 56,
@@ -176,7 +177,7 @@ export function Select<T extends string | number>({
   value,
   options,
   onChange,
-  placeholder = 'Choose',
+  placeholder = t('Choose'),
   title,
   subtitle,
 }: {
@@ -222,7 +223,7 @@ export function SelectMulti<T extends string>({
   values,
   options,
   onChange,
-  placeholder = 'Choose',
+  placeholder = t('Choose'),
   title,
   subtitle,
 }: {
@@ -243,16 +244,16 @@ export function SelectMulti<T extends string>({
       <Field
         label={label}
         value={summary}
-        hint={chosen.length > 1 ? `${chosen.length} selected` : undefined}
+        hint={chosen.length > 1 ? t('{count} selected', { count: chosen.length }) : undefined}
         placeholder={placeholder}
         onPress={() => setOpen(true)}
       />
       <Sheet
         visible={open}
         title={title ?? label}
-        subtitle={subtitle ?? 'You can choose more than one'}
+        subtitle={subtitle ?? t('You can choose more than one')}
         onClose={() => setOpen(false)}
-        footer={<Button label="Done" onPress={() => setOpen(false)} />}
+        footer={<Button label={t('Done')} onPress={() => setOpen(false)} />}
       >
         <GroupedRows
           options={options}

@@ -98,7 +98,7 @@ function ShoppingList({ items }: { items: ShoppingItem[] }) {
                 onPress={() => toggle(index)}
                 accessibilityRole="checkbox"
                 accessibilityState={{ checked: done }}
-                accessibilityLabel={`${item.item}, ${item.quantity}`}
+                accessibilityLabel={`${item.item}, ${item.quantity}`.trim()}
                 style={{ flexDirection: 'row', alignItems: 'center', minHeight: 44 }}
               >
                 <Pop trigger={done} style={{ marginRight: 12 }}>

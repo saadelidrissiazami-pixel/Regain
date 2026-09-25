@@ -29,7 +29,7 @@ export default function WellbeingCategoryScreen() {
     <Screen>
       <ScreenHeader
         title={name ? themeLabel(name) : t('Sessions')}
-        subtitle={SUBTITLES[name ?? ''] ?? `${programs.length} sessions`}
+        subtitle={SUBTITLES[name ?? ''] ?? t('{count} sessions', { count: programs.length })}
         onBack={() => goBack('/(tabs)/wellbeing')}
       />
       {wellbeing.programsQuery.isLoading ? (

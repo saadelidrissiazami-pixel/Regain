@@ -10,11 +10,12 @@ import { z } from 'zod';
 import { InlineNotice } from '../../src/components/feedback';
 import { Appear, Button, Field, haptic, Screen, Shake, Text } from '../../src/components/ui';
 import { supabase } from '../../src/lib/supabase';
+import { t } from '../../src/lib/i18n';
 import { useTheme } from '../../src/theme/ThemeProvider';
 
 const schema = z.object({
-  email: z.string().email('That email address does not look right'),
-  password: z.string().min(6, '6 characters minimum'),
+  email: z.string().email(t('That email address does not look right')),
+  password: z.string().min(6, t('6 characters minimum')),
 });
 
 type FormValues = z.infer<typeof schema>;
@@ -24,13 +25,13 @@ type FormValues = z.infer<typeof schema>;
 // “something went wrong” that hides the cause.
 function authErrorMessage(error: { message: string }): string {
   const message = error.message.toLowerCase();
-  if (message.includes('invalid login credentials')) return 'That email or password is not right.';
+  if (message.includes('invalid login credentials')) return t('That email or password is not right.');
   if (message.includes('email not confirmed')) {
-    return 'This account is not confirmed yet. Open the link we emailed you, then come back and sign in.';
+    return t('This account is not confirmed yet. Open the link we emailed you, then come back and sign in.');
   }
-  if (message.includes('user already registered')) return 'An account already exists for this address. Sign in instead.';
+  if (message.includes('user already registered')) return t('An account already exists for this address. Sign in instead.');
   if (message.includes('email rate limit exceeded')) {
-    return 'Too many attempts on this address. Try again in a few minutes.';
+    return t('Too many attempts on this address. Try again in a few minutes.');
   }
   return error.message;
 }
@@ -67,7 +68,7 @@ export default function SignInScreen() {
     }
     // No session on sign-up: this project requires email confirmation. Naming the address is
     // worth it, because a typo is the most common explanation for a message that “never arrived”.
-    setInfo(`Account created. Open the confirmation link sent to ${values.email}, then sign in.`);
+    setInfo(t('Account created. Open the confirmation link sent to {email}, then sign in.', { email: values.email }));
   };
 
   return (
@@ -89,10 +90,10 @@ export default function SignInScreen() {
       </Animated.View>
       <Appear index={1} key={mode}>
         <Text variant="title" accessibilityRole="header">
-          {mode === 'sign-in' ? 'Good to see you again' : 'Welcome to Regain'}
+          {mode === 'sign-in' ? t('Good to see you again') : t('Welcome to Regain')}
         </Text>
         <Text variant="body" tone="ink2" style={{ marginTop: 6, marginBottom: 28 }}>
-          {mode === 'sign-in' ? 'Sign in to pick your week back up.' : 'Create your account to get started.'}
+          {mode === 'sign-in' ? t('Sign in to pick your week back up.') : t('Create your account to get started.')}
         </Text>
       </Appear>
 
@@ -103,7 +104,7 @@ export default function SignInScreen() {
             name="email"
             render={({ field: { onChange, onBlur, value } }) => (
               <Field
-                label="Email address"
+                label={t('Email address')}
                 placeholder="you@example.com"
                 autoCapitalize="none"
                 autoComplete="email"
@@ -121,8 +122,8 @@ export default function SignInScreen() {
             name="password"
             render={({ field: { onChange, onBlur, value } }) => (
               <Field
-                label="Password"
-                placeholder="6 characters minimum"
+                label={t('Password')}
+                placeholder={t('6 characters minimum')}
                 secureTextEntry
                 autoComplete={mode === 'sign-in' ? 'current-password' : 'new-password'}
                 textContentType={mode === 'sign-in' ? 'password' : 'newPassword'}
@@ -142,9 +143,9 @@ export default function SignInScreen() {
 
       <Appear index={3}>
         <View style={{ marginTop: 16 }}>
-          <Button label={mode === 'sign-in' ? 'Sign in' : 'Sign up'} loading={submitting} onPress={handleSubmit(onSubmit)} />
+          <Button label={mode === 'sign-in' ? t('Sign in') : t('Sign up')} loading={submitting} onPress={handleSubmit(onSubmit)} />
           <Button
-            label={mode === 'sign-in' ? 'No account yet? Sign up' : 'Already have an account? Sign in'}
+            label={mode === 'sign-in' ? t('No account yet? Sign up') : t('Already have an account? Sign in')}
             variant="ghost"
             onPress={() => {
               haptic.selection();

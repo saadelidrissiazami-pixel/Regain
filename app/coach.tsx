@@ -10,11 +10,12 @@ import { Card, haptic, IconButton, ScreenHeader, Text, TextInput } from '../src/
 import { fetchCoachHistory, sendCoachMessage, type CoachMessage, type CoachSubject } from '../src/lib/coach';
 import { usePremium } from '../src/lib/premium';
 import { useAuthStore } from '../src/store/authStore';
+import { t } from '../src/lib/i18n';
 import { useTheme } from '../src/theme/ThemeProvider';
 
-const OPENING: Record<CoachSubject, string> = {
-  forme: 'A question about your session, your meals or your recovery? Write it the way you would say it.',
-  'bien-etre': 'Tell me how you are feeling, or what is in the way right now. No judgement.',
+const OPENING: Record<CoachSubject, () => string> = {
+  forme: () => t('A question about your session, your meals or your recovery? Write it the way you would say it.'),
+  'bien-etre': () => t('Tell me how you are feeling, or what is in the way right now. No judgement.'),
 };
 
 function Bubble({ message }: { message: Pick<CoachMessage, 'role' | 'content'> }) {
@@ -83,12 +84,16 @@ export default function CoachScreen() {
   if (!premiumLoading && !isPremium) {
     return (
       <View style={{ flex: 1, backgroundColor: theme.bg, paddingHorizontal: 20, paddingTop: 60 }}>
-        <ScreenHeader title="Your coach" subtitle="Ask a question, any time" onBack={() => goBack(subject === 'forme' ? '/(tabs)/fitness' : '/(tabs)/wellbeing')} />
+        <ScreenHeader
+          title={t('Your coach')}
+          subtitle={t('Ask a question, any time')}
+          onBack={() => goBack(subject === 'forme' ? '/(tabs)/fitness' : '/(tabs)/wellbeing')}
+        />
         <EmptyState
           icon="chatbubbles-outline"
-          title="Your coach is part of Premium"
-          body="Ask about your sessions, your meals or your energy, and get an answer that takes your goals into account."
-          actionLabel="See what Premium adds"
+          title={t('Your coach is part of Premium')}
+          body={t('Ask about your sessions, your meals or your energy, and get an answer that takes your goals into account.')}
+          actionLabel={t('See what Premium adds')}
           onAction={() => router.push('/paywall?source=locked')}
         />
       </View>
@@ -102,7 +107,11 @@ export default function CoachScreen() {
       keyboardVerticalOffset={0}
     >
       <View style={{ paddingHorizontal: 20, paddingTop: 60 }}>
-        <ScreenHeader title="Your coach" subtitle="Ask a question, any time" onBack={() => goBack(subject === 'forme' ? '/(tabs)/fitness' : '/(tabs)/wellbeing')} />
+        <ScreenHeader
+          title={t('Your coach')}
+          subtitle={t('Ask a question, any time')}
+          onBack={() => goBack(subject === 'forme' ? '/(tabs)/fitness' : '/(tabs)/wellbeing')}
+        />
       </View>
 
       <ScrollView
@@ -114,7 +123,7 @@ export default function CoachScreen() {
         {messages.length === 0 && !historyQuery.isLoading ? (
           <Card>
             <Text variant="bodySm" tone="ink2">
-              {OPENING[subject]}
+              {OPENING[subject]()}
             </Text>
           </Card>
         ) : null}
@@ -131,7 +140,7 @@ export default function CoachScreen() {
 
         {/* A spent quota, an outage or an undeployed function all arrive here with their real message. */}
         {sendMutation.isError ? <InlineNotice tone="error" message={(sendMutation.error as Error).message} /> : null}
-        {historyQuery.isError ? <InlineNotice tone="error" message="Your history could not be loaded." /> : null}
+        {historyQuery.isError ? <InlineNotice tone="error" message={t('Your history could not be loaded.')} /> : null}
       </ScrollView>
 
       <View
@@ -149,7 +158,7 @@ export default function CoachScreen() {
       >
         <TextInput
           style={{ flex: 1 }}
-          placeholder="Write to your coach…"
+          placeholder={t('Write to your coach…')}
           value={input}
           onChangeText={setInput}
           onSubmitEditing={send}
@@ -158,7 +167,7 @@ export default function CoachScreen() {
         />
         {/* `send` does nothing while the field is empty: the opacity says so at a glance. */}
         <View style={{ opacity: sendMutation.isPending || input.trim().length === 0 ? 0.4 : 1 }}>
-          <IconButton icon="arrow-up" label="Send" variant="primary" onPress={send} />
+          <IconButton icon="arrow-up" label={t('Send')} variant="primary" onPress={send} />
         </View>
       </View>
     </KeyboardAvoidingView>

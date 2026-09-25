@@ -2,6 +2,7 @@ import { Platform } from 'react-native';
 import type { CustomerInfo, CustomerInfoUpdateListener, PurchasesPackage } from 'react-native-purchases';
 
 import { PREMIUM_ENTITLEMENT_ID, STORE_SUBSCRIPTIONS_URL } from '../config/subscriptions';
+import { t } from './i18n';
 import { scheduleTrialReminder } from './notifications';
 import { isExpoGo, isWeb } from './runtime';
 
@@ -14,13 +15,14 @@ const TEST_STORE_KEY = process.env.EXPO_PUBLIC_REVENUECAT_TEST_STORE_KEY;
 const API_KEY = __DEV__ && TEST_STORE_KEY ? TEST_STORE_KEY : Platform.OS === 'ios' ? IOS_KEY : ANDROID_KEY;
 
 export const purchasesUnavailableReason: string | null = isWeb
-  ? 'Subscriptions are taken out from the mobile app.'
-  : isExpoGo
+  ? t('Subscriptions are taken out from the mobile app.')
+  : // The Expo Go and missing-key notices only ever appear in development, so they stay in English.
+    isExpoGo
     ? 'In-app purchases do not work in Expo Go: test them in a development build (see docs/abonnements.md).'
     : !API_KEY
       ? __DEV__
         ? 'Subscriptions are not configured yet: the RevenueCat key is missing (see docs/abonnements.md).'
-        : 'Subscriptions are unavailable at the moment. Try again in a few moments.'
+        : t('Subscriptions are unavailable at the moment. Try again in a few moments.')
       : null;
 
 export const isPurchasesConfigured = purchasesUnavailableReason === null;

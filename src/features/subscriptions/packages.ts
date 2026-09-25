@@ -1,3 +1,5 @@
+import { t } from '../../lib/i18n';
+
 // Formatting RevenueCat's offers for the paywall. Structural types (compatible with
 // PurchasesPackage) so it stays testable without loading the native module.
 
@@ -23,13 +25,13 @@ export type PackageLike = {
 const ORDER = ['ANNUAL', 'SIX_MONTH', 'THREE_MONTH', 'TWO_MONTH', 'MONTHLY', 'WEEKLY', 'LIFETIME'];
 
 const PLAN: Record<string, { title: string; period: string | null; months: number | null }> = {
-  ANNUAL: { title: 'Yearly', period: 'per year', months: 12 },
-  SIX_MONTH: { title: 'Six-monthly', period: 'every 6 months', months: 6 },
-  THREE_MONTH: { title: 'Quarterly', period: 'every 3 months', months: 3 },
-  TWO_MONTH: { title: 'Two-monthly', period: 'every 2 months', months: 2 },
-  MONTHLY: { title: 'Monthly', period: 'per month', months: 1 },
-  WEEKLY: { title: 'Weekly', period: 'per week', months: null },
-  LIFETIME: { title: 'Lifetime', period: 'one-off payment', months: null },
+  ANNUAL: { title: t('Yearly'), period: t('per year'), months: 12 },
+  SIX_MONTH: { title: t('Six-monthly'), period: t('every 6 months'), months: 6 },
+  THREE_MONTH: { title: t('Quarterly'), period: t('every 3 months'), months: 3 },
+  TWO_MONTH: { title: t('Two-monthly'), period: t('every 2 months'), months: 2 },
+  MONTHLY: { title: t('Monthly'), period: t('per month'), months: 1 },
+  WEEKLY: { title: t('Weekly'), period: t('per week'), months: null },
+  LIFETIME: { title: t('Lifetime'), period: t('one-off payment'), months: null },
 };
 
 export function sortPackages<T extends PackageLike>(packages: T[]): T[] {
@@ -52,31 +54,43 @@ export function annualSavingsPercent(packages: PackageLike[]): number | null {
 export function durationLabel(count: number, unit: string): string {
   switch (unit) {
     case 'DAY':
-      return `${count} day${count > 1 ? 's' : ''}`;
+      return count > 1 ? t('{count} days', { count }) : t('{count} day', { count });
     case 'WEEK':
-      return `${count} week${count > 1 ? 's' : ''}`;
+      return count > 1 ? t('{count} weeks', { count }) : t('{count} week', { count });
     case 'MONTH':
-      return `${count} month${count > 1 ? 's' : ''}`;
+      return count > 1 ? t('{count} months', { count }) : t('{count} month', { count });
     case 'YEAR':
-      return `${count} year${count > 1 ? 's' : ''}`;
+      return count > 1 ? t('{count} years', { count }) : t('{count} year', { count });
     default:
       return `${count}`;
   }
 }
 
-const UNIT_SINGULAR: Record<string, string> = { DAY: 'day', WEEK: 'week', MONTH: 'month', YEAR: 'year' };
+const UNIT_SINGULAR: Record<string, () => string> = {
+  DAY: () => t('day'),
+  WEEK: () => t('week'),
+  MONTH: () => t('month'),
+  YEAR: () => t('year'),
+};
 
 /** The introductory offer, spelled out the way Apple and Google require (duration + price). */
 export function introOfferLabel(intro: IntroPriceLike | null): string | null {
   if (!intro) return null;
   const cycles = Math.max(1, intro.cycles);
   if (intro.price === 0) {
-    return `${durationLabel(intro.periodNumberOfUnits * cycles, intro.periodUnit)} free trial`;
+    return t('{duration} free trial', { duration: durationLabel(intro.periodNumberOfUnits * cycles, intro.periodUnit) });
   }
   if (intro.periodNumberOfUnits === 1 && UNIT_SINGULAR[intro.periodUnit]) {
-    return `${intro.priceString} per ${UNIT_SINGULAR[intro.periodUnit]} for ${durationLabel(cycles, intro.periodUnit)}`;
+    return t('{price} per {unit} for {duration}', {
+      price: intro.priceString,
+      unit: UNIT_SINGULAR[intro.periodUnit](),
+      duration: durationLabel(cycles, intro.periodUnit),
+    });
   }
-  return `${intro.priceString} for ${durationLabel(intro.periodNumberOfUnits * cycles, intro.periodUnit)}`;
+  return t('{price} for {duration}', {
+    price: intro.priceString,
+    duration: durationLabel(intro.periodNumberOfUnits * cycles, intro.periodUnit),
+  });
 }
 
 export type PackageDisplay = {
@@ -93,7 +107,7 @@ export function describePackage(pkg: PackageLike, savingsPercent: number | null)
   const plan = PLAN[pkg.packageType] ?? { title: pkg.identifier, period: null, months: null };
   const perMonth =
     plan.months && plan.months > 1 && pkg.product.pricePerMonthString
-      ? `that is ${pkg.product.pricePerMonthString} / month`
+      ? t('that is {price} / month', { price: pkg.product.pricePerMonthString })
       : null;
   const badge = pkg.packageType === 'ANNUAL' && savingsPercent ? `−${savingsPercent}%` : null;
   return {
@@ -139,9 +153,9 @@ export type TrialStep = { when: string; what: string };
 export function trialTimeline(days: number, price: string): TrialStep[] {
   const reminderDay = Math.max(1, days - trialReminderDaysBefore(days));
   return [
-    { when: 'Today', what: 'All of Premium unlocks' },
-    { when: `Day ${reminderDay}`, what: 'We tell you the trial is about to end' },
-    { when: `Day ${days}`, what: `First payment of ${price}, unless you cancel before then` },
+    { when: t('Today'), what: t('All of Premium unlocks') },
+    { when: t('Day {number}', { number: reminderDay }), what: t('We tell you the trial is about to end') },
+    { when: t('Day {number}', { number: days }), what: t('First payment of {price}, unless you cancel before then', { price }) },
   ];
 }
 

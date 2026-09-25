@@ -2,6 +2,7 @@ import { View } from 'react-native';
 import Svg, { Circle, Path } from 'react-native-svg';
 
 import { MOOD_OPTIONS } from '../../features/wellbeing/reflection';
+import { t } from '../../lib/i18n';
 import { useTheme } from '../../theme/ThemeProvider';
 import { haptic, Pop, PressableScale } from '../ui/motion';
 import { Text } from '../ui/Text';
@@ -25,7 +26,7 @@ function Face({ level, color, size = 30 }: { level: number; color: string; size?
 export function MoodScale({ value, onChange }: { value: number | null; onChange: (value: number) => void }) {
   const theme = useTheme();
   return (
-    <View accessibilityRole="radiogroup" accessibilityLabel="How do you feel after this session?" style={{ flexDirection: 'row', gap: 4 }}>
+    <View accessibilityRole="radiogroup" accessibilityLabel={t('How do you feel after this session?')} style={{ flexDirection: 'row', gap: 4 }}>
       {MOOD_OPTIONS.map((option) => {
         const selected = value === option.value;
         return (

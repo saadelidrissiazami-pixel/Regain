@@ -40,7 +40,11 @@ export function CoachCard({ message, title }: { message: string; title?: string 
           </Text>
           {long ? (
             <View style={{ alignSelf: 'flex-end' }}>
-              <TextLink label={open ? 'Show less' : 'Show more'} icon={open ? 'chevron-up' : 'arrow-forward'} onPress={() => setOpen((v) => !v)} />
+              <TextLink
+                label={open ? t('Show less') : t('Show more')}
+                icon={open ? 'chevron-up' : 'arrow-forward'}
+                onPress={() => setOpen((v) => !v)}
+              />
             </View>
           ) : null}
         </View>

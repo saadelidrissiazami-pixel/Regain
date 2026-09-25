@@ -4,6 +4,7 @@ import { Platform } from 'react-native';
 
 import type { AvailabilitySlot } from '../features/availability/types';
 import { buildCalendarEvents } from '../features/planning/schedule';
+import { t } from './i18n';
 import { areRemindersEnabled } from './notifications';
 import type { PlannedActivityRow } from './planning';
 import { isExpoGo, isWeb } from './runtime';
@@ -22,8 +23,9 @@ const ALARM_MINUTES_BEFORE = 15;
 const CLEAR_HORIZON_DAYS = 60;
 
 export const calendarUnavailableReason: string | null = isWeb
-  ? 'Calendar syncing happens from the mobile app.'
+  ? t('Calendar syncing happens from the mobile app.')
   : isExpoGo
+    // Expo Go only ever runs in development, so this one stays in English on purpose.
     ? 'Expo Go has no calendar access: syncing will work in the installed app (a development build or a published release).'
     : null;
 

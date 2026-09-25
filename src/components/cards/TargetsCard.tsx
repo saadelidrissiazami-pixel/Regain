@@ -27,7 +27,7 @@ export function MacroCard({ value, label, background }: { value: number; label: 
   return (
     <View
       accessible
-      accessibilityLabel={`${label} : ${value} grammes`}
+      accessibilityLabel={t('{label}: {value} grams', { label, value })}
       style={{ flex: 1, alignItems: 'center', borderRadius: 14, paddingVertical: 12, backgroundColor: background }}
     >
       <Text variant="cardTitle" tabular>

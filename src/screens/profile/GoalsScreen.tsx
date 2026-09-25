@@ -10,6 +10,7 @@ import type { EnergyLevel } from '../../features/planning/catalog';
 import { fetchPreferences } from '../../lib/planning';
 import { completeOnboarding, fetchProfile, fetchSleepMinutes } from '../../lib/profile';
 import { useAuthStore } from '../../store/authStore';
+import { t } from '../../lib/i18n';
 import { useOnboardingForm } from './useOnboardingForm';
 
 /** My goals: first name, sleep, goals, budget and usual energy, all editable at any time. */
@@ -65,11 +66,15 @@ export default function GoalsScreen() {
       keyboard
       footer={
         dataQuery.isSuccess ? (
-          <Button label="Save" loading={saveMutation.isPending} onPress={() => form.validate() && saveMutation.mutate()} />
+          <Button label={t('Save')} loading={saveMutation.isPending} onPress={() => form.validate() && saveMutation.mutate()} />
         ) : undefined
       }
     >
-      <ScreenHeader title="My goals" subtitle="Your coach uses these to choose your activities." onBack={() => goBack('/(tabs)/profile')} />
+      <ScreenHeader
+        title={t('My goals')}
+        subtitle={t('Your coach uses these to choose your activities.')}
+        onBack={() => goBack('/(tabs)/profile')}
+      />
       {dataQuery.isLoading ? (
         <LoadingSkeleton preset="list" />
       ) : dataQuery.isError ? (
@@ -77,36 +82,36 @@ export default function GoalsScreen() {
       ) : (
         <>
           <Field
-            label="Your first name"
+            label={t('Your first name')}
             value={values.firstName}
             onChangeText={(text) => set('firstName', text)}
-            placeholder="e.g. Camille"
+            placeholder={t('e.g. Camille')}
             autoCapitalize="words"
             autoComplete="given-name"
             textContentType="givenName"
             error={errors.firstName}
           />
           <SelectMulti
-            label="Your goals"
+            label={t('Your goals')}
             values={values.primaryGoals}
             options={[...GOAL_OPTIONS]}
             onChange={(goals) => set('primaryGoals', goals)}
-            placeholder="Pick one or more goals"
+            placeholder={t('Pick one or more goals')}
           />
           {errors.primaryGoals ? (
             <Text variant="caption" tone="danger" style={{ marginTop: -6, marginBottom: 12 }}>
               {errors.primaryGoals}
             </Text>
           ) : null}
-          <Select label="Your usual sleep" value={values.sleepMinutes} options={SLEEP_OPTIONS} onChange={(m) => set('sleepMinutes', m)} />
+          <Select label={t('Your usual sleep')} value={values.sleepMinutes} options={SLEEP_OPTIONS} onChange={(m) => set('sleepMinutes', m)} />
 
           <Text variant="label" style={{ marginTop: 12, marginBottom: 8 }}>
-            Your budget for activities
+            {t('Your budget for activities')}
           </Text>
-          <SegmentedControl label="Budget" tone="surface" value={values.budgetLevel} onChange={(b) => set('budgetLevel', b)} options={[...BUDGET_OPTIONS]} />
+          <SegmentedControl label={t('Budget')} tone="surface" value={values.budgetLevel} onChange={(b) => set('budgetLevel', b)} options={[...BUDGET_OPTIONS]} />
 
           <Text variant="label" style={{ marginTop: 24, marginBottom: 4 }}>
-            Your usual energy
+            {t('Your usual energy')}
           </Text>
           {ENERGY_SLOTS.map((slot) => (
             <View key={slot.key} style={{ marginTop: 10 }}>
@@ -114,7 +119,7 @@ export default function GoalsScreen() {
                 {slot.label}
               </Text>
               <SegmentedControl<EnergyLevel>
-                label={`Energy: ${slot.label}`}
+                label={t('Energy: {slot}', { slot: slot.label })}
                 tone="surface"
                 value={values.energyBySlot[slot.key]}
                 onChange={(level) => set('energyBySlot', { ...values.energyBySlot, [slot.key]: level })}
