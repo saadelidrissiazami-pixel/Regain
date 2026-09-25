@@ -55,9 +55,19 @@ export function PhotoEstimateSheet({
   const run = async (source: 'camera' | 'library') => {
     setError(null);
     try {
+      const startedAt = Date.now();
       const photo = source === 'camera' ? await takeMealPhoto() : await pickMealPhoto();
-      // Backing out of the picker is not a failure: the sheet stays where it was.
-      if (!photo) return;
+      if (!photo) {
+        // Backing out of the picker is not a failure and deserves no message. But a picker that
+        // returns before anyone could have tapped anything never opened at all — a simulator has
+        // no camera, and the failure is silent. Saying nothing there looks like a broken button.
+        // ponytail: a 800ms threshold rather than a real capability check; expo-image-picker
+        // exposes none, and expo-device would be another native module for one boolean.
+        if (source === 'camera' && Date.now() - startedAt < 800) {
+          setError(new Error(t('The camera did not open. On a simulator there is none — choose an existing photo instead.')));
+        }
+        return;
+      }
       setPhase('working');
       const estimate = await estimateFromPhoto(photo);
       setItems(estimate.items);

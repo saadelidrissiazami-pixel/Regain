@@ -115,6 +115,7 @@ export const FR: Record<string, string> = {
   'Profile': 'Profil',
   'Vibrations': 'Vibrations',
   'A pulse at each change of breath, to follow with your eyes closed': 'Une impulsion à chaque changement de souffle, pour suivre les yeux fermés',
+  'The camera did not open. On a simulator there is none — choose an existing photo instead.': "L'appareil photo ne s'est pas ouvert. Sur un simulateur il n'y en a pas — choisis plutôt une photo existante.",
   'A word from your coach': 'Un mot de ton coach',
   'Later this week': 'Plus tard cette semaine',
   'Up next': 'Ensuite',
