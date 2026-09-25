@@ -26,6 +26,7 @@ import { useTheme } from '../../theme/ThemeProvider';
 import { BreathingPlayer, GroundingPlayer, NarratedPlayer, PrepCountdown } from './session/players';
 import { SessionReview } from './session/SessionReview';
 import { t } from '../../lib/i18n';
+import { hasNarrationAudio, stopSpeaking } from '../../lib/voice';
 
 /** An immersive wellbeing session: no tab bar, one single thing to attend to. */
 export default function WellbeingSessionScreen() {
@@ -44,6 +45,9 @@ export default function WellbeingSessionScreen() {
   // the voice that used to count them out loud.
   const isBreathing = slug ? CONTENT_BY_SLUG[slug]?.type === 'breathing' : false;
   const [hapticsOn, setHapticsOn] = useState(true);
+  // The voice is only worth offering once something has been recorded; until then the toggle
+  // would switch silence on and off.
+  const [voiceOn, setVoiceOn] = useState(hasNarrationAudio);
   const [menuOpen, setMenuOpen] = useState(false);
   const [runKey, setRunKey] = useState(0);
   // Stable: PrepCountdown depends on onDone inside its countdown effect.
@@ -254,8 +258,9 @@ export default function WellbeingSessionScreen() {
         contentContainerStyle={{ flexGrow: 1, justifyContent: 'center', paddingHorizontal: 24, paddingTop: 16, paddingBottom: insets.bottom + 24 }}
         showsVerticalScrollIndicator={false}
       >
-        {(isBreathing && hapticsOn) || playingLabel ? (
+        {voiceOn || (isBreathing && hapticsOn) || playingLabel ? (
           <View style={{ alignSelf: 'center', marginBottom: 16, flexDirection: 'row', gap: 8 }}>
+            {voiceOn ? <Pill icon="volume-high-outline" label={t('Voice guidance')} tone="onImage" /> : null}
             {isBreathing && hapticsOn ? <Pill icon="pulse-outline" label={t('Vibrations')} tone="onImage" /> : null}
             {playingLabel ? (
               <PressableScale
@@ -286,10 +291,11 @@ export default function WellbeingSessionScreen() {
               intro={content.intro}
               outro={content.outro}
               hapticsOn={hapticsOn}
+              voiceOn={voiceOn}
               onDone={handleDone}
             />
           ) : content.type === 'narrated' ? (
-            <NarratedPlayer blocks={content.blocks} onDone={content.endsQuietly ? handleQuietDone : handleDone} />
+            <NarratedPlayer blocks={content.blocks} voiceOn={voiceOn} onDone={content.endsQuietly ? handleQuietDone : handleDone} />
           ) : (
             <GroundingPlayer steps={content.steps} durationMinutes={program.duration_minutes} onDone={handleDone} />
           )}
@@ -301,6 +307,28 @@ export default function WellbeingSessionScreen() {
 
       <Sheet visible={menuOpen} title={t('Session options')} onClose={() => setMenuOpen(false)} scroll={false}>
         <View style={{ paddingHorizontal: 20 }}>
+          {/* Shown only once clips exist: before that the switch would toggle silence. */}
+          {hasNarrationAudio ? (
+            <ListRow
+              icon={voiceOn ? 'volume-high-outline' : 'volume-mute-outline'}
+              title={t('Voice guidance')}
+              subtitle={t('A voice reads the instructions')}
+              chevron={false}
+              divider
+              right={
+                <Switch
+                  value={voiceOn}
+                  onValueChange={(value) => {
+                    if (!value) stopSpeaking();
+                    setVoiceOn(value);
+                  }}
+                  trackColor={{ false: theme.line, true: theme.primary600 }}
+                  thumbColor="#FFFFFF"
+                  accessibilityLabel={t('Voice guidance')}
+                />
+              }
+            />
+          ) : null}
           {isBreathing ? (
             <ListRow
               icon={hapticsOn ? 'pulse-outline' : 'remove-outline'}

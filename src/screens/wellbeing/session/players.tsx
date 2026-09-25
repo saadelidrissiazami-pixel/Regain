@@ -4,6 +4,7 @@ import Animated, { FadeIn, useAnimatedStyle, useReducedMotion, useSharedValue, w
 
 import { Button, haptic, Text } from '../../../components/ui';
 import { breathKind } from '../../../features/wellbeing/breathing';
+import { speakGently as speak, stopSpeaking as stopSpeech } from '../../../lib/voice';
 import { blockAt, narratedDuration } from '../../../features/wellbeing/narration';
 import type { BreathingPhase, GroundingStep, NarratedBlock } from '../../../features/wellbeing/types';
 import { useTheme } from '../../../theme/ThemeProvider';
@@ -58,12 +59,32 @@ function NarratedSequence({
   blocks,
   elapsed,
   running,
+  voiceOn,
 }: {
   blocks: NarratedBlock[];
   elapsed: number;
   running: boolean;
+  voiceOn: boolean;
 }) {
   const position = blockAt(blocks, elapsed);
+
+  // The clip plays once, as the block begins — never during the silence, which is the point of
+  // the exercise. A pause cuts it, and resuming plays the current block again from its start.
+  const spokenRef = useRef(-1);
+  const blockIndex = position?.index ?? -1;
+  const phase = position?.phase;
+  useEffect(() => {
+    if (!voiceOn || !running) {
+      stopSpeech();
+      spokenRef.current = -1;
+      return;
+    }
+    if (phase !== 'voice' || blockIndex < 0 || spokenRef.current === blockIndex) return;
+    spokenRef.current = blockIndex;
+    speak(blocks[blockIndex].text);
+  }, [voiceOn, running, phase, blockIndex, blocks]);
+
+  useEffect(() => stopSpeech, []);
 
   if (!position) return null;
 
@@ -96,10 +117,12 @@ export function NarratedIntro({
   blocks,
   skipLabel,
   onFinish,
+  voiceOn,
 }: {
   blocks: NarratedBlock[];
   skipLabel: string;
   onFinish: () => void;
+  voiceOn: boolean;
 }) {
   const total = useMemo(() => narratedDuration(blocks), [blocks]);
   const clock = useSessionClock(total);
@@ -107,7 +130,7 @@ export function NarratedIntro({
 
   return (
     <View style={{ gap: 18 }}>
-      <NarratedSequence blocks={blocks} elapsed={clock.elapsed} running={clock.running} />
+      <NarratedSequence blocks={blocks} elapsed={clock.elapsed} running={clock.running} voiceOn={voiceOn} />
       <Button label={skipLabel} variant="ghost" onPress={onFinish} />
     </View>
   );
@@ -116,9 +139,11 @@ export function NarratedIntro({
 export function NarratedPlayer({
   blocks,
   onDone,
+  voiceOn,
 }: {
   blocks: NarratedBlock[];
   onDone: () => void;
+  voiceOn: boolean;
 }) {
   const total = useMemo(() => narratedDuration(blocks), [blocks]);
   const clock = useSessionClock(total);
@@ -128,7 +153,7 @@ export function NarratedPlayer({
     <View style={{ gap: 22 }}>
       <SessionRing progress={total === 0 ? 0 : clock.elapsed / total} elapsed={clock.elapsed} total={total} />
       <SessionControls running={clock.running} onToggle={clock.toggle} onSeek={clock.seek} />
-      <NarratedSequence blocks={blocks} elapsed={clock.elapsed} running={clock.running} />
+      <NarratedSequence blocks={blocks} elapsed={clock.elapsed} running={clock.running} voiceOn={voiceOn} />
     </View>
   );
 }
@@ -147,6 +172,7 @@ export function BreathingPlayer({
   intro,
   outro,
   hapticsOn,
+  voiceOn,
   onDone,
 }: {
   cycles: number;
@@ -154,6 +180,7 @@ export function BreathingPlayer({
   intro?: NarratedBlock[];
   outro?: NarratedBlock[];
   hapticsOn: boolean;
+  voiceOn: boolean;
   onDone: () => void;
 }) {
   const theme = useTheme();
@@ -208,6 +235,7 @@ export function BreathingPlayer({
       <NarratedIntro
         key={stage}
         blocks={stage === 'intro' ? intro! : outro!}
+        voiceOn={voiceOn}
        
         skipLabel={stage === 'intro' ? t('Start now') : t('Finish')}
         onFinish={() => (stage === 'intro' ? dispatch('start') : onDone())}
