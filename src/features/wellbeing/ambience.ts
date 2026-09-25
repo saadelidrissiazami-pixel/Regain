@@ -23,8 +23,6 @@ const NEVER_AUTO = new Set(['En public']);
 
 /** The normal volume, and the lowered volume while the voice is speaking. */
 export const AMBIENCE_VOLUME = 0.35;
-export const AMBIENCE_DUCKED_VOLUME = 0.12;
-
 export function ambienceLabel(choice: AmbienceChoice): string | null {
   return AMBIENCES.find((ambience) => ambience.id === choice)?.label ?? null;
 }

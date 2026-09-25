@@ -2,10 +2,9 @@ import { useEffect, useMemo, useReducer, useRef, useState } from 'react';
 import { Pressable, View } from 'react-native';
 import Animated, { FadeIn, useAnimatedStyle, useReducedMotion, useSharedValue, withRepeat, withTiming } from 'react-native-reanimated';
 
-import { Button, Text } from '../../../components/ui';
+import { Button, haptic, Text } from '../../../components/ui';
 import { blockAt, narratedDuration } from '../../../features/wellbeing/narration';
 import type { BreathingPhase, GroundingStep, NarratedBlock } from '../../../features/wellbeing/types';
-import { speakGently as speak, stopSpeaking as stopSpeech } from '../../../lib/voice';
 import { useTheme } from '../../../theme/ThemeProvider';
 import { SessionControls, SessionRing } from './SessionControls';
 import { useSessionClock } from './useSessionClock';
@@ -57,33 +56,13 @@ function SilenceBreath() {
 function NarratedSequence({
   blocks,
   elapsed,
-  audioOn,
   running,
 }: {
   blocks: NarratedBlock[];
   elapsed: number;
-  audioOn: boolean;
   running: boolean;
 }) {
   const position = blockAt(blocks, elapsed);
-
-  // The voice says the block once, as it begins — never during the silence, which is the heart of
-  // the exercise. A pause cuts it, and resuming says the current block again from its start.
-  const spokenRef = useRef(-1);
-  const blockIndex = position?.index ?? -1;
-  const phase = position?.phase;
-  useEffect(() => {
-    if (!audioOn || !running) {
-      stopSpeech();
-      spokenRef.current = -1;
-      return;
-    }
-    if (phase !== 'voice' || blockIndex < 0 || spokenRef.current === blockIndex) return;
-    spokenRef.current = blockIndex;
-    speak(blocks[blockIndex].text);
-  }, [audioOn, running, phase, blockIndex, blocks]);
-
-  useEffect(() => stopSpeech, []);
 
   if (!position) return null;
 
@@ -107,7 +86,6 @@ function useFinishOnce(finished: boolean, onDone: () => void) {
   useEffect(() => {
     if (!finished || doneRef.current) return;
     doneRef.current = true;
-    stopSpeech();
     onDone();
   }, [finished, onDone]);
 }
@@ -115,12 +93,10 @@ function useFinishOnce(finished: boolean, onDone: () => void) {
 /** The intro or outro of a breathing session: it runs on its own, and skips in one move. */
 export function NarratedIntro({
   blocks,
-  audioOn,
   skipLabel,
   onFinish,
 }: {
   blocks: NarratedBlock[];
-  audioOn: boolean;
   skipLabel: string;
   onFinish: () => void;
 }) {
@@ -130,7 +106,7 @@ export function NarratedIntro({
 
   return (
     <View style={{ gap: 18 }}>
-      <NarratedSequence blocks={blocks} elapsed={clock.elapsed} audioOn={audioOn} running={clock.running} />
+      <NarratedSequence blocks={blocks} elapsed={clock.elapsed} running={clock.running} />
       <Button label={skipLabel} variant="ghost" onPress={onFinish} />
     </View>
   );
@@ -138,11 +114,9 @@ export function NarratedIntro({
 
 export function NarratedPlayer({
   blocks,
-  audioOn,
   onDone,
 }: {
   blocks: NarratedBlock[];
-  audioOn: boolean;
   onDone: () => void;
 }) {
   const total = useMemo(() => narratedDuration(blocks), [blocks]);
@@ -153,7 +127,7 @@ export function NarratedPlayer({
     <View style={{ gap: 22 }}>
       <SessionRing progress={total === 0 ? 0 : clock.elapsed / total} elapsed={clock.elapsed} total={total} />
       <SessionControls running={clock.running} onToggle={clock.toggle} onSeek={clock.seek} />
-      <NarratedSequence blocks={blocks} elapsed={clock.elapsed} audioOn={audioOn} running={clock.running} />
+      <NarratedSequence blocks={blocks} elapsed={clock.elapsed} running={clock.running} />
     </View>
   );
 }
@@ -171,14 +145,14 @@ export function BreathingPlayer({
   phases,
   intro,
   outro,
-  audioOn,
+  hapticsOn,
   onDone,
 }: {
   cycles: number;
   phases: BreathingPhase[];
   intro?: NarratedBlock[];
   outro?: NarratedBlock[];
-  audioOn: boolean;
+  hapticsOn: boolean;
   onDone: () => void;
 }) {
   const theme = useTheme();
@@ -210,8 +184,14 @@ export function BreathingPlayer({
   }, [stage, cycle, phaseIndex, paused, phase.label, reduceMotion, scale]);
 
   useEffect(() => {
-    if (stage === 'active' && audioOn && !paused) speak(phase.label);
-  }, [stage, cycle, phaseIndex, phase.label, audioOn, paused]);
+    if (stage !== 'active' || !hapticsOn || paused) return;
+    // One pulse per phase change, so the rhythm can be followed with the eyes closed — which is
+    // what the voice used to be for. The strength says which phase has begun: a firm one to
+    // breathe in, a soft one to breathe out, and the faintest for holding, where nothing moves.
+    if (/inspir|breathe in/i.test(phase.label)) haptic.medium();
+    else if (/retene|bloque|pause|hold/i.test(phase.label)) haptic.selection();
+    else haptic.light();
+  }, [stage, cycle, phaseIndex, phase.label, hapticsOn, paused]);
 
   useEffect(() => {
     if (stage !== 'active' || paused) return;
@@ -226,7 +206,7 @@ export function BreathingPlayer({
       <NarratedIntro
         key={stage}
         blocks={stage === 'intro' ? intro! : outro!}
-        audioOn={audioOn}
+       
         skipLabel={stage === 'intro' ? t('Start now') : t('Finish')}
         onFinish={() => (stage === 'intro' ? dispatch('start') : onDone())}
       />
@@ -275,7 +255,6 @@ export function BreathingPlayer({
       <SessionControls
         running={!paused}
         onToggle={() => {
-          if (!paused) stopSpeech();
           setPaused((p) => !p);
         }}
       />
@@ -289,12 +268,10 @@ const SCALE_VALUES = Array.from({ length: 11 }, (_, i) => i);
 export function GroundingPlayer({
   steps,
   durationMinutes,
-  audioOn,
   onDone,
 }: {
   steps: GroundingStep[];
   durationMinutes: number;
-  audioOn: boolean;
   onDone: (summaryNote?: string) => void;
 }) {
   const theme = useTheme();
@@ -304,15 +281,6 @@ export function GroundingPlayer({
   const [breathCount, setBreathCount] = useState(0);
   const step = steps[index];
   const isLast = index === steps.length - 1;
-  const speakText = step.kind === 'scale' ? step.prompt : step.text;
-  const paused = !clock.running;
-
-  useEffect(() => {
-    if (audioOn && !paused) speak(speakText);
-    return () => {
-      if (audioOn) stopSpeech();
-    };
-  }, [index, audioOn, paused, speakText]);
 
   const goNext = () => {
     if (isLast) {
@@ -418,12 +386,8 @@ export function GroundingPlayer({
 const PREP_SECONDS = 10;
 
 /** Ten seconds to settle in before the session starts. */
-export function PrepCountdown({ onDone, audioOn }: { onDone: () => void; audioOn: boolean }) {
+export function PrepCountdown({ onDone }: { onDone: () => void }) {
   const [secondsLeft, setSecondsLeft] = useState(PREP_SECONDS);
-
-  useEffect(() => {
-    if (audioOn) speak(t('Make yourself comfortable. The session begins in a few seconds.'));
-  }, [audioOn]);
 
   useEffect(() => {
     if (secondsLeft <= 0) {

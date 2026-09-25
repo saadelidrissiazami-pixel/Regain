@@ -3,7 +3,6 @@ import { createAudioPlayer, setAudioModeAsync, type AudioPlayer } from 'expo-aud
 import { useEffect, useRef } from 'react';
 
 import {
-  AMBIENCE_DUCKED_VOLUME,
   AMBIENCE_VOLUME,
   isAmbienceChoice,
   type AmbienceChoice,
@@ -34,10 +33,10 @@ export function saveAmbiencePreference(choice: AmbienceChoice) {
  * Plays the chosen ambience on a loop through the session: fading in and out, with the volume
  * lowered while the voice speaks. `active` set to false pauses it (the end of a session).
  */
-export function useAmbiencePlayer(choice: AmbienceChoice, { active, ducked }: { active: boolean; ducked: boolean }) {
+export function useAmbiencePlayer(choice: AmbienceChoice, { active }: { active: boolean }) {
   const playerRef = useRef<AudioPlayer | null>(null);
   const fadeTimer = useRef<ReturnType<typeof setInterval> | null>(null);
-  const target = active && choice !== 'off' ? (ducked ? AMBIENCE_DUCKED_VOLUME : AMBIENCE_VOLUME) : 0;
+  const target = active && choice !== 'off' ? AMBIENCE_VOLUME : 0;
 
   const stopFade = () => {
     if (fadeTimer.current) clearInterval(fadeTimer.current);
