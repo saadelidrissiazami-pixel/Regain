@@ -112,6 +112,7 @@ export const FR: Record<string, string> = {
   'The photo estimate is unavailable for the moment.': "L'estimation par photo est indisponible pour le moment.",
   '{count} kcal in total': '{count} kcal au total',
   'Today could not be loaded.': "Impossible de charger la journée.",
+  'Profile': 'Profil',
   'A word from your coach': 'Un mot de ton coach',
   'Later this week': 'Plus tard cette semaine',
   'Up next': 'Ensuite',

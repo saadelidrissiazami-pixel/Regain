@@ -5,17 +5,18 @@ import type { ColorValue } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 import { haptic } from '../../src/components/ui/motion';
+import { t } from '../../src/lib/i18n';
 import { useTheme } from '../../src/theme/ThemeProvider';
 import { font } from '../../src/theme/typography';
 
 type IconName = ComponentProps<typeof Ionicons>['name'];
 
 const TABS: { name: string; title: string; icon: string }[] = [
-  { name: 'planning', title: 'Plan', icon: 'calendar' },
-  { name: 'wellbeing', title: 'Wellbeing', icon: 'leaf' },
-  { name: 'fitness', title: 'Fitness', icon: 'barbell' },
-  { name: 'tracking', title: 'Tracking', icon: 'bar-chart' },
-  { name: 'profile', title: 'Profile', icon: 'person' },
+  { name: 'planning', title: t('Plan'), icon: 'calendar' },
+  { name: 'wellbeing', title: t('Wellbeing'), icon: 'leaf' },
+  { name: 'fitness', title: t('Fitness'), icon: 'barbell' },
+  { name: 'tracking', title: t('Tracking'), icon: 'bar-chart' },
+  { name: 'profile', title: t('Profile'), icon: 'person' },
 ];
 
 function TabIcon({ icon, focused, color }: { icon: string; focused: boolean; color: ColorValue }) {
