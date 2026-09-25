@@ -3,6 +3,7 @@ import { Pressable, View } from 'react-native';
 import Animated, { FadeIn, useAnimatedStyle, useReducedMotion, useSharedValue, withRepeat, withTiming } from 'react-native-reanimated';
 
 import { Button, haptic, Text } from '../../../components/ui';
+import { breathKind } from '../../../features/wellbeing/breathing';
 import { blockAt, narratedDuration } from '../../../features/wellbeing/narration';
 import type { BreathingPhase, GroundingStep, NarratedBlock } from '../../../features/wellbeing/types';
 import { useTheme } from '../../../theme/ThemeProvider';
@@ -176,8 +177,8 @@ export function BreathingPlayer({
 
   useEffect(() => {
     if (stage !== 'active' || paused) return;
-    const inhale = /inspir/i.test(phase.label);
-    const target = inhale ? 1.35 : /retene|bloque|pause/i.test(phase.label) ? scale.get() : 0.9;
+    const kind = breathKind(phase.label);
+    const target = kind === 'in' ? 1.35 : kind === 'hold' ? scale.get() : 0.9;
     scale.set(reduceMotion ? target : withTiming(target, { duration: secondsLeft * 1000 }));
     // secondsLeft deliberately absent: the animation only restarts on a new phase or on resuming.
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -188,8 +189,9 @@ export function BreathingPlayer({
     // One pulse per phase change, so the rhythm can be followed with the eyes closed — which is
     // what the voice used to be for. The strength says which phase has begun: a firm one to
     // breathe in, a soft one to breathe out, and the faintest for holding, where nothing moves.
-    if (/inspir|breathe in/i.test(phase.label)) haptic.medium();
-    else if (/retene|bloque|pause|hold/i.test(phase.label)) haptic.selection();
+    const kind = breathKind(phase.label);
+    if (kind === 'in') haptic.medium();
+    else if (kind === 'hold') haptic.selection();
     else haptic.light();
   }, [stage, cycle, phaseIndex, phase.label, hapticsOn, paused]);
 
