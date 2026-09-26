@@ -18,6 +18,21 @@ import { imageForExercise, imageForWorkout } from '../../theme/images';
 import { useTheme } from '../../theme/ThemeProvider';
 import { t } from '../../lib/i18n';
 
+/**
+ * The exercise photograph, kept deliberately short.
+ *
+ * It was 220 — a third of a small screen — and it showed the session's generic image, so the set
+ * counter and the coaching tip were pushed under the fold for a picture that taught nothing. At
+ * 140 with the movement's own photograph, it earns its place and the controls stay visible.
+ *
+ * A header that shrinks as you scroll was tried first and does not work here: the photograph sits
+ * inside the scrolling content, so shrinking it shortens that content, which shortens the scroll,
+ * which grows the photograph back. Collapsing properly means lifting it out of the ScrollView and
+ * scaffolding this screen differently at every stage, which is a great deal of machinery for a
+ * screen that now fits.
+ */
+const HERO_HEIGHT = 140;
+
 type Position = { exercise: number; set: number };
 type State =
   | { stage: 'intro' }
@@ -197,8 +212,16 @@ function Player({ session, sessionIndex, planId }: { session: WorkoutSession; se
         <Text variant="bodySm" tone="ink2" style={{ marginTop: 4 }}>
           {t('{sets} sets · {reps} reps', { sets: exercise.sets, reps: exercise.reps })}
         </Text>
+        {/* The exercise's own photograph, not the session's: what to do is the question being
+            asked here, and the picture of a generic “legs” session never answered it. */}
         <View style={{ marginTop: 16 }}>
-          <Thumbnail source={imageForWorkout(session.focus)} width="100%" height={220} radius={20} icon="barbell-outline" />
+          <Thumbnail
+            source={imageForExercise(exercise.name, session.focus)}
+            width="100%"
+            height={HERO_HEIGHT}
+            radius={20}
+            icon="barbell-outline"
+          />
         </View>
         <View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'center', marginTop: 20, gap: 24 }}>
           <IconButton icon="chevron-back" label={t('Previous set')} variant="surface" onPress={() => dispatch('prevSet')} />
