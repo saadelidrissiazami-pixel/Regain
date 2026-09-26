@@ -131,7 +131,12 @@ function prompt(exercise) {
       : 'Show the single moment in the movement that makes it recognisable — the hardest point of the repetition.',
     `Setting: ${SETTING[exercise.equipment]}.`,
     `Framing: ${FRAMING[exercise.group]}. Square composition, the body filling most of the frame.`,
-    'The person wears plain heather-grey athletic clothing and trainers, has an ordinary athletic build, and is seen from an angle where the face is not identifiable.',
+    'The person wears plain heather-grey athletic clothing and trainers and has an ordinary athletic build.',
+    // Saying only "the face is not identifiable" was read as permission to crop: three of the first
+    // ten came back with the head cut off at the neck or out of frame. Anonymity has to be stated
+    // as a camera angle, and completeness as its own requirement.
+    'The whole body is inside the frame, head and both hands and both feet included, nothing cut off at any edge. The person is anonymous because the head is turned away from the camera or seen from behind or in profile — never because it is cropped, missing or out of frame.',
+    'Every piece of equipment the exercise names is present and in the right number: an exercise done with dumbbells shows two dumbbells, one in each hand.',
     'The form is technically correct and safe: joints aligned as the cue describes, spine neutral unless the cue says otherwise.',
     'Natural colour, soft even light, shallow depth of field. No text, no numbers, no logos, no watermark, no brand marks, no on-screen labels, no arrows, no second person, no mirror reflection.',
   ].join(' ');
