@@ -82,10 +82,10 @@ async function loadExercises() {
       },
     ],
   });
-  // slugify comes from the catalogue too, so the name this script writes and the name the app
-  // looks for cannot drift apart.
-  const { EXERCISES, slugify } = await import(`${bundled}?${Date.now()}`);
-  return EXERCISES.map((exercise) => ({ ...exercise, slug: slugify(exercise.name) }));
+  // The slug is written down in the catalogue, not computed here: the file this script names and
+  // the file the app looks for are then the same string, in either language.
+  const { EXERCISES } = await import(`${bundled}?${Date.now()}`);
+  return EXERCISES;
 }
 
 // ---------------------------------------------------------------------------
