@@ -6,7 +6,6 @@ import { View } from 'react-native';
 import { AdjustmentsList } from '../../components/AdjustmentsList';
 import { AddFoodSheet } from '../../components/cards/AddFoodSheet';
 import { CalorieProgressCard } from '../../components/cards/CalorieProgressCard';
-import { PhotoEstimateSheet } from '../../components/cards/PhotoEstimateSheet';
 import { CoachCard } from '../../components/cards/CoachCard';
 import { TargetsCard } from '../../components/cards/TargetsCard';
 import { WeekTracker } from '../../components/cards/WeekTracker';
@@ -38,7 +37,7 @@ export default function FitnessScreen() {
   }, [recalcule]);
   const [showAllAdjustments, setShowAllAdjustments] = useState(false);
   const nutrition = useNutritionLog();
-  const [foodSheet, setFoodSheet] = useState<'none' | 'manual' | 'photo'>('none');
+  const [foodSheet, setFoodSheet] = useState<'none' | 'manual'>('none');
 
   const generateMutation = useMutation({
     mutationFn: () => createFitnessPlan(userId!, profile!),
@@ -249,9 +248,7 @@ export default function FitnessScreen() {
         log={nutrition}
         visible={foodSheet === 'manual'}
         onClose={() => setFoodSheet('none')}
-        onScan={() => setFoodSheet('photo')}
       />
-      <PhotoEstimateSheet log={nutrition} visible={foodSheet === 'photo'} onClose={() => setFoodSheet('none')} />
       <Text variant="caption" tone="ink3" style={{ marginTop: 28 }}>
         {t('Regain is not a substitute for a doctor or a dietitian. If you have a health condition, an injury or are pregnant, speak to a professional before you start.')}
       </Text>

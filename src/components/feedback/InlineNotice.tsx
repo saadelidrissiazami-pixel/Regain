@@ -2,7 +2,6 @@ import { Ionicons } from '@expo/vector-icons';
 import { View } from 'react-native';
 import Animated, { FadeIn } from 'react-native-reanimated';
 
-import { t } from '../../lib/i18n';
 import { useTheme } from '../../theme/ThemeProvider';
 import { Text } from '../ui/Text';
 
@@ -21,15 +20,4 @@ export function InlineNotice({ tone = 'info', message }: { tone?: 'info' | 'succ
       </View>
     </Animated.View>
   );
-}
-
-/** A readable message out of any error (network, Supabase, and the rest). */
-export function errorMessage(error: unknown, fallback = t('Something went wrong. Try again in a moment.')): string {
-  if (error instanceof Error && error.message) {
-    if (/network|fetch|Failed to fetch|timeout/i.test(error.message)) {
-      return t('The connection looks interrupted. Check your network, then try again.');
-    }
-    return error.message;
-  }
-  return fallback;
 }

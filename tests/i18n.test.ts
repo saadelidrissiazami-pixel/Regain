@@ -34,6 +34,19 @@ describe('the French dictionary', () => {
     expect(missing).toEqual([]);
   });
 
+  it('has no line the code no longer asks for', () => {
+    // The test above only ever looked for what was missing, so a key outlived its screen in
+    // silence: twenty had piled up by the time anyone counted. A dead line is not harmful, but
+    // it is read as current by whoever translates the next one.
+    const asked = new Set<string>();
+    for (const path of FILES) {
+      for (const match of code(path).matchAll(/\bt\(\s*(['"])((?:\\.|(?!\1).)*)\1/g)) {
+        asked.add(match[2].replace(/\\(['"\\])/g, '$1'));
+      }
+    }
+    expect(Object.keys(FR).filter((english) => !asked.has(english))).toEqual([]);
+  });
+
   it('is only ever given a plain string, so the test above can read it', () => {
     // A template literal is a different key every time it runs: use t('… {n} …', { n }) instead.
     const offenders = FILES.filter((path) => /\bt\(\s*`/.test(code(path)));

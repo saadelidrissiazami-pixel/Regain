@@ -6,7 +6,8 @@ import { amountsFor, foodName, macroSummary, searchFoods, type Food } from '../.
 import type { NutritionLog } from '../../hooks/useNutritionLog';
 import { t } from '../../lib/i18n';
 import { useTheme } from '../../theme/ThemeProvider';
-import { errorMessage, InlineNotice } from '../feedback/InlineNotice';
+import { InlineNotice } from '../feedback/InlineNotice';
+import { errorMessage } from '../../lib/errors';
 import { Button } from '../ui/Button';
 import { Field } from '../ui/Field';
 import { ListRow } from '../ui/ListRow';
@@ -36,12 +37,10 @@ export function AddFoodSheet({
   log,
   visible,
   onClose,
-  onScan,
 }: {
   log: NutritionLog;
   visible: boolean;
   onClose: () => void;
-  onScan?: () => void;
 }) {
   const theme = useTheme();
   const [label, setLabel] = useState('');
@@ -112,16 +111,6 @@ export function AddFoodSheet({
       }
     >
       <View style={{ paddingHorizontal: 20, paddingTop: 8 }}>
-        {onScan ? (
-          <Button
-            label={t('Estimate from a photo')}
-            icon="camera-outline"
-            variant="outline"
-            onPress={onScan}
-            style={{ marginBottom: 16 }}
-          />
-        ) : null}
-
         <Field
           label={t('Food')}
           value={label}
