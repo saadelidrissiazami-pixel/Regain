@@ -19,19 +19,17 @@ import { useTheme } from '../../theme/ThemeProvider';
 import { t } from '../../lib/i18n';
 
 /**
- * The exercise photograph, kept deliberately short.
+ * The exercise photograph.
  *
- * It was 220 — a third of a small screen — and it showed the session's generic image, so the set
- * counter and the coaching tip were pushed under the fold for a picture that taught nothing. At
- * 140 with the movement's own photograph, it earns its place and the controls stay visible.
+ * The photographs are square, so a wide short band cropped the movement badly — at 140 the top and
+ * bottom of a squat were both outside the frame, which is precisely the part that shows the form.
+ * 260 keeps most of the square while leaving the set counter above the fold on a small phone.
  *
- * A header that shrinks as you scroll was tried first and does not work here: the photograph sits
- * inside the scrolling content, so shrinking it shortens that content, which shortens the scroll,
- * which grows the photograph back. Collapsing properly means lifting it out of the ScrollView and
- * scaffolding this screen differently at every stage, which is a great deal of machinery for a
- * screen that now fits.
+ * A header that shrinks as you scroll was tried and does not work here: the photograph sits inside
+ * the scrolling content, so shrinking it shortens that content, which shortens the scroll, which
+ * grows the photograph back.
  */
-const HERO_HEIGHT = 140;
+const HERO_HEIGHT = 260;
 
 type Position = { exercise: number; set: number };
 type State =
