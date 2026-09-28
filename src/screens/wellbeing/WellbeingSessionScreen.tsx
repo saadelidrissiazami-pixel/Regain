@@ -333,13 +333,19 @@ export default function WellbeingSessionScreen() {
             <ListRow
               icon={hapticsOn ? 'pulse-outline' : 'remove-outline'}
               title={t('Vibrations')}
-              subtitle={t('A pulse at each change of breath, to follow with your eyes closed')}
+              subtitle={t('A rhythm to breathe with, felt with your eyes closed')}
               chevron={false}
               divider
               right={
                 <Switch
                   value={hapticsOn}
-                  onValueChange={setHapticsOn}
+                  // Switching it on buzzes straight away. It answers, in one tap and without
+                  // starting a session, the question somebody who feels nothing is left with:
+                  // is it this app, or does this phone not vibrate at all?
+                  onValueChange={(on) => {
+                    setHapticsOn(on);
+                    if (on) haptic.heavy();
+                  }}
                   trackColor={{ false: theme.line, true: theme.primary600 }}
                   thumbColor="#FFFFFF"
                   accessibilityLabel={t('Vibrations')}

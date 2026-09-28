@@ -25,6 +25,9 @@ export const haptic = {
   medium: () => {
     if (Platform.OS !== 'web') Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium).catch(() => {});
   },
+  heavy: () => {
+    if (Platform.OS !== 'web') Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Heavy).catch(() => {});
+  },
   selection: () => {
     if (Platform.OS !== 'web') Haptics.selectionAsync().catch(() => {});
   },

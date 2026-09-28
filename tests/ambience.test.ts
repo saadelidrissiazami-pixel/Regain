@@ -17,9 +17,16 @@ describe('background music at the start of a session', () => {
     expect(initialAmbience('Sommeil', 'off')).toBe('off');
   });
 
-  it('stays silent elsewhere, and always in public', () => {
-    expect(initialAmbience('Respiration', null)).toBe('off');
-    expect(initialAmbience('Respiration', 'pluie')).toBe('off');
+  it('starts on its own for Breathing too, which is also done with the eyes shut', () => {
+    expect(initialAmbience('Respiration', null)).toBe('nappe');
+    expect(initialAmbience('Respiration', 'pluie')).toBe('pluie');
+  });
+
+  it('stays silent where nothing is offered, and always in public', () => {
+    // A surprise sound on a crowded train is the reason “In public” is never automatic, even
+    // when the person has an ambience saved from another session.
+    expect(initialAmbience('Journaling', null)).toBe('off');
+    expect(initialAmbience('Journaling', 'pluie')).toBe('off');
     expect(initialAmbience('En public', 'pluie')).toBe('off');
   });
 

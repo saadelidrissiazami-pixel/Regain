@@ -111,7 +111,7 @@ export const FR: Record<string, string> = {
   'Today could not be loaded.': "Impossible de charger la journée.",
   'Profile': 'Profil',
   'Vibrations': 'Vibrations',
-  'A pulse at each change of breath, to follow with your eyes closed': 'Une impulsion à chaque changement de souffle, pour suivre les yeux fermés',
+  'A rhythm to breathe with, felt with your eyes closed': 'Un rythme sur lequel respirer, ressenti les yeux fermés',
   'Voice guidance': 'Guidage vocal',
   'A voice reads the instructions': 'Une voix lit les consignes',
   'A word from your coach': 'Un mot de ton coach',

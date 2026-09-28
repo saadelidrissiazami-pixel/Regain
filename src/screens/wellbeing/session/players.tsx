@@ -12,6 +12,17 @@ import { SessionControls, SessionRing } from './SessionControls';
 import { useSessionClock } from './useSessionClock';
 import { t } from '../../../lib/i18n';
 
+/**
+ * How a breathing phase is felt: a fixed number of pulses spread across it, not a fixed cadence.
+ *
+ * A fixed gap made a four-second inhale and a ten-second exhale feel like different things — the
+ * long one turned into a buzz. Five pulses spread over whatever the phase lasts keeps the same
+ * shape at every length, and caps what a session can deliver: roughly five per phase, whether the
+ * phase is short or long. The floor keeps two pulses from landing on top of each other.
+ */
+const PULSES_PER_PHASE = 5;
+const MIN_PULSE_GAP_MS = 550;
+
 function Dots({ count, index }: { count: number; index: number }) {
   const theme = useTheme();
   if (count <= 1) return null;
@@ -213,14 +224,24 @@ export function BreathingPlayer({
 
   useEffect(() => {
     if (stage !== 'active' || !hapticsOn || paused) return;
-    // One pulse per phase change, so the rhythm can be followed with the eyes closed — which is
-    // what the voice used to be for. The strength says which phase has begun: a firm one to
-    // breathe in, a soft one to breathe out, and the faintest for holding, where nothing moves.
+    // A pulse train through the phase, not one tap at its start.
+    //
+    // One impact lasts a few milliseconds; at the beginning of a four-second inhale, with the eyes
+    // shut and the phone in a hand resting on a knee, it is missed entirely — reported as “no
+    // vibration at all”. Repeating it makes a rhythm that can actually be followed, which is what
+    // this is for since the voice went away. Holding still gets a single faint tap, because
+    // nothing is meant to be moving then.
     const kind = breathKind(phase.label);
-    if (kind === 'in') haptic.medium();
-    else if (kind === 'hold') haptic.selection();
-    else haptic.light();
-  }, [stage, cycle, phaseIndex, phase.label, hapticsOn, paused]);
+    if (kind === 'hold') {
+      haptic.selection();
+      return;
+    }
+    const pulse = kind === 'in' ? haptic.heavy : haptic.light;
+    pulse();
+    const gap = Math.max(MIN_PULSE_GAP_MS, (phase.seconds * 1000) / PULSES_PER_PHASE);
+    const timer = setInterval(pulse, gap);
+    return () => clearInterval(timer);
+  }, [stage, cycle, phaseIndex, phase.label, phase.seconds, hapticsOn, paused]);
 
   useEffect(() => {
     if (stage !== 'active' || paused) return;

@@ -13,10 +13,17 @@ export const AMBIENCES: { id: AmbienceId; label: string; description: string }[]
   { id: 'bol', label: t('Singing bowl'), description: t('One resonance every sixteen seconds') },
 ];
 
-/** Categories where the music starts on its own, with the ambience offered by default. */
+/**
+ * Categories where the music starts on its own, with the ambience offered by default.
+ *
+ * Breathing was left out at first and should not have been: a breathing session is done with the
+ * eyes shut like a meditation, and starting it in silence reads as a session that has not begun.
+ * The soft pad suits it — a chord that breathes at roughly the pace being asked for.
+ */
 const AUTO_START: Record<string, AmbienceId> = {
   Sommeil: 'pluie',
   Méditation: 'bol',
+  Respiration: 'nappe',
 };
 
 const NEVER_AUTO = new Set(['En public']);
