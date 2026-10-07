@@ -1,14 +1,14 @@
+import type { ActivityExtra } from '../activities/catalogue';
+// One definition of a step, kept where the steps themselves are written.
+import type { ActivityStep } from '../activities/steps';
 import type { ActivityCategory } from './types';
+
+export type { ActivityStep };
 
 export type EnergyLevel = 'bas' | 'moyen' | 'eleve';
 export type CostLevel = 'gratuit' | 'faible' | 'modere';
 export type BudgetLevel = 'gratuit' | 'modere' | 'confortable';
 
-export type ActivityStep = {
-  icon: string;
-  title: string;
-  description: string;
-};
 
 export type CatalogActivity = {
   id: string;
@@ -25,6 +25,8 @@ export type CatalogActivity = {
   first_action: string | null;
   /** What says it is over, so an activity does not stretch on without end. */
   stop_rule: string | null;
+  /** The extra panel this activity opens — a route map, a neighbourhood, a book. */
+  extra: ActivityExtra | null;
 };
 
 const ENERGY_ORDER: Record<EnergyLevel, number> = { bas: 0, moyen: 1, eleve: 2 };

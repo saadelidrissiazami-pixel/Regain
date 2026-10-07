@@ -34,6 +34,7 @@ function activity(overrides: Partial<CatalogActivity> & { id: string }): Catalog
     stop_rule: null,
     tags: [],
     steps: [],
+    extra: null,
     ...overrides,
   };
 }

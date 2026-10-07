@@ -116,8 +116,10 @@ describe('the wording overlay', () => {
     expect(localiseActivity({ title: 'Méditation guidée 10 min' }).title).toBe('A 10-minute guided meditation');
   });
 
-  it('leaves a row it has never heard of exactly as the database gave it', () => {
+  it('leaves the wording of a row it has never heard of exactly as the database gave it', () => {
+    // A row added to the catalogue after this build shipped. Its words come through untouched;
+    // `extra` is answered rather than left out, because the screen reads it on every activity.
     const unknown = { title: 'Something added later', first_action: 'x', stop_rule: 'y' };
-    expect(localiseActivity(unknown)).toEqual(unknown);
+    expect(localiseActivity(unknown)).toEqual({ ...unknown, extra: null });
   });
 });

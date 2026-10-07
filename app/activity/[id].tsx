@@ -21,12 +21,6 @@ import { t } from '../../src/lib/i18n';
 
 type IconName = ComponentProps<typeof Thumbnail>['icon'];
 
-// These three extras belong to catalogue rows from an earlier version, which are no longer
-// offered but are still referenced by older plans. The titles matched here are the ones the
-// person reads, after localiseActivity has done its work — not the ones stored in the database.
-const NEIGHBORHOOD_HISTORY_TITLES = [t('Explore a new neighbourhood')];
-const WALKING_LOOP_TITLES = [t('A brisk 30-minute walk'), t('A walk in nature')];
-const BOOK_TITLES = [t('Read a book')];
 const COST_LABELS = { gratuit: t('Free'), faible: t('Low cost'), modere: t('Moderate cost') } as const;
 
 /** One activity: why it was suggested, how to do it, and how to tick it off. */
@@ -180,9 +174,11 @@ export default function ActivityDetailScreen() {
           ) : null}
 
           <View style={{ marginTop: 12 }}>
-            {NEIGHBORHOOD_HISTORY_TITLES.includes(activity.title) ? <NeighborhoodHistoryCard /> : null}
-            {WALKING_LOOP_TITLES.includes(activity.title) ? <WalkingLoopCard durationMinutes={activity.duration_minutes} /> : null}
-            {BOOK_TITLES.includes(activity.title) && prefs ? <BookSuggestionCard primaryGoals={prefs.primary_goals} /> : null}
+            {/* Which panel an activity opens is decided next to its content, by the title the
+                database stores — not by matching a translated title here. */}
+            {activity.extra === 'neighbourhood' ? <NeighborhoodHistoryCard /> : null}
+            {activity.extra === 'walking-loop' ? <WalkingLoopCard durationMinutes={activity.duration_minutes} /> : null}
+            {activity.extra === 'book' && prefs ? <BookSuggestionCard primaryGoals={prefs.primary_goals} /> : null}
           </View>
 
           {complementary.length > 0 ? (

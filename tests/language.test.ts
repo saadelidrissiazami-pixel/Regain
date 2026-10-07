@@ -24,6 +24,10 @@ const FILES_WITH_DELIBERATE_FRENCH = [
   // The food table names each food in both languages on its own row, rather than through t(): a
   // dictionary entry per food would double the file, and searching then matches either language.
   'src/features/fitness/foods.ts',
+  // Each activity's steps, written in both languages on the same entry so the two are reviewed
+  // together. They cannot go through t(): the key would be the English step, and a dictionary
+  // line per step would double a file that is already mostly text.
+  'src/features/activities/steps.ts',
 ];
 
 /** Values the database stores, which the app translates for display but must send back as-is. */

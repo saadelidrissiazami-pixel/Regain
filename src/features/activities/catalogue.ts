@@ -15,6 +15,7 @@
 // in its original wording instead of disappearing.
 
 import { lang } from '../../lib/i18n';
+import { stepsFor, type ActivityStep } from './steps';
 
 type Wording = { title: string; firstAction: string; stopRule: string };
 
@@ -261,6 +262,22 @@ const WORDING_BY_STORED_TITLE: Record<string, Wording> = {
     firstAction: 'Choose the episode in advance, then play it.',
     stopRule: 'When the episode ends: it was a choice, not a slide.',
   },
+  // Walks. These three carry the route and neighbourhood cards, declared in EXTRA_BY_STORED_TITLE.
+  'Marcher une boucle près de chez soi': {
+    title: 'Walk a loop near home',
+    firstAction: 'Head out and let the app trace a loop that brings you back where you started.',
+    stopRule: 'When you get back to the spot you left from.',
+  },
+  "Découvrir une rue qu'on ne prend jamais": {
+    title: 'Find a street you never take',
+    firstAction: 'Head out and turn into the first street you never take.',
+    stopRule: 'When you have found three things worth telling someone.',
+  },
+  'Marcher trente minutes en accélérant': {
+    title: 'Walk thirty minutes, picking up the pace',
+    firstAction: 'Set off at a normal pace: the first five minutes are a warm-up, nothing more.',
+    stopRule: 'At the end of the six slow minutes.',
+  },
 };
 
 // Rows from an earlier catalogue. They are no longer offered — 0024 set `active = false` on all
@@ -303,30 +320,59 @@ const LEGACY_TITLES: Record<string, string> = {
 /** The stored titles this build knows how to word in English. */
 export const LOCALISED_ACTIVITY_TITLES = [...Object.keys(WORDING_BY_STORED_TITLE), ...Object.keys(LEGACY_TITLES)];
 
+/**
+ * The extra panel an activity opens, beyond its own text.
+ *
+ * Keyed by the *stored* title, which is French and never moves, rather than by the title the
+ * person reads. The screen used to hold three arrays of translated titles, so whether the route
+ * map appeared depended on a t() lookup matching a database row — the kind of comparison that
+ * works until somebody rewords one side. Here the key is the row itself.
+ */
+export type ActivityExtra = 'walking-loop' | 'neighbourhood' | 'book';
+
+const EXTRA_BY_STORED_TITLE: Record<string, ActivityExtra> = {
+  // The three walks written for the current catalogue.
+  'Marcher une boucle près de chez soi': 'walking-loop',
+  'Marcher trente minutes en accélérant': 'walking-loop',
+  "Découvrir une rue qu'on ne prend jamais": 'neighbourhood',
+  'Lire deux pages': 'book',
+  // Rows from the earlier catalogue. They are no longer offered, but a plan made before 0024
+  // still points at them, and the panel they used to open should still open.
+  'Marche rapide 30 min': 'walking-loop',
+  'Balade en nature': 'walking-loop',
+  'Explorer un nouveau quartier': 'neighbourhood',
+  "Lecture d'un livre": 'book',
+};
+
 type WithWording = {
   title: string;
   first_action?: string | null;
   stop_rule?: string | null;
+  steps?: ActivityStep[];
 };
 
 /**
- * English wording for one catalogue row, leaving every other field alone.
+ * One catalogue row, worded for this build and given what the screen needs to render it.
+ *
+ * Three things happen here, and all three are keyed off the stored title, so they have to be read
+ * before it is replaced: the steps, the extra panel, and — in English only — the wording itself.
  * A row this build has no wording for keeps the text the database gave it.
  */
-export function localiseActivity<T extends WithWording>(activity: T): T {
-  // The rows are French already, so French reads them as they are.
-  if (lang === 'fr') return activity;
-  const wording = WORDING_BY_STORED_TITLE[activity.title];
+export function localiseActivity<T extends WithWording>(activity: T): T & { extra: ActivityExtra | null } {
+  const stored = activity.title;
+  const steps = stepsFor(stored);
+  // The steps in the database are French-only (0012 and 0016 wrote them as migrations). Where the
+  // bundle has its own, they win in both languages; elsewhere the row keeps what it came with.
+  const common = { ...activity, extra: EXTRA_BY_STORED_TITLE[stored] ?? null, ...(steps ? { steps } : {}) };
+
+  // The rows are French already, so French reads their wording as it is.
+  if (lang === 'fr') return common;
+  const wording = WORDING_BY_STORED_TITLE[stored];
   if (wording) {
-    return {
-      ...activity,
-      title: wording.title,
-      first_action: wording.firstAction,
-      stop_rule: wording.stopRule,
-    };
+    return { ...common, title: wording.title, first_action: wording.firstAction, stop_rule: wording.stopRule };
   }
   // A row from the earlier catalogue: only its title needs wording, since it never had a first
   // action or a stop rule to begin with.
-  const legacy = LEGACY_TITLES[activity.title];
-  return legacy ? { ...activity, title: legacy } : activity;
+  const legacy = LEGACY_TITLES[stored];
+  return legacy ? { ...common, title: legacy } : common;
 }
