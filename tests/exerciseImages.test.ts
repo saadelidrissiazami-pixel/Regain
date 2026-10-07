@@ -87,5 +87,11 @@ describe('the photograph manifest', () => {
     const catalogue = new Set(EXERCISES.map((exercise) => exercise.slug));
     expect(keys.length).toBeGreaterThan(0);
     expect(keys.filter((slug) => !catalogue.has(slug))).toEqual([]);
+    // Both directions, and this is the one that matters: a photograph missing from the manifest
+    // does not break anything, it quietly shows the muscle group instead — which is how fifty-six
+    // wrong pictures went unnoticed for a week. An extra key fails loudly at bundling time; a
+    // missing one fails nowhere, so it has to fail here.
+    const keyed = new Set(keys);
+    expect(EXERCISES.filter((exercise) => !keyed.has(exercise.slug)).map((e) => e.slug)).toEqual([]);
   });
 });

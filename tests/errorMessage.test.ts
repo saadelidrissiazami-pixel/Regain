@@ -53,6 +53,6 @@ describe('errorMessage', () => {
   });
 
   it('keeps a message meant for the person, even when it has no code', () => {
-    expect(errorMessage({ message: 'That is a lot of photos for one day.' })).toBe('That is a lot of photos for one day.');
+    expect(errorMessage({ message: 'You have already noted this meal today.' })).toBe('You have already noted this meal today.');
   });
 });

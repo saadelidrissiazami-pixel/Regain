@@ -212,6 +212,8 @@ export function BreathingPlayer({
   );
   const phase = phases[phaseIndex];
   const scale = useSharedValue(1);
+  /** The phase whose opening pulse has already been given, so a resume does not repeat it. */
+  const announced = useRef('');
 
   useEffect(() => {
     if (stage !== 'active' || paused) return;
@@ -231,13 +233,21 @@ export function BreathingPlayer({
     // vibration at all”. Repeating it makes a rhythm that can actually be followed, which is what
     // this is for since the voice went away. Holding still gets a single faint tap, because
     // nothing is meant to be moving then.
+    // The opening pulse is what says “breathe in now”, so it belongs to the start of a phase and
+    // not to this effect, which also runs on resuming. Without the guard, coming back from a pause
+    // three seconds into an inhale announces an inhale that is nearly over — the one thing a
+    // rhythm followed with the eyes closed must not do.
+    const started = `${cycle}:${phaseIndex}`;
+    const opening = announced.current !== started;
+    announced.current = started;
+
     const kind = breathKind(phase.label);
     if (kind === 'hold') {
-      haptic.selection();
+      if (opening) haptic.selection();
       return;
     }
     const pulse = kind === 'in' ? haptic.heavy : haptic.light;
-    pulse();
+    if (opening) pulse();
     const gap = Math.max(MIN_PULSE_GAP_MS, (phase.seconds * 1000) / PULSES_PER_PHASE);
     const timer = setInterval(pulse, gap);
     return () => clearInterval(timer);

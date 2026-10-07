@@ -47,6 +47,17 @@ describe('the French dictionary', () => {
     expect(Object.keys(FR).filter((english) => !asked.has(english))).toEqual([]);
   });
 
+  it('is looked up with a variable in the places that expect it, and nowhere else', () => {
+    // The test above reads the dictionary against the literals it can see, so a key reached only
+    // through t(someVariable) looks dead and invites deletion. That failure costs more than the
+    // dead lines it prevents: a deleted key breaks a screen in French alone, which is the one
+    // place these tests cannot look. So a new dynamic lookup has to land here first, and whoever
+    // adds it has to say how its keys stay visible — exerciseByName's do, because every exercise
+    // name is also written as a literal in the catalogue it searches.
+    const dynamic = FILES.filter((path) => /\bt\(\s*[^'"`)\s]/.test(code(path)) && !path.endsWith('i18n.ts'));
+    expect(dynamic).toEqual(['src/features/fitness/exercises.ts']);
+  });
+
   it('is only ever given a plain string, so the test above can read it', () => {
     // A template literal is a different key every time it runs: use t('… {n} …', { n }) instead.
     const offenders = FILES.filter((path) => /\bt\(\s*`/.test(code(path)));

@@ -6,8 +6,7 @@ import { amountsFor, foodName, macroSummary, searchFoods, type Food } from '../.
 import type { NutritionLog } from '../../hooks/useNutritionLog';
 import { t } from '../../lib/i18n';
 import { useTheme } from '../../theme/ThemeProvider';
-import { InlineNotice } from '../feedback/InlineNotice';
-import { errorMessage } from '../../lib/errors';
+import { errorMessage, InlineNotice } from '../feedback';
 import { Button } from '../ui/Button';
 import { Field } from '../ui/Field';
 import { ListRow } from '../ui/ListRow';

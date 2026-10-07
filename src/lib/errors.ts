@@ -32,7 +32,7 @@ function isDev(): boolean {
 export function errorMessage(error: unknown, fallback = t('Something went wrong. Try again in a moment.')): string {
   const message = messageOf(error);
   if (!message) return fallback;
-  if (/network|fetch|Failed to fetch|timeout/i.test(message)) {
+  if (/network|fetch|timeout/i.test(message)) {
     return t('The connection looks interrupted. Check your network, then try again.');
   }
   const code = databaseCode(error);
