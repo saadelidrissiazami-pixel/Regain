@@ -24,13 +24,19 @@ import { fileURLToPath } from 'node:url';
 const ROOT = join(dirname(fileURLToPath(import.meta.url)), '..');
 const OUT = join(ROOT, 'assets', 'images', 'exercises');
 
-const MODEL = process.env.IMAGE_MODEL ?? 'gpt-image-1';
+// gpt-image-1 was shut down on 2026-10-23; gpt-image-2 is its successor and carries no end date.
+// The request shape is unchanged, so the move is the model name alone. IMAGE_MODEL overrides it —
+// gpt-image-2.5-sunburst and -flare also exist, and are worth a --only comparison before a full
+// regeneration rather than a blind switch.
+const MODEL = process.env.IMAGE_MODEL ?? 'gpt-image-2';
 // The API's smallest square. The bundle keeps 768, which is still twice what the largest card
 // shows on a 3× screen — see resize() for why the extra pixels are dropped.
 const API_SIZE = '1024x1024';
 const BUNDLE_SIZE = 768;
 const JPEG_QUALITY = 85;
-// Output tokens at $40/M: high 4160, medium 1056, low 272 for a 1024² square.
+// Output tokens at $40/M: high 4160, medium 1056, low 272 for a 1024² square. These were measured
+// against gpt-image-1 and are kept as an order of magnitude: the figure the script prints before a
+// batch is there to make you stop and think, not to reconcile a bill.
 const CENTS_PER_IMAGE = { high: 16.6, medium: 4.2, low: 1.1 };
 
 function env(name) {
