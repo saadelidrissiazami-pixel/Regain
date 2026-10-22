@@ -1203,6 +1203,9 @@ export const FR: Record<string, string> = {
   'Cannot load this right now': 'Impossible de charger ça pour le moment',
   'The connection looks interrupted. Check your network, then try again.':
     'La connexion semble interrompue. Vérifie ton réseau, puis réessaie.',
+  'The app stopped short': "L'application s'est interrompue",
+  'Nothing you recorded is lost. Start again below, and if it happens twice, close the app and reopen it.': "Rien de ce que tu as enregistré n'est perdu. Reprends ci-dessous, et si cela se reproduit, ferme l'application et rouvre-la.",
+  'Start again': 'Reprendre',
   'Something went wrong. Try again in a moment.': 'Quelque chose s’est mal passé. Réessaie dans un instant.',
   'Done': 'Terminé',
   'You can choose more than one': 'Tu peux en choisir plusieurs',

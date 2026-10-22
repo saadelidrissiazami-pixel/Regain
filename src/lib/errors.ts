@@ -1,7 +1,7 @@
 import { t } from './i18n';
 
 /** The text an error carries, whether it is an Error or one of Supabase's plain objects. */
-function messageOf(error: unknown): string {
+export function messageOf(error: unknown): string {
   if (error instanceof Error) return error.message;
   if (typeof error === 'object' && error !== null && 'message' in error) {
     const message = (error as { message: unknown }).message;
@@ -24,7 +24,7 @@ function databaseCode(error: unknown): string | null {
 }
 
 /** `__DEV__` is injected by Metro and absent everywhere else, tests included. */
-function isDev(): boolean {
+export function isDev(): boolean {
   return typeof __DEV__ !== 'undefined' && __DEV__;
 }
 

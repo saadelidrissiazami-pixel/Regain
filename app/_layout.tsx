@@ -7,14 +7,15 @@ import {
   Inter_800ExtraBold,
   useFonts,
 } from '@expo-google-fonts/inter';
-import { QueryClientProvider } from '@tanstack/react-query';
+import { PersistQueryClientProvider } from '@tanstack/react-query-persist-client';
 import { router, Stack } from 'expo-router';
 import * as SplashScreen from 'expo-splash-screen';
 import { useEffect } from 'react';
 import { LogBox, Platform } from 'react-native';
 import { SafeAreaProvider } from 'react-native-safe-area-context';
 
-import { queryClient } from '../src/lib/queryClient';
+import { AppErrorBoundary } from '../src/components/feedback/AppErrorBoundary';
+import { PERSIST_OPTIONS, queryClient } from '../src/lib/queryClient';
 import { initPurchases, onPremiumChange } from '../src/lib/purchases';
 import { ThemeProvider } from '../src/theme/ThemeProvider';
 import { useAuthStore } from '../src/store/authStore';
@@ -26,6 +27,10 @@ import { useAuthStore } from '../src/store/authStore';
 LogBox.ignoreLogs(['[RevenueCat] ⚠️ Using a Test Store API key.']);
 
 SplashScreen.preventAutoHideAsync().catch(() => {});
+
+// expo-router renders a layout's ErrorBoundary export in place of its subtree when a render throws.
+// Exported from the root layout, it covers every screen in the app.
+export { AppErrorBoundary as ErrorBoundary };
 
 // SF Pro (the system font) on iOS: Inter is only loaded for Android and the web.
 const FONTS =
@@ -69,12 +74,12 @@ export default function RootLayout() {
   if (!fontsLoaded) return null;
 
   return (
-    <QueryClientProvider client={queryClient}>
+    <PersistQueryClientProvider client={queryClient} persistOptions={PERSIST_OPTIONS}>
       <SafeAreaProvider>
         <ThemeProvider>
           <Stack screenOptions={{ headerShown: false, contentStyle: { backgroundColor: 'transparent' } }} />
         </ThemeProvider>
       </SafeAreaProvider>
-    </QueryClientProvider>
+    </PersistQueryClientProvider>
   );
 }
