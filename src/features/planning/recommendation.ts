@@ -9,7 +9,13 @@ export type ActivityFit = {
 };
 
 export function computeActivityFit(activity: CatalogActivity, prefs: UserPreferences): ActivityFit {
-  const matchedGoalLabels = GOAL_OPTIONS.filter((g) => activity.tags.includes(g.value)).map((g) => g.label);
+  // Both sides, not just the activity's. The screen introduces this list with “Serves your
+  // goals”, so listing a goal the person never chose tells them something untrue about themselves
+  // — and the honest fallback, “worth a try if you feel like it”, was unreachable because an
+  // activity with any tag at all matched something.
+  const matchedGoalLabels = GOAL_OPTIONS.filter(
+    (g) => activity.tags.includes(g.value) && prefs.primary_goals.includes(g.value)
+  ).map((g) => g.label);
 
   const goodEnergySlotLabels = ENERGY_SLOTS.filter((slot) => {
     const userEnergy = prefs.typical_energy_by_slot[slot.key] ?? 'moyen';
