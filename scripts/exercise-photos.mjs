@@ -15,50 +15,12 @@
  * An exercise is keyed by the slug of its English name, which is the catalogue's own key
  * (see muscleGroupOf), so renaming an exercise loses its photo instead of keeping a stale one.
  */
-import { Buffer } from 'node:buffer';
-import { execFileSync } from 'node:child_process';
-import { existsSync, mkdirSync, readFileSync, readdirSync, writeFileSync } from 'node:fs';
+import { existsSync, mkdirSync, writeFileSync } from 'node:fs';
 import { dirname, join } from 'node:path';
-import { fileURLToPath } from 'node:url';
 
-const ROOT = join(dirname(fileURLToPath(import.meta.url)), '..');
+import { CENTS_PER_IMAGE, generate, resize, ROOT, writeManifest } from './lib/photos.mjs';
+
 const OUT = join(ROOT, 'assets', 'images', 'exercises');
-
-// gpt-image-1 was shut down on 2026-10-23; gpt-image-2 is its successor and carries no end date.
-// The request shape is unchanged, so the move is the model name alone. IMAGE_MODEL overrides it —
-// gpt-image-2.5-sunburst and -flare also exist, and are worth a --only comparison before a full
-// regeneration rather than a blind switch.
-const MODEL = process.env.IMAGE_MODEL ?? 'gpt-image-2';
-// The API's smallest square. The bundle keeps 768, which is still twice what the largest card
-// shows on a 3× screen — see resize() for why the extra pixels are dropped.
-const API_SIZE = '1024x1024';
-const BUNDLE_SIZE = 768;
-const JPEG_QUALITY = 85;
-// Output tokens at $40/M: high 4160, medium 1056, low 272 for a 1024² square. These were measured
-// against gpt-image-1 and are kept as an order of magnitude: the figure the script prints before a
-// batch is there to make you stop and think, not to reconcile a bill.
-const CENTS_PER_IMAGE = { high: 16.6, medium: 4.2, low: 1.1 };
-
-function env(name) {
-  if (process.env[name]) return process.env[name];
-  try {
-    const line = readFileSync(join(ROOT, '.env'), 'utf8')
-      .split('\n')
-      .find((l) => l.startsWith(`${name}=`));
-    return line?.slice(name.length + 1).trim();
-  } catch {
-    return undefined;
-  }
-}
-
-function key() {
-  const value = env('OPENAI_API_KEY');
-  if (!value) {
-    console.error('OPENAI_API_KEY is not set. Put it in .env or pass it on the command line.');
-    process.exit(1);
-  }
-  return value;
-}
 
 /** The catalogue, loaded straight from the app so the two can never disagree. */
 async function loadExercises() {
@@ -150,73 +112,14 @@ function prompt(exercise) {
 
 // ---------------------------------------------------------------------------
 
-/** OpenAI quotes the key it was given back at you in a 401. Never print one. */
-function redactKeys(text) {
-  return text.replace(/sk-[\w-]+/g, 'sk-…');
-}
-
-async function generate(exercise, quality) {
-  const res = await fetch('https://api.openai.com/v1/images/generations', {
-    method: 'POST',
-    headers: { Authorization: `Bearer ${key()}`, 'Content-Type': 'application/json' },
-    body: JSON.stringify({
-      model: MODEL,
-      prompt: prompt(exercise),
-      n: 1,
-      size: API_SIZE,
-      quality,
-      output_format: 'jpeg',
-      // Close to lossless out of the model; the one lossy step is the resize below.
-      output_compression: 95,
-    }),
+function writeExerciseManifest() {
+  return writeManifest({
+    dir: OUT,
+    out: 'src/theme/exercisePhotos.ts',
+    constName: 'EXERCISE_PHOTOS',
+    assetPath: '../../assets/images/exercises',
+    keyedBy: { script: 'scripts/exercise-photos.mjs', by: 'photoSlug() from src/features/fitness/exercises.ts' },
   });
-  if (!res.ok) throw new Error(`OpenAI ${res.status}: ${redactKeys((await res.text()).slice(0, 300))}`);
-  const body = await res.json();
-  const b64 = body.data?.[0]?.b64_json;
-  if (!b64) throw new Error(`no image in the response: ${JSON.stringify(body).slice(0, 300)}`);
-  return Buffer.from(b64, 'base64');
-}
-
-/**
- * 1024² down to 768², in place.
- *
- * The largest card shows the photo about 200pt wide, so 768 is already generous at 3×, and the
- * 56 photographs are going into the app bundle — at 1024 they would add megabytes nobody sees.
- * sips ships with macOS, which beats adding an image library for two operations.
- */
-function resize(path) {
-  execFileSync('sips', ['-Z', String(BUNDLE_SIZE), '-s', 'formatOptions', String(JPEG_QUALITY), path], {
-    stdio: 'ignore',
-  });
-}
-
-/**
- * Rewrites the module the app reads, listing only the photographs that are on disk.
- *
- * Metro resolves require() at build time, so a module naming a file that does not exist fails the
- * whole bundle. Generating the list from the directory means the app builds and runs at seven
- * photographs exactly as it will at fifty-six — the exercises without one fall back to their
- * muscle group, as they did before any of this existed.
- */
-function writeManifest() {
-  const slugs = readdirSync(OUT)
-    .filter((file) => file.endsWith('.jpg'))
-    .map((file) => file.slice(0, -4))
-    .sort();
-  writeFileSync(
-    join(ROOT, 'src', 'theme', 'exercisePhotos.ts'),
-    [
-      "import type { ImageSourcePropType } from 'react-native';",
-      '',
-      '// Generated by scripts/exercise-photos.mjs — do not edit by hand.',
-      '// Keyed by photoSlug() from src/features/fitness/exercises.ts.',
-      'export const EXERCISE_PHOTOS: Record<string, ImageSourcePropType> = {',
-      ...slugs.map((slug) => `  '${slug}': require('../../assets/images/exercises/${slug}.jpg'),`),
-      '};',
-      '',
-    ].join('\n'),
-  );
-  console.log(`src/theme/exercisePhotos.ts: ${slugs.length} photographs`);
 }
 
 async function build(exercises, quality) {
@@ -226,7 +129,7 @@ async function build(exercises, quality) {
     const path = join(OUT, `${exercise.slug}.jpg`);
     process.stdout.write(`${exercise.slug}… `);
     try {
-      writeFileSync(path, await generate(exercise, quality));
+      writeFileSync(path, await generate(prompt(exercise), quality));
       resize(path);
       written += 1;
       console.log('ok');
@@ -234,7 +137,7 @@ async function build(exercises, quality) {
       console.log(`failed: ${error.message}`);
     }
   }
-  writeManifest();
+  writeExerciseManifest();
   console.log(`\n${written}/${exercises.length} written to assets/images/exercises/`);
   if (written < exercises.length) console.log('Run the same command again: what exists is skipped.');
 }
@@ -271,7 +174,7 @@ if (args[0] === 'check') {
 } else if (args[0] === 'build') {
   if (missing.length === 0) {
     console.log('Every exercise already has its photograph.');
-    writeManifest();
+    writeExerciseManifest();
   } else {
     console.log(
       `${missing.length} images at ${quality} quality ≈ $${((missing.length * CENTS_PER_IMAGE[quality]) / 100).toFixed(2)}\n`,
@@ -279,7 +182,7 @@ if (args[0] === 'check') {
     await build(missing, quality);
   }
 } else if (args[0] === 'manifest') {
-  writeManifest();
+  writeExerciseManifest();
 } else {
   console.error('Usage: exercise-photos.mjs check | manifest | build [--only <slug>] [--quality high|medium|low]');
   process.exit(1);

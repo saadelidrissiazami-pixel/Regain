@@ -78,7 +78,7 @@ export default function ActivityDetailScreen() {
         <>
           <Appear>
             <Thumbnail
-              source={imageForActivity(activity.category)}
+              source={imageForActivity(activity.category, activity.photo)}
               width="100%"
               height={180}
               radius={22}

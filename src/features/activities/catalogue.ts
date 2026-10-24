@@ -15,6 +15,7 @@
 // in its original wording instead of disappearing.
 
 import { lang } from '../../lib/i18n';
+import { ACTIVITY_PHOTOS } from './photos';
 import { stepsFor, type ActivityStep } from './steps';
 
 type Wording = { title: string; firstAction: string; stopRule: string };
@@ -330,6 +331,16 @@ export const LOCALISED_ACTIVITY_TITLES = [...Object.keys(WORDING_BY_STORED_TITLE
  */
 export type ActivityExtra = 'walking-loop' | 'neighbourhood' | 'book';
 
+/**
+ * The English name of a stored row, whatever this build's language.
+ *
+ * Used where English is wanted regardless of the interface — writing an image prompt, for one:
+ * the model reads English best, and the row it has to illustrate is named in French.
+ */
+export function englishTitle(storedTitle: string): string {
+  return WORDING_BY_STORED_TITLE[storedTitle]?.title ?? LEGACY_TITLES[storedTitle] ?? storedTitle;
+}
+
 const EXTRA_BY_STORED_TITLE: Record<string, ActivityExtra> = {
   // The three walks written for the current catalogue.
   'Marcher une boucle près de chez soi': 'walking-loop',
@@ -358,12 +369,19 @@ type WithWording = {
  * before it is replaced: the steps, the extra panel, and — in English only — the wording itself.
  * A row this build has no wording for keeps the text the database gave it.
  */
-export function localiseActivity<T extends WithWording>(activity: T): T & { extra: ActivityExtra | null } {
+export function localiseActivity<T extends WithWording>(
+  activity: T
+): T & { extra: ActivityExtra | null; photo: string | null } {
   const stored = activity.title;
   const steps = stepsFor(stored);
   // The steps in the database are French-only (0012 and 0016 wrote them as migrations). Where the
   // bundle has its own, they win in both languages; elsewhere the row keeps what it came with.
-  const common = { ...activity, extra: EXTRA_BY_STORED_TITLE[stored] ?? null, ...(steps ? { steps } : {}) };
+  const common = {
+    ...activity,
+    extra: EXTRA_BY_STORED_TITLE[stored] ?? null,
+    photo: ACTIVITY_PHOTOS[stored] ?? null,
+    ...(steps ? { steps } : {}),
+  };
 
   // The rows are French already, so French reads their wording as it is.
   if (lang === 'fr') return common;

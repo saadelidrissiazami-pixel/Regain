@@ -58,7 +58,7 @@ export function NextUpCard({ when, activity, onPress }: { when: string; activity
           </View>
         </View>
         <Thumbnail
-          source={imageForActivity(activity.category)}
+          source={imageForActivity(activity.category, activity.photo)}
           width={64}
           height={64}
           radius={14}

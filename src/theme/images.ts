@@ -1,6 +1,7 @@
 import type { ImageSourcePropType } from 'react-native';
 
 import { IMAGE_KEY_BY_MUSCLE_GROUP, muscleGroupOf, photoSlug } from '../features/fitness/exercises';
+import { ACTIVITY_PHOTOGRAPHS } from './activityPhotos';
 import { EXERCISE_PHOTOS } from './exercisePhotos';
 import type { ImageKey } from './imageKeys';
 import type { ActivityCategory } from '../features/planning/types';
@@ -36,7 +37,16 @@ const BY_ACTIVITY_CATEGORY: Record<ActivityCategory, ImageKey> = {
   temps_libre: 'nature',
 };
 
-export function imageForActivity(category: ActivityCategory): ImageSourcePropType | undefined {
+/**
+ * The activity's own photograph when it has one, its category's when it does not.
+ *
+ * Nine category pictures covered forty-eight activities, so none of them showed what the activity
+ * actually is. They are generated one by one (scripts/activity-photos.mjs), so the fallback is
+ * what keeps every row illustrated in between runs — and what let this ship before a single
+ * photograph existed.
+ */
+export function imageForActivity(category: ActivityCategory, photo?: string | null): ImageSourcePropType | undefined {
+  if (photo && ACTIVITY_PHOTOGRAPHS[photo]) return ACTIVITY_PHOTOGRAPHS[photo];
   return IMAGES[BY_ACTIVITY_CATEGORY[category]];
 }
 

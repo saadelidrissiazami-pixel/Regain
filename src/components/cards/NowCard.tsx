@@ -66,7 +66,7 @@ export function NowCard({
           </View>
         </View>
         <Thumbnail
-          source={imageForActivity(activity.category)}
+          source={imageForActivity(activity.category, activity.photo)}
           width={84}
           height={84}
           radius={16}

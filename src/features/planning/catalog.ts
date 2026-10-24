@@ -27,6 +27,8 @@ export type CatalogActivity = {
   stop_rule: string | null;
   /** The extra panel this activity opens — a route map, a neighbourhood, a book. */
   extra: ActivityExtra | null;
+  /** The file name of this activity's own photograph, when it has one. */
+  photo: string | null;
 };
 
 const ENERGY_ORDER: Record<EnergyLevel, number> = { bas: 0, moyen: 1, eleve: 2 };

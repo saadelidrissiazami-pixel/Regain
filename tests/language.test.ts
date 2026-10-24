@@ -31,6 +31,8 @@ const FILES_WITH_DELIBERATE_FRENCH = [
   // The execution cues for each exercise, written in both languages on the same entry for the
   // same reason as the steps above.
   'src/features/fitness/exerciseCues.ts',
+  // Keyed by the French title the database stores, which is the key and not the wording.
+  'src/features/activities/photos.ts',
 ];
 
 /** Values the database stores, which the app translates for display but must send back as-is. */
