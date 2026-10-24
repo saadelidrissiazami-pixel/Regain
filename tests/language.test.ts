@@ -28,6 +28,9 @@ const FILES_WITH_DELIBERATE_FRENCH = [
   // together. They cannot go through t(): the key would be the English step, and a dictionary
   // line per step would double a file that is already mostly text.
   'src/features/activities/steps.ts',
+  // The execution cues for each exercise, written in both languages on the same entry for the
+  // same reason as the steps above.
+  'src/features/fitness/exerciseCues.ts',
 ];
 
 /** Values the database stores, which the app translates for display but must send back as-is. */

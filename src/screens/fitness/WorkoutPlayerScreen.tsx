@@ -14,6 +14,8 @@ import { sessionTitle } from '../../features/fitness/schedule';
 import type { WorkoutSession } from '../../features/fitness/types';
 import { useFitness } from '../../hooks/useFitness';
 import { logWorkout } from '../../lib/fitness';
+import { cuesFor } from '../../features/fitness/exerciseCues';
+import { photoSlug } from '../../features/fitness/exercises';
 import { imageForExercise, imageForWorkout } from '../../theme/images';
 import { useTheme } from '../../theme/ThemeProvider';
 import { t } from '../../lib/i18n';
@@ -252,6 +254,9 @@ function Player({ session, sessionIndex, planId }: { session: WorkoutSession; se
     );
   } else if (state.stage === 'rest') {
     const nextExercise = exercises[state.next.exercise];
+    // By slug, not by name: the name is translated, and that is how all fifty-six photographs
+    // went missing in French.
+    const nextCues = cuesFor(photoSlug(nextExercise.name) ?? '');
     content = (
       <View style={{ alignItems: 'center', paddingTop: 24 }}>
         <Text variant="overline" tone="ink2">
@@ -267,6 +272,19 @@ function Player({ session, sessionIndex, planId }: { session: WorkoutSession; se
         <Text variant="bodySm" tone="ink2" center style={{ marginTop: 24 }}>
           {t('Next: {exercise}, set {set} of {sets}', { exercise: nextExercise.name, set: state.next.set + 1, sets: nextExercise.sets })}
         </Text>
+        {/* The rest screen is where the detail belongs. During a set the screen is full and nobody
+            is reading; here there is a minute of nothing to do and the next exercise has just been
+            named. Only on the first set of an exercise: by the second, it has been read. */}
+        {nextCues && state.next.set === 0 ? (
+          <Card variant="tinted" padding={14} style={{ marginTop: 24, width: '100%' }}>
+            <Text variant="overline" tone="ink2" style={{ marginBottom: 8 }}>
+              {t('How to do it')}
+            </Text>
+            <Text variant="caption" tone="ink2">{`1. ${nextCues.setup}`}</Text>
+            <Text variant="caption" tone="ink2" style={{ marginTop: 6 }}>{`2. ${nextCues.execute}`}</Text>
+            <Text variant="caption" tone="ink2" style={{ marginTop: 6 }}>{`⚠️ ${nextCues.mistake}`}</Text>
+          </Card>
+        ) : null}
       </View>
     );
     footer = <Button label={t('Skip the rest')} variant="secondary" iconRight="play-skip-forward" onPress={() => dispatch('skipRest')} />;
