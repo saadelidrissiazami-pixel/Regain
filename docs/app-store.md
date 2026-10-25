@@ -95,21 +95,19 @@ routine,habits,wellbeing,meditation,breathing,sleep,strength,planner,energy,jour
 | Marketing URL | optional |
 | Privacy policy | `https://saadelidrissiazami-pixel.github.io/Regain/legal/privacy-policy` |
 
-The English legal pages are new ([privacy-policy.md](legal/privacy-policy.md),
-[terms-of-use.md](legal/terms-of-use.md)); the French ones stay published for the versions already
-installed. The two links the subscription screen shows come from EAS environment variables, so they
-have to be repointed for `production` and `preview`:
+All four legal pages are published: English ([privacy-policy.md](legal/privacy-policy.md),
+[terms-of-use.md](legal/terms-of-use.md)) and French
+([politique-de-confidentialite.md](legal/politique-de-confidentialite.md),
+[conditions-utilisation.md](legal/conditions-utilisation.md)).
 
-```bash
-npx eas-cli@latest env:create --name EXPO_PUBLIC_PRIVACY_URL --value https://saadelidrissiazami-pixel.github.io/Regain/legal/privacy-policy --environment production --environment preview --visibility plaintext --force
-```
+The two environment variables hold the **English** addresses, already set on `production` and
+`preview`. The app no longer needs a second pair: the subscription screen swaps the last segment of
+the address for its French page when the phone is French
+([src/config/legal.ts](../src/config/legal.ts)). An address the mapping does not recognise is left
+alone, so a renamed page degrades to English rather than to a 404.
 
-```bash
-npx eas-cli@latest env:create --name EXPO_PUBLIC_TERMS_URL --value https://saadelidrissiazami-pixel.github.io/Regain/legal/terms-of-use --environment production --environment preview --visibility plaintext --force
-```
-
-Without that, the paywall keeps linking to the French pages — which still works, but an English
-listing pointing at a French policy is worth avoiding.
+App Store Connect still takes one privacy policy URL per listing language — French on the fr-FR
+listing, English on en-US.
 
 ## Screenshots
 
