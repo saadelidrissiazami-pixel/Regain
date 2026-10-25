@@ -9,11 +9,12 @@
  */
 import { Buffer } from 'node:buffer';
 import { execFileSync } from 'node:child_process';
-import { readFileSync, readdirSync, writeFileSync } from 'node:fs';
-import { dirname, join } from 'node:path';
-import { fileURLToPath } from 'node:url';
+import { readdirSync, writeFileSync } from 'node:fs';
+import { join } from 'node:path';
 
-export const ROOT = join(dirname(fileURLToPath(import.meta.url)), '..', '..');
+import { env, ROOT } from './env.mjs';
+
+export { ROOT } from './env.mjs';
 
 /** The API's smallest square. The bundle keeps 768 — twice what the largest card shows at 3×. */
 export const API_SIZE = '1024x1024';
@@ -29,18 +30,6 @@ export const CENTS_PER_IMAGE = { high: 16.6, medium: 4.2, low: 1.1 };
 // IMAGE_MODEL overrides it — the 2.5 variants also exist, and are worth an --only comparison
 // before a full regeneration rather than a blind switch.
 export const MODEL = process.env.IMAGE_MODEL ?? 'gpt-image-2';
-
-function env(name) {
-  if (process.env[name]) return process.env[name];
-  try {
-    const line = readFileSync(join(ROOT, '.env'), 'utf8')
-      .split('\n')
-      .find((l) => l.startsWith(`${name}=`));
-    return line?.slice(name.length + 1).trim();
-  } catch {
-    return undefined;
-  }
-}
 
 export function key() {
   const value = env('OPENAI_API_KEY');
