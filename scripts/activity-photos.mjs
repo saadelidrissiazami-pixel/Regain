@@ -36,7 +36,7 @@ async function loadActivities() {
   const bundled = join(ROOT, 'node_modules', '.cache', 'activity-photos.mjs');
   mkdirSync(join(ROOT, 'node_modules', '.cache'), { recursive: true });
   await esbuild.build({
-    entryPoints: [join(ROOT, 'src/features/activities/photos.ts')],
+    entryPoints: [join(ROOT, 'src/features/activities/catalogue.ts')],
     bundle: true,
     platform: 'node',
     format: 'esm',

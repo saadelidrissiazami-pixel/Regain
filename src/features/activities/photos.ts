@@ -1,5 +1,3 @@
-import { englishTitle } from './catalogue';
-
 /**
  * The file name of each activity's photograph.
  *
@@ -64,5 +62,3 @@ export const ACTIVITY_PHOTOS: Record<string, string> = {
   "Découvrir une rue qu'on ne prend jamais": 'find-a-street-you-never-take',
   'Marcher trente minutes en accélérant': 'walk-thirty-minutes-picking-up-the-pace',
 };
-
-export { englishTitle };

@@ -18,6 +18,12 @@ import { lang } from '../../lib/i18n';
 import { ACTIVITY_PHOTOS } from './photos';
 import { stepsFor, type ActivityStep } from './steps';
 
+// Re-exported so scripts/activity-photos.mjs has one entry point to bundle. photos.ts used to
+// re-export englishTitle for the same reason, which made the two files import each other — Metro
+// allows a cycle but warns that it can hand you an uninitialised value, and it was right to:
+// nothing but luck kept this one harmless.
+export { ACTIVITY_PHOTOS };
+
 type Wording = { title: string; firstAction: string; stopRule: string };
 
 const WORDING_BY_STORED_TITLE: Record<string, Wording> = {
