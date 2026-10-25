@@ -1,3 +1,5 @@
+import { createElement } from 'react';
+
 import { cleanup } from '@testing-library/react';
 import { afterEach, vi } from 'vitest';
 
@@ -78,6 +80,41 @@ vi.mock('react-native-reanimated', async () => {
     // Always on, so nothing waits on a transition that will never run in a DOM.
     useReducedMotion: () => true,
   };
+});
+
+/**
+ * react-native-svg, drawn as plain SVG.
+ *
+ * The real package resolves to a native component through codegen, which has no meaning in a DOM.
+ * Its own web build maps these elements onto the SVG tags below, so the stub is the same shape —
+ * and what the tests here assert is our drawing's geometry, not the library's rendering.
+ */
+vi.mock('react-native-svg', () => {
+  const tag = (name: string) => {
+    const Element = ({ children, ...props }: Record<string, unknown> & { children?: unknown }) =>
+      createElement(name, props, children as never);
+    Element.displayName = name;
+    return Element;
+  };
+  const Svg = tag('svg');
+  return {
+    default: Svg,
+    Svg,
+    Circle: tag('circle'),
+    Ellipse: tag('ellipse'),
+    G: tag('g'),
+    Line: tag('line'),
+    Path: tag('path'),
+    Polyline: tag('polyline'),
+    Rect: tag('rect'),
+  };
+});
+
+// A gradient is a background. It decides no word on screen, and its native module warns loudly
+// into the test output when asked to draw in a DOM.
+vi.mock('expo-linear-gradient', async () => {
+  const { View } = await import('react-native');
+  return { LinearGradient: View };
 });
 
 afterEach(cleanup);

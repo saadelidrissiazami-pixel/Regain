@@ -1,10 +1,8 @@
 import type { ImageSourcePropType } from 'react-native';
 
 import { IMAGE_KEY_BY_MUSCLE_GROUP, muscleGroupOf, photoSlug } from '../features/fitness/exercises';
-import { ACTIVITY_PHOTOGRAPHS } from './activityPhotos';
 import { EXERCISE_PHOTOS } from './exercisePhotos';
 import type { ImageKey } from './imageKeys';
-import type { ActivityCategory } from '../features/planning/types';
 
 // Mood photography (assets/images), generated for Regain in one style: soft light, sage and
 // cream. A key missing here shows <Thumbnail>'s fallback gradient instead.
@@ -24,31 +22,6 @@ export const IMAGES: Partial<Record<ImageKey, ImageSourcePropType>> = {
   fitCore: require('../../assets/images/fit-core.jpg'),
   nutrition: require('../../assets/images/nutrition.jpg'),
 };
-
-const BY_ACTIVITY_CATEGORY: Record<ActivityCategory, ImageKey> = {
-  physique: 'sport',
-  outdoor: 'nature',
-  indoor: 'reading',
-  social: 'social',
-  relaxation: 'rest',
-  meditation: 'meditation',
-  dev_perso: 'reading',
-  recuperation: 'rest',
-  temps_libre: 'nature',
-};
-
-/**
- * The activity's own photograph when it has one, its category's when it does not.
- *
- * Nine category pictures covered forty-eight activities, so none of them showed what the activity
- * actually is. They are generated one by one (scripts/activity-photos.mjs), so the fallback is
- * what keeps every row illustrated in between runs — and what let this ship before a single
- * photograph existed.
- */
-export function imageForActivity(category: ActivityCategory, photo?: string | null): ImageSourcePropType | undefined {
-  if (photo && ACTIVITY_PHOTOGRAPHS[photo]) return ACTIVITY_PHOTOGRAPHS[photo];
-  return IMAGES[BY_ACTIVITY_CATEGORY[category]];
-}
 
 /** A photo for a strength session, chosen from its focus (“Legs …”, “Push — …”). */
 export function imageForWorkout(focus: string): ImageSourcePropType | undefined {

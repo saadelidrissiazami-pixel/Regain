@@ -1,18 +1,18 @@
 /**
- * The file name of each activity's photograph.
+ * The stable identifier of each activity.
  *
  * Written down rather than derived, for the reason the exercises learned the hard way: a slug
- * computed from a name that goes through t() looks for a French file on a French phone, finds
+ * computed from a name that goes through t() looks for a French key on a French phone, finds
  * nothing, and falls back silently — which is how fifty-six photographs went missing in one
  * language and in no test.
  *
  * The key here is the title the *database* stores, which is French and does not move. The slug
- * comes from the English wording, so the files are readable to anyone looking in the directory.
+ * comes from the English wording, so it reads to anyone scanning the list.
  *
- * Generated once from the catalogue, then owned by hand: a new activity needs a line here, and
- * scripts/activity-photos.mjs refuses to run until it has one.
+ * Generated once from the catalogue, then owned by hand: a new activity needs a line here, and a
+ * test fails until it has one. src/components/illustrations/motifs.tsx is keyed by these.
  */
-export const ACTIVITY_PHOTOS: Record<string, string> = {
+export const ACTIVITY_SLUGS: Record<string, string> = {
   'Bouger sur une chanson': 'move-to-one-song',
   'Marcher dans le logement': 'walk-around-indoors',
   'Délier ses mains et ses épaules': 'loosen-your-hands-and-shoulders',

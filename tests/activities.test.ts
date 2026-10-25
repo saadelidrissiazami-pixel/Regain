@@ -121,6 +121,6 @@ describe('the wording overlay', () => {
     // `extra` and `photo` are answered rather than left out: the screen reads both on every
     // activity, and an absent key would be a different thing from a known absence.
     const unknown = { title: 'Something added later', first_action: 'x', stop_rule: 'y' };
-    expect(localiseActivity(unknown)).toEqual({ ...unknown, extra: null, photo: null });
+    expect(localiseActivity(unknown)).toEqual({ ...unknown, extra: null, slug: null });
   });
 });

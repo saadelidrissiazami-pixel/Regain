@@ -8,11 +8,12 @@ import { useTheme } from '../../theme/ThemeProvider';
 type IconName = ComponentProps<typeof Ionicons>['name'];
 
 /**
- * An illustrative image. With no photo, a soft sage gradient and an icon take over, so the
- * layout stays the same.
+ * An illustrative image. A drawing takes the same place as a photograph, and with neither a soft
+ * sage gradient and an icon take over, so the layout never moves.
  */
 export function Thumbnail({
   source,
+  illustration,
   width,
   height,
   radius = 14,
@@ -21,6 +22,8 @@ export function Thumbnail({
   children,
 }: {
   source?: ImageSourcePropType;
+  /** A drawing, used when there is no photograph. */
+  illustration?: ReactNode;
   width: DimensionValue;
   height: DimensionValue;
   radius?: number;
@@ -38,6 +41,8 @@ export function Thumbnail({
     >
       {source ? (
         <Image source={source} resizeMode="cover" style={{ width: '100%', height: '100%' }} />
+      ) : illustration ? (
+        <View style={{ flex: 1 }}>{illustration}</View>
       ) : (
         <LinearGradient
           colors={[theme.sage200, theme.sage100]}

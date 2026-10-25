@@ -35,7 +35,7 @@ function activity(overrides: Partial<CatalogActivity> & { id: string }): Catalog
     tags: [],
     steps: [],
     extra: null,
-    photo: null,
+    slug: null,
     ...overrides,
   };
 }

@@ -18,7 +18,7 @@ function activity(over: Partial<CatalogActivity> & { id: string }): CatalogActiv
     tags: [],
     steps: [],
     extra: null,
-    photo: null,
+    slug: null,
     ...over,
   };
 }

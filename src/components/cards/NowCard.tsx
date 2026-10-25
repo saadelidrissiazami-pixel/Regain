@@ -3,7 +3,7 @@ import { View } from 'react-native';
 
 import type { CatalogActivity } from '../../features/planning/catalog';
 import { CATEGORY_COLORS, CATEGORY_ICONS, CATEGORY_LABELS } from '../../features/planning/types';
-import { imageForActivity } from '../../theme/images';
+import { activityIllustration } from '../illustrations/ActivityIllustration';
 import { useTheme } from '../../theme/ThemeProvider';
 import { Button } from '../ui/Button';
 import { Card } from '../ui/Card';
@@ -66,7 +66,7 @@ export function NowCard({
           </View>
         </View>
         <Thumbnail
-          source={imageForActivity(activity.category, activity.photo)}
+          illustration={activityIllustration(activity.category, activity.slug)}
           width={84}
           height={84}
           radius={16}

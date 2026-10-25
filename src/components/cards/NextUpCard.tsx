@@ -4,7 +4,7 @@ import { View } from 'react-native';
 import type { CatalogActivity } from '../../features/planning/catalog';
 import { t } from '../../lib/i18n';
 import { CATEGORY_COLORS, CATEGORY_ICONS, CATEGORY_LABELS } from '../../features/planning/types';
-import { imageForActivity } from '../../theme/images';
+import { activityIllustration } from '../illustrations/ActivityIllustration';
 import { useTheme } from '../../theme/ThemeProvider';
 import { Card } from '../ui/Card';
 import { Tag } from '../ui/Tag';
@@ -58,7 +58,7 @@ export function NextUpCard({ when, activity, onPress }: { when: string; activity
           </View>
         </View>
         <Thumbnail
-          source={imageForActivity(activity.category, activity.photo)}
+          illustration={activityIllustration(activity.category, activity.slug)}
           width={64}
           height={64}
           radius={14}

@@ -15,7 +15,7 @@ import { computeActivityFit, pickComplementaryActivities } from '../../src/featu
 import { CATEGORY_COLORS, CATEGORY_ICONS, CATEGORY_LABELS } from '../../src/features/planning/types';
 import { usePlanning } from '../../src/hooks/usePlanning';
 import { fetchActivityById, fetchCatalog } from '../../src/lib/planning';
-import { imageForActivity } from '../../src/theme/images';
+import { activityIllustration } from '../../src/components/illustrations/ActivityIllustration';
 import { useTheme } from '../../src/theme/ThemeProvider';
 import { t } from '../../src/lib/i18n';
 
@@ -78,7 +78,7 @@ export default function ActivityDetailScreen() {
         <>
           <Appear>
             <Thumbnail
-              source={imageForActivity(activity.category, activity.photo)}
+              illustration={activityIllustration(activity.category, activity.slug)}
               width="100%"
               height={180}
               radius={22}
