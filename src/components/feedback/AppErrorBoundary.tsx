@@ -4,6 +4,15 @@ import { Pressable, ScrollView, Text, useColorScheme, View } from 'react-native'
 import { isDev, messageOf } from '../../lib/errors';
 import { t } from '../../lib/i18n';
 
+/** The first line of the stack that is not framework noise: enough to name the screen at fault. */
+function topFrame(error: Error): string {
+  const frame = (error.stack ?? '')
+    .split('\n')
+    .slice(1)
+    .find((line) => !/node_modules|\[native code\]/.test(line));
+  return frame ? `\n${frame.trim()}` : '';
+}
+
 /**
  * The last screen before a white one.
  *
@@ -33,28 +42,38 @@ export function AppErrorBoundary({ error, retry }: ErrorBoundaryProps) {
       <Pressable
         onPress={() => void retry()}
         accessibilityRole="button"
-        style={({ pressed }) => ({
-          marginTop: 28,
-          paddingVertical: 16,
-          borderRadius: 16,
-          alignItems: 'center',
-          backgroundColor: pressed ? '#4F6B4A' : '#5E7F57',
-        })}
+        // A plain object with an opacity on press: the button has to look like one even if the
+        // style function is the thing that went wrong.
+        style={({ pressed }) => [
+          {
+            marginTop: 28,
+            paddingVertical: 16,
+            paddingHorizontal: 24,
+            borderRadius: 16,
+            alignItems: 'center',
+            backgroundColor: '#5E7F57',
+          },
+          pressed && { opacity: 0.8 },
+        ]}
       >
         <Text style={{ fontSize: 16, fontWeight: '600', color: '#FFFFFF' }}>{t('Start again')}</Text>
       </Pressable>
 
-      {/* The cause, in development only. In a build somebody uses, a stack trace is noise at best
-          and alarming at worst — and there is nothing they could do with it. */}
-      {isDev() ? (
-        <ScrollView style={{ marginTop: 24, maxHeight: 180 }}>
-          <Text selectable style={{ fontSize: 12, color: ink2, fontFamily: 'Courier' }}>
-            {messageOf(error) || String(error)}
-            {'\n\n'}
-            {error.stack}
-          </Text>
-        </ScrollView>
-      ) : null}
+      {/*
+        The cause, always — not only in development.
+
+        It used to be hidden outside dev, on the grounds that a stack trace is noise to anybody
+        who did not write the app. That reasoning cost a diagnosis: somebody hit this screen on a
+        real phone and there was nothing to go on, not even a sentence. One selectable line that
+        can be read aloud or long-pressed and copied is worth more than the silence it replaces.
+        The whole stack stays behind __DEV__, where it is read rather than endured.
+      */}
+      <ScrollView style={{ marginTop: 24, maxHeight: isDev() ? 180 : 96 }}>
+        <Text selectable style={{ fontSize: 12, lineHeight: 18, color: ink2, fontFamily: 'Courier' }}>
+          {messageOf(error) || String(error)}
+          {isDev() ? `\n\n${error.stack ?? ''}` : topFrame(error)}
+        </Text>
+      </ScrollView>
     </View>
   );
 }
