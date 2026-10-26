@@ -11,12 +11,12 @@ import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 import { wellbeingTheme } from '../../components/cards/wellbeingThemes';
 import { EmptyState, LoadingSkeleton } from '../../components/feedback';
-import { Button, Card, ChoiceChip, haptic, IconButton, ListRow, Pill, PressableScale, Screen, Sheet, Tag, Text } from '../../components/ui';
-import { AMBIENCES, ambienceLabel, initialAmbience, type AmbienceChoice } from '../../features/wellbeing/ambience';
+import { BalanceSlider, Button, Card, ChoiceChip, IconButton, ListRow, Pill, PressableScale, Screen, Sheet, Tag, Text, haptic } from '../../components/ui';
+import { AMBIENCES, BALANCE_MIDDLE, ambienceLabel, initialAmbience, voiceVolume, type AmbienceChoice } from '../../features/wellbeing/ambience';
 import { CONTENT_BY_SLUG } from '../../features/wellbeing/content';
 import { themeLabel } from '../../features/wellbeing/catalogue';
 import { SOS_URGENCE } from '../../features/wellbeing/sos';
-import { loadAmbiencePreference, saveAmbiencePreference, useAmbiencePlayer } from '../../lib/ambience';
+import { loadAmbiencePreference, loadBalance, saveAmbiencePreference, saveBalance, useAmbiencePlayer } from '../../lib/ambience';
 import { usePremium } from '../../lib/premium';
 import { fetchPrograms, markProgramCompleted, type SessionReview as Review } from '../../lib/wellbeing';
 import { useAuthStore } from '../../store/authStore';
@@ -26,7 +26,7 @@ import { useTheme } from '../../theme/ThemeProvider';
 import { BreathingPlayer, GroundingPlayer, NarratedPlayer, PrepCountdown } from './session/players';
 import { SessionReview } from './session/SessionReview';
 import { t } from '../../lib/i18n';
-import { hasNarrationAudio, stopSpeaking, subscribeToSpeech } from '../../lib/voice';
+import { hasNarrationAudio, setVoiceGain, stopSpeaking, subscribeToSpeech } from '../../lib/voice';
 
 /** An immersive wellbeing session: no tab bar, one single thing to attend to. */
 export default function WellbeingSessionScreen() {
@@ -40,6 +40,7 @@ export default function WellbeingSessionScreen() {
   /** The clock lives inside the player; the music has to follow the same pause. */
   const [running, setRunning] = useState(true);
   const [speaking, setSpeaking] = useState(false);
+  const [balance, setBalance] = useState(BALANCE_MIDDLE);
   const [noteDraft, setNoteDraft] = useState('');
   // A narrated session runs on its own: with no voice it would still force you to read the
   // screen, and so to keep your eyes open. The voice is on from the start there, and can be
@@ -74,9 +75,14 @@ export default function WellbeingSessionScreen() {
     };
   }, [category]);
   useEffect(() => subscribeToSpeech(setSpeaking), []);
+  useEffect(() => {
+    loadBalance().then(setBalance).catch(() => {});
+  }, []);
+  useEffect(() => setVoiceGain(voiceVolume(balance)), [balance]);
   useAmbiencePlayer(ambience, {
     active: (stage === 'prep' || stage === 'play') && running,
     underVoice: speaking,
+    balance,
   });
 
   const chooseAmbience = (choice: AmbienceChoice) => {
@@ -356,6 +362,20 @@ export default function WellbeingSessionScreen() {
 
       <Sheet visible={menuOpen} title={t('Session options')} onClose={() => setMenuOpen(false)} scroll={false}>
         <View style={{ paddingHorizontal: 20 }}>
+          {/* The balance first: it is the setting somebody reaches for while a sentence is being
+              read over music, which is precisely when the switches below are too blunt. */}
+          {hasNarrationAudio && ambience !== 'off' ? (
+            <View style={{ paddingVertical: 14 }}>
+              <BalanceSlider
+                value={balance}
+                onChange={setBalance}
+                onSettle={() => saveBalance(balance)}
+                leftLabel={t('Music')}
+                rightLabel={t('Voice')}
+                accessibilityLabel={t('Balance between the music and the voice')}
+              />
+            </View>
+          ) : null}
           {/* Shown only once clips exist: before that the switch would toggle silence. */}
           {hasNarrationAudio ? (
             <ListRow

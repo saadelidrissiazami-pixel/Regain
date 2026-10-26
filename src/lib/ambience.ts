@@ -3,8 +3,10 @@ import { createAudioPlayer, setAudioModeAsync, type AudioPlayer } from 'expo-aud
 import { useEffect, useRef } from 'react';
 
 import {
+  BALANCE_MIDDLE,
   ambienceVolume,
   isAmbienceChoice,
+  normaliseBalance,
   type AmbienceChoice,
   type AmbienceId,
 } from '../features/wellbeing/ambience';
@@ -17,6 +19,7 @@ const SOURCES: Record<AmbienceId, number> = {
 };
 
 const PREFERENCE_KEY = 'regain.wellbeing.ambience';
+const BALANCE_KEY = 'regain.wellbeing.balance';
 /** Starting and stopping is a mood; ducking under a sentence has to keep up with the sentence. */
 const FADE_MS = 1500;
 const DUCK_MS = 260;
@@ -31,6 +34,15 @@ export function saveAmbiencePreference(choice: AmbienceChoice) {
   AsyncStorage.setItem(PREFERENCE_KEY, choice).catch(() => {});
 }
 
+export async function loadBalance(): Promise<number> {
+  const saved = await AsyncStorage.getItem(BALANCE_KEY).catch(() => null);
+  return normaliseBalance(saved === null ? null : Number(saved));
+}
+
+export function saveBalance(balance: number) {
+  AsyncStorage.setItem(BALANCE_KEY, String(normaliseBalance(balance))).catch(() => {});
+}
+
 /**
  * Plays the chosen ambience on a loop through the session: fading in and out, and dropping under
  * the voice while a clip is read.
@@ -41,11 +53,15 @@ export function saveAmbiencePreference(choice: AmbienceChoice) {
  */
 export function useAmbiencePlayer(
   choice: AmbienceChoice,
-  { active, underVoice = false }: { active: boolean; underVoice?: boolean }
+  {
+    active,
+    underVoice = false,
+    balance = BALANCE_MIDDLE,
+  }: { active: boolean; underVoice?: boolean; balance?: number }
 ) {
   const playerRef = useRef<AudioPlayer | null>(null);
   const fadeTimer = useRef<ReturnType<typeof setInterval> | null>(null);
-  const target = ambienceVolume({ choice, active, underVoice });
+  const target = ambienceVolume({ choice, active, underVoice, balance });
 
   const stopFade = () => {
     if (fadeTimer.current) clearInterval(fadeTimer.current);

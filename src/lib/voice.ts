@@ -25,6 +25,19 @@ let audioModeSet = false;
  * only this module knows when a clip starts and when it ends.
  */
 let speaking = false;
+/** Set from the session screen, so a clip starts at the level the person chose. */
+let gain = 1;
+
+export function setVoiceGain(value: number) {
+  gain = Math.min(1, Math.max(0, value));
+  if (player) {
+    try {
+      player.volume = gain;
+    } catch {
+      // The player is on its way out.
+    }
+  }
+}
 const listeners = new Set<(speaking: boolean) => void>();
 
 function setSpeaking(value: boolean) {
@@ -73,7 +86,7 @@ export function speakGently(text: string) {
       void setAudioModeAsync({ playsInSilentMode: true, interruptionMode: 'mixWithOthers' });
     }
     player = createAudioPlayer(source);
-    player.volume = 1;
+    player.volume = gain;
     // Released on the next block or at the end of the session; this only marks the silence that
     // follows the sentence, which is where the ambience is allowed to come back up.
     player.addListener('playbackStatusUpdate', (status) => {

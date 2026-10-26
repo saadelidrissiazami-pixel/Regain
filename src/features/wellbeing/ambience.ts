@@ -29,37 +29,63 @@ const AUTO_START: Record<string, AmbienceId> = {
 const NEVER_AUTO = new Set(['En public']);
 
 /**
- * The two levels the music sits at.
+ * How loud the music and the voice are, from one control.
  *
- * It is a background, and a background that competes with a spoken instruction has stopped being
- * one: music is continuous and a voice is not, so a fixed level wins every sentence. The second
- * value is what it drops to while a clip is read — far enough below to leave the words alone,
- * not so far that the session falls silent between them.
+ * There used to be two fixed numbers, chosen by me and judged by nobody: a background that was
+ * right for one person's room, one pair of headphones and one hearing. A guided session is
+ * listened to in bed, on a train, and at arm's length on a kitchen table — no single pair of
+ * numbers is right for all three. Headspace puts a single slider between the two, and that is
+ * the shape this takes.
  *
- * Both were lowered once the narration existed: 0.35 was chosen when nothing spoke over it.
+ * 0 is music alone, 1 is voice alone, and the middle is both at the levels that were fixed
+ * before: nobody who never touches it hears a change.
  */
+export const BALANCE_MIDDLE = 0.5;
+
+/** The loudest the music ever gets, at the far end of the slider. */
+const AMBIENCE_CEILING = 0.44;
+/** What it sits at in the middle — the level the sessions were mixed at. */
 export const AMBIENCE_VOLUME = 0.22;
+/** And under a spoken sentence: music is continuous, a voice is not, so a fixed level wins. */
 export const AMBIENCE_VOLUME_UNDER_VOICE = 0.07;
 
+const DUCK_RATIO = AMBIENCE_VOLUME_UNDER_VOICE / AMBIENCE_VOLUME;
+
+const clamp01 = (n: number) => Math.min(1, Math.max(0, n));
+
+/** The balance, kept inside its range whatever is handed to it. */
+export function normaliseBalance(value: unknown): number {
+  return typeof value === 'number' && Number.isFinite(value) ? clamp01(value) : BALANCE_MIDDLE;
+}
+
 /**
- * The level the music should be at, right now.
- *
- * A function rather than three lines inside the player, because the two sentences above it were
- * true of the comment and false of the code for months: the ducking was described, never written,
- * and nothing could have noticed. This can be read back.
+ * The voice's level. Full from the middle of the slider onwards, fading only as the slider is
+ * pushed all the way towards the music — a voice at half volume under music is not a mix, it is
+ * a session you cannot follow.
  */
+export function voiceVolume(balance: number): number {
+  return clamp01(normaliseBalance(balance) * 2);
+}
+
+/** The music's level, lower while a sentence is being read. */
 export function ambienceVolume({
   choice,
   active,
   underVoice,
+  balance = BALANCE_MIDDLE,
 }: {
   choice: AmbienceChoice;
   active: boolean;
   underVoice: boolean;
+  balance?: number;
 }): number {
   if (!active || choice === 'off') return 0;
-  return underVoice ? AMBIENCE_VOLUME_UNDER_VOICE : AMBIENCE_VOLUME;
+  // Linear from the ceiling down to silence, so the middle lands on the level the sessions were
+  // mixed at — 0.44 halved — and the far end is genuinely silent rather than merely quiet.
+  const level = (1 - normaliseBalance(balance)) * AMBIENCE_CEILING;
+  return underVoice ? level * DUCK_RATIO : level;
 }
+
 export function ambienceLabel(choice: AmbienceChoice): string | null {
   return AMBIENCES.find((ambience) => ambience.id === choice)?.label ?? null;
 }

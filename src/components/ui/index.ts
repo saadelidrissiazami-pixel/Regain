@@ -1,3 +1,4 @@
+export { BalanceSlider } from './BalanceSlider';
 export { Avatar } from './Avatar';
 export { Button, TextLink, type ButtonVariant } from './Button';
 export { Card, type CardVariant } from './Card';
