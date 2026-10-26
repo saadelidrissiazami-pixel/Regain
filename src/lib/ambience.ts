@@ -3,7 +3,7 @@ import { createAudioPlayer, setAudioModeAsync, type AudioPlayer } from 'expo-aud
 import { useEffect, useRef } from 'react';
 
 import {
-  AMBIENCE_VOLUME,
+  ambienceVolume,
   isAmbienceChoice,
   type AmbienceChoice,
   type AmbienceId,
@@ -17,7 +17,9 @@ const SOURCES: Record<AmbienceId, number> = {
 };
 
 const PREFERENCE_KEY = 'regain.wellbeing.ambience';
+/** Starting and stopping is a mood; ducking under a sentence has to keep up with the sentence. */
 const FADE_MS = 1500;
+const DUCK_MS = 260;
 const FADE_STEP_MS = 50;
 
 export async function loadAmbiencePreference(): Promise<AmbienceChoice | null> {
@@ -30,13 +32,20 @@ export function saveAmbiencePreference(choice: AmbienceChoice) {
 }
 
 /**
- * Plays the chosen ambience on a loop through the session: fading in and out, with the volume
- * lowered while the voice speaks. `active` set to false pauses it (the end of a session).
+ * Plays the chosen ambience on a loop through the session: fading in and out, and dropping under
+ * the voice while a clip is read.
+ *
+ * `active` is false whenever the session is not running — the end of it, and every pause. Leaving
+ * the music playing through a pause was the whole reason the pause button looked broken: the
+ * clock stopped, the voice stopped, and the sea carried on.
  */
-export function useAmbiencePlayer(choice: AmbienceChoice, { active }: { active: boolean }) {
+export function useAmbiencePlayer(
+  choice: AmbienceChoice,
+  { active, underVoice = false }: { active: boolean; underVoice?: boolean }
+) {
   const playerRef = useRef<AudioPlayer | null>(null);
   const fadeTimer = useRef<ReturnType<typeof setInterval> | null>(null);
-  const target = active && choice !== 'off' ? AMBIENCE_VOLUME : 0;
+  const target = ambienceVolume({ choice, active, underVoice });
 
   const stopFade = () => {
     if (fadeTimer.current) clearInterval(fadeTimer.current);
@@ -75,7 +84,9 @@ export function useAmbiencePlayer(choice: AmbienceChoice, { active }: { active: 
     if (target > 0 && !player.playing) player.play();
 
     const start = player.volume;
-    const steps = Math.max(1, Math.round(FADE_MS / FADE_STEP_MS));
+    // Both ends of a duck are quick; only silence and the first note take their time.
+    const duration = target > 0 && start > 0 ? DUCK_MS : FADE_MS;
+    const steps = Math.max(1, Math.round(duration / FADE_STEP_MS));
     let step = 0;
     stopFade();
     fadeTimer.current = setInterval(() => {

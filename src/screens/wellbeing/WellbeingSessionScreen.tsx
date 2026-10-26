@@ -26,7 +26,7 @@ import { useTheme } from '../../theme/ThemeProvider';
 import { BreathingPlayer, GroundingPlayer, NarratedPlayer, PrepCountdown } from './session/players';
 import { SessionReview } from './session/SessionReview';
 import { t } from '../../lib/i18n';
-import { hasNarrationAudio, stopSpeaking } from '../../lib/voice';
+import { hasNarrationAudio, stopSpeaking, subscribeToSpeech } from '../../lib/voice';
 
 /** An immersive wellbeing session: no tab bar, one single thing to attend to. */
 export default function WellbeingSessionScreen() {
@@ -37,6 +37,9 @@ export default function WellbeingSessionScreen() {
   const queryClient = useQueryClient();
   const { isPremium, isLoading: premiumLoading } = usePremium();
   const [stage, setStage] = useState<'prep' | 'play' | 'review' | 'done'>('prep');
+  /** The clock lives inside the player; the music has to follow the same pause. */
+  const [running, setRunning] = useState(true);
+  const [speaking, setSpeaking] = useState(false);
   const [noteDraft, setNoteDraft] = useState('');
   // A narrated session runs on its own: with no voice it would still force you to read the
   // screen, and so to keep your eyes open. The voice is on from the start there, and can be
@@ -70,7 +73,11 @@ export default function WellbeingSessionScreen() {
       cancelled = true;
     };
   }, [category]);
-  useAmbiencePlayer(ambience, { active: stage === 'prep' || stage === 'play' });
+  useEffect(() => subscribeToSpeech(setSpeaking), []);
+  useAmbiencePlayer(ambience, {
+    active: (stage === 'prep' || stage === 'play') && running,
+    underVoice: speaking,
+  });
 
   const chooseAmbience = (choice: AmbienceChoice) => {
     setAmbience(choice);
@@ -258,9 +265,28 @@ export default function WellbeingSessionScreen() {
         contentContainerStyle={{ flexGrow: 1, justifyContent: 'center', paddingHorizontal: 24, paddingTop: 16, paddingBottom: insets.bottom + 24 }}
         showsVerticalScrollIndicator={false}
       >
-        {voiceOn || (isBreathing && hapticsOn) || playingLabel ? (
+        {hasNarrationAudio || (isBreathing && hapticsOn) || playingLabel ? (
           <View style={{ alignSelf: 'center', marginBottom: 16, flexDirection: 'row', gap: 8 }}>
-            {voiceOn ? <Pill icon="volume-high-outline" label={t('Voice guidance')} tone="onImage" /> : null}
+            {/* The pill was a label; it is a switch. Cutting the voice was two taps away behind
+                the “…” menu, which is nowhere when a sentence is already being read over you. */}
+            {hasNarrationAudio ? (
+              <PressableScale
+                onPress={() => {
+                  if (voiceOn) stopSpeaking();
+                  setVoiceOn(!voiceOn);
+                }}
+                feedback="selection"
+                accessibilityRole="switch"
+                accessibilityState={{ checked: voiceOn }}
+                accessibilityLabel={voiceOn ? t('Voice guidance. Turn it off') : t('Voice guidance is off. Turn it on')}
+              >
+                <Pill
+                  icon={voiceOn ? 'volume-high-outline' : 'volume-mute-outline'}
+                  label={voiceOn ? t('Voice guidance') : t('Voice off')}
+                  tone="onImage"
+                />
+              </PressableScale>
+            ) : null}
             {isBreathing && hapticsOn ? <Pill icon="pulse-outline" label={t('Vibrations')} tone="onImage" /> : null}
             {playingLabel ? (
               <PressableScale
@@ -292,10 +318,16 @@ export default function WellbeingSessionScreen() {
               outro={content.outro}
               hapticsOn={hapticsOn}
               voiceOn={voiceOn}
+              onRunningChange={setRunning}
               onDone={handleDone}
             />
           ) : content.type === 'narrated' ? (
-            <NarratedPlayer blocks={content.blocks} voiceOn={voiceOn} onDone={content.endsQuietly ? handleQuietDone : handleDone} />
+            <NarratedPlayer
+              blocks={content.blocks}
+              voiceOn={voiceOn}
+              onRunningChange={setRunning}
+              onDone={content.endsQuietly ? handleQuietDone : handleDone}
+            />
           ) : (
             <GroundingPlayer steps={content.steps} durationMinutes={program.duration_minutes} onDone={handleDone} />
           )}

@@ -151,14 +151,18 @@ export function NarratedPlayer({
   blocks,
   onDone,
   voiceOn,
+  onRunningChange,
 }: {
   blocks: NarratedBlock[];
   onDone: () => void;
   voiceOn: boolean;
+  /** So the screen can hold the music to the same pause as the clock and the voice. */
+  onRunningChange?: (running: boolean) => void;
 }) {
   const total = useMemo(() => narratedDuration(blocks), [blocks]);
   const clock = useSessionClock(total);
   useFinishOnce(clock.elapsed >= total, onDone);
+  useEffect(() => onRunningChange?.(clock.running), [clock.running, onRunningChange]);
 
   return (
     <View style={{ gap: 22 }}>
@@ -185,6 +189,7 @@ export function BreathingPlayer({
   hapticsOn,
   voiceOn,
   onDone,
+  onRunningChange,
 }: {
   cycles: number;
   phases: BreathingPhase[];
@@ -193,6 +198,7 @@ export function BreathingPlayer({
   hapticsOn: boolean;
   voiceOn: boolean;
   onDone: () => void;
+  onRunningChange?: (running: boolean) => void;
 }) {
   const theme = useTheme();
   const reduceMotion = useReducedMotion();
@@ -212,6 +218,7 @@ export function BreathingPlayer({
   );
   const phase = phases[phaseIndex];
   const scale = useSharedValue(1);
+  useEffect(() => onRunningChange?.(!paused), [paused, onRunningChange]);
   /** The phase whose opening pulse has already been given, so a resume does not repeat it. */
   const announced = useRef('');
 

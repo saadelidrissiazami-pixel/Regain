@@ -28,8 +28,38 @@ const AUTO_START: Record<string, AmbienceId> = {
 
 const NEVER_AUTO = new Set(['En public']);
 
-/** The normal volume, and the lowered volume while the voice is speaking. */
-export const AMBIENCE_VOLUME = 0.35;
+/**
+ * The two levels the music sits at.
+ *
+ * It is a background, and a background that competes with a spoken instruction has stopped being
+ * one: music is continuous and a voice is not, so a fixed level wins every sentence. The second
+ * value is what it drops to while a clip is read — far enough below to leave the words alone,
+ * not so far that the session falls silent between them.
+ *
+ * Both were lowered once the narration existed: 0.35 was chosen when nothing spoke over it.
+ */
+export const AMBIENCE_VOLUME = 0.22;
+export const AMBIENCE_VOLUME_UNDER_VOICE = 0.07;
+
+/**
+ * The level the music should be at, right now.
+ *
+ * A function rather than three lines inside the player, because the two sentences above it were
+ * true of the comment and false of the code for months: the ducking was described, never written,
+ * and nothing could have noticed. This can be read back.
+ */
+export function ambienceVolume({
+  choice,
+  active,
+  underVoice,
+}: {
+  choice: AmbienceChoice;
+  active: boolean;
+  underVoice: boolean;
+}): number {
+  if (!active || choice === 'off') return 0;
+  return underVoice ? AMBIENCE_VOLUME_UNDER_VOICE : AMBIENCE_VOLUME;
+}
 export function ambienceLabel(choice: AmbienceChoice): string | null {
   return AMBIENCES.find((ambience) => ambience.id === choice)?.label ?? null;
 }

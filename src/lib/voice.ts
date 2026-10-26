@@ -17,6 +17,31 @@ import { clipKey } from './narrationKey';
 let player: AudioPlayer | null = null;
 let audioModeSet = false;
 
+/**
+ * Whether a clip is being read right now, and who wants to know.
+ *
+ * The ambience listens: a pad at a fixed level sits on top of a spoken instruction and wins,
+ * because music is continuous and a voice is not. Nothing else can work this out from outside —
+ * only this module knows when a clip starts and when it ends.
+ */
+let speaking = false;
+const listeners = new Set<(speaking: boolean) => void>();
+
+function setSpeaking(value: boolean) {
+  if (speaking === value) return;
+  speaking = value;
+  for (const listener of listeners) listener(value);
+}
+
+/** Calls back immediately with the current state, then on every change. Returns the unsubscribe. */
+export function subscribeToSpeech(listener: (speaking: boolean) => void): () => void {
+  listeners.add(listener);
+  listener(speaking);
+  return () => {
+    listeners.delete(listener);
+  };
+}
+
 function release() {
   try {
     player?.remove();
@@ -24,6 +49,7 @@ function release() {
     // Already gone.
   }
   player = null;
+  setSpeaking(false);
 }
 
 export function speakGently(text: string) {
@@ -39,7 +65,13 @@ export function speakGently(text: string) {
     }
     player = createAudioPlayer(source);
     player.volume = 1;
+    // Released on the next block or at the end of the session; this only marks the silence that
+    // follows the sentence, which is where the ambience is allowed to come back up.
+    player.addListener('playbackStatusUpdate', (status) => {
+      if (status.didJustFinish) setSpeaking(false);
+    });
     player.play();
+    setSpeaking(true);
   } catch {
     release();
   }
