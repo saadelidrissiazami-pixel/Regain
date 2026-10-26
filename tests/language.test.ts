@@ -33,6 +33,9 @@ const FILES_WITH_DELIBERATE_FRENCH = [
   'src/features/fitness/exerciseCues.ts',
   // Keyed by the French title the database stores, which is the key and not the wording.
   'src/features/activities/slugs.ts',
+  // The offer to change the language, written in the language being switched to: asking in
+  // English whether to switch to French is the wrong way round.
+  'src/i18n/languageSwitch.ts',
 ];
 
 /** Values the database stores, which the app translates for display but must send back as-is. */

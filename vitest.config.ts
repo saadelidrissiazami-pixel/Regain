@@ -31,7 +31,12 @@ export default defineConfig({
   test: {
     projects: [
       {
-        resolve: { alias: { 'expo-localization': helper('expo-localization.ts') } },
+        resolve: {
+          alias: {
+            'expo-localization': helper('expo-localization.ts'),
+            'react-native': helper('react-native.ts'),
+          },
+        },
         test: {
           ...shared,
           name: 'unit',

@@ -3,16 +3,17 @@ import { useQuery } from '@tanstack/react-query';
 import { router } from 'expo-router';
 import type { ComponentProps } from 'react';
 import { useState } from 'react';
-import { Linking, View } from 'react-native';
+import { Alert, Linking, Platform, View } from 'react-native';
 
 import { Appear, Avatar, Card, IconButton, ListRow, PressableScale, Screen, Sheet, Text } from '../../components/ui';
 import { PRIVACY_URL, SUPPORT_EMAIL, TERMS_URL } from '../../config/legal';
+import { LANGUAGE_NAME, SWITCH_PROMPT } from '../../i18n/languageSwitch';
 import { countCompletedActivities } from '../../lib/planning';
 import { usePremium } from '../../lib/premium';
 import { fetchProfile, firstNameOf } from '../../lib/profile';
 import { fetchStreak } from '../../lib/tracking';
 import { useToday } from '../../lib/useCurrentDate';
-import { t } from '../../lib/i18n';
+import { chooseLanguage, lang, t } from '../../lib/i18n';
 import { fromLocalISODate } from '../../lib/week';
 import { useAuthStore } from '../../store/authStore';
 import { useTheme } from '../../theme/ThemeProvider';
@@ -153,6 +154,31 @@ export default function ProfileScreen() {
               title={t('Write to us')}
               subtitle={SUPPORT_EMAIL}
               onPress={() => Linking.openURL(`mailto:${SUPPORT_EMAIL}`)}
+              divider
+            />
+          ) : null}
+          {/* The phone used to decide this on its own. On an iPhone whose per-app Language row is
+              simply not there, that left the whole app in a language somebody did not choose,
+              with no way back. iOS only: elsewhere the system setting does appear and works. */}
+          {Platform.OS === 'ios' ? (
+            <ListRow
+              icon="language-outline"
+              title={t('Language')}
+              subtitle={LANGUAGE_NAME[lang]}
+              onPress={() => {
+                const next = lang === 'fr' ? 'en' : 'fr';
+                const prompt = SWITCH_PROMPT[next];
+                Alert.alert(prompt.title, prompt.body, [
+                  { text: prompt.cancel, style: 'cancel' },
+                  {
+                    text: prompt.confirm,
+                    onPress: () => {
+                      chooseLanguage(next);
+                      setHelpOpen(false);
+                    },
+                  },
+                ]);
+              }}
               divider
             />
           ) : null}
