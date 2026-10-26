@@ -82,6 +82,8 @@ const {
 } = pick(en_courses_sommeil, fr_courses_sommeil);
 const { sosAngoisse, sosPriseDeParole, sosRuminations, sosStressTravail } = pick(en_sos, fr_sos);
 
+export { groundingStepText } from './types';
+
 export const CONTENT_BY_SLUG: Record<string, ProgramContent> = {
   'respiration-express': respirationExpress,
   'respiration-4-7-8': respiration478,

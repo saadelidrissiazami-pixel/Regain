@@ -265,7 +265,7 @@ export default function WellbeingSessionScreen() {
         contentContainerStyle={{ flexGrow: 1, justifyContent: 'center', paddingHorizontal: 24, paddingTop: 16, paddingBottom: insets.bottom + 24 }}
         showsVerticalScrollIndicator={false}
       >
-        {hasNarrationAudio || (isBreathing && hapticsOn) || playingLabel ? (
+        {hasNarrationAudio || isBreathing || playingLabel ? (
           <View style={{ alignSelf: 'center', marginBottom: 16, flexDirection: 'row', gap: 8 }}>
             {/* The pill was a label; it is a switch. Cutting the voice was two taps away behind
                 the “…” menu, which is nowhere when a sentence is already being read over you. */}
@@ -287,7 +287,24 @@ export default function WellbeingSessionScreen() {
                 />
               </PressableScale>
             ) : null}
-            {isBreathing && hapticsOn ? <Pill icon="pulse-outline" label={t('Vibrations')} tone="onImage" /> : null}
+            {/* Shown whether it is on or off, and for the same reason as the voice: a pill that
+                vanishes once you turn it off leaves no way to turn it back on. Only breathing
+                sessions vibrate, so elsewhere the switch would be a dead one. */}
+            {isBreathing ? (
+              <PressableScale
+                onPress={() => setHapticsOn(!hapticsOn)}
+                feedback="selection"
+                accessibilityRole="switch"
+                accessibilityState={{ checked: hapticsOn }}
+                accessibilityLabel={hapticsOn ? t('Vibrations. Turn them off') : t('Vibrations are off. Turn them on')}
+              >
+                <Pill
+                  icon={hapticsOn ? 'pulse-outline' : 'remove-outline'}
+                  label={hapticsOn ? t('Vibrations') : t('Vibrations off')}
+                  tone="onImage"
+                />
+              </PressableScale>
+            ) : null}
             {playingLabel ? (
               <PressableScale
                 onPress={() => setMenuOpen(true)}
@@ -329,7 +346,7 @@ export default function WellbeingSessionScreen() {
               onDone={content.endsQuietly ? handleQuietDone : handleDone}
             />
           ) : (
-            <GroundingPlayer steps={content.steps} durationMinutes={program.duration_minutes} onDone={handleDone} />
+            <GroundingPlayer steps={content.steps} durationMinutes={program.duration_minutes} voiceOn={voiceOn} onDone={handleDone} />
           )}
         </View>
         <Text variant="caption" tone="ink2" center style={{ marginTop: 28, fontStyle: 'italic' }}>

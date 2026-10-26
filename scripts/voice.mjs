@@ -111,13 +111,32 @@ async function loadBlocks(lang) {
   const { clipKey } = await import(`file://${keyFile}?${Date.now()}`);
 
   const mod = await import(`file://${bundled}?${Date.now()}`);
+  const { groundingStepText } = mod;
   const bySlug = mod.CONTENT_BY_SLUG;
   if (!bySlug) throw new Error('CONTENT_BY_SLUG not found in the bundled content.');
+  // Every spoken block, whatever kind of session holds it.
+  //
+  // This used to read `narrated` sessions and nothing else, which left the breathing intros and
+  // outros and the grounding steps without a single clip — six sessions that opened in silence
+  // while the rest of the app spoke. Nothing failed: a block with no clip is silent by design,
+  // so the hole was audible and invisible.
+  const spokenBlocks = (content) => {
+    if (content?.type === 'narrated') return content.blocks;
+    if (content?.type === 'breathing') return [...(content.intro ?? []), ...(content.outro ?? [])];
+    // `prompt` sur les échelles, `text` partout ailleurs : groundingStepText tranche, et c'est
+    // la même fonction que le lecteur utilise.
+    if (content?.type === 'grounding') {
+      return (content.steps ?? []).map((step) => ({ text: groundingStepText(step) }));
+    }
+    return [];
+  };
+
   const out = [];
   for (const [slug, content] of Object.entries(bySlug)) {
-    if (content?.type !== 'narrated') continue;
-    content.blocks.forEach((block, index) => {
-      out.push({ slug, index, key: clipKey(block.text), text: block.text, speakSeconds: block.speakSeconds });
+    spokenBlocks(content).forEach((block, index) => {
+      const text = typeof block === 'string' ? block : block?.text;
+      if (!text) return;
+      out.push({ slug, index, key: clipKey(text), text, speakSeconds: block?.speakSeconds });
     });
   }
   return out;

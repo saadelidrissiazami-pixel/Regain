@@ -44,6 +44,15 @@ export function subscribeToSpeech(listener: (speaking: boolean) => void): () => 
 
 function release() {
   try {
+    // Stop first, then tear down. `remove()` releases the native player, but it does not promise
+    // that the sound already coming out of the speaker stops with it — so the clip being replaced
+    // went on talking under the next one, and a pause did not silence the sentence in progress.
+    // The ambience has always done it in this order; the voice never did.
+    player?.pause();
+  } catch {
+    // Already stopped.
+  }
+  try {
     player?.remove();
   } catch {
     // Already gone.

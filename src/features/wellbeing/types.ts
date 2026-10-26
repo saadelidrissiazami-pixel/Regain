@@ -21,6 +21,17 @@ export type GroundingStep =
   | { kind: 'breath-counter'; text: string; count: number };
 
 /**
+ * What a grounding step says out loud.
+ *
+ * The wording lives under `text` on three kinds and under `prompt` on the fourth, so anything
+ * reading these steps has to know both. One function, used by the player and by the script that
+ * records the clips — otherwise the recording and the reading drift, and the drift is silent.
+ */
+export function groundingStepText(step: GroundingStep): string {
+  return step.kind === 'scale' ? step.prompt : step.text;
+}
+
+/**
  * One block of a narrated session: some text, then a real silence to live it in.
  * The session's length is derived from its blocks, rather than stated alongside them.
  */

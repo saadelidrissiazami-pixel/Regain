@@ -6,6 +6,7 @@ import { Button, haptic, Text } from '../../../components/ui';
 import { breathKind } from '../../../features/wellbeing/breathing';
 import { speakGently as speak, stopSpeaking as stopSpeech } from '../../../lib/voice';
 import { blockAt, narratedDuration } from '../../../features/wellbeing/narration';
+import { groundingStepText } from '../../../features/wellbeing/types';
 import type { BreathingPhase, GroundingStep, NarratedBlock } from '../../../features/wellbeing/types';
 import { useTheme } from '../../../theme/ThemeProvider';
 import { SessionControls, SessionRing } from './SessionControls';
@@ -336,10 +337,12 @@ const SCALE_VALUES = Array.from({ length: 11 }, (_, i) => i);
 export function GroundingPlayer({
   steps,
   durationMinutes,
+  voiceOn,
   onDone,
 }: {
   steps: GroundingStep[];
   durationMinutes: number;
+  voiceOn: boolean;
   onDone: (summaryNote?: string) => void;
 }) {
   const theme = useTheme();
@@ -349,6 +352,19 @@ export function GroundingPlayer({
   const [breathCount, setBreathCount] = useState(0);
   const step = steps[index];
   const isLast = index === steps.length - 1;
+
+  // This session is read aloud like the others. It never was: its player was the only one that
+  // took no `voiceOn`, so seven written instructions sat on screen in silence. It is paced by
+  // the person rather than by a clock, so each step speaks as it appears.
+  useEffect(() => {
+    if (!voiceOn) {
+      stopSpeech();
+      return;
+    }
+    const said = step ? groundingStepText(step) : '';
+    if (said) speak(said);
+  }, [voiceOn, index, step]);
+  useEffect(() => stopSpeech, []);
 
   const goNext = () => {
     if (isLast) {
