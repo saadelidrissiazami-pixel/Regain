@@ -16,7 +16,7 @@ import { useFitness } from '../../hooks/useFitness';
 import { logWorkout } from '../../lib/fitness';
 import { cuesFor } from '../../features/fitness/exerciseCues';
 import { photoSlug } from '../../features/fitness/exercises';
-import { imageForExercise, imageForWorkout } from '../../theme/images';
+import { imageForWorkout } from '../../theme/images';
 import { useTheme } from '../../theme/ThemeProvider';
 import { t } from '../../lib/i18n';
 
@@ -31,7 +31,6 @@ import { t } from '../../lib/i18n';
  * the scrolling content, so shrinking it shortens that content, which shortens the scroll, which
  * grows the photograph back.
  */
-const HERO_HEIGHT = 260;
 
 type Position = { exercise: number; set: number };
 type State =
@@ -175,14 +174,7 @@ function Player({ session, sessionIndex, planId }: { session: WorkoutSession; se
             <Text variant="label" tone="ink3" tabular style={{ width: 28 }}>
               {i + 1}
             </Text>
-            <Thumbnail
-              source={imageForExercise(exercise.name, session?.focus)}
-              width={44}
-              height={44}
-              radius={10}
-              icon="barbell-outline"
-            />
-            <View style={{ flex: 1, paddingLeft: 12 }}>
+            <View style={{ flex: 1 }}>
               <Text variant="label">{exercise.name}</Text>
               <Text variant="caption" tone="ink2">
                 {t('{sets} sets · {reps} reps · {rest} s rest', { sets: exercise.sets, reps: exercise.reps, rest: exercise.rest_seconds })}
@@ -204,6 +196,7 @@ function Player({ session, sessionIndex, planId }: { session: WorkoutSession; se
     );
   } else if (state.stage === 'exercise') {
     const exercise = exercises[state.exercise];
+    const cues = cuesFor(photoSlug(exercise.name) ?? '');
     const lastSet = state.set + 1 >= exercise.sets;
     const lastExercise = state.exercise + 1 >= exercises.length;
     content = (
@@ -212,17 +205,21 @@ function Player({ session, sessionIndex, planId }: { session: WorkoutSession; se
         <Text variant="bodySm" tone="ink2" style={{ marginTop: 4 }}>
           {t('{sets} sets · {reps} reps', { sets: exercise.sets, reps: exercise.reps })}
         </Text>
-        {/* The exercise's own photograph, not the session's: what to do is the question being
-            asked here, and the picture of a generic “legs” session never answered it. */}
-        <View style={{ marginTop: 16 }}>
-          <Thumbnail
-            source={imageForExercise(exercise.name, session.focus)}
-            width="100%"
-            height={HERO_HEIGHT}
-            radius={20}
-            icon="barbell-outline"
-          />
-        </View>
+        {/*
+          The written instruction, where a photograph used to be.
+
+          The photographs answered “what does this look like” and they answered it badly: a fixed
+          frame around a standing body crops the head off a lunge and the feet off a press, and no
+          choice of crop suits both. The question being asked at this moment is “how do I do this”,
+          and three sentences answer it without a frame to fit into.
+        */}
+        {cues ? (
+          <Card variant="tinted" padding={16} style={{ marginTop: 16 }}>
+            <Text variant="body">{`1. ${cues.setup}`}</Text>
+            <Text variant="body" style={{ marginTop: 10 }}>{`2. ${cues.execute}`}</Text>
+            <Text variant="bodySm" tone="ink2" style={{ marginTop: 12 }}>{`⚠️ ${cues.mistake}`}</Text>
+          </Card>
+        ) : null}
         <View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'center', marginTop: 20, gap: 24 }}>
           <IconButton icon="chevron-back" label={t('Previous set')} variant="surface" onPress={() => dispatch('prevSet')} />
           <View style={{ alignItems: 'center' }} accessible accessibilityLabel={t('Set {set} of {sets}', { set: state.set + 1, sets: exercise.sets })}>

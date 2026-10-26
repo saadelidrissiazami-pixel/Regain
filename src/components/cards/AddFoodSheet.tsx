@@ -81,18 +81,26 @@ export function AddFoodSheet({
 
   const save = () => {
     if (!canSave) return;
+    // Closing is the receipt. The sheet used to stay open with the fields wiped, which looks
+    // exactly like a tap that did nothing — and the day's total sat on the screen behind,
+    // out of sight. It closes once the row is written, never before: a failure has to stay
+    // visible next to the form that caused it.
+    const done = { onSaved: onClose };
     if (picked && amounts && grams) {
       // The quantity goes into the label: reading back “Chicken breast (150 g)” a week later says
       // where the numbers came from, and nothing else stores it.
-      log.add({ label: `${foodName(picked)} (${grams} ${picked.unit})`, ...amounts });
+      log.add({ label: `${foodName(picked)} (${grams} ${picked.unit})`, ...amounts }, done);
     } else if (kcal !== null) {
-      log.add({
-        label,
-        calories: kcal,
-        proteinG: protein.trim() ? parseNumber(protein, 500) : null,
-        carbsG: carbs.trim() ? parseNumber(carbs, 1000) : null,
-        fatG: fat.trim() ? parseNumber(fat, 500) : null,
-      });
+      log.add(
+        {
+          label,
+          calories: kcal,
+          proteinG: protein.trim() ? parseNumber(protein, 500) : null,
+          carbsG: carbs.trim() ? parseNumber(carbs, 1000) : null,
+          fatG: fat.trim() ? parseNumber(fat, 500) : null,
+        },
+        done
+      );
     }
     clear();
   };

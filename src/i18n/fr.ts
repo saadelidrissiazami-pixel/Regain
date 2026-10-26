@@ -114,6 +114,7 @@ export const FR: Record<string, string> = {
   'A rhythm to breathe with, felt with your eyes closed': 'Un rythme sur lequel respirer, ressenti les yeux fermés',
   'Voice guidance': 'Guidage vocal',
   'Language': 'Langue',
+  '{calories} kcal': '{calories} kcal',
   'Voice off': 'Voix coupée',
   'Vibrations off': 'Vibrations coupées',
   'Vibrations. Turn them off': 'Vibrations. Les couper',

@@ -34,7 +34,11 @@ export type NutritionLog = {
   complements: Complement[];
   isLoading: boolean;
   isError: boolean;
-  add: (entry: NewNutritionEntry) => void;
+  /**
+   * `onSaved` fires only once the row is really written. The sheet closes on it rather than on
+   * the tap: closing straight away would hide the failure along with the form.
+   */
+  add: (entry: NewNutritionEntry, options?: { onSaved?: () => void }) => void;
   remove: (id: string) => void;
   adding: boolean;
   addError: unknown;
@@ -106,7 +110,7 @@ export function useNutritionLog(date?: string): NutritionLog {
     complements,
     isLoading: query.isLoading,
     isError: query.isError,
-    add: (entry) => addMutation.mutate(entry),
+    add: (entry, options) => addMutation.mutate(entry, { onSuccess: options?.onSaved }),
     remove: (id) => removeMutation.mutate(id),
     adding: addMutation.isPending,
     addError: addMutation.error,

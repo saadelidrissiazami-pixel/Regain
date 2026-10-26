@@ -123,6 +123,31 @@ export function CalorieProgressCard({ log, onAdd }: { log: NutritionLog; onAdd: 
         </View>
       ) : null}
 
+      {/*
+        What the day is actually made of.
+
+        The card counted the calories and never named them, so after the sheet closed there was
+        no trace of what had been eaten — a number going up, and nothing to check it against.
+        A total nobody can audit is a total nobody trusts.
+      */}
+      {log.entries.length > 0 ? (
+        <View style={{ marginTop: 14, borderTopWidth: 1, borderTopColor: theme.divider, paddingTop: 10 }}>
+          {log.entries.map((entry) => (
+            <View
+              key={entry.id}
+              style={{ flexDirection: 'row', alignItems: 'baseline', gap: 10, paddingVertical: 4 }}
+            >
+              <Text variant="caption" style={{ flex: 1 }} numberOfLines={1}>
+                {entry.label}
+              </Text>
+              <Text variant="caption" tone="ink2" tabular>
+                {t('{calories} kcal', { calories: Math.round(entry.calories) })}
+              </Text>
+            </View>
+          ))}
+        </View>
+      ) : null}
+
       <Button label={t('Add what I ate')} icon="add" variant="secondary" onPress={onAdd} style={{ marginTop: 14 }} />
     </Card>
   );
